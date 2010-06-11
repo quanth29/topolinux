@@ -1,0 +1,210 @@
+3d 3D
+D D
+I I
+L L
+LRUD LRUD
+N -
+R R
+S S
+V V
+angle_units Angle units 
+append_shots Append shots  
+azimuth Azimuth
+azimuth+ Azimuth +
+azimuth- Azimuth -
+backward  backward
+bad_file_format Unrecognized file type. Must be: raw or TLX.
+base_station Start plot from here
+calibration_data_no_save calibration data. Failed saving to file 
+calibration_data_save calibration data. Saving to file 
+cancel Cancel
+canvas_mode QTopo - Plot mode
+centerline_commands Centerline commands
+clean_scrap Do you really want to clear the scrap?
+clean_shots Do you really want to clear the survey?
+clear Clear
+clino Clino
+coeff_backup Calibration backed up to file.
+comment Comment
+cover Coverage
+cross_section Cross section
+data_download_failed Calibration data download failed.
+date Date
+default_none Unsupported export type
+default_dat Using file /tmp/data.plt
+default_svx Using file /tmp/data.svx
+default_th Using file /tmp/data.th
+deg deg
+delete_shot Delete shot
+delta Delta 
+description Description
+device Device 
+distox_backup  Backup old coeffiecients 
+distox_calib DistoX in calibration mode.
+distox_download QTopo - DistoX
+distox_mode DistoX - Mode
+distox_normal DistoX in normal mode.
+distox_write DistoX - Write
+distox_write2 Write calibration to the DistoX 
+down Down
+download Download
+download_shots Download shots from DistoX
+duplicate duplicate shot
+edit_descr Calibration description:
+enter_filename Enter the filename:
+error Error
+eval Compute
+exit Exit
+exit_question Do you really want to exit?
+export Export
+ext Ext
+ext_box Extend
+extended Extended
+failed_backup Failed to backup calibration.
+failed_open Failed to open backup file.
+failed_read Failed to read calibration from DistoX.
+failed_read_default Failed to read calibration from DistoX. Using default.
+failed_toggle Failed to switch DistoX mode.
+failed_write Failed to write calibration to DistoX.
+file_open_failed Failed file open.
+flag Flg
+flag_box Flag
+from From
+from_station  FROM station
+ft ft
+grad grad
+grid Grid
+guess_centerline Guess centerline 
+help Help
+help_index See file help\en\index.htm
+horizontal Horizontal
+ignore Ignore
+image_open_failed Failed to open image file
+incl+ Incl. +
+incl- Incl. -
+insert Insert
+insert_before Insert before 
+insert_shot Insert shot
+insert_shot_at Insert shot at
+iterations Iterations 
+left Left
+length_units Length units 
+line Line 
+m m
+merge_next Merge w. next
+mode Mode
+name Name
+no No
+no_export_type Unexpected export type
+no_saved_dat Failed to save compass file
+no_saved_svx Failed to save survex file
+no_saved_th Failed to save therion file
+none None
+number Stations
+ok OK
+one_station Cannot add sketch with only one station
+open Open
+open_file Open file
+open_sketch Open sketch
+open_survey Open survey file
+options Options
+orientation Orientation
+plan Plan
+point Point 
+prefix Stations prefix
+properties Comment and options
+qtopo_3d QTopo - 3D
+qtopo_centerline QTopo - Survey
+qtopo_clean_scrap QTopo - Clear scrap
+qtopo_clean_shots QTopo - Clear survey
+qtopo_comment QTopo - Survey
+qtopo_continuation QTopo - Continuation
+qtopo_e_line QTopo E-section - Line 
+qtopo_e_point QTopo E-section - Point 
+qtopo_e_select QTopo E-section - Select
+qtopo_edit_station QTopo - Edit station
+qtopo_exit QTopo - Exit
+qtopo_extend QTopo - Extend
+qtopo_help QTopo - Help
+qtopo_insert_LRUD - QTopo - LRUD
+qtopo_insert_shot QTopo - Shot insert
+qtopo_label QTopo - Label
+qtopo_options QTopo - Options
+qtopo_p_line QTopo Plan - Line 
+qtopo_p_point QTopo Plan - Point 
+qtopo_p_select QTopo Plan - Select
+qtopo_plot QTopo - Plot
+qtopo_scrap QTopo - Scrap
+qtopo_select QTopo Plot - Select
+qtopo_shot QTopo - Shot
+qtopo_sketch QTopo - Sketch
+qtopo_station QTopo - Station
+qtopo_station_comment QTopo - Station comment
+qtopo_x_line QTopo X-section - Line 
+qtopo_x_point QTopo X-section - Point 
+qtopo_x_select QTopo X-section - Select
+qtopoc_calib QTopo - Calib
+qtopoc_coeff QTopo - Calibration
+qtopoc_comment QTopo - Description
+qtopoc_data Download calibration data from DistoX.
+qtopoc_guess   Guess the data groups
+qtopoc_guess2   Use DistoX calibration to guess
+raw_read_failed Failed reading raw file
+read Read
+read_ Read
+read_data calibration data from the DistoX.
+remove_station Remove station
+renumber Renumber
+reversed  reversed
+right Right
+save Save as
+save_file Save file
+save_th2 Save th2 file
+saved_dat Saved compass file
+saved_svx Saved survex file
+saved_th Saved therion file
+scrap_name Scrap name 
+scrap_prefix_e ext
+scrap_prefix_h horiz
+scrap_prefix_p plan
+scrap_prefix_x cross
+select Select
+set Set
+shot_comment QTopo - Shot
+shot_download_failed Shot download failed
+shots_saving shots. Saving to file
+shots_saving_failed shots. Failed saving to file
+single_survey Single survey
+sketch Sketch
+skip Skip
+splay Toggle splay
+splay_shots Splay shots at  
+split Split
+station Station
+surface surface shot
+survey_commands Survey commands
+survey_info QTopo - Survey info
+swap_from_to Swap stations
+tape Tape
+team Team
+title Title
+tlx_read_failed Failed reading TLX file
+to To
+to_station  TO station
+toggle DistoX mode
+too_few_data Not enough calibration data. Need at least 16.
+undo Undo
+up Up
+vertical Vertical
+warn_scrap WARNING. Scrap has fewer that two control points
+what_do What do you want to do?
+write Write
+write_LRUD Write LRUD below
+write_no Calibration NOT written to DistoX.
+write_ok Written calibration to DistoX.
+written Written
+x-section X-section
+yes Yes
+zero_data No calibration data read.
+zoom_in Zoom in
+zoom_out Zoom out
