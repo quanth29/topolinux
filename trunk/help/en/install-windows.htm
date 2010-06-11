@@ -1,0 +1,80 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../css/basic.css">
+</head>
+<body>
+<img src="../images/logo6-64.gif" width=64 valign="bottom">
+<h3>TopoLinux - Windows Installation</h3>
+<p>
+<br>
+<p>
+
+<b>Precompiled</b>
+<p>
+
+You need to install the Microsoft VisualC 2008 redistributable package.
+You can get it from 
+<a href="http://go.microsoft.com" target=_top>http://go.microsoft.com</a>.
+Make sure to get that one for VisualC 2008 (v. 9.0).
+The link is
+<a href="http://www.microsoft.com/downloads/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074"
+target=_top>http://www.microsoft.com/downloads/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074</a>.
+Download and install it.
+<p>
+
+Next download the Windows precompiled archive, and unzip it.
+It will create a folder <tt>qtshot</tt> containing
+<ul>
+<li><tt>qtopo.rc</tt>, run-time configuration</li>
+<li><tt>qtshot</tt>, QTopoShot executable</li>
+<li><tt>help</tt>, help pages</li>
+<li><tt>i18n</tt>, internationalization data</li>
+<li><tt>icons</tt>, programs icons</li>
+<li>a number of Qt dll.</li>
+</ul>
+<p>
+
+Double click on <tt>qtshot</tt> to run the program.
+<p>
+<br>
+<p>
+
+
+<b>Sources</b>
+<p>
+The sources for the Windows installation are the same as for Linux.
+See the <a href="install-linux.htm">Linux installation</a> for details.
+Download the source archive and unzip it.
+<p>
+
+You need to Microsoft Visual C++ 2008 (v. 9.0) and the Qt development
+environment (Qt-4.x.x). You need the Qt3 supporti compiled in.
+Create a new VisualC project with all the
+C source and header files in the subdirectories
+<ul>
+<li><tt>distox</tt>,</li>
+<li><tt>utils</tt>,</li>
+<li><tt>QTshot-02</tt>.</li>
+</ul>
+<p>
+
+Open a console window and cd into <tt>QTshot-02</tt>. 
+Then execute <tt>Qt/bin/moc</tt> (sustitute the proper path for your
+installation of Qt) on the files 
+<ul>
+<li><tt>PlotCanvas.h</tt></li>
+<li><tt>BackgroundImage.h</tt></li>
+<li><tt>QTshot.h</tt></li>
+</ul>
+and include the moc-files in the project.
+The syntax is "moc -o output_file -D define input_file".
+<p>
+
+Compile the project, with <tt>QT3_SUPPORT</tt>.
+<p>
+<br>
+<p>
+
+</body>
+</html>
+

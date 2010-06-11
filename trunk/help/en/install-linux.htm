@@ -1,0 +1,91 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../css/basic.css">
+</head>
+<body>
+<img src="../images/logo6-64.gif" width=64 valign="bottom">
+<h3>TopoLinux - Linux Installation</h3>
+<p>
+<br>
+<p>
+
+<b>Sources</b>
+<p>
+The safest way to install QTopo on Linux is to compile it from the
+sources. Download and untar the source tgz:
+<pre>
+	tar -xzf qtopo-XXX.tgz
+</pre>
+This will create a directory TopoLinux, with the following subdirectories:
+<pre>
+   bin .......... executable files
+   basic-02 ..... TopoLinux utilities
+   calib-02 ..... TopoLinux calibration utilities
+   distox ....... DistoX connection and communication
+   docs ......... documentation
+   help ......... help pages
+   i18n ......... internationalization data files
+   icons ........ run-time icons
+   pixmaps ...... compile-time pixmaps
+   QTcalib-02 ... QTopoCalib classes
+   QTshot-02 .... QTopoShot classes
+   utils ........ utility classes
+   tmp .......... data
+</pre>
+The source files are in <tt>distox</tt>, <tt>utils</tt>, <tt>basic-02</tt>,
+<tt>calib-02</tt>, <tt>QTshot-02</tt> and <tt>QTcalib-02</tt>.
+Unless you must work without a window environment,
+it is not necessary to compile the programs in <tt>basic-02</tt> and <tt>calib-02</tt>.
+There are also a few files, the most important of which is
+the run-time configuration file <tt>qtopo.rc</tt>.
+<p>
+
+There is no "configure" and you must compile everything by hand.
+You need the C++ and Qt development environment (g++, etc., and Qt),
+and you must compile the sources in four directories:
+<ol>
+<li><tt>cd distox; make</tt></li>
+<li><tt>cd utils; make</tt></li>
+<li><tt>cd QTshot; qmake; make</tt></li>
+<li><tt>cd QTcalib; qmake; make</tt></li>
+</ol>
+<p>
+
+At this point you have two executables <tt>QTshot-02/qtshot</tt> and
+<tt>QTcalib-02/qtcalib</tt>.
+Run them from the <tt>TopoLinux</tt> root directory, as they look for
+the run-time resources from there.
+<p>
+<br>
+<p>
+
+<b>Precompiled</b>
+<p>
+The precompiled download archive contains the subdirectories 
+<pre>
+	bin ......... executables
+	docs ........ documentation
+	i18n ........ internationalization data
+	icons ....... run-time icons
+	help ........ help pages
+	tmp ......... data
+</pre>
+<p>
+
+Furthermore, there is the run-time configuration file <tt>qtopo.rc</tt>.
+<p>
+
+You need to have the Qt run-time (libraries) installed.
+To execute a program, invoke it from the <tt>TopoLinux</tt> root directory.
+For example
+<pre>
+	./bin/qtshot
+</pre>
+<p>
+<br>
+<p>
+
+
+</body>
+</html>
+

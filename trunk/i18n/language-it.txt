@@ -1,0 +1,210 @@
+3d 3D
+D D
+I I
+L S
+LRUD Trasversali
+N -
+R D
+S S
+V V
+angle_units Unita` angoli
+append_shots Aggiungi 
+azimuth Azimuth
+azimuth+ Azimuth +
+azimuth- Azimuth -
+backward  all'indietro
+bad_file_format Tipo file non riconosciuto. Deve essere: raw o TLX.
+base_station Inizia i disegni da qui
+calibration_data_no_save dati di calibrazione. Fallito salvataggio in 
+calibration_data_save dati di calibrazione. Salvati in 
+cancel Cancella
+canvas_mode QTopo - Modalita` disegno
+centerline_commands Comandi di poligonale
+clean_scrap Vuoi davvero cancellare il disegno?
+clean_shots Vuoi davvero cancellare la poligonale?
+clear Pulisci
+clino Clino
+coeff_backup Salvata precedente calibrazione su file
+comment Commento
+cover Copertura
+cross_section Sezione
+data_download_failed Fallito scaricamento dati da DistoX
+date Data
+default_none Tipo di export non gestito
+default_dat Usato file /tmp/data.plt
+default_svx Usato file /tmp/data.svx
+default_th Usato file /tmp/data.th
+deg gradi
+delete_shot Rimuovi tiro
+delta Delta 
+description Descrizione
+device Device
+distox_backup  Backup precedente calibrazione
+distox_calib DistoX in modo calibrazione
+distox_download QTopo - DistoX
+distox_mode DistoX - Modo
+distox_normal DistoX in modo normale
+distox_write DistoX - Scrittura
+distox_write2 Scrivi calibrazione nel DistoX
+down Giu`
+download Scarica
+download_shots Scarica la poligonale da DistoX
+duplicate tiro duplicato
+edit_descr Descrizione calibrazione:
+enter_filename Scrivi il nome del file
+error Errore
+eval Calcola
+exit Esci
+exit_question Vuoi davvero uscire?
+export Esporta
+ext Ext
+ext_box Svilluppo:
+extended Sez. Long.
+failed_backup Fallito salvatatggio precedente calibrazione
+failed_open Fallita scrittura file
+failed_read Fallita lettura calibrazione dal DistoX
+failed_read_default Fallita lettura calibrazione da DistoX.
+failed_toggle Fallita commutazione modo DistoX
+failed_write Fallita scrittura calibrazione su DistoX
+file_open_failed Fallita apertura file.
+flag Flg
+flag_box Note:
+from Da
+from_station  DA
+ft ft
+grad gradi
+grid Reticolo
+guess_centerline Trova capisaldi
+help Aiuto
+help_index Vedi file help\en\index.htm
+horizontal Orizzontale
+ignore Ignora
+image_open_failed Fallita apertura file immagine
+incl+ Incl. +
+incl- Incl. -
+insert Inserire
+insert_before Inserisci prima
+insert_shot Inserisci tiro
+insert_shot_at Inserisci tiro al
+iterations Iterazioni
+left Sinistra
+length_units Unita` lunghezze
+line Linea
+m m
+merge_next Unisci al seguente
+mode Modo
+name Nome
+no No
+no_export_type Tipo file non supportato
+no_saved_dat Fallita scrittura file compass
+no_saved_svx Fallita scrittura file survex
+no_saved_th Fallita scrittura file therion
+none Nessuno
+number Caposaldi
+ok OK
+one_station Impossibile inserire schizzo con un solo caposaldo
+open Apri
+open_file Apri file
+open_sketch Apri disegno
+open_survey Apri un file con rilievo
+options Opzioni
+orientation Orientazione
+plan Pianta
+point Punto
+prefix Prefisso caposaldi
+properties Commento e opzioni
+qtopo_3d QTopo - 3D
+qtopo_centerline QTopo - Poligonale
+qtopo_clean_scrap QTopo - Cancella scrap
+qtopo_clean_shots QTopo - Cancella polgonale
+qtopo_comment QTopo - Rilievo
+qtopo_continuation QTopo - Continuation
+qtopo_e_line QTopo Sez. Long. - Linea 
+qtopo_e_point QTopo Sez. Long. - Punto 
+qtopo_e_select QTopo Sez. Long. - Selezione
+qtopo_edit_station QTopo - Modifica caposaldo
+qtopo_exit QTopo - Esci
+qtopo_extend QTopo - Extend
+qtopo_help QTopo - Aiuto
+qtopo_insert_LRUD - QTopo - LRUD
+qtopo_insert_shot QTopo - Inserimento tiro
+qtopo_label QTopo - Testo
+qtopo_options QTopo - Opzioni
+qtopo_p_line QTopo Pianta - Linea 
+qtopo_p_point QTopo Pianta - Punto 
+qtopo_p_select QTopo Pianta - Selezione
+qtopo_plot QTopo - Disegno
+qtopo_scrap QTopo - Scrap
+qtopo_select QTopo Disegno - Selezione
+qtopo_shot QTopo - Shot
+qtopo_sketch QTopo - Schizzo
+qtopo_station QTopo - Caposaldo
+qtopo_station_comment QTopo - Commento caposaldo
+qtopo_x_line QTopo Sezione - Linea 
+qtopo_x_point QTopo Sezione - Punto 
+qtopo_x_select QTopo Sezione - Selezione
+qtopoc_calib QTopo - Calib
+qtopoc_coeff QTopo - Calibrazione
+qtopoc_comment QTopo - Descrizione
+qtopoc_data Scarica dati calibrazione dal DistoX
+qtopoc_guess   Trova gruppi
+qtopoc_guess2   Usa precedente calibrazione nel trovare i gruppi
+raw_read_failed Fallita lettura file raw
+read Leggi
+read_ Letti
+read_data dati di calibrazione da DistoX 
+remove_station Remuovi caposaldo
+renumber Renumera
+reversed  invertita
+right Destra
+save Salva come
+save_file Salva file
+save_th2 Salva file th2
+saved_dat Salvato file compass
+saved_svx Salvato file survex
+saved_th Salvato file therion
+scrap_name Nome del disegno
+scrap_prefix_e sezione
+scrap_prefix_h orizzontale
+scrap_prefix_p pianta
+scrap_prefix_x trasversale
+select Selezione
+set Gruppo
+shot_comment QTopo - Tiro
+shot_download_failed Fallito scaricamento poligonale
+shots_saving tiri. Salvati su file
+shots_saving_failed tiri. Fallito salvataggio su file
+single_survey Rilievo singolo
+sketch Disegno
+skip Ignora
+splay Laterali
+splay_shots Laterali al caposaldo
+split Dividi
+station Caposaldo
+surface tiro di superficie
+survey_commands Comandi di rilievo
+survey_info QTopo - Informazioni rilievo
+swap_from_to Scambia capisaldi
+tape Distanza
+team Squadra
+title Titolo
+tlx_read_failed Fallita lettura file TLX
+to A
+to_station  A
+toggle Cambia
+too_few_data Insufficenti dati di calibrazione. Minimo 16
+undo Disfa
+up Su`
+vertical Verticale
+warn_scrap ATTENZIONE. Il disegno ha meno di due punti di controllo
+what_do Cosa vuoi fare?
+write Scrivi
+write_LRUD Scrivi le trasversali
+write_no Calibrazione NON scritta su DistoX
+write_ok Scritta calibrazione su DistoX
+written Scritti
+x-section Sezione
+yes Si'
+zero_data Nessun dato di calibrazione.
+zoom_in Zoom in
+zoom_out Zoom out
