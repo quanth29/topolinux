@@ -1,0 +1,24 @@
+QTopo README
+
+Dec. 23, 2009
+
+Install
+
+(1) make in dostox
+(2) make in utils
+(3) qmake in QTshot-02
+(4) make in QTshot-02
+
+Programs
+  QTshot-02/qtshot 
+
+It uses a config file (example qtopo.rc) and optionally
+a language file (example language-it.txt).
+You can write your own language file.
+
+Utilities
+make in basic-02
+programs are tlx_...
+
+Note. Docs are a little outdated.
+
