@@ -1,0 +1,79 @@
+Howto compile TopoLinux
+
+
+Get the latest tarball and untar it.
+This creates the directory TopoLinux with the source files, and some
+documentation. In particular you should have the following subdirectories:
+  basic-02        TopoLinux utilities
+  bin             where programs are placed
+  calib-02        TopoLinux Calibration utilities
+  distox          DistoX communication calsses
+  experimental    experimental code [not used]
+  docs            pdf docs
+  help            help files (documentation)
+  i18n            internationalization data files
+  icons           icons
+  pixmaps         pixmaps
+  PTopo           PocketTopo classes ["empty"]
+  QTcalib-02      QTopoCalib: calibration program
+  QTshot-02       QTopoShot: measurements management program
+  utils           utility classes
+and some files.
+
+------------------------------------------------------------
+Howto ccompile on Linux
+
+[1]
+First of all you must make in distox.
+
+[2]
+To copmpile the TopoLinux utilities make in basic-02 and calib-02
+
+[3] 
+To compile QTopoShot, first make in utils, then cd to QTshot-02 and 
+qmake and make.
+
+[4]
+To compile QTopoCalib, you need classes in utils and in QTshot-02.
+Having already made QTshot, cd to QTcalib-02 and qmake and make.
+
+[5] 
+The programs qtshot and qtcalib are in the bin directory.
+The utilities are left in basic-02 and calib-02.
+To run qtshot and qtcalib you need the QTopo resource file.
+A sample qtopo.rc is provided in the top directory.
+
+For example cd to the top directory and type the command
+    ./bin/qtshot
+
+[6]
+There is no installer.
+You must install the programs by hand; for example
+    cp ./bin/* /usr/local/bin
+    mkdir /usr/local/etc/qtopo
+    cp -r qtopo.rc i18n /usr/local/etc/qtopo
+
+
+----------------------------------------------------------------------
+Howto compile on Windows (MSVC 2008)
+
+[1] Prerequisite
+You need the MS VC compiler: you can get MS VC Express edition
+free from MicroSoft website.
+You also need the QT libraries and development environment (header files,
+and the MOC compiler).
+
+[2] 
+In a DOS window (cmd window) run the MOC compiler to
+create the moc file from the headers
+   QTshot.h
+   PlotCanvas.h
+   BackgroundImage.h
+   QTcalib.h
+
+[3]
+Make VC project, including the files in QTshot, distox, utils.
+Note that pixmaps must be added to the include directories.
+
+
+
