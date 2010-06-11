@@ -1,0 +1,1 @@
+../QTshot/Locale.h

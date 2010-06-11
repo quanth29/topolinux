@@ -1,0 +1,1 @@
+../QTshot/IconSet.cpp
