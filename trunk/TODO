@@ -1,0 +1,106 @@
+TODO - BUGS - DONE
+
+GENERAL CRITERIA TO SATISFY
+
+- Follow general pattern of other applications
+  Consistent buttons, colors, actions
+
+- Items must have siutable affordance
+  User must clearly see whta he can do with the item
+
+- Use USER-CENTRIC features (and language)
+  avoid system-centric features.
+
+- FEEDBACKS to the user: each action must produce something visible.
+
+- MESSAGES must be concise, and to the point
+  Use a consistent jargon, but allow users more freedom of terms
+
+- USER INPUTS:
+  - Make clear how user inputs are used
+  - Provide DEFAULTS (when possible)
+    Every dialog must have defaults
+    Use defaults to teach users
+  - User errors PREVENTION
+    Avoid textboxes if possible (choice, combobox, radiobutton, ...)
+  - Let user back up from errors
+
+- Use ERROR MESSAGES to teach usage: HINTS what to do
+
+- Do not OVERLOAD interaction: do not put two metaphors in one dialog
+
+- Avoid FRAGMENTATION: too many dialogs to say one thing
+
+- Simplicity: regularity (placement, font, color, size)
+              differences are for "important" things
+              contrast: color, hue, texture, form, position orientation, size
+              white space gestalt: proximity, similarity, continuity, closure
+                                   area, simmetry
+              alignment
+              color
+
+-----------------------------------------------------
+COMPILE DEFINES
+
+USER_HORIZONTAL_CROSS_SECTION
+let the user decide when a cross section is vertical or horizontal
+otherwise use threshold in config file
+
+-----------------------------------------------------
+TODO
+
+
+LRUD
+test LRUD in therion/compass exports
+write LRUD in the export (survex)
+use LRUD in the plot
+
+plot grids
+set spacing in options/config
+PlotStatus has field grid_spacing
+
+feedbacks whether shots/points have comments
+line color or thickness ?
+
+stations on cross-sections
+
+In the drawing plot window there is no "select-and-move" a point
+(drag-n-drop).
+
+20091231
+on exit save the current config setting in user home .qtopo.rc
+
+Give depth to the 3D view
+20091223 made an attempt using line thickness.
+         would like to use gradients, but not sure qt v.3 has them
+
+Fast Background warping methods
+
+Fix Download action for QTcalib as in QTshot
+20091227 done but must check that i made no mistake
+
+Add history of most recently opened files ...
+need to write in the user home directory
+
+----------------------------------------------------
+Things that might be OK
+
+20100106
+scale bar on the plan and extended plots
+kind of crude, but ok.
+
+Background images:
+- not persistent between close/open of the Plot.
+- not exported in th2 files
+- at most only one image at a time (previous ones are dropped)
+
+
+20091231 extend flag in th export:
+for the moment fixed exporting first the centerline,
+then the splay shots, and computing the extend for each splay shot
+with an heuristics
+
+20091227 Help functionality
+with extern helper browser
+might be done with QHelper class, but Qt3 does not have it
+

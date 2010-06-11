@@ -1,0 +1,357 @@
+Change-log
+
+20100530 QTshot support for DistoX modes
+Added support for switching between calib and normal mode,
+as well as between silent nad non-silent mode.
+calib mode  = bit-3 set (0x08)
+silent mode = bit-4 set (0x10)
+Note my distox has 000s.c110
+
+20100524 NUM
+Fixed bug in Num.cpp (linking homotopy list)
+
+20100506 CALIBRATION
+included the implementation of beat's calibration algo in the distribution.
+experimental algos not included.
+
+20100426 POCKETTOPO and LRUD
+made POKETTOPO and LRUD support compile time options.
+PocketTopo support not included in the distribution.
+
+20100416 PLOT CANVAS BACKGROUND
+fixed bug in PLotCanvas::doImage()
+
+20100407 TABLE COLLAPSE
+made the collapsed status of the table a property of the shot-widget.
+when a new file is loaded the table is resetto expanded.
+
+20100406 BASE BLOCK
+fixed a bug in DataList (did not set base_block to NULL on clear).
+The shot table display (QTshotWidget) retain the iconic pixmap
+in the old cell when the base_block is changed, or when a new dataset
+is loaded. Fixed a number of bugs connected with the existence of 
+the base_block: it was not cleared on load.
+
+20100402 UTILITIES
+modified basic utility programs to keep into account the
+roll data (byte 7).
+
+20100401 EXPORT FUNCTIONS
+extrancted export functions fron DataList:
+new files DataXXXExport.h and DataXXXExport.cpp
+
+20100331 CBLOCK and CTRANSFORM
+extracted CBlock and CTransform from CalibList.h into independent source
+files
+
+20100324 PLOT EXPORT
+new class PlotExport with export info and methods
+
+20100321 POCKETTOPO
+support to read PocketTopo files.
+class PTfile and ancillary classes.
+all in a separate directory.
+conditional compile with HAS_POCKETTOPO.
+PocketTopo input/export seems to work, but requires more testing.
+
+20100318 ROLL
+start adding roll support
+roll is read/written to TLX file (version 2)
+manual block insert has roll=0
+raw data file have roll=0
+TLX data file version 1 has roll = 0.0 
+
+20100318 DECLINATION
+added declination.
+the value of the declination is stored in the survey info.
+it can be entered in the export survey info dialog.
+it is used in all the exports.
+by default it is zero (0)
+
+20100305 THERION EXPORT
+therion export
+splay shots are being written with therion splay syntax,
+ie, using dash '-' for the unnamed station.
+splay shots are written all together after the centerline shots.
+
+20100301 COMPASS EXPORT
+station names in Compass export
+station names in Compass are limited to 12 chars
+the program issue a warning if there is a station name longer than 12 chars.
+N.B. the file is written anyways, and must be saved again, because
+it is not a proper compass file.
+It is possible to choose between a single survey or multiple surveys in the file.
+
+20100215
+debian bluetooth setup with bluez:
+using bluetooth-agent with PIN "0000"
+made a script that runs the agent if not already running.
+could system the script in qtshot/qtcalib or in Protocol.
+(the agent can run under any user.) 
+
+20100214 SERIAL COMMUNICATION
+improved error messages in Serial.cpp
+now can use the program Serial (compile Serial.cpp with -DTEST)
+to check the communication with the DistoX
+
+20100206 LRUD
+LRUD are saved in TLX file and loaded from TLX files
+LRUD are displayed in the plots (plan, extended, 3D have been checked)
+x-section not checked yet.
+LRUD are enabled only if the LRUD flags is set in config file.
+
+20100205 (see 20100104) 
+changed LRUD: made a struct to contain LRUD 
+a DBlock has two LRUD: one at From (default), the other at To
+- they show in the shot dialog
+- LRUD widget has entries to change the LRUD for the from station
+  and those for the to station is there is one.
+- shots with LRUD in the table have a '+' pixmap before the station name
+  the plot baseshot has a circle with a cross (and arrows if LRUD too)
+- LRUD are exported in Therion if present
+  in Compass they are exported or, if missing, LRUD are guessed from the splay shots
+  in Survex must still do it
+
+20100202 
+fixed "*units" bug in th exports
+fixed "-text" bug in th2 save for label and continuation
+
+20100128 NUM
+converted num to C++
+added the name of base station for the computation of the centerline
+
+20100127 THERION POINT CONTINUATION
+added terion point "continuation", symbol '?' 
+takes a comment (option string)
+
+20100126 EXPORT 
+compass/survex export icons.
+export info dialog customized to therion/compass/survex.
+default export type taken by config file.
+update help pages.
+
+20100123 PLOT GRID
+Grid spacing written on toolbar for the plots.
+scale-bar and grid are alternative:
+when the grid is hidden the scalbar is displayed and there is no label
+with the grid spacing in the toolbar.
+
+20100123 LOGO
+compiled logo icons in the programs: not need to distribute icons directory
+
+20100123 UNITS
+fixed units (m/ft) also in the plot: scalebar and grid
+default units selected in the config file.
+
+20100123
+added shifting of therion items upon recomputing the plot
+because of changes of shot stations
+
+20100123 EXPORT TYPE
+made ExportType enum
+
+20100123 COMMENTS
+made the comment-size in the table a config parameter
+
+20100122
+Config handles values of string with white spaces, if enclosed by '"'
+
+20100121 
+compiled on Windows with MSVC 9.0 and Qt 4.6.0 
+found how to deploy (with MS VC runtime installer)
+
+20100120
+extend estimate, might be ok.
+the old function to estimate the "centerline extend" is still in the
+code, but it is not used
+
+20100118
+plots stay centered on zoom in/out
+
+20100115
+fixed a coeff backup filename that is a new file.
+the name is also proposed to the user in the "write" dialog.
+
+20100113 LOCALE
+Localized QTcalib
+
+20100111 STATION NAMES in PLOT
+Plot: toggle station numbers on/off
+when off do not insert stations
+
+20100109 VTHRESHOLD
+horizontal cross-section: might be ok
+V_THRESHOLD parameter in config file
+
+20100109 LOCALE
+Localize QTshot using QLocale class
+QLocale locale( "it" );
+double d = locale.toDouble( "..." ); // ignores leading and trailing spaces
+int i = locale.toInt( "..." );
+unsigned int ui = toUInt( "..." ); // can set the base too
+QString s = locale.toString( d, 'g', 2 ); // precision=2
+
+20100106
+ExtendWidget, dialog for the "extend" flag in Extended plot
+might have room also for the shot comment.
+and apply to plan and 3D as well.
+
+20100106 new struct Units for the units and respective factors
+data are exported in therion and survex files in the
+user units.
+
+20100105 STATION COMMENTS 
+station commenst are added to station selected in either
+the Plan or the Extended plot 
+Station commenst are saved in the th2 files
+(3D viewer does not partecipate in this)
+
+20100104 LRUD INSERT 
+can add LRUD at From station and at To station
+LRUD are stored as several splay shots
+probably there is a better way to do this
+
+20100101 DBLOCK
+privatized DBlock (except for DataList which is friend)
+
+20091231 CONFIG
+config load parameters from different sources in row, so that
+the last overwrite the previou definitions:
+  1. global QTOPO_RC environment
+  2. user home .qtopo.rc
+  3. local qtopo.rc 
+
+20091231 BUG
+station crosses on the background did not follow the zoom
+
+20091231 ORIENTATION EPXORT BUG
+therion export: orientation ranged 0..7 (missed *45)
+
+20091231 DATE and COMMENT
+date and comment in TLX saved file
+
+20091229 CLOSED LINES
+- added support for closed lines
+- added line type rock-border (color gray)
+- added ticks to lines pit and chimney
+- added arrow heads to line arrow
+- distibuished line by color
+- made plots persistent between calls
+- erase plots when a new centerline is loaded
+- ask date and description when data are downloaded
+- save/load date and description in TLX file
+
+20091227 HELP
+- help in HTML format
+
+20091226 INTERNATIONALIZATION
+- i18n for QTcalib
+- fix "Toggle" action for QTcalib
+- revise QTcalib messages
+- add exit confirm to QTcalib
+
+20091226 BACKGROUND IMAGE
+Background image: erase station / change station name
+There is Edit/Remove dialog, but the changes are not reflected
+on the display because the cross+name are printed in the original
+image data
+
+20091225
+- Fixed background image tiling the canvas
+  but it takes quite a while to compute background warped image
+  need a faster warping method
+- When the user does not enter the text in Background station
+  selection, no point is added
+- Edit shot in QTshotWidget table:
+  only one choice available at a time: 
+  properties, renumber, delete, insert, merge, split
+  each choice selection activate the corresponding choice
+- Plot mode selection
+  when the user chanegs point type, the point input mode is activated
+  same for the line type and line input mode
+- QTshotWidget keeps pointers to the (last) four plots, one for each type.
+- When the "extend" is changed for a shot, the change is propagated to the
+  extended section plot (if any)
+- Background station-point selection:
+  - use cross-air cursor 
+  - mark points with cross and name
+  - fixed the proper value of Y_OFFSET
+- IconSet manages also pens, shapes, arrows and brushes
+
+20091224 INTERNATIONALIZATION
+- Made directory utils for Language and config
+  Language and config are singletons,
+  key-value lookup with operator()
+
+When Plot is close, it ends the current line if needed.
+When it is opened again the line is completed, the UNDO reopens it and
+goes back, cancelling the line points. But the input mode is NOT changed to
+LINE, so that one can continue the line with another type.
+20091224 FIXED: on undo the current line type is taked from the line
+
+20091223 PLOT OFFSET
+- Fix offx offy in PLotCanvas
+- When user is drawing a line
+  and changes line type/draw mode the line is closed
+- When Plot is closed and reopened the settings, zoom, shift etc.
+  were lost. Fixed with a class PlotStatus
+- Plot: when a station has been selected for therion inhibit to
+  select it again.
+
+20091102
+- add comment to TLX file format
+
+
+20091224 new class PlotStatus: factorize saved plot status
+
+20091224 made buttons active/inactive 
+         (feedbacks to user for what can be done and what not)
+         new class IconSet container of pixmaps
+
+20091223 changed name QTdata --> QTshot
+
+200912   QTdata
+         interface usability: uniformized icons colors, visual feedbacks
+	 (canvas mode cursors, canvas mode icon, flickering download icon)
+
+20091215 new class Language:
+	 internationalization support
+         default en
+         first custom translation: it
+
+200911   QTdata
+         background sketches for the plots
+
+20091004 QTcalib
+         calib_list::loadData return number of read data
+         qtcalib added calibration description comment
+         The description is saved in calibration files after the data
+         and is reloaded when the file is opened
+
+20091003 calib
+         included the pyramid (base Y-Z, vertex X) in hex_plot and Calibration;
+         not very useful in Calibration as the point of view cannot be changed
+
+20091003 QTcalib
+         included write-coeff dialog with backup option for old coeffs.
+    TODO coeff are backed up to file 'backup.txt'
+         let the user input the name
+
+20090930 QTcalib
+    TODO there is a problem with set-guess: sometimes there 
+         is no set change even though the angles are quite different
+
+20090929 basic
+         new program dump2data.c 
+         inspects a memory dump: writes info, extract unused (hot) data, etc.
+
+20090915 distox QTdata QTcalib
+         support disto-log configuration option 
+
+20080820 distox
+         created "distox" with the DistoX communication sources 
+         and Vector/Matrix
+
+20080817 QTcalib 
+         included the calibration class in the interface
+

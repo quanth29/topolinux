@@ -1,0 +1,79 @@
+DEBUG no
+NEWBY no
+DISTO_LOG no
+DEVICE  /dev/rfcomm0
+ROOT /home/projects/Disto/DATA
+# 
+# window geometry
+# GEOMETRY 240x320
+GEOMETRY 480x640
+Y_OFFSET 30
+V_THRESHOLD 80.0
+LRUD no
+#
+# user browser for help pages
+BROWSER /usr/bin/firefox
+#
+# shot comments are truncated in the table: set their length
+COMMENT_SIZE 20
+#
+# ---------------------- options ------------------------
+# length units: m meter ft foot
+LENGTH_UNITS meter
+#
+# angle units: deg degree grad
+ANGLE_UNITS  degree
+#
+# default export type: therion compass survex pockettopo
+EXPORT therion
+#
+# --------------- i18n and localization ------------------
+# language for the messages
+# LANGUAGE i18n/language-it.txt
+#
+# locale for numbers
+# LOCALE it
+#
+# language for the help docs: help pages are at "help/LANG/index.htm"
+LANG en
+#
+CALIB_GUESS 20
+BACKUP_FILE backup
+#
+TMP_DIR ./
+DEFAULT_DATA /home/projects/Disto/DATA/data.tlx
+#
+# ---------------- PocketTopo file ----------------------
+#
+# Qtopo therion line indices (see TherionLine.h)
+# 0 THL_ARROW = 0,
+# 1 THL_BORDER,
+# 2 THL_CHIMNEY,
+# 3 THL_PIT,
+# 4 THL_USER,
+# 5 THL_WALL,
+# 6 THL_ROCK,   // rock-border / rock-edge
+# * THL_PLACEMARK
+#
+# PocketTopo has six colors [1 to 6]
+#         0  1  2  3  4  5  6
+PT_LINES  0  1  4  3  5  6  2
+#
+# Qtopo point indices
+#  0 THP_AIR = 0,      // 0
+#  1 THP_BLOCK,        // 1
+#  2 THP_CLAY,         // 2
+#  3 THP_DEBRIS,       // 3
+#  4 THP_LABEL,        // 4
+#  5 THP_SAND,         // 5
+#  6 THP_STALACTITE,   // 6
+#  7 THP_USER,         // 7
+#  8 THP_WATER,        // 8
+#  9 THP_ENTRANCE,     // 9
+# 10 THP_CONTINUATION, // 10
+# 11 THP_STATION,      // station must be last
+#  * THP_PLACEMARK
+#
+#          0  1  2  3  4  5  6
+PT_POINTS  0  1  2  3  5  6  8
+
