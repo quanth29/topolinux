@@ -4,11 +4,11 @@
 
 MAKE_DIRS = \
   distox \
-  basic-02 \
-  calib-02 \
+  basic \
+  calib \
   utils \
-  QTshot-02 \
-  QTcalib-02
+  QTshot \
+  QTcalib
 
 EXTRA_MAKE_DIRS = \
   warp \

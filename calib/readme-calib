@@ -1,0 +1,9 @@
+data.txt contains the recorded data of several calibration measures
+as displayed by the disto first three memories
+arranged as Gx Mx Gy My Gz Mz group
+
+data_calib.txt contains the same data as hex values 
+rearranged as Gx Gy Gz Mx My Mz group
+which is the format dump_data saves them.
+
+calib.cpp is the calibration program that is supposed to compute the 
