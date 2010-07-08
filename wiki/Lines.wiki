@@ -16,6 +16,6 @@ Only a few Therion line types are supported and there is only a limited support 
 Furthermore centerline shot are red.
 Splay shots are black. To display them use the Splay toggle button.
 
-<img src=qtplotlines.jpg>
+http://code.google.com/p/topolinux/w/images/qtplotlines.jpg
 
 In Line insert mode the Mode button shows a pencil, and the cursor is a pencil. It is vertical before you start drawing, and turns slanted while you draw the line. Lines are drawn as consecutive segments: you click on the points in sequence. To finish the line click a second time on the last point. You finish a line also be clicking on its first point; this way you get a closed line. A line is automatically finished if you switch mode, or change line type. 
