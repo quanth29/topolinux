@@ -1,0 +1,21 @@
+#summary Lines drawing
+
+= QTopo - Lines =
+
+You can add lines to the plot in the QTopo drawing windows. Lines are drawn as sequences of points: they are just like centerlines and you mark all the stations in sequence to draw them.
+
+Only a few Therion line types are supported and there is only a limited support for their options.
+    * wall. This is displayed as solid blue line.
+    * border. Displayed as solid violet line.
+    * pit. Displayed as solid violet line with ticks pointing "into the cave empty space", as in Therion.
+    * chimney. Displayed as dashed violet line with ticks pointing "into the cave empty space", as in Therion.
+    * arrow. Displayed as solid black lines with small arrow-heads at the end it points to.
+    * rock-border. Displayed as solid gray line.
+    * user. Displayed as solid green line.
+
+Furthermore centerline shot are red.
+Splay shots are black. To display them use the Splay toggle button.
+
+<img src=qtplotlines.jpg>
+
+In Line insert mode the Mode button shows a pencil, and the cursor is a pencil. It is vertical before you start drawing, and turns slanted while you draw the line. Lines are drawn as consecutive segments: you click on the points in sequence. To finish the line click a second time on the last point. You finish a line also be clicking on its first point; this way you get a closed line. A line is automatically finished if you switch mode, or change line type. 
