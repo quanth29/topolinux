@@ -5,16 +5,26 @@
 TODO
 
 
-= Survey =
-Main survey application
-  * [Shot table] Centerline and splay shot table
-  * [Shot edit] Editing shots.
-  * [Shot insert] Inserting a new shot.
-  * [Survey command] Summary of command buttons.
+= QTopoShot =
 
-= Drawings =
+== Survey ==
+Main survey application
+  * [Shot-table] Centerline and splay shot table
+  * [Shot-edit] Editing shots.
+  * [Shot-insert] Inserting a new shot.
+  * [Survey-command] Summary of command buttons.
+
+== Drawings ==
 Plot drawing windows.
   * [Modes] Selection and insertion.
   * [Points] Drawing points.
   * [Lines] Drawing lines.
-  * [Drawing command] Summary of command buttons.
+  * [Drawing-command] Summary of command buttons.
+
+== 3D viewer ==
+3D display of the survey.
+  * [3D-command] Summary of command buttons.
+
+== Background sketch ==
+Background sketch import.
+  * [Sketch-command] Summary of command buttons.
