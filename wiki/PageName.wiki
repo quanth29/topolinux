@@ -1,8 +1,17 @@
-#summary TopoLinux. Protable programs for DistoX.
+#summary TopoLinux. Portable programs for DistoX.
 
 = Introduction =
 
-TODO
+TopoLinux is a set of programs to work with the DistoX.
+It consists of two graphical applications, QTopoShot and QTopoCalib, and
+a number of command-line utilities.
+
+The graphical applications are based on the
+Qt graphics libraries and aim to be portable. They have been successfully 
+compiled on Linux and Windows.
+
+The command-line utilities have been developed for limited environments
+and data-recovery purposes. They have been tested only on Linux.
 
 
 = QTopoShot =
