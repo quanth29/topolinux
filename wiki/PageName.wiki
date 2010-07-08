@@ -5,9 +5,16 @@
 TODO
 
 
-= Details =
+= Survey =
+Main survey application
+  * [Shot table] Centerline and splay shot table
+  * [Shot edit] Editing shots.
+  * [Shot insert] Inserting a new shot.
+  * [Survey command] Summary of command buttons.
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+= Drawings =
+Plot drawing windows.
+  * [Modes] Selection and insertion.
+  * [Points] Drawing points.
+  * [Lines] Drawing lines.
+  * [Drawing command] Summary of command buttons.
