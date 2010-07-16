@@ -13,11 +13,11 @@ This will create a directory TopoLinux, with the following subdirectories:
    * bin .............. executable files
    * basic-02 ..... TopoLinux utilities
    * calib-02 ...... TopoLinux calibration utilities
-   * distox ....... DistoX connection and communication
+   * distox ......... DistoX connection and communication
    * docs ........... documentation
    * help ........... help pages
    * i18n ........... internationalization data files
-   * icons ........ run-time icons
+   * icons .......... run-time icons
    * pixmaps ....... compile-time pixmaps
    * QTcalib-02 ... QTopoCalib classes
    * QTshot-02 .... QTopoShot classes
