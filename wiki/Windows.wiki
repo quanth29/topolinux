@@ -1,0 +1,41 @@
+#summary Windows Installation
+
+= Windows Installation =
+
+== Precompiled program archive ==
+
+You need to install the Microsoft VisualC 2008 redistributable package. You can get it from http://go.microsoft.com. Make sure to get that one for VisualC 2008 (v. 9.0). The link is 
+http://www.microsoft.com/downloads/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074. Download and install it.
+
+Next download the Windows precompiled archive, and unzip it. It will create a folder qtshot containing
+
+    * qtopo.rc, run-time configuration
+    * qtshot, QTopoShot executable
+    * help, help pages
+    * i18n, internationalization data
+    * icons, programs icons
+    * a number of Qt dll.
+
+Double click on qtshot to run the program. 
+
+
+
+== Source archive ==
+
+The sources for the Windows installation are the same as for Linux. See the Linux installation for details. Download the source archive and unzip it.
+
+You need to Microsoft Visual C++ 2008 (v. 9.0) and the Qt development environment (Qt-4.x.x). You need the Qt3 supporti compiled in. Create a new VisualC project with all the C source and header files in the subdirectories
+
+    * distox,
+    * utils,
+    * QTshot-02.
+
+Open a console window and cd into QTshot-02. Then execute Qt/bin/moc (sustitute the proper path for your installation of Qt) on the files
+
+    * PlotCanvas.h
+    * BackgroundImage.h
+    * QTshot.h
+
+and include the moc-files in the project. The syntax is "moc -o output_file -D define input_file".
+
+Compile the project, with QT3_SUPPORT.
