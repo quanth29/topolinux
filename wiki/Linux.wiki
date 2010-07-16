@@ -10,29 +10,27 @@ The safest way to install QTopo on Linux is to compile it from the sources. Down
 	tar -xzf qtopo-XXX.tgz
 
 This will create a directory TopoLinux, with the following subdirectories:
-
-   bin .......... executable files
-   basic-02 ..... TopoLinux utilities
-   calib-02 ..... TopoLinux calibration utilities
-   distox ....... DistoX connection and communication
-   docs ......... documentation
-   help ......... help pages
-   i18n ......... internationalization data files
-   icons ........ run-time icons
-   pixmaps ...... compile-time pixmaps
-   QTcalib-02 ... QTopoCalib classes
-   QTshot-02 .... QTopoShot classes
-   utils ........ utility classes
-   tmp .......... data
+   * bin .......... executable files
+   * basic-02 ..... TopoLinux utilities
+   * calib-02 ..... TopoLinux calibration utilities
+   * distox ....... DistoX connection and communication
+   * docs ......... documentation
+   * help ......... help pages
+   * i18n ......... internationalization data files
+   * icons ........ run-time icons
+   * pixmaps ...... compile-time pixmaps
+   * QTcalib-02 ... QTopoCalib classes
+   * QTshot-02 .... QTopoShot classes
+   * utils ........ utility classes
+   * tmp .......... data
 
 The source files are in distox, utils, basic-02, calib-02, QTshot-02 and QTcalib-02. Unless you must work without a window environment, it is not necessary to compile the programs in basic-02 and calib-02. There are also a few files, the most important of which is the run-time configuration file qtopo.rc.
 
 There is no "configure" and you must compile everything by hand. You need the C++ and Qt development environment (g++, etc., and Qt), and you must compile the sources in four directories:
-
-   1. cd distox; make
-   2. cd utils; make
-   3. cd QTshot; qmake; make
-   4. cd QTcalib; qmake; make
+   # cd distox; make
+   # cd utils; make
+   # cd QTshot; qmake; make
+   3 cd QTcalib; qmake; make
 
 At this point you have two executables QTshot-02/qtshot and QTcalib-02/qtcalib. Run them from the TopoLinux root directory, as they look for the run-time resources from there.
 
@@ -41,12 +39,12 @@ At this point you have two executables QTshot-02/qtshot and QTcalib-02/qtcalib. 
 
 The precompiled download archive contains the subdirectories
 
-	bin ......... executables
-	docs ........ documentation
-	i18n ........ internationalization data
-	icons ....... run-time icons
-	help ........ help pages
-	tmp ......... data
+	* bin ......... executables
+	* docs ........ documentation
+	* i18n ........ internationalization data
+	* icons ....... run-time icons
+	* help ........ help pages
+	* tmp ......... data
 
 Furthermore, there is the run-time configuration file qtopo.rc.
 
