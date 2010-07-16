@@ -51,5 +51,5 @@ Calibration DistoX calibration application.
 
 = Installation =
 
-[Linux] installation
-[Windows] installation
+  * [Linux] installation
+  * [Windows] installation
