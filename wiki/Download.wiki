@@ -1,0 +1,9 @@
+#summary Calibration data
+
+= Calibration data download =
+
+To download the data from the DistoX click on the Download button.
+
+QTopo can try to guess the data groups when it downloads the data from the DistoX. The guess is based on the direction differences between consecutive data, and it assumes that you have taken the data of each group in a row. Therefore you should try to change the calibration directions from one group to the next when you take the data in the field. To improve the guess you can use the old calibration stored in the DistoX.
+
+Before computing the calibration, you should nevertheless check in the table that there is no mistake. You can correct the group assignment, by writing the proper group indices in the first column of the table. 
