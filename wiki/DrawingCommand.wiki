@@ -4,8 +4,8 @@
 
 The command buttons are grayed out when they are not active.
 
-|| Save || Write the drawing to a Therion th2 file. ||
-|| Sketch || Load a background cave sketch. || 
+|| Save || Write the drawing to a Therion th2 file. || ||
+|| Sketch || Load a background cave sketch. || ||
 || Grid || Toggle the display of the underlying grid on and off. ||
 When the grid is displayed the grid spacing in shown in the toolbar.
 A scalebar appears in the upper-left side of the canvas, when the grid is off. ||
