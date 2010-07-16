@@ -15,14 +15,11 @@ When you are done click the "OK" command button. The image will be imported as b
 
 == Command buttons ==
 
-|| OK || Make the image the background sketch of the drawing. You must have selected at least two station points on the image, so that QTopo knows how to fit it to the plot.
-You can select more stations if you like: the image will be warped to fit all of them. ||
+|| OK || Make the image the background sketch of the drawing. You must have selected at least two station points on the image, so that QTopo knows how to fit it to the plot. You can select more stations if you like: the image will be warped to fit all of them. ||
 || Zoom in. || Zoom in. ||
 || Zoom out. || Zoom out. ||
 || Left. || Move the image to the left. ||
 || Up. || Move the image up. ||
 || Down. || Move the image down. ||
 || Right. || Move the image to the right. ||
-|| Close || Close the window without making the image the background sketch.
-Be careful with this. ||
-
+|| Close || Close the window without making the image the background sketch. Be careful with this. ||
