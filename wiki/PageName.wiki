@@ -16,6 +16,15 @@ and data-recovery purposes. They have been tested only on Linux.
 
 = QTopoShot =
 
+This is the DistoX survey application.
+It downloads the survey data from the DistoX, manages the survey
+shots, and let the user draw sketches for the plan and extended
+elevation maps.
+
+The survey data can be exported in Therion, Compass,
+Survex, and PocketTopo format. The sketches can be exported in
+Therion format.
+
 == Survey ==
 Main survey application
   * [ShotTable] Centerline and splay shot table
@@ -32,21 +41,26 @@ Plot drawing windows.
 
 == 3D viewer ==
 3D display of the survey.
-  * [3DCommand] Summary of command buttons.
+  * [3DCommand] Summary of the command buttons.
 
 == Background sketch ==
 Background sketch import.
-  * [SketchCommand] Summary of command buttons.
+  * [SketchCommand] Summary of the command buttons.
 
 
 = QTopoCalib =
 
-Calibration DistoX calibration application.
+This is the DistoX calibration application.
+
+This program toggle the DistoX on and off calibration mode.
+It downloads the calibration shots from the DistoX, and computes
+the calibration coefficients, which can be uploaded to the DistoX.
+
   * [Table] Data table.
   * [Download] Data download.
-  * [Coverage] Direction coverage.
+  * [Coverage] Angular direction data coverage.
   * [Compute] Calibration computation.
-  * [CalibrationCommand] Summary of command buttons.
+  * [CalibrationCommand] Summary of the command buttons.
 
 
 = Installation =
