@@ -12,7 +12,7 @@ The safest way to install QTopo on Linux is to compile it from the sources. Down
 This will create a directory TopoLinux, with the following subdirectories:
    * bin .............. executable files
    * basic-02 ..... TopoLinux utilities
-   * calib-02 ..... TopoLinux calibration utilities
+   * calib-02 ...... TopoLinux calibration utilities
    * distox ....... DistoX connection and communication
    * docs ........... documentation
    * help ........... help pages
@@ -21,7 +21,7 @@ This will create a directory TopoLinux, with the following subdirectories:
    * pixmaps ....... compile-time pixmaps
    * QTcalib-02 ... QTopoCalib classes
    * QTshot-02 .... QTopoShot classes
-   * utils .......... utility classes
+   * utils ............ utility classes
    * tmp .............. data
 
 The source files are in distox, utils, basic-02, calib-02, QTshot-02 and QTcalib-02. Unless you must work without a window environment, it is not necessary to compile the programs in basic-02 and calib-02. There are also a few files, the most important of which is the run-time configuration file qtopo.rc.
