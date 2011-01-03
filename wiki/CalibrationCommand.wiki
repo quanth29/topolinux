@@ -12,5 +12,6 @@ The command buttons are grayed out when they are not active.
 || Mode || Toggle the DistoX between normal mode and calibration mode. || The resulting DistoX mode is displayed in a dialog box. || 
 || Read || Read the calibration from the DistoX, and display it. || . ||
 || Write || Write the calibration to the DistoX. || You can backup the old DistoX calibration if you need. ||
+|| Options || Change DistoX device || . ||
 || Help || Open the help browser. || . ||
 || Exit || Exit QTopoCalib. || . ||
