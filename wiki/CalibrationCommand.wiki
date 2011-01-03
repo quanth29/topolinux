@@ -1,3 +1,5 @@
+#summary Calibration commands
+
 = QTcalib - Command buttons =
 
 The command buttons are grayed out when they are not active.
