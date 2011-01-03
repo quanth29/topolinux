@@ -1,10 +1,13 @@
-#summary One-sentence summary of this page.
+#summary 3D viewer commands
 
 = QTopo - 3D viewer =
 
-The 3D viewer displays the centeline and splay shots in 3D. The centerline shots are red, the splay shots are black. Cneterline shots are the thicker the closer they are to the viewpoint.
+The 3D viewer displays the centeline and splay shots in 3D. The centerline shots are red, the splay shots are black. Centerline shots are colored by the distance from the point
+of view.
 
-The point of view can be changed with the rotation buttons. The inclination goes from -90 to +90 degrees, while the azimuth goes al the way around the 360 degrees. 
+The point of view can be changed with the rotation buttons. The inclination goes from -90 to +90 degrees, while the azimuth goes all the way around the 360 degrees. 
+
+Centerline with comment are displayed thicker.
 
 == Commands ==
 
