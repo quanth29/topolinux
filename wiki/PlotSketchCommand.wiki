@@ -1,0 +1,25 @@
+#summary Plot background sketch
+
+= QTopo - Plot background sketch =
+
+
+You can add a background sketch to the drawing window, to help you make the drawing. 
+This functionality is not compiled in the program by default.
+You need to compiled QTshot with BACKGROUND_IMAGE defined.
+
+To add a background sketch click on the Sketch command button of the drawing window. This ask you for a PNG image file, hopefully the image of a cave sketch, and displays it in the background sketch window.
+
+You have to select some station points in the image so that QTopo knows how to insert it as background. Two stations are the minimum requirement. To select a station click on it on the image: it will be maked by a cross and a dialog will ask you the station name. Type it in and click the "OK" button: now the station name appears near the cross.
+
+When you are done click the "OK" command button. The image will be imported as background sketch in the drawing window. Be aware that the background sketch is not saved with the drawing. Therefore you lose it when you close the drawing window.
+
+== Command buttons ==
+
+|| OK || Make the image the background sketch of the drawing. You must have selected at least two station points on the image, so that QTopo knows how to fit it to the plot. You can select more stations if you like: the image will be warped to fit all of them. ||
+|| Zoom in. || Zoom in. ||
+|| Zoom out. || Zoom out. ||
+|| Left. || Move the image to the left. ||
+|| Up. || Move the image up. ||
+|| Down. || Move the image down. ||
+|| Right. || Move the image to the right. ||
+|| Close || Close the window without making the image the background sketch. Be careful with this. ||
