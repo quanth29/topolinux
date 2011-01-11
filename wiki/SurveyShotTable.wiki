@@ -1,0 +1,14 @@
+#summary Survey shot table
+
+= QTopoShot - Survey shot table =
+
+
+The shot table has eight columns:
+   # From station. To change it, click on the cell and write the new value.
+   # To station. To change it, click on the cell and write the new value. Leave it blank for splay shots;
+   # Tape;
+   # Azimuth (ie, compass);
+   # Clino;
+   # Ext: the shot "extend" direction for the extended plot. Possible values are: "-" (none), "L" (left), "R" (right), "V" (vertical), and "I" (ignore). Refer to Therion documetation for the detailed meaning.
+   # Flg: optional shot flag, not used by QTopo, but written in the fle exported for other programs (Therion, Compass, Survex). Possible values are: "-" (none), "S" (surface), and "D" (duplicate). Refer to Therion documetation for the detailed meaning.
+   # Shot comment (only the beginning of the comment)
