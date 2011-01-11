@@ -1,0 +1,12 @@
+#summary Direction coverage
+
+= Calibration direction coverage =
+
+
+With the Coverage button you can check the spread of the data directions, ie, how well they cover all possible directions.
+
+The map represents the solid angle. The equator corresponds to direction at zero inclination, the upper pole is +90 and the lower pole -90. The mid vertical line corresponds to azimuth 0. East directions are on the right side, west ones on the left side. Mnemonic symbols are displayed with the image.
+
+Red spots represent directions of poor coverage. The more red the worse.
+
+The map of the coverage does not include data with the Skip flag set. 
