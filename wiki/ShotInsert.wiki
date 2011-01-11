@@ -1,6 +1,0 @@
-#summary Shot insert
-
-QTopoShot - Shot insert
-
-
-Insert shot brings up a new dialog to enter the values of tape, azimuth and clino. Check the box "Insert before" if you want to insert the new shot before the selected shot, instead of after. 
