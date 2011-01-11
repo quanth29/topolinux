@@ -1,0 +1,17 @@
+#summary Plot drawing commands
+
+= Plot-Drawing command buttons =
+
+The command buttons are grayed out when they are not active.
+
+|| Save || Write the drawing to a Therion th2 file. || . ||
+|| Sketch || Load a background cave sketch. || . ||
+|| Grid || Toggle the display of the underlying grid on and off. || When the grid is displayed the grid spacing in shown in the toolbar. A scalebar appears in the upper-left side of the canvas, when the grid is off. ||
+|| Splay toggle || Toggle the display of splay shots on/off in the plot. || Centerline shots are red. Splay shots are black. ||
+|| Station toggle || Toggle the display of the stations on/off in the plot. || Station points can be selected only when the stations are displayed. ||
+|| Zoom in || Zoom in. || . ||
+|| Zoom out || Zoom out. || . ||
+|| Clear || Clear the drawing. || NOTE. This clears all the therion items you have drawn so far. Be careful with this. ||
+|| Undo || Undo the last action. || There is no "redo". ||
+|| Mode || Switch operating mode. || Modes are: "Select", "Point", and "Line". The icon on this button changes according to the current mode. Station points are input in "Select" mode. Other points are input in "Point" mode. Lines are drawn in "Line" mode. ||
+|| Close || Close the drawing window. || The drawing is not lost. It reappears when you reopen the drawing window. ||
