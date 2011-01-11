@@ -1,0 +1,10 @@
+#summary Survey shot insert
+
+QTopoShot - Shot insert
+
+
+The "Insert Shot" command of the "Shot dialog" brings up a new dialog to enter
+the values of tape, azimuth and clino for the shot to insert.
+
+Check the box "Insert before" if you want to insert the new shot before the
+selected shot, instead of after. 
