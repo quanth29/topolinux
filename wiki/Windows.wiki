@@ -37,21 +37,21 @@ The first three directories are common to both projects. QTshot contains the fil
 
 Open a console window and cd into QTshot-02. Then execute Qt/bin/moc (substitute the proper path for your installation of Qt) on the files
 
-    * PlotCanvas . h
-    * PlotCanvasScene . h
-    * BackgroundImage . h
-    * QTshot . h
-    * QTcalib . h
+    * PlotCanvas.h
+    * PlotCanvasScene.h
+    * BackgroundImage.h
+    * QTshot.h
+    * QTcalib.h
 
 and include the moc-files in the proper project. The first four files are for QTopoShot, the last one for QTopoCalib.
 The syntax is "moc -o output_file -D define input_file".
 For example "D:\Qt\bin\moc.exe -o moc_QTshot.cpp QTshot.h"
 
 Edit the project settings to include the Qt directories (besides the QTopo directories)
-    * Qt\\include
-    * Qt\\include\\QtCore
-    * Qt\\include\\QtGui
-    * Qt\\include\\Qt
+    * Qt\include
+    * Qt\include\QtCore
+    * Qt\include\QtGui
+    * Qt\include\Qt
 
 and the preprocessing directive. The additional QTopoShot dowanload for windows contains the project files that you can use, as well as additional source files required by VC. 
     * main.cpp main.h
