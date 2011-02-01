@@ -67,3 +67,4 @@ the calibration coefficients, which can be uploaded to the DistoX.
 
   * [Linux] installation
   * [Windows] installation
+  * [CHANGES] program development log
