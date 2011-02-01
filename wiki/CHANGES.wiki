@@ -1,5 +1,5 @@
 #summary Program development log
-= TopoLinux Program development log =
+= TopoLinux development log =
 
 
 Change-log
@@ -14,6 +14,10 @@ Below a certain zoom level (ZOOM_10) the 1m resolution is hidden.
 new icons for select/point/line/area with drop-down menus
 for the point/line/area type
 Point orientation remain in the select menu.
+
+20110128 Memory utility on windows.
+Compiled a win32 project for dump_memory.
+Uploaded the program (and addition win32 sources) on Topolinux website.
 
 20110128 Area in the plot
 Code for areas: water, snow, ice, and user
@@ -533,5 +537,4 @@ Fixed offx offy in PLotCanvas. When user is drawing a line and changes line type
 
 20080820 distox: created "distox" with the DistoX communication sources and Vector/Matrix
 
-20080817 QTcalib 
-         included the calibration class in the interface
+20080817 QTcalib. included the calibration class in the interface
