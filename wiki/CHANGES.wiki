@@ -4,6 +4,44 @@
 
 Change-log
 
+20110216 TherionScrap
+new class TherionScrap that collects points, lines and areas
+This is the first step towards multiscrap plots.
+for the time it is many plots, each with a single scrap.
+plan to make many plots each with many scraps.
+Each plot covers a portion of the data (case of several distinct passages
+in the data) with possibly more than one scrap.
+
+20110213 QTshot datalist
+modifed autoincrement of station numbers so that they incresae
+only by one whenever count > 1. TODO to check that is works.
+
+20110207 QTshot aggregated "Save" and "Export" buttons.
+
+20110207 Plot export as image (png) bedided as therion (.th2)
+
+20110205 syntax uniformization:
+trying to uniformize the method names to the Qt style.
+
+20110204 Internationalization
+Updated internationalizations "en" and "it".
+
+20110204 Exporting the scrap names in the therion dat export.
+Organizing the names: plot_name scrap_name file_name.
+The scrap-name is used to set the file-name.
+The names of the scraps/files are used to set the "survey commands"
+in the data therion export if there is no command.
+TODO Fixing the scrap export in PocketTopo (right now exports only the
+first plot of the lists). see saveAsPocketTopo
+
+20110202 Multille scrap plots
+Started the support for multiple scraps. Right now there is a list of plan
+plots and a list of extended plots. Each plot has a scrap. The scrap name must
+be entered when the plot is created. Default names are provided, something
+like "plan-1", the number is incremented at each new plot.
+The plots are listed in drop-down menu lists attached at the plot buttons.
+When a plot is hidden it can be shown by selecting its menu entry.
+
 20110201 Plot grid at two resolutions
 Plot grid with two resolutions:
 1 m resolution (light gray)
