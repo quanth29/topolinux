@@ -4,6 +4,37 @@
 
 Change-log
 
+20110301 Therion Point icons
+made new icons for the therion points using 24x24 pixmaps
+previous polygons are still in place under define OLD_POLYGON
+The orientations can be arbitrary: define ORIENTATION_UNITS
+specify the unit step.
+
+20110226 PlotCanvas
+Widget to edit therion point attributes: subtype, align, scale,
+and a generic options. ThPoint2D has specific memmbers for subtype,
+align and scale. The attributes are exported in the th2 file.
+Introduced the member "text" for points (used as text for label, and
+name for station).
+
+20110225 PlotCanvas
+Inactive scraps are denoted by yellow circles at the points
+(area lines are not marked yet).
+Changing scrap selection and entering a new scrap finishes any open
+line/area.
+Point options: clicking twice on a point does not move it but opens the
+point subtype/options dialog.
+
+20110223 PlotCanvas
+Export of th2 with multiple scraps
+multiple scraps show up in the PlotCanvas scrap drop down menu.
+
+20110221 TherionScrap
+a vector of scraps in the PlotStatus, with the possibility to add
+new scraps (addScrap) and select the current scrap (th_scrap) by the name.
+PlotCanvas: added widget to get the name of the new scrap.
+add action for the scraps with menu the list of scrap names
+
 20110216 TherionScrap
 new class TherionScrap that collects points, lines and areas
 This is the first step towards multiscrap plots.
