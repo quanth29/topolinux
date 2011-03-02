@@ -80,7 +80,7 @@ class Language
       Idiom * w = words;
       while ( w != NULL && ! w->equal( k ) ) w = w->next;
       if ( w == NULL ) {
-        fprintf(stderr, "Language: get key not found %s\n", k );
+        fprintf(stderr, "***** LANGUAGE: get key not found %s\n", k );
         return NULL;
       } 
       return w->value.c_str();

@@ -51,8 +51,7 @@ class Config
 
     const char * operator() ( const char * key ) 
     {
-      std::map< std::string, std::string >::const_iterator it =
-        m_param.find( key );
+      std::map< std::string, std::string >::const_iterator it = m_param.find( key );
       if ( it == m_param.end() ) return ""; // default empty string
       return (it->second.c_str());
     }
@@ -60,6 +59,19 @@ class Config
     const char * Value( const char * key ) 
     {
       return operator() (key);
+    }
+
+    /** check if the value of a key is true or false
+     * @param key   key
+     * @return true if the key starts with one of: 1, y, Y, t, T
+     */
+    bool isTrue( const char * key )
+    {
+      std::map< std::string, std::string >::const_iterator it = m_param.find( key );
+      if ( it == m_param.end() ) return false;
+      if ( it->second.empty() ) return false;
+      return ( it->second[0] == '1' || it->second[0] == 'y' || it->second[0] == 'Y' ||
+               it->second[0] == 't' || it->second[0] == 'T' );
     }
 
   private:

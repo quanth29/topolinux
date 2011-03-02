@@ -25,9 +25,30 @@ Config::Config( )
 void
 Config::LoadDefaults()
 {
+  m_param["DEBUG"] = "no";
+  m_param["NEWBY"] = "no";
+  m_param["DISTO_LOG"] = "no";
+  m_param["LRUD"] = "no";
+  m_param["GEOMETRY"] = "480x640";
+  m_param["Y_OFFSET"] = "30";
+  m_param["V_THRESHOLD"] = "80.0";
+  m_param["COMMENT_SIZE"] = "20";
+  m_param["LENGTH_UNITS"] = "meter";
+  m_param["ANGLE_UNITS"] = "degree";
+  m_param["EXPORT"] = "therion";
+  // m_param["LANGUAGE"] = "i18n/language-it.txt";
+  // m_param["LOCALE"] = "it";
+  m_param["LANG"] = "en";
+  m_param["CALIB_GUESS"] = "20";
+  m_param["BACKUP_FILE"] = "backup";
+  m_param["PT_LINES"] = "0 1 4 3 5 6 2";
+  m_param["PT_POINTS"] = "0 1 2 3 5 6 8";
+
   #if defined WIN32
-    m_param["DEBUG"] = "no";
-    m_param["GEOMETRY"] = "240x320";
+    m_param["DEVICE" ] = "com1";
+    m_param["ROOT" ] = "/home/projects/Disto/DATA";
+    m_param["BROWSER" ] = "/usr/bin/iceweasel";
+    m_param["DEFAULT_DATA"] = "/home/projects/Disto/DATA/data.tlx";
 
     m_param["TMP_DIR"] =        "C:\\Program Files\\qtopo\\tmp";
     m_param["QTCALIB_ICON"] =   "C:\\Program Files\\qtopo\\icons\\logo6c-64.xpm";
@@ -39,14 +60,15 @@ Config::LoadDefaults()
     m_param["COVER_XPM"] =       "C:\\Program Files\\qtopo\\tmp\\cover.xpm";
     m_param["TEMP_TLXDATA"] =    "C:\\Program Files\\qtopo\\tmp\\data.tlx";
     m_param["DEFAULT_DATA"] =    "C:\\Program Files\\qtopo\\tmp\\data.txt";
-  #elif defined ARM /* ARM Linux */
-    m_param["DEBUG"] = "no";
+  #elif defined ARM /* ARM Linux */   
     m_param["GEOMETRY"] = "240x320";
+    m_param["DEVICE" ] = "/dev/rfcomm0";
 
-    m_param["TMP_DIR"] =        "/tmp";
-    m_param["QTCALIB_ICON"] =   "/opt/QtPalmtop/pics/qtcalib-64.xpm";
-    m_param["QTDATA_ICON"] =    "/opt/QtPalmtop/pics/qtdata-64.xpm";
-    m_param["TEMP_DATA"] =       "/tmp/data.txt";
+    m_param["TMP_DIR"] =      "/tmp";
+    m_param["DEFAULT_DATA"] = "/opt/QtPalmtop/data.tlx";
+    m_param["QTCALIB_ICON"] = "/opt/QtPalmtop/pics/qtcalib-64.xpm";
+    m_param["QTDATA_ICON"] =  "/opt/QtPalmtop/pics/qtdata-64.xpm";
+    m_param["TEMP_DATA"] =    "/tmp/data.txt";
     m_param["TEMP_DATA_GUESS"] = "/tmp/data-guess.txt";
     m_param["TEMP_COEFF"] =      "/tmp/coeff.txt";
     m_param["DEFAULT_COEFF"] =   "/tmp/coeff.txt";
@@ -54,12 +76,12 @@ Config::LoadDefaults()
     m_param["TEMP_TLXDATA"] =    "/tmp/data.tlx";
     m_param["DEFAULT_DATA"] =    "/tmp/data.txt";
   #else /* X86 Linux */
-    m_param["DEBUG"] = "no";
-    m_param["GEOMETRY"] = "240x320";
+    m_param["DEVICE" ] = "/dev/rfcomm0";
 
-    m_param["TMP_DIR"] =        "/tmp";
-    m_param["QTCALIB_ICON"] =   "/usr/local/share/icons/logo6c-64.xpm";
-    m_param["QTDATA_ICON"] =    "/usr/local/share/icons/logo6-64.xpm";
+    m_param["TMP_DIR"] =      "/tmp";
+    m_param["DEFAULT_DATA"] = "/home/projects/Disto/DATA/data.tlx";
+    m_param["QTCALIB_ICON"] = "/usr/local/share/icons/logo6c-64.xpm";
+    m_param["QTDATA_ICON"] =  "/usr/local/share/icons/logo6-64.xpm";
     m_param["TEMP_DATA"] =       "/tmp/data.txt";
     m_param["TEMP_DATA_GUESS"] = "/tmp/data-guess.txt";
     m_param["TEMP_COEFF"] =      "/tmp/coeff.txt";
