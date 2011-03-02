@@ -8,12 +8,17 @@
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
  */
+#include <assert.h>
+#include <sstream>
 
+#include <QFileInfo>
+#include <QFile>
+  
+#include "shorthands.h"
 #include "DataThExport.h"
-
 #include "Extend.h"
 #include "Flags.h"
-  
+
 /** Centerline data are exported to Therion format as follow
  *    survey survey_name -title "survey_title"
  *      declination ... degrees 
@@ -40,41 +45,73 @@ saveAsTherion( DataList & data,
                const CenterlineInfo & c_info,
                const Units & units )
 {
-  FILE * fp = fopen( c_info.exportName.latin1(), "w" );
-  if ( fp == NULL ) {
-    DBG_CHECK("Failed to open file \"%s\"\n", c_info.exportName.latin1() );
+  const SurveyInfo & info = c_info.surveyInfo;
+  QFileInfo fileinfo( info.exportName );
+
+  QFile file( info.exportName );
+  if ( ! file.open( QIODevice::WriteOnly ) ) {
+    DBG_CHECK("Failed to open file \"%s\"\n", info.exportName.TO_CHAR() );
     return false;
   }
-  const SurveyInfo & info = c_info.surveyInfo;
+  if ( info.therionThconfig ) {
+    QString thconfigname = fileinfo.path() + "/thconfig"; 
+    // printf("saving thconfig <<%s>>\n", thconfigname.TO_CHAR() );
+    QString thname = fileinfo.fileName();
+    QFile thconfig( thconfigname );
+    if ( thconfig.open( QIODevice::WriteOnly ) ) {
+      thconfig.write( "# Therion configuration file\n");
+      thconfig.write( "# Edit as needed\n");
+      thconfig.write( "\nsource ");
+      thconfig.write( thname.TO_CHAR() );
+      thconfig.write( "\n\nexport map -proj plan -o cave-p.pdf\n" );
+      thconfig.write( "\nexport map -proj extended -o cave-s.pdf\n" );
+      thconfig.close();
+    } else {
+      DBG_CHECK("Failed to open thconfig file \"%s\"\n", thconfigname.TO_CHAR() );
+    }
+
+  }
   // int day, month, year;
   // GetDate( &day, &month, &year);
 
-  fprintf(fp, "survey %s", info.name.latin1() );
-  if ( ! info.title.isEmpty() ) {
-    fprintf(fp, " -title \"%s\"", info.title.latin1() );
-  }
-  fprintf(fp, "\n\n");
-  fprintf(fp, "  declination %.2f degrees \n\n", info.declination ); 
+  std::ostringstream oss;
+  oss.setf( std::ios::fixed );
+  oss.precision(2);
 
-  fprintf(fp, "  centerline\n");
-  fprintf(fp, "    date %4d.%02d.%02d\n", c_info.year, c_info.month, c_info.day );
+  oss << "survey " << info.name.TO_CHAR();
+  if ( ! info.title.isEmpty() ) {
+    oss << "\\\n   -title \"" << info.title.TO_CHAR() << "\"";
+  }
+  if ( info.declination != DECLINATION_UNDEF ) {
+    oss << "\\\n   -declination [" << info.declination << " degrees]";
+  }
+  oss << "\n\n";
+
+  oss << "  centerline\n";
+  oss << "    date ";
+  oss.fill( '0' );
+  oss.width( 4 ); oss << c_info.year  << ".";
+  oss.width( 2 ); oss << c_info.month << ".";
+  oss.width( 2 ); oss <<  c_info.day  << "\n";
+  oss.fill( ' ');
+  // file.write( "%4d.%02d.%02d\n", c_info.year, c_info.month, c_info.day );
   double ls = units.length_factor;
   double as = units.angle_factor;
   if ( units.length_units == LENGTH_FEET ) {
-    fprintf(fp, "    units length left right up down feet\n");
+    oss << "    units length left right up down feet\n";
   } else {
-    fprintf(fp, "    units length left right up down metres\n");
+    oss << "    units length left right up down metres\n";
   }
   if ( units.angle_units == ANGLE_GRAD ) {
-    fprintf(fp, "    units compass clino grads\n");
+    oss << "    units compass clino grads\n";
   } else {
-    fprintf(fp, "    units compass clino degrees\n");
+    oss << "    units compass clino degrees\n";
   }
 
-  if ( info.centerlineCommand.size() > 0 ) {
-    fprintf(fp, "%s\n", info.centerlineCommand.c_str() );
+  if ( info.therionCenterlineCommand.size() > 0 ) {
+    oss << info.therionCenterlineCommand.c_str() << "\n";
   }
-  fprintf(fp, "    data normal from to length compass clino\n");
+  oss << "    data normal from to length compass clino\n";
 
   DBlock * b;
   int extend = EXTEND_RIGHT;
@@ -88,61 +125,62 @@ saveAsTherion( DataList & data,
   int extra_cnt = 0;
 
   // first pass centerline shots
-  for ( b = data.Head(); b; b=b->Next() ) {
-    if ( ! b->hasFrom() || ! b->hasTo() ) {
+  for ( b = data.listHead(); b; b=b->next() ) {
+    if ( ! b->hasFromStation() || ! b->hasToStation() ) {
       // skip data without either From or To 
       continue;
     }
 
     #ifdef HAS_LRUD
-      LRUD * lf = b->LRUD_From();
-      LRUD * lt = b->LRUD_To();
+      LRUD * lf = b->GetLRUD( 0 );
+      LRUD * lt = b->GetLRUD( 1 );
       if ( lf != NULL || lt != NULL ) {
         if ( ! with_lrud ) {
           with_lrud = true;
-          fprintf(fp, "    data normal from to length compass clino left right up down\n");
+          oss << "    data normal from to length compass clino left right up down\n";
         }
       } else {
         if ( with_lrud ) {
           with_lrud = false;
-          fprintf(fp, "    data normal from to length compass clino\n");
+          oss << "    data normal from to length compass clino\n";
         }
       }
     #else
-      fprintf(fp, "    data normal from to length compass clino\n");
+      // FIXED 20100715 no need to write this
+      // oss << "    data normal from to length compass clino\n";
     #endif
     
     if ( b->Flag() == FLAG_SURFACE ) { // surface
       if ( ! in_surface ) {
-        fprintf(fp, "    flags surface\n");
+        oss << "    flags surface\n";
         in_surface = true;
       }
     } else {
       if ( in_surface ) {
-        fprintf(fp, "    flags not surface\n");
+        oss << "    flags not surface\n";
         in_surface = false;
       }
     }
     if ( b->Flag() == FLAG_DUPLICATE ) { // duplicate
       if ( ! in_duplicate ) {
-        fprintf(fp, "    flags duplicate\n");
+        oss << "    flags duplicate\n";
         in_duplicate = true;
       }
     } else {
       if ( in_duplicate ) {
-        fprintf(fp, "    flags not duplicate\n");
+        oss << "    flags not duplicate\n";
         in_duplicate = false;
       }
     }
 /*
-    if ( b->hasFrom() && b->hasTo() ) {
+    if ( b->hasFromStation() && b->hasToStation() ) {
       if ( in_splay ) {
-        fprintf(fp, "    flags not splay\n");
+        oss << "    flags not splay\n";
         in_splay = false;
       }
     } else {
       if ( ! in_splay ) {
-        fprintf(fp, "    flags splay\n");
+        oss << "    flags splay\n";
         in_splay = true;
       }
     }
@@ -153,67 +191,77 @@ saveAsTherion( DataList & data,
     } else if ( b->Extend() != extend ) {
       b->setExtended( b->Extend() );
       if ( b->Extend() == EXTEND_IGNORE ) { 
-        fprintf(fp, "    extend ignore\n");
+        oss << "    extend ignore\n";
       } else if ( b->Extend() == EXTEND_VERT ) {
-        fprintf(fp, "    extend vertical\n");
+        oss << "    extend vertical\n";
       } else {
         extend = b->Extend();
         if ( b->Extend() == EXTEND_LEFT ) {
-          fprintf(fp, "    extend left \n");
+          oss << "    extend left\n";
         } else if ( b->Extend() == EXTEND_RIGHT ) { 
-          fprintf(fp, "    extend right \n");
+          oss << "    extend right\n";
         }
       }
     }
 
-    fprintf(fp, "    %s %s", b->From(), b->To() );
-    fprintf(fp, " %.2f %.2f %.2f ", ls*b->Tape(), as*b->Compass(), as*b->Clino() );
+    oss << "    " << b->fromStation() << " " << b->toStation()
+        << " " << ls*b->Tape() 
+        << " " << as*b->Compass()
+        << " " << as*b->Clino() ;
     
     #ifdef HAS_LRUD
       if ( lf != NULL ) {
         if ( lt != NULL ) {
-          fprintf(fp, "[%.2f %.2f] [%.2f %.2f] [%.2f %.2f] [%.2f %.2f]",
-            lf->left, lt->left, lf->right, lt->right, lf->up, lt->up, lf->down, lt->down );
+          oss << " [" <<  lf->left  << " " << lt->left  << "]"
+              << " [" <<  lf->right << " " << lt->right << "]"
+              << " [" <<  lf->up    << " " << lt->up    << "]"
+              << " [" <<  lf->down  << " " << lt->down  << "]";
         } else {
-          fprintf(fp, "%.2f %.2f %.2f %.2f", lf->left, lf->right, lf->up, lf->down );
+          oss << " " <<  lf->left 
+              << " " <<  lf->right
+              << " " <<  lf->up
+              << " " <<  lf->down;
         }
       } else if ( lt != NULL ) {
-        fprintf(fp, "%.2f %.2f %.2f %.2f", lt->left, lt->right, lt->up, lt->down );
+        oss << " " <<  lt->left 
+            << " " <<  lt->right
+            << " " <<  lt->up
+            << " " <<  lt->down;
       }
     #endif
+    oss << "\n";
 
-    fprintf(fp, "\n");
     if ( b->Extend() == EXTEND_IGNORE || b->Extend() == EXTEND_VERT ) {
       if ( extend == EXTEND_LEFT ) {
-        fprintf(fp, "    extend left\n");
+        oss << "    extend left\n";
       } else if ( extend == EXTEND_RIGHT ) {
-        fprintf(fp, "    extend right\n");
+        oss << "    extend right\n";
       }
     }
     if ( b->hasComment() ) {
-      fprintf(fp, "    # %s\n", b->Comment() );
+      oss << "    # " << b->getComment() << "\n";
     }
   }
   // second pass: splay shots
   // splay shots do not have LRUD
-  fprintf(fp, "    # splay shots\n");
-  fprintf(fp, "    flags splay\n");
-  for ( b = data.Head(); b; b=b->Next() ) {
-    if ( b->hasFrom() && b->hasTo() ) { // centerline shots
+  oss << "    # splay shots\n";
+  oss << "    flags splay\n";
+  for ( b = data.listHead(); b; b=b->next() ) {
+    if ( b->hasFromStation() && b->hasToStation() ) { // centerline shots
       continue;
     }
-    if ( ! b->hasFrom() && ! b->hasTo() ) { // skip data with neither From nor To 
+    if ( ! b->hasFromStation() && ! b->hasToStation() ) { // skip data with neither From nor To 
       continue;
     }
     /* ignore SURFACE FLAG for splay shots
     if ( b->flag == FLAG_SURFACE ) { // surface
       if ( ! in_surface ) {
-        fprintf(fp, "    flags surface\n");
+        oss << "    flags surface\n";
         in_surface = true;
       }
     } else {
       if ( in_surface ) {
-        fprintf(fp, "    flags not surface\n");
+        oss << "    flags not surface\n";
         in_surface = false;
       }
     }
@@ -230,45 +278,47 @@ saveAsTherion( DataList & data,
     // evalSplayExtended( b );
 
     if ( b->Extended() == EXTEND_IGNORE ) { 
-      fprintf(fp, "    extend ignore\n");
+      oss << "    extend ignore\n";
     } else if ( b->Extended() == EXTEND_VERT ) {
-      fprintf(fp, "    extend vertical\n");
+      oss << "    extend vertical\n";
     } else if ( b->Extended() == EXTEND_LEFT ) {
-      fprintf(fp, "    extend left \n");
+      oss << "    extend left \n";
     } else if ( b->Extended() == EXTEND_RIGHT ) { 
-      fprintf(fp, "    extend right \n");
+      oss << "    extend right \n";
     }
     ++extra_cnt;
-    if ( ! b->hasFrom() ) {
-      assert( b->hasTo() );
+    if ( ! b->hasFromStation() ) {
+      assert( b->hasToStation() );
       // FIXME Therion uses '-' for wall and '.' for inside features
-      fprintf(fp, "    - %s", b->To() );
-    } else { // b->hasFrom() 
-      assert( ! b->hasTo() );
-      fprintf(fp, "    %s -", b->From() );
+      oss << "    - " << b->toStation();
+    } else { // b->hasFromStation() 
+      assert( ! b->hasToStation() );
+      oss << "    " << b->fromStation() << " -";
     }
 
-    fprintf(fp, " %.2f %.2f %.2f \n", 
-      ls*b->Tape(), as*b->Compass(), as*b->Clino() );
+    oss << " " << ls*b->Tape() 
+        << " " << as*b->Compass()
+        << " " << as*b->Clino() << "\n";
     if ( b->Extend() == EXTEND_IGNORE || b->Extend() == EXTEND_VERT ) {
       if ( extend == EXTEND_LEFT ) {
-        fprintf(fp, "    extend left\n");
+        file.write( "    extend left\n");
       } else if ( extend == EXTEND_RIGHT ) {
-        fprintf(fp, "    extend right\n");
+        file.write( "    extend right\n");
       }
     }
     if ( b->hasComment() ) {
-      fprintf(fp, "    # %s\n", b->Comment() );
+      oss << "    # " << b->getComment() << "\n";
     }
   }
 
-  fprintf(fp, "  endcenterline\n");
+  oss << "  endcenterline\n";
 
-  if ( info.surveyCommand.size() > 0 ) {
-    fprintf(fp, "%s\n", info.surveyCommand.c_str() );
+  if ( info.therionSurveyCommand.size() > 0 ) {
+    oss << info.therionSurveyCommand <<  "\n";
   }
-  fprintf(fp, "endsurvey\n");
+  oss << "endsurvey\n";
 
-  fclose( fp );
+  file.write( oss.str().c_str() );
+  file.close();
   return true;
 }

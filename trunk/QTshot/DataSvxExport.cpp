@@ -9,7 +9,12 @@
  *  See the file COPYING.
  */
 #include <stdio.h>
+#include <sstream>
 
+#include <QFileInfo>
+#include <QFile>
+  
+#include "shorthands.h"
 #include "DataSvxExport.h"
 
 #include "Flags.h"
@@ -38,111 +43,136 @@ saveAsSurvex( DataList & data,
               const CenterlineInfo & c_info,
               const Units & units )
 {
+  const SurveyInfo & info = c_info.surveyInfo;
   int extra_cnt = 0;
-  FILE * fp = fopen( c_info.exportName.latin1(), "w" );
-  if ( fp == NULL ) {
-    DBG_CHECK("Failed to open file \"%s\"\n", c_info.exportName.latin1() );
+
+  QFile file( info.exportName );
+  if ( ! file.open( QIODevice::WriteOnly ) ) {
+    DBG_CHECK("Failed to open file \"%s\"\n", info.exportName.TO_CHAR() );
     return false;
   }
 
-  const SurveyInfo & info = c_info.surveyInfo;
   // int day, month, year;
   // GetDate( &day, &month, &year);
+  
+  std::ostringstream oss;
+  oss.setf( std::ios::fixed );
+  oss.precision(2);
 
-  fprintf(fp, "*begin %s\n\n", info.name.latin1() );
+  oss << "*begin " << info.name.TO_CHAR() << "\n\n";
   if ( ! info.title.isEmpty() ) {
-    fprintf(fp, " *title \"%s\"", info.title.latin1() );
+    oss << "  *title \"" << info.title.TO_CHAR() << "\"\n";
   }
   // TODO survey title ect.
   double ls = units.length_factor;
   double as = units.angle_factor;
   if ( units.length_units == LENGTH_FEET ) {
-    fprintf(fp, "    *units tape feet\n");
+    oss << "    *units tape feet\n";
   } else {
-    fprintf(fp, "    *units tape metres\n");
+    oss << "    *units tape metres\n";
   }
   if ( units.angle_units == ANGLE_GRAD ) {
-    fprintf(fp, "    *units compass clino grads\n");
+    oss << "    *units compass clino grads\n";
   } else {
-    fprintf(fp, "    *units compass clino degrees\n");
+    oss << "    *units compass clino degrees\n";
   }
 
-  fprintf(fp, "    *calibrate declination %.2f \n\n", info.declination ); 
-
-  fprintf(fp, "    *date %4d.%02d.%02d\n", c_info.year, c_info.month, c_info.day );
-  if ( info.centerlineCommand.size() > 0 ) {
-    fprintf(fp, "%s\n", info.centerlineCommand.c_str() );
+  if ( info.declination != DECLINATION_UNDEF ) {
+    oss << "    *calibrate declination "  <<info.declination << "\n\n";
   }
-  fprintf(fp, "    *data normal from to tape compass clino\n");
+
+  oss << "    *date ";
+  oss.fill( '0' );
+  oss.width( 4 ); oss << c_info.year  << ".";
+  oss.width( 2 ); oss << c_info.month << ".";
+  oss.width( 2 ); oss <<  c_info.day  << "\n";
+  oss.fill( ' ');
+  if ( info.therionCenterlineCommand.size() > 0 ) {
+    oss << info.therionCenterlineCommand << "\n";
+  }
+  oss << "    *data normal from to tape compass clino\n";
   DBlock * b;
   bool in_splay = false;
   bool in_surface = false;
   bool in_duplicate = false;
-  for ( b = data.Head(); b; b=b->Next() ) {
-    if ( ! b->hasFrom() && ! b->hasTo() ) {
+  for ( b = data.listHead(); b; b=b->next() ) {
+    if ( ! b->hasFromStation() && ! b->hasToStation() ) {
       // skip data with neither From nor To 
       continue;
     }
     if ( b->Flag() == FLAG_SURFACE ) { // surface
       if ( ! in_surface ) {
-        fprintf(fp, "    *flags surface\n");
+        oss << "    *flags surface\n";
         in_surface = true;
       }
     } else {
       if ( in_surface ) {
-        fprintf(fp, "    *flags not surface\n");
+        oss << "    *flags not surface\n";
         in_surface = false;
       }
     }
-    if ( b->Flag() == FLAG_DUPLICATE || ! b->hasTo() ) { // duplicate
+    if ( b->Flag() == FLAG_DUPLICATE || ! b->hasToStation() ) { // duplicate
       if ( ! in_surface ) {
-        fprintf(fp, "    *flags duplicate\n");
+        oss << "    *flags duplicate\n";
         in_duplicate = true;
       }
     } else {
       if ( in_duplicate ) {
-        fprintf(fp, "    *flags not duplicate\n");
+        oss << "    *flags not duplicate\n";
         in_duplicate = false;
       }
     }
 
-    if ( ! b->hasFrom() ) {
+
+    oss.fill( '0' );
+    if ( ! b->hasFromStation() ) {
       if ( ! in_splay ) {
-        fprintf(fp, "    *flags splay\n");
+        oss << "    *flags splay\n";
         in_splay = true;
       }
       ++extra_cnt;
-      if ( b->hasTo() ) {
-        fprintf(fp, "    %s_%04d %s", b->To(), extra_cnt, b->To() );
+      if ( b->hasToStation() ) {
+        oss << "    " << b->toStation() << "_";
+        oss.width( 4 ); oss << extra_cnt << " ";
+        oss << b->toStation();
       } else {
-        fprintf(fp, "    from_%04d to_%04d", extra_cnt, extra_cnt);
+        oss << "    f_";
+        oss.width( 4 ); oss << extra_cnt << " t_";
+        oss.width( 4 ); oss << extra_cnt;
       }
     } else {
-      if ( ! b->hasTo() ) {
+      if ( ! b->hasToStation() ) {
         if ( ! in_splay ) {
-          fprintf(fp, "    *flags splay\n");
+          oss << "    *flags splay\n";
           in_splay = true;
         }
-        fprintf(fp, "    %s %s_%04d", b->From(), b->From(), ++extra_cnt);
+        ++extra_cnt;
+        oss << "    " << b->fromStation() << " " << b->fromStation() << "_";
+        oss.width( 4 ); oss << extra_cnt;
       } else {
         if ( in_splay ) {
-          fprintf(fp, "    *flags not splay\n");
+          oss << "    *flags not splay\n";
           in_splay = false;
         }
-        fprintf(fp, "    %s %s", b->From(), b->To() );
+        oss << "    " << b->fromStation() << " " <<  b->toStation();
       }
     }
+    oss.fill( ' ' );
 
-    fprintf(fp, " %.2f %.2f %.2f \n", ls*b->Tape(), as*b->Compass(), as*b->Clino() );
+    oss << " " << ls*b->Tape()
+        << " " << as*b->Compass()
+        << " " << as*b->Clino() << "\n";
     if ( b->hasComment() ) {
-      fprintf(fp, "    ; %s\n", b->Comment() );
+      oss << "    ; " << b->getComment() << "\n";
     }
   }
 
-  if ( info.surveyCommand.size() > 0 ) {
-    fprintf(fp, "%s\n", info.surveyCommand.c_str() );
+  if ( info.therionSurveyCommand.size() > 0 ) {
+    oss << info.therionSurveyCommand << "\n";
   }
-  fprintf(fp, "*end\n");
-  fclose( fp );
+  oss << "*end\n";
+
+  file.write( oss.str().c_str() );
+  file.close();
   return true;
 }

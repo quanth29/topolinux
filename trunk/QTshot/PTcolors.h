@@ -76,20 +76,20 @@ class PTcolors
      * @param k    color index (as in PocketTopo)
      * @return the therion point index
      */
-    ThPointType thPoint( size_t k ) const
+    Therion::PointType thPoint( size_t k ) const
     {
-      if ( k >= PT_COLORS ) return THP_PLACEMARK;
-      return (ThPointType)point[k];
+      if ( k >= PT_COLORS ) return Therion::THP_PLACEMARK;
+      return (Therion::PointType)point[k];
     }
 
     /** get the therion-line index for a given color
      * @param k    color index (as in PocketTopo)
      * @return the therion line index
      */
-    ThLineType thLine( size_t k ) const
+    Therion::LineType thLine( size_t k ) const
     {
-      if ( k >= PT_COLORS ) return THL_PLACEMARK;
-      return (ThLineType)line[k];
+      if ( k >= PT_COLORS ) return Therion::THL_PLACEMARK;
+      return (Therion::LineType)line[k];
     }
 
 };

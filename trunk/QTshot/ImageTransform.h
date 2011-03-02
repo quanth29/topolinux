@@ -17,39 +17,23 @@
 #include <vector>
 
 #include <qpixmap.h>
+#include "BackgroundImageStation.h"
 
-class CanvasPoint; // forward
-
-/** correspondence between a station-point (x,y) in the sketch
- *  and a station (x0,y0) in the plot
- */
-struct BackgroundImageStation
-{
-  std::string name; //!< station name
-  int x;            //!< sketch coordinates
-  int y;
-
-  BackgroundImageStation( const char * n, int _x, int _y )
-    : name( n )
-    , x( _x )
-    , y( _y )
-  { }
-
-};
+class PlotPoint; // forward
 
 /** point correspondence between sketch image and plot
  */
 struct BackgroundImagePoint
 {
-  int x;            //!< sketch coordinates (pixel in the image)
-  int y;
-  int x0;           //!< plot coordinates (point on the canvas)
-  int y0;
-  CanvasPoint * point; //!< pointer to the corresponding canvas point
+  double x;            //!< sketch coordinates (pixel in the image)
+  double y;
+  double x0;           //!< plot coordinates (point on the canvas)
+  double y0;
+  PlotPoint * point; //!< pointer to the corresponding canvas point
 
-  BackgroundImagePoint( CanvasPoint * pt, const BackgroundImageStation & st )
-    : x( st.x )
-    , y( st.y )
+  BackgroundImagePoint( PlotPoint * pt, const BackgroundImageStation * st )
+    : x( st->x )
+    , y( st->y )
     , point(pt )
   { }
 };
@@ -65,7 +49,7 @@ class BackgroundImageCallback
      * @param stations   stations correspondences
      * @param sketch     background sketch
      */
-    virtual void evalBackground( std::vector< BackgroundImageStation > & stations,
+    virtual void evalBackground( const std::vector< BackgroundImageStation *> & stations,
                                  QPixmap * sketch ) = 0;
 };
 

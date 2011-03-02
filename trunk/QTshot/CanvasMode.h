@@ -22,7 +22,8 @@
 enum InputMode {
   INPUT_COMMAND,
   INPUT_POINT,
-  INPUT_LINE
+  INPUT_LINE,
+  INPUT_AREA
 };
 
 #endif

@@ -1,4 +1,4 @@
-/** @file QTshot.h
+/* @file QTshot.h
  *
  * @author marco corvi
  * @date apr 2009
@@ -10,32 +10,35 @@
  */
 #ifndef QT_DATA_H
 #define QT_DATA_H
+#include <assert.h>
 
 #include <string>
+#include <sstream>
 
-#include <qglobal.h>
-#include <qmainwindow.h>
-#include <qpushbutton.h>
-#include <qlabel.h>
-#include <qthread.h>
+// #include <qglobal.h>
+#include <QMainWindow>
+// #include <qpushbutton.h>
+#include <QLabel>
+#include <QThread>
 
-#include <qaction.h>
+#include <QAction>
 
-#include <qmenubar.h>
-#include <qlcdnumber.h>
-#include <qlayout.h>
-#include <qlineedit.h>
-#include <qcheckbox.h>
-#include <qcombobox.h>
+// #include <qmenubar.h>
+// #include <qlcdnumber.h>
+// #include <qlayout.h>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QComboBox>
 // #include <qabstractlayout.h>
-#include <qwidget.h>
-#include <qpoint.h>
-// #include <qradiobutton.h>
-#include <qcheckbox.h>
-#include <qdialog.h>
-#include <qradiobutton.h>
+#include <QWidget>
+#include <QPoint>
+#include <QDialog>
+#include <QRadioButton>
+#include <QTableWidget>
+#include <QTextEdit>
+#include <QMenu>
 
-#include "portability.h"
+#include "shorthands.h"
 
 
 #ifndef EMBEDDED
@@ -73,11 +76,12 @@
 
 #include "PlotDrawer.h"
 #include "PTcolors.h"
+#include "PlotList.h"
 
 class PlotCanvas;
 class QTshotWidget;
 
-class QTshotWidget : public QMAINWINDOW
+class QTshotWidget : public QMainWindow
                    , public DistoXListener
                    , public PlotDrawer
 {  
@@ -102,26 +106,43 @@ class QTshotWidget : public QMAINWINDOW
        bool do_lrud;        //!< whether to show the LRUD checkbox
      #endif
      DataList dlist;        //!< survey data
-     QTABLE * table;        //!< widget data table
-     QTOOLBUTTON * btnNew;
-     QTOOLBUTTON * btnData;
-     QTOOLBUTTON * btnSave;
-     QTOOLBUTTON * btnExport;
-     QTOOLBUTTON * btnCollapse;
-     QTOOLBUTTON * btnPlan;
-     QTOOLBUTTON * btnExtended;
-     QTOOLBUTTON * btn3D;
-     PlotCanvas * planCanvas;  //!< plot canvas
-     PlotCanvas * extCanvas;
-     PlotCanvas * crossCanvas;
-     PlotCanvas * _3DCanvas;
+     QTableWidget * table;        //!< widget data table
+     QAction * actNew;
+     QAction * actOpen;
+     QAction * actSave;
+     QAction * actData;
+     // QAction * actExport;
+     QAction * actCollapse;
+     QAction * actPlan;
+     QAction * actExtended;
+     QAction * act3D;
+     QAction * actToggle;
+     QAction * actOptions;
+     QAction * actHelp;
+     QAction * actQuit;
+     QMenu * plan_menu;
+     QMenu * ext_menu;
+     int plan_cnt;
+     int ext_cnt;
+     int xsect_cnt;
+     int hsect_cnt;
+     QString temp_plan_name;  //!< temporary plot scrap name (for ScrapNameWidget)
+     QString temp_ext_name;  //!< temporary plot scrap name (for ScrapNameWidget)
+     // PlotCanvas * planCanvas;  //!< plot canvases
+     PlotList  planCanvases;
+     // PlotCanvas * extCanvas;
+     PlotList  extCanvases;
+     // PlotCanvas * crossCanvas;
+     PlotList  crossCanvases;
 
+
+     PlotCanvas * _3DCanvas;
 
      Units units;
      ExportType export_type;      //!< 0: th,  1: svx  2: dat
      PTcolors   pt_colors;        //!< pocket topo colors to therion lines and points
 
-     char device[32];
+     char device[32];      //!< current DistoX device
      bool collapse;        //!< onCollapse action [true: do collapse, false: do un-collapse]
      bool append;          //!< whether download data is appended
      bool smart;           //!< whether data download is "smart"
@@ -132,50 +153,53 @@ class QTshotWidget : public QMAINWINDOW
      int comment_size;     //!< width of comment displayed in the table
 
    private:
+     void createActions();
+     void createToolBar();
+     void createTable();
+
      /** turn button "export" on/off and set the icon
       * @param on_off   whether to turn button on or off
-      */
+      *
      void onOffButtonExport( bool on_off )
      {
        if ( on_off ) {
          switch ( export_type ) {
-         case ExportTherion: 
-           btnExport->setPixmap( icon->ExportTh() );
+         case EXPORT_THERION: 
+           actExport->setIcon( icon->ExportTh() );
            break;
-         case ExportCompass:
-           btnExport->setPixmap( icon->ExportDat() );
+         case EXPORT_COMPASS:
+           actExport->setIcon( icon->ExportDat() );
            break;
-         case ExportSurvex:
-           btnExport->setPixmap( icon->ExportSvx() );
+         case EXPORT_SURVEX:
+           actExport->setIcon( icon->ExportSvx() );
            break;
-         case ExportPocketTopo:
-           btnExport->setPixmap( icon->ExportTop() );
+         case EXPORT_POCKETTOPO:
+           actExport->setIcon( icon->ExportTop() );
            break;
-         case ExportUnknown:
+         case EXPORT_UNKNOWN:
            break;
          }
        } else {
          switch ( export_type ) {
-         case ExportTherion: 
-           btnExport->setPixmap( icon->ExportThOff() );
+         case EXPORT_THERION: 
+           actExport->setIcon( icon->ExportThOff() );
            break;
-         case ExportCompass:
-           btnExport->setPixmap( icon->ExportDatOff() );
+         case EXPORT_COMPASS:
+           actExport->setIcon( icon->ExportDatOff() );
            break;
-         case ExportSurvex:
-           btnExport->setPixmap( icon->ExportSvxOff() );
+         case EXPORT_SURVEX:
+           actExport->setIcon( icon->ExportSvxOff() );
            break;
-         case ExportPocketTopo:
-           btnExport->setPixmap( icon->ExportTopOff() );
+         case EXPORT_POCKETTOPO:
+           actExport->setIcon( icon->ExportTopOff() );
            break;
-         case ExportUnknown:
+         case EXPORT_UNKNOWN:
            break;
          }
        }
-       btnExport->setToggleButton( on_off );
-       // btnExport->repaint(0,0, -1,-1);
-       // btnExport->show();
+       actExport->setEnabled( on_off );
      }
+      */
 
      /** turn buttons on/off
       * @param on_off   whether tu turn buttons on or off
@@ -184,67 +208,95 @@ class QTshotWidget : public QMAINWINDOW
      {
        // fprintf(stderr, "onOffButtons() %s \n", on_off ? "true" : "false" );
        if ( on_off ) {
-         btnNew->setPixmap( icon->New() );
-         btnSave->setPixmap( icon->Save() );
-         btnCollapse->setPixmap( icon->Collapse() );
-         btnPlan->setPixmap( icon->Plan() );
-         btnExtended->setPixmap( icon->Extended() );
-         btn3D->setPixmap( icon->_3d() );
+         actNew->setIcon( icon->New() );
+         actSave->setIcon( icon->Save() );
+         actCollapse->setIcon( icon->Collapse() );
+         actPlan->setIcon( icon->Plan() );
+         actExtended->setIcon( icon->Extended() );
+         act3D->setIcon( icon->_3d() );
        } else {
-         btnNew->setPixmap( icon->NewOff() );
-         btnSave->setPixmap( icon->SaveOff() );
-         btnCollapse->setPixmap( icon->CollapseOff() );
-         btnPlan->setPixmap( icon->PlanOff() );
-         btnExtended->setPixmap( icon->ExtendedOff() );
-         btn3D->setPixmap( icon->_3dOff() );
+         actNew->setIcon( icon->NewOff() );
+         actSave->setIcon( icon->SaveOff() );
+         actCollapse->setIcon( icon->CollapseOff() );
+         actPlan->setIcon( icon->PlanOff() );
+         actExtended->setIcon( icon->ExtendedOff() );
+         act3D->setIcon( icon->_3dOff() );
        }
-       btnNew->setToggleButton( on_off );
-       btnSave->setToggleButton( on_off ); // setCheckable( on_off )
-       btnCollapse->setToggleButton( on_off );
-       btnPlan->setToggleButton( on_off );
-       btnExtended->setToggleButton( on_off );
-       btn3D->setToggleButton( on_off );
+       actNew->setEnabled( on_off );
+       actSave->setEnabled( on_off ); // setCheckable( on_off )
+       actCollapse->setEnabled( on_off );
+       actPlan->setEnabled( on_off );
+       actExtended->setEnabled( on_off );
+       act3D->setEnabled( on_off );
 
-       onOffButtonExport( on_off );
-/*
-       btnSave->repaint(0,0, -1,-1);
-       btnCollapse->repaint(0,0, -1,-1);
-       btnPlan->repaint(0,0, -1,-1);
-       btnExtended->repaint(0,0, -1,-1);
-       btn3D->repaint(0,0, -1,-1);
-       btnSave->show();
-       btnCollapse->show();
-       btnPlan->show();
-       btnExtended->show();
-       btn3D->show();
-*/
+       // onOffButtonExport( on_off );
      }
 
    public:
+     void getSurveyText( std::ostringstream & oss );
+
+     /*
+     void setPlotName( const char * name, int mode ) 
+     {
+       if ( mode == MODE_PLAN ) {
+         temp_plan_name = name;
+       } else if ( mode == MODE_EXT ) {
+         temp_ext_name = name;
+       }
+     }
+     */
+
+     const char * getPlotName( int mode ) const 
+     { 
+       if ( mode == MODE_PLAN ) {
+         return temp_plan_name.TO_CHAR();
+       } else if ( mode == MODE_EXT ) {
+         return temp_ext_name.TO_CHAR();
+       } else if ( mode == MODE_3D ) {
+         return "3D plot";
+       }
+       return "Cross section";
+     }
+
      /** close all plots
       */
      void closePlots();
     
-     void insertPoint( int x, int y, ThPointType type, int mode );
-     void insertLinePoint( int x, int y, ThLineType type, int mode );
-     void openPlot( int mode );
+     void insertPoint( int x, int y, Therion::PointType type, PlotCanvas * canvas );
+     void insertLinePoint( int x, int y, Therion::LineType type, PlotCanvas * canvas );
 
-     const PTcolors & colors() const { return pt_colors; }
+     /** callback: PlotDrawer callback to open a new plot+scrap
+      * @param mode   plot mode
+      * @param pname  plot name
+      * @param sname  scrap name
+      */
+     PlotCanvas * openPlot( int mode, const char * pname, const char * sname );
+
+     const PTcolors & getColors() const { return pt_colors; }
 
      // ---------------------------------------------------
 
      /** set the pointer to the extended section plot
       * @param canvas  extended section plot
       */
-     void setPlanCanvas( PlotCanvas * canvas = NULL ) { planCanvas = canvas; }
-     void setExtCanvas( PlotCanvas * canvas = NULL ) { extCanvas = canvas; }
-     void setCrossCanvas( PlotCanvas * canvas = NULL ) { crossCanvas = canvas; }
+     // void setPlanCanvas( PlotCanvas * canvas = NULL ) { planCanvas = canvas; }
+     // void setExtCanvas( PlotCanvas * canvas = NULL ) { extCanvas = canvas; }
+     void addPlanCanvas( const char * name, PlotCanvas * c ) 
+     { 
+       planCanvases.addPlot( name, c ); 
+     }
+     void addExtCanvas( const char * name, PlotCanvas * c ) 
+     {
+       extCanvases.addPlot( name, c ); 
+     }
+
+     // void setCrossCanvas( PlotCanvas * canvas = NULL ) { crossCanvas = canvas; }
      void set3DCanvas( PlotCanvas * canvas = NULL ) { _3DCanvas = canvas; }
 
      /** update extended plot when the extend of a shot is changed
       * @param b    shot (block)
       */
-     void updateExtCanvas( DBlock * b );
+     void updateExtCanvases( DBlock * b );
 
      void updateCanvases();
 
@@ -270,7 +322,7 @@ class QTshotWidget : public QMAINWINDOW
     /** accessor: get the survey info
      * @return pointer to the survey info 
      */
-    SurveyInfo * GetSurveyInfo() { return &(info.surveyInfo); }
+    SurveyInfo * getSurveyInfo() { return &(info.surveyInfo); }
 
     /** fill the date string
      * @param date   date string (output)
@@ -311,7 +363,11 @@ class QTshotWidget : public QMAINWINDOW
     /** accessor: get the survey data
      * @return pointer to the survey data
      */
-    DataList * GetList() { return &dlist; }
+    DataList * getList() { return &dlist; }
+
+    /** ask the data-list to recompute the centerline
+     */
+    void redoNum() { dlist.doNum( true ); }
 
     /** drop a block from the list
      * @param block block to drop
@@ -322,7 +378,7 @@ class QTshotWidget : public QMAINWINDOW
 // UNITS
 
     // for Plot
-    const Units & GetUnits() { return units; }
+    const Units & getUnits() { return units; }
 
     int lengthUnits() const { return units.length_units; }
     int angleUnits() const { return units.angle_units; }
@@ -347,20 +403,37 @@ class QTshotWidget : public QMAINWINDOW
     { 
       if ( export_type != t ) {
         export_type = t;
-        if ( export_type == ExportTherion ) { // therion
-          info.exportName = "/tmp/cave.th";
-        } else if ( export_type == ExportSurvex ) { // survex
-          info.exportName = "/tmp/cave.svx";
-        } else if ( export_type == ExportCompass ) { // compass
-          info.exportName = "/tmp/cave.dat";
+        if ( export_type == EXPORT_THERION ) { // therion
+          info.surveyInfo.exportName = "cave.th";
+        } else if ( export_type == EXPORT_SURVEX ) { // survex
+          info.surveyInfo.exportName = "cave.svx";
+        } else if ( export_type == EXPORT_COMPASS ) { // compass
+          info.surveyInfo.exportName = "cave.dat";
+        } else if ( export_type == EXPORT_POCKETTOPO ) { // compass
+          info.surveyInfo.exportName = "cave.top";
         }
-        onOffButtonExport( dlist.Size() > 0 );
+        // onOffButtonExport( dlist.listSize() > 0 );
       }
     }
 
     void downloadData( );
 
+    /** get the DistoX device
+     * @return the DistoX device
+     */
     const char * getDevice() const { return device; }
+ 
+    /** set the DistoX device
+     * @param d  new DistoX device
+     */
+    void setDevice( const char * d )
+    { 
+      if ( d ) {
+        strncpy( device, d, 32 );
+        device[32-1] = 0;
+      }
+    }
+
     bool getAppend() const { return append; }
     bool getSmart() const { return smart; }
     bool getBackward() const { return backward; }
@@ -381,7 +454,7 @@ class QTshotWidget : public QMAINWINDOW
     {
       download = f;
       assert( s1 == ! s2 );
-      if ( d ) strncpy(device, d, 31);
+      setDevice( d );
       append = a;
       smart = s;
       splay_at = (s1) ? SPLAY_AT_FROM : SPLAY_AT_TO;
@@ -391,18 +464,25 @@ class QTshotWidget : public QMAINWINDOW
     /** set the base block (start block for plots)
      * @param b new base block
      */
-    void SetBaseBlock( DBlock * b );
+    void setBaseBlock( DBlock * b );
 
     /** get distoX modes
-     * @param calib whether distox is in calibration mode
+     * @param calib  whether distox is in calibration mode
      * @param silent whether distox is in silent mode
+     * @param grad   whether distox is in grad (as opposed to degrees)
+     * @param compass whether distox is in compass/clino mode
      * return true if ok, false if failed to get distox modes
      */
-    bool GetDistoModes( bool & calib, bool & silent );
+    bool getDistoModes( bool & calib, bool & silent,
+                        bool & grad, bool & compass );
 
-    bool SetCalibMode( bool on );
+    bool setCalibMode( bool on );
 
-    bool SetSilentMode( bool on );
+    bool setSilentMode( bool on );
+
+    bool setGradMode( bool on );
+
+    bool setCompassMode( bool on );
 
   public:
     /** callback: on File->Open
@@ -444,6 +524,13 @@ class QTshotWidget : public QMAINWINDOW
      */
     void doRealNew();
 
+    /** create a new plot
+     * @param pname  plot name
+     * @param sname  scrap name
+     * @param mode   plot mode (MODE_PLAN or MODE_EXT)
+     */
+    void doNewPlot( QString pname, QString sname, int mode );
+
   public slots:
     void doHelp();
 
@@ -467,7 +554,7 @@ class QTshotWidget : public QMAINWINDOW
 
     /** export data as Therion/Survex/Compass
      */
-    void doExport();
+    void doExport( QAction * action);
 
     /** export data 
      */
@@ -488,11 +575,13 @@ class QTshotWidget : public QMAINWINDOW
 
     /** show plot of the plan
      */
-    void doPlan();
+    void doPlanScrap();
+    void doPlan( QAction * );
 
     /** show plot of the extended section
      */
-    void doExtended();
+    void doExtendedScrap();
+    void doExtended( QAction * );
 
     /** show 3D view
      */
@@ -500,10 +589,11 @@ class QTshotWidget : public QMAINWINDOW
 
     /** show plot of a cross-section
      * @param block    shot where the cross-section is taken
+     * @param name     cross section name
      * @param reversed whether the cross-section is taken reversed
      * @param vertical whether the cross-section is taken vertically
      */
-    void doCrossSection( DBlock * block, bool reversed, bool vertical = true );
+    void doCrossSection( DBlock * block, QString name, bool reversed, bool vertical = true );
 
     /** update datas
      * @param row    row index
@@ -513,45 +603,23 @@ class QTshotWidget : public QMAINWINDOW
 
     /** table double clicked
      */
-    void double_clicked( int row, int col, int btn, const QPoint & mousePos ); 
+    void double_clicked( int row, int col );
 
     /** table clicked
      *
     void clicked( int row, int col, int btn, const QPoint & mousePos ); 
      */
 
+    void updateActData( int c );
+
+  signals:
+    void signalActData( int c );
+
 };
 
 // --------------------------------------------------------------------
 // small widgets
 
-/** dialog for a filename
- */
-class MyFileDialog : public QDialog
-{
-  Q_OBJECT
-  private:
-    QTshotWidget * widget;
-    QLineEdit * line;
-    int mode;
-
-  public:
-    MyFileDialog( QTshotWidget * parent, const char * title, int m );
-
-  public slots:
-    void onOK()
-    {
-      if ( mode == 0 ) {
-        widget->onOpenFile( line->text() );
-      } else {
-        widget->onSaveFile( line->text() );
-      }
-      delete this;
-    }
-
-    void onCancel() { delete this; }
-
-};
 
 /** initial splash dialog: help new users to do one of the two:
  * - load a survey from file
@@ -571,21 +639,17 @@ class SplashWidget : public QDialog
     {
       hide();
       parent->doOpen();
-      // delete this;
     }
 
     void doData() 
     {
       hide();
       parent->doData();
-      // delete this;
     }
 
     void doCancel() 
     { 
       hide();
-      // FIXME this should be here but it segfaults
-      // delete this;
     }
 };
 
@@ -613,8 +677,6 @@ class LRUDWidget : public QDialog
     void doCancel() 
     {
       hide();
-      // FIXME this should be here but it segfaults
-      // delete this;
    }
 };
 #endif
@@ -628,21 +690,25 @@ class ToggleWidget : public QDialog
     QTshotWidget * parent;
     bool isCalib;
     bool isSilent;
+    bool isGrad;
+    bool isCompass;
     QCheckBox * calibBtn;
     QCheckBox * silentBtn;
+    QCheckBox * gradBtn;
+    QCheckBox * compassBtn;
 
   public:
     ToggleWidget( QTshotWidget * parent );
 
   public slots:
     void doCalib(int state);
-
     void doSilent(int state);
+    void doGrad(int state);
+    void doCompass(int state);
 
     void doClose()
     {
       hide();
-      // delete this;
     }
 
 };
@@ -656,14 +722,17 @@ class OptionsWidget : public QDialog
     QTshotWidget * parent;
     QRadioButton * length_btn[2];
     QRadioButton * angle_btn[2];
-    QRadioButton * export_btn[4];
+    // QRadioButton * export_btn[4];
+    QLineEdit    * m_device;
 
   public:
     OptionsWidget( QTshotWidget * my_parent );
 
+    void SetValues();
+
   public slots:
     void doOK();
-    void doCancel() { delete this; }
+    void doCancel() { hide(); }
 };
 
 /** dialog to insert a new block
@@ -684,7 +753,7 @@ class InsertWidget : public QDialog
 
   public slots:
     void doOK();
-    void doCancel() { delete this; }
+    void doCancel() { hide(); }
 };
 
 /** dialog to confirm exit action
@@ -699,8 +768,8 @@ class ExitWidget : public QDialog
     ExitWidget( QTshotWidget * p);
 
   public slots:
-    void doOK() { hide(); parent->doRealExit(); /* delete this; */ }
-    void doCancel() { delete this; }
+    void doOK() { hide(); parent->doRealExit(); }
+    void doCancel() { hide(); }
 };
 
 
@@ -725,7 +794,7 @@ class DataWidget : public QDialog
 
   public slots:
     void doOK();
-    void doCancel() { delete this; }
+    void doCancel() { hide(); }
     void doSplay1( bool );
     void doSplay2( bool );
 };
@@ -749,9 +818,10 @@ class CommentWidget : public QDialog
     QRadioButton * toinsert;
     QRadioButton * todrop;
     QRadioButton * cross_section;
+    QLineEdit * section_name;
     QCheckBox * reversed;
     QCheckBox * horizontal;
-    QCheckBox * swapBox;
+    // QCheckBox * swapBox;
     QComboBox * extBox;
     QComboBox * flagBox;
     DBlock * block;
@@ -766,9 +836,11 @@ class CommentWidget : public QDialog
       CommentWidget( QTshotWidget * my_parent, DBlock * b );
     #endif
 
+    void SetValues(); // TODO
+
   public slots:
     void doOK();
-    void doCancel() { delete this; }
+    void doCancel() { hide(); }
 
     /** handle comment text changes
      * @param text commenttext
@@ -785,7 +857,7 @@ class CommentWidget : public QDialog
      */
     void doFlag( int flag );
 
-    void doSwap( bool );
+    // void doSwap( bool );
 
 };
 
@@ -796,21 +868,22 @@ class SurveyInfoWidget : public QDialog
   Q_OBJECT
   private:
     QTshotWidget * parent;
-    QLineEdit * name;            //!< survey name
-    QLineEdit * title;           //!< survey title
-    QLineEdit * team;            //!< team(s) string
-    QLineEdit * prefix;          //!< compass station prefix
-    QLineEdit * declination;     //!< magnetic declination
-    QCheckBox * single_survey;   //!< single survey in compass
-    QMULTILINEEDIT * centerline;
-    QMULTILINEEDIT * survey;
+    QLineEdit * edit_name;            //!< survey name
+    QLineEdit * edit_title;           //!< survey title
+    QLineEdit * edit_team;            //!< team(s) string
+    QLineEdit * edit_prefix;          //!< compass station prefix
+    QLineEdit * edit_declination;     //!< magnetic declination
+    QCheckBox * box_single_survey;    //!< single survey in compass
+    QTextEdit * centerline;
+    QTextEdit * survey;
+    QCheckBox * box_thconfig;         //!< write thconfig
 
   public:
     SurveyInfoWidget( QTshotWidget * my_parent );
 
   public slots:
     void doOK();
-    void doCancel() { delete this; }
+    void doCancel() { hide(); }
 };
 
 /** dialog for the survey clean
@@ -825,8 +898,8 @@ class CleanShotsWidget : public QDialog
     CleanShotsWidget( QTshotWidget * my_parent );
 
   public slots:
-    void doOK() { parent->doRealNew(); delete this; }
-    void doCancel() { delete this; }
+    void doOK() { hide(); parent->doRealNew(); }
+    void doCancel() { hide(); }
 };
 
 /** dialog for centerline info
@@ -844,7 +917,29 @@ class CenterlineWidget : public QDialog
 
   public slots:
     void doOK();
-    void doCancel() { delete this; }
+    void doCancel() { hide(); }
+};
+
+/** dialog to get the scrap name, input by the user
+ */
+class ScrapNameWidget : public QDialog
+{
+  Q_OBJECT
+  private:
+    QTshotWidget * parent;
+    QLineEdit * pname;      //!< plot name
+    QLineEdit * sname;      //!< scrap name
+    int plot_type;          //!< plot/scrap type
+
+  public:
+    ScrapNameWidget( QTshotWidget * p, QString & name, int plot_type );
+
+  public slots:
+    void doOK();
+    void doCancel() 
+    { 
+      hide();
+    }
 };
 
 #endif // TL_DATA_H

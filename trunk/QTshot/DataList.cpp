@@ -8,7 +8,6 @@
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
  */
-#include <assert.h>
 #include <string.h>
 #include <math.h>
 
@@ -17,6 +16,7 @@
 #include <string>
 
 #include "ArgCheck.h"
+#include "shorthands.h"
 
 #include "Locale.h"
 #include "GetDate.h"
@@ -45,11 +45,11 @@ DataList::clear()
 {
   DBlock * next;
   while ( head ) {
-    next = head->next;
+    next = head->next_block;
     delete head;
     head = next;
   }
-  size = 0;
+  list_size = 0;
   shot = 0;
   need_num   = false;
   base_block = NULL;
@@ -58,9 +58,9 @@ DataList::clear()
 bool 
 DataList::saveTlx( CenterlineInfo & c_info )
 {
-  FILE * fp = fopen( c_info.fileName.latin1(), "w" );
+  FILE * fp = fopen( c_info.fileName.TO_CHAR(), "w" );
   if ( fp == NULL ) {
-    DBG_CHECK("Failed to open file \"%s\"\n", c_info.fileName.latin1() );
+    DBG_CHECK("Failed to open file \"%s\"\n", c_info.fileName.TO_CHAR() );
     return false;
   }
   fprintf(fp, "tlx2\n"); // TopoLinux file format version 2
@@ -91,7 +91,7 @@ DataList::saveTlx( CenterlineInfo & c_info )
   DBlock * b = head;
   while ( b ) {
     fprintf(fp, "\"%s\" \"%s\" %.2f %.2f %.2f %.2f %d %d %d\n",
-      b->from.c_str(), b->to.c_str(),
+      b->fromStation(), b->toStation(),
       b->distance, b->compass, b->clino, b->roll, 
       b->extend, b->flag, b->count );
     if ( b->count > 1 ) {
@@ -101,7 +101,7 @@ DataList::saveTlx( CenterlineInfo & c_info )
           break;
         }
         fprintf(fp, "@ %.2f %.2f %.2f %.2f\n", blk->distance, blk->compass, blk->clino, blk->roll);
-        blk = blk->next;
+        blk = blk->next_blocklet;
       }
 
       #ifdef HAS_LRUD
@@ -121,7 +121,7 @@ DataList::saveTlx( CenterlineInfo & c_info )
         fprintf(fp, "# %s\n", b->comment.c_str() );
       }
     }
-    b = b->next;
+    b = b->next_block;
   }
   fclose( fp );
   return true;
@@ -131,7 +131,7 @@ DBlock *
 DataList::getBlock( size_t pos ) 
 {
   DBlock * b = head;
-  while ( b && pos > 0 ) { b=b->next; --pos; }
+  while ( b && pos > 0 ) { b=b->next_block; --pos; }
   return b;
 }
 
@@ -141,7 +141,7 @@ DataList::insertBlock( DBlock * blk, double d, double b, double c, double r, boo
   ARG_CHECK( blk == NULL, );
 
   DBlock * b1 = new DBlock( NULL, NULL, d, b, c, r, 0, 0, 0 );
-  ++size;
+  ++list_size;
   need_num = true;
 
   if ( head == NULL ) {
@@ -150,20 +150,20 @@ DataList::insertBlock( DBlock * blk, double d, double b, double c, double r, boo
   }
   if ( before ) {
     if ( head == blk ) { // b1 --> head --> head_next
-      b1->next = head;
+      b1->next_block = head;
       head = b1;
     } else {
       DBlock * b0 = head;
-      while ( b0->next && b0->next != blk ) b0 = b0->next;
-      b1->next = b0->next;
-      b0->next = b1;
+      while ( b0->next_block && b0->next_block != blk ) b0 = b0->next_block;
+      b1->next_block = b0->next_block;
+      b0->next_block = b1;
     }
   } else { // after
     DBlock * b0 = head;
-    while ( b0->next && b0 != blk ) b0 = b0->next;
-    // N.B. if b0->next == NULL then b0 is the last Block
-    b1->next = b0->next;
-    b0->next = b1;
+    while ( b0->next_block && b0 != blk ) b0 = b0->next_block;
+    // N.B. if b0->next_block == NULL then b0 is the last Block
+    b1->next_block = b0->next_block;
+    b0->next_block = b1;
   }
 }
 
@@ -255,10 +255,10 @@ DataList::shotIsClose( double d1, double b1, double c1, double d2, double b2, do
 
 void
 DataList::createBlock( int from, int to, 
-                       double * d0, double * b0, double * c0, double * r0, 
-                       int cnt,
-                       int splay_at, bool backward,
-                       DBlock ** last, DBlock ** start )
+		       double * d0, double * b0, double * c0, double * r0, 
+		       int cnt,
+		       int splay_at, bool backward,
+		       DBlock ** last, DBlock ** start )
 {
   ARG_CHECK( d0 == NULL,  );
   ARG_CHECK( b0 == NULL,  );
@@ -285,6 +285,36 @@ DataList::createBlock( int from, int to,
   // need_num = true; // done by insertBlock()
 }
 
+DBlock * 
+DataList::initFromTo( int & from, int & to, bool append )
+{
+  DBlock * last = NULL;
+  from = 0;
+  to   = 1;
+  if ( append ) {
+    DBlock * last = head;
+    if ( last ) {
+      while ( last->next_block ) {
+	last = last->next_block;
+	// initialize "from" and "to"
+      }
+      if ( last->hasFromStation() ) {
+	from = atoi( last->fromStation() );
+	if ( last->hasToStation() ) to = atoi( last->toStation() );
+	else to = from+1;
+      }
+    }
+  } else {
+    clear();
+  }
+
+  if ( to < from ) {
+    int tmp = from; from = to; to = tmp;
+  } 
+
+  return last;
+}
+
 
 bool
 DataList::loadDisto( DistoX & disto, bool append, bool smart, int splay_at, bool backward )
@@ -294,50 +324,35 @@ DataList::loadDisto( DistoX & disto, bool append, bool smart, int splay_at, bool
   }
   // DBlock * bb = NULL;      // temporary block pointer
   DBlock * start = NULL;  // first block inserted
-  DBlock * last = NULL;   // last block on the list
-  int from = 0;
-  int to   = 1;
-  if ( append ) {
-    last = head;
-    if ( last ) {
-      while ( last->next ) {
-        last = last->next;
-        // initialize "from" and "to"
-      }
-      if ( last->hasFrom() ) {
-        from = atoi( last->from.c_str() );
-        if ( last->hasTo() ) to = atoi( last->to.c_str() );
-        else to = from+1;
-      }
-      if ( backward ) {
-        int tmp = from; from = to; to = tmp;
-      } 
-    }
-  } else {
-    clear();
-  }
+  int from, to;
+  DBlock * last = initFromTo( from, to, append );
 
-  double d0[10], b0[10], c0[10], r0[10];
-  double dave, bave, cave, rave;
-  int cnt = 0;
+  // NOTE Max 20 measures for a shot
+  /* static */ double d0[20], b0[20], c0[20], r0[20];
+  /* static */ int cnt = 0;
   unsigned int xd, xb, xc, xr;
   double d, b, c, r;
   while ( disto.nextMeasurement( xd, xb, xc, xr, d, b, c, r ) ) {
+    double dave, bave, cave, rave;
     computeAverage( d0, b0, c0, r0, cnt, dave, bave, cave, rave );
     if ( cnt > 0 ) {
-      if ( cnt > 1 || !smart ) {
-        from = to;
-        ++ to;
-      }
+      // if ( cnt > 1 || !smart ) { // 2011.02.13 increment only when insert block
+      //   ++ from;
+      //   ++ to;
+      // }
       if ( ! smart || ! shotIsClose( dave, bave, cave, d, b, c ) ) {
-        // if (d,b,c) is not close to the average
-        // write out the array of previous shots
-        // and restart counting from 0
-        createBlock( from, to, d0, b0, c0, r0, cnt, splay_at, backward, &last, &start );
-        cnt = 0;
+	// if (d,b,c) is not close to the average
+	// write out the array of previous shots
+	// and restart counting from 0
+        if ( cnt > 1 || !smart ) {
+          ++ from;
+          ++ to;
+        }
+	createBlock( from, to, d0, b0, c0, r0, cnt, splay_at, backward, &last, &start );
+	cnt = 0;
       }
     }
-    if ( cnt < 10 ) {
+    if ( cnt < 20 ) {
       d0[cnt] = d;
       b0[cnt] = b;
       c0[cnt] = c;
@@ -346,6 +361,10 @@ DataList::loadDisto( DistoX & disto, bool append, bool smart, int splay_at, bool
     }
   }
   if ( cnt > 0 ) {
+    if ( cnt > 1 || !smart ) { // 2011.02.13
+      ++ from;
+      ++ to;
+    }
     createBlock( from, to, d0, b0, c0, r0, cnt, splay_at, backward, &last, &start );
   }
   // need_num = true; // done by createBlock() --> insertBlock()
@@ -362,61 +381,45 @@ DataList::loadRaw( FILE * in, bool append, bool smart, int splay_at, bool backwa
 
   // DBlock * bb = NULL;      // temporary block pointer
   DBlock * start = NULL;  // first block inserted
-  DBlock * last = NULL;   // last block on the list
-  int from = 0;
-  int to   = 1;
-  if ( append ) {
-    last = head;
-    if ( last ) {
-      while ( last->next ) {
-        last = last->next;
-        // initialize "from" and "to"
-      }
-      if ( last->hasFrom() ) {
-        from = atoi( last->from.c_str() );
-        if ( last->hasTo() ) to = atoi( last->to.c_str() );
-        else to = from+1;
-      }
-      if ( backward ) {
-        int tmp = from; from = to; to = tmp;
-      } 
-    }
-  } else {
-    clear();
-  }
+  int from, to;
+  DBlock * last = initFromTo( from, to, append );
 
   char line[128];
-  double d0[10], b0[10], c0[10], r0[10];
-  double dave, bave, cave, rave;
+  double d0[20], b0[20], c0[20], r0[20];
   int cnt = 0;
   while ( fgets( line, 128, in ) != NULL ) {
     unsigned int xd, xb, xc, xr;
     double d, b, c, r;
+    double dave, bave, cave, rave;
     // first try to read 8 values (raw-format 2.0)
     // if it fails try to read six values (raw-format 1.0)
     if ( sscanf( line, "%x %x %x %x %lf %lf %lf %lf", &xd, &xb, &xc, &xr, &d, &b, &c, &r ) != 8 ) {
       xr = 0;
       r = 0.0;
       if ( sscanf( line, "%x %x %x %lf %lf %lf", &xd, &xb, &xc, &d, &b, &c ) != 6 ) {
-        break;
+	break;
       }
     }
 
     computeAverage( d0, b0, c0, r0, cnt, dave, bave, cave, rave );
     if ( cnt > 0 ) {
-      if ( cnt > 1 || !smart ) {
-        from = to;
-        ++ to;
-      }
+      // if ( cnt > 1 || !smart ) {
+      //   from = to;
+      //   ++ to;
+      // }
       if ( ! smart || ! shotIsClose( dave, bave, cave, d, b, c ) ) {
-        // if (d,b,c) is not close to the average
-        // write out the array of previous shots
-        // and restart counting from 0
-        createBlock( from, to, d0, b0, c0, r0, cnt, splay_at, backward, &last, &start );
-        cnt = 0;
+        if ( cnt > 1 || !smart ) { // 2011.02.13
+          from = to;
+          ++ to;
+        }
+	// if (d,b,c) is not close to the average
+	// write out the array of previous shots
+	// and restart counting from 0
+	createBlock( from, to, d0, b0, c0, r0, cnt, splay_at, backward, &last, &start );
+	cnt = 0;
       }
     }
-    if ( cnt < 10 ) {
+    if ( cnt < 20 ) {
       d0[cnt] = d;
       b0[cnt] = b;
       c0[cnt] = c;
@@ -427,6 +430,10 @@ DataList::loadRaw( FILE * in, bool append, bool smart, int splay_at, bool backwa
   fclose( in );
 
   if ( cnt > 0 ) {
+    if ( cnt > 1 || !smart ) { // 2011.02.13
+      from = to;
+      ++ to;
+    }
     createBlock( from, to, d0, b0, c0, r0, cnt, splay_at, backward, &last, &start );
   }
   // need_num = true; // done by createBlock() --> insertBlock()
@@ -508,7 +515,7 @@ DataList::loadTlx( FILE * fp, bool append, CenterlineInfo * info, int version )
 
   // if ( append ) {
   //   last = head;
-  //   if ( last ) while ( last->next ) last = last->next;
+  //   if ( last ) while ( last->next_block ) last = last->next_block;
   // } else {
     clear();
   // }
@@ -543,43 +550,43 @@ DataList::loadTlx( FILE * fp, bool append, CenterlineInfo * info, int version )
     if ( len == 0 ) continue; // skip empty lines
     if (line[0] != '"') {
       if ( b != NULL ) {
-        if ( line[0] == '#' ) { // LRUD or data comment
-          #ifdef HAS_LRUD
-            if ( line[1] == 'F' ) {
-              double l, r, u, d;
-              if ( sscanf(line+3, "%lf %lf %lf %lf", &l, &r, &u, &d ) != 4 ) {
-                break;
-              }
-              b->lrud_from = new LRUD(l,r,u,d);
-            } else if ( line[1] == 'T' ) {
-              double l, r, u, d;
-              if ( sscanf(line+3, "%lf %lf %lf %lf", &l, &r, &u, &d ) != 4 ) {
-                break;
-              }
-              b->lrud_to = new LRUD(l,r,u,d);
-            } else {
-              b->setComment( line+2 );
-            }
-          #else
-            b->setComment( line+2 );
-          #endif
-        } else if ( line[0] == '@' ) { // data blocklet
-          bool ok = false;
-          if ( version == 1 ) {
-            ok = sscanf(line+2, "%lf %lf %lf", &dist, &comp, &clino ) == 3;
-            roll = 0.0;
-          } else if ( version == 2 ) {
-            ok = sscanf(line+2, "%lf %lf %lf %lf", &dist, &comp, &clino, &roll ) == 4;
-          }
-          if ( ! ok ) {
-            break;
-          }
-          DBlocklet * blket = new DBlocklet( dist, comp, clino, roll );
-          b->addBlocklet( blket );
-        } else {
-          DBG_CHECK("ERROR: unexpected line %d. Please report it with your data.\n", line_nr);
-          DBG_CHECK("LINE: %s", line);
-        }
+	if ( line[0] == '#' ) { // LRUD or data comment
+	  #ifdef HAS_LRUD
+	    if ( line[1] == 'F' ) {
+	      double l, r, u, d;
+	      if ( sscanf(line+3, "%lf %lf %lf %lf", &l, &r, &u, &d ) != 4 ) {
+		break;
+	      }
+	      b->lrud_from = new LRUD(l,r,u,d);
+	    } else if ( line[1] == 'T' ) {
+	      double l, r, u, d;
+	      if ( sscanf(line+3, "%lf %lf %lf %lf", &l, &r, &u, &d ) != 4 ) {
+		break;
+	      }
+	      b->lrud_to = new LRUD(l,r,u,d);
+	    } else {
+	      b->setComment( line+2 );
+	    }
+	  #else
+	    b->setComment( line+2 );
+	  #endif
+	} else if ( line[0] == '@' ) { // data blocklet
+	  bool ok = false;
+	  if ( version == 1 ) {
+	    ok = sscanf(line+2, "%lf %lf %lf", &dist, &comp, &clino ) == 3;
+	    roll = 0.0;
+	  } else if ( version == 2 ) {
+	    ok = sscanf(line+2, "%lf %lf %lf %lf", &dist, &comp, &clino, &roll ) == 4;
+	  }
+	  if ( ! ok ) {
+	    break;
+	  }
+	  DBlocklet * blket = new DBlocklet( dist, comp, clino, roll );
+	  b->addBlocklet( blket );
+	} else {
+	  DBG_CHECK("ERROR: unexpected line %d. Please report it with your data.\n", line_nr);
+	  DBG_CHECK("LINE: %s", line);
+	}
       }
       continue;
     }
@@ -631,34 +638,34 @@ DataList::loadTlx( FILE * fp, bool append, CenterlineInfo * info, int version )
       char * ch = tmp;
       while ( isspace(*ch) ) ch++;
       if ( strncmp(ch, "date", 4) == 0 ) {
-        Locale::FromDate( ch+5, info->year, info->month, info->day );
-        // ssize_t r = sscanf(ch+5, "%d %d %d", &(info->year), &(info->month), &(info->day) );
-        // r = r;
-        // DBG_CHECK("Date: %d %d %d\n", info->year, info->month, info->day);
+	Locale::FromDate( ch+5, info->year, info->month, info->day );
+	// ssize_t r = sscanf(ch+5, "%d %d %d", &(info->year), &(info->month), &(info->day) );
+	// r = r;
+	// DBG_CHECK("Date: %d %d %d\n", info->year, info->month, info->day);
       }
       while ( ch && *ch != 0 ) {
-        while ( *ch != '\n' && *ch != 0 ) ++ch;
-        if ( *ch == 0 ) break;
-        ch ++;
-        if ( *ch == 0 ) break;
-        ch ++;
-        if ( *ch == 0 ) break;
-        char * ch1 = ch;
-        while ( *ch != '\n' && *ch != 0 ) ++ch;
-        char ch2 = *ch;
-        *ch = 0;
-        // DBG_CHECK("%s\n", ch1 );
-        oss << ch1 << " "; // replace '\n' by ' ' (space) 
-        *ch = ch2;
+	while ( *ch != '\n' && *ch != 0 ) ++ch;
+	if ( *ch == 0 ) break;
+	ch ++;
+	if ( *ch == 0 ) break;
+	ch ++;
+	if ( *ch == 0 ) break;
+	char * ch1 = ch;
+	while ( *ch != '\n' && *ch != 0 ) ++ch;
+	char ch2 = *ch;
+	*ch = 0;
+	// DBG_CHECK("%s\n", ch1 );
+	oss << ch1 << " "; // replace '\n' by ' ' (space) 
+	*ch = ch2;
       }
       info->description = oss.str();
       delete[] tmp;
     }
   }
 
-  RecomputeMultimeasureBlocks( start );
+  recomputeMultimeasureBlocks( start );
 
-  // DBG_CHECK("data load size %d \n", size );
+  // DBG_CHECK("data load size %d \n", list_size );
   return true;
 }
 
@@ -677,45 +684,45 @@ DataList::loadPocketTopo( PlotDrawer * drawer, FILE * fp, CenterlineInfo * info 
 }
 
 void
-DataList::RecomputeMultimeasureBlocks( DBlock * start )
+DataList::recomputeMultimeasureBlocks( DBlock * start )
 {
   ARG_CHECK( start == NULL, );
 
-  for ( DBlock * b = start; b; b=b->next ) {
+  for ( DBlock * b = start; b; b=b->next_block ) {
     if ( b->count > 1 ) {
       DBlocklet * bket = b->blocklet;
       if ( bket == NULL ) {
-        b->count = 1;
-        continue;
+	b->count = 1;
+	continue;
       }
       double d0 = bket->distance;
       double b0 = bket->compass;
       double c0 = bket->clino;
       double r0 = bket->roll;
-      bket = bket->next;
+      bket = bket->next_blocklet;
       b->count = 1;
       while ( bket ) {
-        d0 += bket->distance;
-        c0 += bket->clino;
+	d0 += bket->distance;
+	c0 += bket->clino;
 
-        if ( bket->compass > 270 && (b0 / b->count) < 90 ) {
-          b0 += ( bket->compass - 360.0 );
-        } else if ( bket->compass < 90 && (b0 / b->count) > 270 ) {
-          b0 += ( bket->compass + 360.0 );
-        } else {
-          b0 += bket->compass;
-        }
+	if ( bket->compass > 270 && (b0 / b->count) < 90 ) {
+	  b0 += ( bket->compass - 360.0 );
+	} else if ( bket->compass < 90 && (b0 / b->count) > 270 ) {
+	  b0 += ( bket->compass + 360.0 );
+	} else {
+	  b0 += bket->compass;
+	}
 
-        if ( bket->roll > 270 && (r0 / b->count) < 90 ) {
-          r0 += ( bket->roll - 360.0 );
-        } else if ( bket->roll < 90 && (r0 / b->count) > 270 ) {
-          r0 += ( bket->roll + 360.0 );
-        } else {
-          r0 += bket->roll;
-        }
+	if ( bket->roll > 270 && (r0 / b->count) < 90 ) {
+	  r0 += ( bket->roll - 360.0 );
+	} else if ( bket->roll < 90 && (r0 / b->count) > 270 ) {
+	  r0 += ( bket->roll + 360.0 );
+	} else {
+	  r0 += bket->roll;
+	}
 
-        b->count ++;
-        bket = bket->next;
+	b->count ++;
+	bket = bket->next_blocklet;
       }
       b->distance = d0 / b->count;
       b->compass  = b0 / b->count;
@@ -736,34 +743,34 @@ DataList::updateBlock( int r, int c, const char * txt )
   ARG_CHECK( txt == NULL, );
 
   DBlock * b = head;
-  while ( b && r > 0 ) { --r; b = b->next; }
+  while ( b && r > 0 ) { --r; b = b->next_block; }
   if ( b ) {
     if ( c == 0 ) { // From
-      b->from = txt;
+      b->setFromStation( txt );
       need_num = true;
     } else if ( c == 1 ) { // To
-      b->to = txt;
+      b->setToStation( txt );
       need_num = true;
     } else if ( c == 5 ) { // ext FIXME LANGUAGE
       if ( strncasecmp( txt, "L", 1 ) == 0 ) {
-        b->extend = EXTEND_LEFT;
+	b->extend = EXTEND_LEFT;
       } else if ( strncasecmp( txt, "R", 1 ) == 0 ) {
-        b->extend = EXTEND_RIGHT;
+	b->extend = EXTEND_RIGHT;
       } else if ( strncasecmp( txt, "V", 1 ) == 0 ) {
-        b->extend = EXTEND_VERT;
+	b->extend = EXTEND_VERT;
       } else if ( strncasecmp( txt, "I", 1 ) == 0 ) {
-        b->extend = EXTEND_IGNORE;
+	b->extend = EXTEND_IGNORE;
       } else {
-        b->extend = EXTEND_NONE;
+	b->extend = EXTEND_NONE;
       }
       need_num = true;
     } else if ( c == 6 ) { // flg FIXME Language
       if ( strncasecmp( txt, "S", 1 ) == 0 ) {
-        b->flag = FLAG_SURFACE;
+	b->flag = FLAG_SURFACE;
       } else if ( strncasecmp( txt, "D", 1 ) == 0 ) {
-        b->flag = FLAG_DUPLICATE;
+	b->flag = FLAG_DUPLICATE;
       } else {
-        b->flag = FLAG_NONE;
+	b->flag = FLAG_NONE;
       }
     } else if ( c == 7 ) { // comment
       b->setComment( txt );
@@ -786,52 +793,52 @@ DataList::evalSplayExtended( DBlock * b )
     b->extended = b->Extend();
   } else {
     // pick extend by the centerline shots
-    const std::string & name = ( b->hasFrom() )? b->from : b->to;
+    const std::string & name = ( b->hasFromStation() )? b->fromStation() : b->toStation();
     // [1] get "average" left and right directions
     double left  = -1;
     double right = -1;
-    for ( DBlock * b1 = head; b1; b1=b1->next ) {
+    for ( DBlock * b1 = head; b1; b1=b1->next_block ) {
       if ( b1->isSplay() ) continue;
-      if ( b1->hasFrom( name ) ) {
-        if ( b1->Extended() == EXTEND_RIGHT ) {
-          if ( right < 0 ) {
-            right =  b1->Compass();
-          } else if ( fabs(right - b1->Compass() ) < 180 ) {
-            right = (right + b1->Compass())/2.0;
-        } else {
-            right = ( right + b1->Compass() + 360 )/2.0;
-            if ( right > 360 ) right -= 360.0;
-          }
-        } else if ( b1->Extended() == EXTEND_LEFT ) {
-          if ( left < 0 ) {
-            left =  b1->Compass();
-        } else if ( fabs(left - b1->Compass() ) < 180 ) {
-            left = (left + b1->Compass())/2.0;
-        } else {
-            left = ( left + b1->Compass() + 360 )/2.0;
-            if ( left > 360 ) left -= 360.0;
-          }
-        }
-      } else if ( b1->hasTo( name ) ) {
-        if ( b1->Extended() == EXTEND_LEFT ) {
-          if ( left < 0 ) {
-            left = b1->Compass();
-          } else if ( fabs(left - b1->Compass() ) < 180 ) {
-            left = (left + b1->Compass())/2.0;
-          } else {
-            left = ( left + b1->Compass() + 360 )/2.0;
-            if ( left > 360 ) left -= 360.0;
-          }
-        } else if ( b1->extended == EXTEND_RIGHT ) {
-          if ( right < 0 ) {
-            right = b1->Compass();
-          } else if ( fabs(right - b1->Compass() ) < 180 ) {
-            right = (right + b1->Compass())/2.0;
-          } else {
-            right = ( right + b1->Compass() + 360 )/2.0;
-            if ( right > 360 ) right -= 360.0;
-          }
-        }
+      if ( b1->hasFromStation( name ) ) {
+	if ( b1->Extended() == EXTEND_RIGHT ) {
+	  if ( right < 0 ) {
+	    right =  b1->Compass();
+	  } else if ( fabs(right - b1->Compass() ) < 180 ) {
+	    right = (right + b1->Compass())/2.0;
+	} else {
+	    right = ( right + b1->Compass() + 360 )/2.0;
+	    if ( right > 360 ) right -= 360.0;
+	  }
+	} else if ( b1->Extended() == EXTEND_LEFT ) {
+	  if ( left < 0 ) {
+	    left =  b1->Compass();
+	} else if ( fabs(left - b1->Compass() ) < 180 ) {
+	    left = (left + b1->Compass())/2.0;
+	} else {
+	    left = ( left + b1->Compass() + 360 )/2.0;
+	    if ( left > 360 ) left -= 360.0;
+	  }
+	}
+      } else if ( b1->hasToStation( name ) ) {
+	if ( b1->Extended() == EXTEND_LEFT ) {
+	  if ( left < 0 ) {
+	    left = b1->Compass();
+	  } else if ( fabs(left - b1->Compass() ) < 180 ) {
+	    left = (left + b1->Compass())/2.0;
+	  } else {
+	    left = ( left + b1->Compass() + 360 )/2.0;
+	    if ( left > 360 ) left -= 360.0;
+	  }
+	} else if ( b1->extended == EXTEND_RIGHT ) {
+	  if ( right < 0 ) {
+	    right = b1->Compass();
+	  } else if ( fabs(right - b1->Compass() ) < 180 ) {
+	    right = (right + b1->Compass())/2.0;
+	  } else {
+	    right = ( right + b1->Compass() + 360 )/2.0;
+	    if ( right > 360 ) right -= 360.0;
+	  }
+	}
       }
     }
     // [2] choose extend
@@ -841,31 +848,31 @@ DataList::evalSplayExtended( DBlock * b )
       if ( dr > 180 ) dr -= 180;
       if ( dl > 180 ) dl -= 180;
       if ( dr < dl/2 ) {
-        b->extended = EXTEND_RIGHT;
+	b->extended = EXTEND_RIGHT;
       } else if ( dl < dr/2 ) {
-        b->extended = EXTEND_LEFT;
+	b->extended = EXTEND_LEFT;
       } else {
-        b->extended = EXTEND_VERT;
+	b->extended = EXTEND_VERT;
       }
     } else if ( right < 0 ) {
       double dl = fabs( b->compass - left );
       if ( dl > 180 ) dl -= 180;
       if ( dl < 45 ) {
-        b->extended = EXTEND_LEFT;
+	b->extended = EXTEND_LEFT;
       } else if ( dl > 135 ) {
-        b->extended = EXTEND_RIGHT;
+	b->extended = EXTEND_RIGHT;
       } else {
-        b->extended = EXTEND_VERT;
+	b->extended = EXTEND_VERT;
       }
     } else if ( left < 0 ) {
       double dr = fabs( b->compass - right );
       if ( dr > 180 ) dr -= 180;
       if ( dr < 45 ) {
-        b->extended = EXTEND_RIGHT;
+	b->extended = EXTEND_RIGHT;
       } else if ( dr > 135 ) {
-        b->extended = EXTEND_LEFT;
+	b->extended = EXTEND_LEFT;
       } else {
-        b->extended = EXTEND_VERT;
+	b->extended = EXTEND_VERT;
       }
     }
   }
@@ -876,10 +883,10 @@ DataList::evalSplayExtended( DBlock * b )
 void 
 DataList::dump()
 {
-  fprintf(stderr, "DataList %d \n", size );
+  fprintf(stderr, "DataList %d \n", list_size );
   int k=0;
-  for ( DBlock * bl = head; bl; bl=bl->next ) {
-    fprintf(stderr, "\"%s=%s\" ", bl->from.c_str(),  bl->to.c_str() );
+  for ( DBlock * bl = head; bl; bl=bl->next_block ) {
+    fprintf(stderr, "\"%s=%s\" ", bl->fromStation(),  bl->toStation() );
     ++k;
     if ( (k%10) == 0 ) fprintf(stderr, "\n");
   }
@@ -888,32 +895,32 @@ DataList::dump()
 
 
 int
-DataList::DoNum()
+DataList::doNum( bool force )
 {
   DBG_CHECK("DoNum() needed %d, n. measures %d\n", need_num, num_measures );
 
-  if ( ! need_num ) return num_measures;
+  if ( ! force && ! need_num ) return num_measures;
 
   num_measures = 0;
-  num.ClearLists();
+  num.clearLists();
   need_num = false;
-  for ( DBlock * bl = head; bl; bl=bl->Next() ) {
+  for ( DBlock * bl = head; bl; bl=bl->next() ) {
     if ( bl->isSplay() ) continue;
-    // DBG_CEHCK("DataList::DoNum() add %s %s\n", bl->From(), bl->To() );
-    num.AddMeasure( bl->From(), bl->To(), bl->Tape(), bl->Compass(), bl->Clino() );
+    // DBG_CEHCK("DataList::doNum() add %s %s\n", bl->From(), bl->To() );
+    num.addMeasure( bl->fromStation(), bl->toStation(), bl->Tape(), bl->Compass(), bl->Clino() );
     ++ num_measures;
   }
-  // DBG_CHECK("DataList::DoNum() measures %d\n", n_measures );
+  // DBG_CHECK("DataList::doNum() measures %d\n", n_measures );
   if ( num_measures == 0 ) {
     return 0;
   }
-  if ( base_block && base_block->hasFrom() ) {
-    num.MakePoints( 1, base_block->From() );
+  if ( base_block && base_block->hasFromStation() ) {
+    num.makePoints( 1, base_block->fromStation() );
   } else {
-    num.MakePoints( 1 );
+    num.makePoints( 1 );
   }
-  num.SetPoints();
-  // DBG_CHECK("DataList::DoNum() made points %d \n", n_pts );
+  num.setPoints();
+  // DBG_CHECK("DataList::doNum() made points %d \n", n_pts );
   // NumPrintPoints();
   
   DBG_CHECK("DoNum() done: n. measures %d\n", num_measures );
@@ -926,7 +933,7 @@ DataList::mergeBlock( DBlock * bb )
 {
   ARG_CHECK( bb == NULL, false );
 
-  DBlock * bn = bb->next;
+  DBlock * bn = bb->next_block;
   if ( bn == NULL ) return false;
   if ( bb->count == 1 ) {
     if ( bn->count == 1 ) {
@@ -954,15 +961,15 @@ DataList::mergeBlock( DBlock * bb )
   }
   bb->count = ct;
   DBlocklet * b = bb->blocklet;
-  while ( b->next ) b=b->next;
+  while ( b->next_blocklet ) b=b->next_blocklet;
   if ( cn == 1 ) {
-    b->next = new DBlocklet( bn->distance, bn->compass, bn->clino, bn->roll );
+    b->next_blocklet = new DBlocklet( bn->distance, bn->compass, bn->clino, bn->roll );
   } else {
-    b->next = bn->blocklet;
+    b->next_blocklet = bn->blocklet;
   }
-  bb->next = bn->next;
+  bb->next_block = bn->next_block;
   delete bn;
-  -- size;
+  -- list_size;
 
   need_num = true;
   return true;
@@ -975,23 +982,23 @@ DataList::splitBlock( DBlock * bb )
 
   if ( bb->count == 1 ) return false;
   --shot;
-  DBlocklet * b = bb->blocklet->next;
-  DBlock * bn  = bb->next;
+  DBlocklet * b = bb->blocklet->next_blocklet;
+  DBlock * bn  = bb->next_block;
   DBlock * b1 = bb;
   while ( b ) {
-    b1->next = new DBlock( "", "", b->distance, b->compass, b->clino, b->roll,
+    b1->next_block = new DBlock( "", "", b->distance, b->compass, b->clino, b->roll,
                            bb->extend, bb->flag, 1 );
-    b1 = b1->next;
-    b  = b->next;
-    ++size;
+    b1 = b1->next_block;
+    b  = b->next_blocklet;
+    ++list_size;
   }
-  b1->next = bn;
+  b1->next_block = bn;
   bb->distance = bb->blocklet->distance;
   bb->compass  = bb->blocklet->compass;
   bb->clino    = bb->blocklet->clino;
   bb->count = 1;
   while ( bb->blocklet ) {
-    b = bb->blocklet->next;
+    b = bb->blocklet->next_blocklet;
     delete bb->blocklet;
     bb->blocklet = b;
   }

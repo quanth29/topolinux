@@ -11,17 +11,23 @@
 #ifndef TH_LINE_TYPE_H
 #define TH_LINE_TYPE_H
 
-/** therion line types
- */
-enum ThLineType {
-  THL_ARROW = 0,
-  THL_BORDER,
-  THL_CHIMNEY,
-  THL_PIT,
-  THL_USER,
-  THL_WALL,
-  THL_ROCK,   // rock-border / rock-edge
-  THL_PLACEMARK
-};
+namespace Therion
+{
+  /** therion line types
+   */
+  enum LineType {
+    THL_ARROW = 0,
+    THL_BORDER,
+    THL_CHIMNEY,
+    THL_PIT,
+    THL_USER,
+    THL_WALL,
+    THL_ROCK,   // rock-border / rock-edge
+    THL_PLACEMARK
+  };
+  
+  extern const char * LineName[ THL_PLACEMARK ];
+
+}
 
 #endif

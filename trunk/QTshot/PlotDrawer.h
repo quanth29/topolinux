@@ -16,6 +16,8 @@
 #include "CanvasMode.h"
 #include "PTcolors.h"
 
+class PlotCanvas;
+
 class PlotDrawer
 {
   public:
@@ -25,13 +27,13 @@ class PlotDrawer
      */
     virtual void closePlots() = 0;
 
-    virtual void insertPoint( int x, int y, ThPointType type, int mode ) = 0;
+    virtual void insertPoint( int x, int y, Therion::PointType type, PlotCanvas * canvas ) = 0;
   
-    virtual void insertLinePoint( int x, int y, ThLineType type, int mode ) = 0;
+    virtual void insertLinePoint( int x, int y, Therion::LineType type, PlotCanvas * canvas ) = 0;
 
-    virtual void openPlot( int mode ) = 0;
+    virtual PlotCanvas *  openPlot( int mode, const char * pname, const char * sname ) = 0;
 
-    virtual const PTcolors & colors() const = 0;
+    virtual const PTcolors & getColors() const = 0;
 
 };
 
