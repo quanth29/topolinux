@@ -51,7 +51,7 @@
 
 void usage()
 {
-  printf("Usage: dump2data [options] <memory-dump> \n");
+  printf("Usage: tlx_dump2data [options] <memory-dump> \n");
   printf("options: \n");
   printf("  -a            show all data [by default only hot data are shown]\n");
   printf("  -b            show measurements/calibration boundaries [default no]\n");

@@ -107,7 +107,7 @@ int main( int argc, char ** argv )
     argv ++;
   }
   if ( argc < 2 ) {
-    fprintf(stderr, "Usage: data2tlx <input_file> [<output_file>]\n");
+    fprintf(stderr, "Usage: tlx_data2tlx <input_file> [<output_file>]\n");
     fprintf(stderr, "where the input_file is the output of dump_data.\n");
     fprintf(stderr, "If the output_file is not specified, output is \n");
     fprintf(stderr, "written to stdout.\n");

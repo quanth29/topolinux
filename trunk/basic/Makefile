@@ -8,19 +8,13 @@ STRIP = strip
 CFLAGS = -g -O2 -Wall -I../distox
 
 EXES = \
-  tlx_dump_memory \
   tlx_dump_data \
   tlx_send_command \
-  tlx_clear_memory \
-  tlx_set_memory \
   tlx_write_calib \
   tlx_read_calib \
   tlx_toggle_calib \
   tlx_data2tlx \
   tlx_dump2data
-
-EXTRA_EXES = \
-  tlx_reset_memory 
 
 SERIAL_OBJS = \
   ../distox/Serial.o
@@ -35,7 +29,7 @@ VECTOR_OBJS = \
 
 default: $(EXES)
 
-all: $(EXES) $(EXTRA_EXES)
+all: $(EXES)
 
 
 tlx_dump_data: dump_data.cpp $(DISTOX_OBJS)
@@ -44,22 +38,6 @@ tlx_dump_data: dump_data.cpp $(DISTOX_OBJS)
 
 tlx_send_command: send_command.cpp $(DISTOX_OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ -lrt -lpthread
-	$(STRIP) $@
-
-tlx_dump_memory: dump_memory.cpp $(SERIAL_OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ 
-	$(STRIP) $@
-
-tlx_clear_memory: clear_memory.cpp $(SERIAL_OBJS)
-	$(CC) $(CFLAGS) -o $@ $^
-	$(STRIP) $@
-
-tlx_reset_memory: reset_memory.cpp $(SERIAL_OBJS)
-	$(CC) $(CFLAGS) -o $@ $^
-	$(STRIP) $@
-
-tlx_set_memory: set_memory.cpp $(SERIAL_OBJS)
-	$(CC) $(CFLAGS) -o $@ $^
 	$(STRIP) $@
 
 tlx_write_calib: write_calib.cpp $(SERIAL_OBJS)

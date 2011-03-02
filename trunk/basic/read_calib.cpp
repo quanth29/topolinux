@@ -109,7 +109,7 @@ void usage()
 {
   static bool printed_usage = false;
   if ( ! printed_usage ) {
-    fprintf(stderr, "Usage: read_calib [-d device] [-h]\n");
+    fprintf(stderr, "Usage: tlx_read_calib [-d device] [-h]\n");
     fprintf(stderr, "Options:\n");
     fprintf(stderr, "  -d device serial device [%s]\n", DEFAULT_DEVICE );
     fprintf(stderr, "  -v        verbose\n");
