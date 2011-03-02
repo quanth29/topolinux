@@ -11,11 +11,11 @@
 #define EXPORT_TYPE_H
 
 enum ExportType {
-  ExportTherion=0,
-  ExportSurvex,
-  ExportCompass,
-  ExportPocketTopo,
-  ExportUnknown
+  EXPORT_THERION=0,
+  EXPORT_SURVEX,
+  EXPORT_COMPASS,
+  EXPORT_POCKETTOPO,
+  EXPORT_UNKNOWN
 };
 
 #endif

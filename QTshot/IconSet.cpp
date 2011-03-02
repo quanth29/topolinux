@@ -15,6 +15,19 @@ extern "C" {
 #include "../icons/logo6-64.xpm"
 #include "../icons/logo6c-64.xpm"
 
+#include "../pixmaps/t_icon.xpm"
+#include "../pixmaps/c_icon.xpm"
+#include "../pixmaps/brush_wavy.xpm"
+#include "../pixmaps/brush_star.xpm"
+#include "../pixmaps/brush_cross.xpm"
+#include "../pixmaps/brush_dot.xpm"
+
+#include "../pixmaps/filescrap.xpm"
+#include "../pixmaps/fileselect.xpm"
+#include "../pixmaps/filepoint.xpm"
+#include "../pixmaps/fileline.xpm"
+#include "../pixmaps/filearea.xpm"
+
 #include "../pixmaps/filenew2.xpm"
 #include "../pixmaps/filenewoff2.xpm"
 #include "../pixmaps/filesave2.xpm"
@@ -60,6 +73,7 @@ extern "C" {
 #include "../pixmaps/filemode1.xpm"
 #include "../pixmaps/filemode2.xpm"
 #include "../pixmaps/filemode3.xpm"
+#include "../pixmaps/filemode4.xpm"
 
 #include "../pixmaps/filethetap.xpm"
 #include "../pixmaps/filethetam.xpm"
@@ -84,10 +98,23 @@ extern "C" {
 #include "../pixmaps/filegreen.xpm"
 #include "../pixmaps/filedarkblue.xpm"
 // #include "../pixmaps/filepit.xpm"
+
+#include "../pixmaps/thp_air_draught.xpm"
+#include "../pixmaps/thp_blocks.xpm"
+#include "../pixmaps/thp_clay.xpm"
+#include "../pixmaps/thp_debris.xpm"
+#include "../pixmaps/thp_entrance.xpm"
+#include "../pixmaps/thp_ice.xpm"
+#include "../pixmaps/thp_pebbles.xpm"
+#include "../pixmaps/thp_sand.xpm"
+#include "../pixmaps/thp_snow.xpm"
+#include "../pixmaps/thp_stalactite.xpm"
+#include "../pixmaps/thp_stalagmite.xpm"
+#include "../pixmaps/thp_user.xpm"
+#include "../pixmaps/thp_water_flow.xpm"
 }
 
-#include "TherionPoint.h"
-
+// #include "TherionPoint.h"
 
 
 IconSet *
@@ -98,6 +125,7 @@ IconSet::IconSet()
   , pen_black( Qt::black )    // splay
   , pen_blue( Qt::blue )      // wall THL_WALL
   , pen_violet( Qt::magenta ) // other lines
+  , pen_yellow( Qt::yellow )  // yellow points
   , pen_green( Qt::green )    // user line
   , pen_gray( Qt::gray )      // rock-border lines
   , dash_black( Qt::black )
@@ -108,10 +136,39 @@ IconSet::IconSet()
   // , pit_pen( pit_brush )
   , dark_red( Qt::darkRed )
   , dark_gray( Qt::darkGray )
+  , pen_pit( Qt::magenta )
+  , pen_chimney( Qt::magenta )
 {
   dash_black.setStyle( Qt::DotLine );
   dash_blue.setStyle( Qt::DotLine );
   dash_violet.setStyle( Qt::DotLine );
+/*
+  pen_red.setWidth( 0 );
+  pen_black.setWidth( 0 );
+  pen_blue.setWidth( 0 );
+  pen_violet.setWidth( 0 );
+  pen_green.setWidth( 0 );
+  pen_gray.setWidth( 0 );
+  dash_black.setWidth( 0 );
+  dash_blue.setWidth( 0 );
+  dash_violet.setWidth( 0 );
+  dark_red.setWidth( 0 );
+  dark_gray.setWidth( 0 );
+*/
+  // pen_chimney.setStyle( Qt::DotLine );
+  T_brush = QBrush( Qt::magenta, QPixmap( (const char **)t_icon_xpm ) );
+  C_brush = QBrush( Qt::magenta, QPixmap( (const char **)c_icon_xpm ) );
+  brush_wavy = QBrush( Qt::blue, QPixmap( (const char **)brush_wavy_xpm ) );
+  brush_star = QBrush( Qt::gray, QPixmap( (const char **)brush_star_xpm ) );
+  brush_cross = QBrush( Qt::gray, QPixmap( (const char **)brush_cross_xpm ) );
+  brush_dot = QBrush( Qt::green, QPixmap( (const char **)brush_dot_xpm ) );
+  // T_brush.setStyle( Qt::SolidPattern );
+  pen_pit.setBrush( T_brush );
+  pen_pit.setWidth(10);
+  pen_pit.setCapStyle( Qt::FlatCap );
+  pen_chimney.setBrush( C_brush );
+  pen_chimney.setWidth(10);
+  pen_chimney.setCapStyle( Qt::FlatCap );
 
   qtshotIcon = QPixmap( (const char **)logo6_64_xpm );
   qtcalibIcon = QPixmap( (const char **)logo6c_64_xpm );
@@ -158,6 +215,13 @@ IconSet::IconSet()
   mode1Icon   = QPixmap( (const char **)filemode1_xpm );
   mode2Icon   = QPixmap( (const char **)filemode2_xpm );
   mode3Icon   = QPixmap( (const char **)filemode3_xpm );
+  mode4Icon   = QPixmap( (const char **)filemode4_xpm );
+
+  scrapIcon   = QPixmap( (const char **)filescrap_xpm );
+  selectIcon   = QPixmap( (const char **)fileselect_xpm );
+  pointIcon   = QPixmap( (const char **)filepoint_xpm );
+  lineIcon   = QPixmap( (const char **)fileline_xpm );
+  areaIcon   = QPixmap( (const char **)filearea_xpm );
 
   okIcon = QPixmap( (const char **)fileok_xpm );
   leftIcon = QPixmap( (const char **)fileleft_xpm );
@@ -186,24 +250,49 @@ IconSet::IconSet()
   penUpCursor = QCursor( penUpIcon, 7, 16 );
   penDownCursor = QCursor( penDownIcon, 0, 16 );
 
+  thpAirDraught = QPixmap( (const char **)thp_air_draught_xpm );
+  thpBlocks= QPixmap( (const char **)thp_blocks_xpm );
+  thpClay = QPixmap( (const char **)thp_clay_xpm );
+  // thpContinuation =
+  thpDebris = QPixmap( (const char **)thp_debris_xpm );
+  thpPebbles = QPixmap( (const char **)thp_pebbles_xpm );
+  // thpLabel
+  thpSand = QPixmap( (const char **)thp_sand_xpm );
+  thpSnow = QPixmap( (const char **)thp_snow_xpm );
+  thpIce = QPixmap( (const char **)thp_ice_xpm );
+  thpStalactite = QPixmap( (const char **)thp_stalactite_xpm );
+  thpStalagmite = QPixmap( (const char **)thp_stalagmite_xpm );
+  thpUser = QPixmap( (const char **)thp_user_xpm );
+  thpWaterFlow = QPixmap( (const char **)thp_water_flow_xpm );
+  thpEntrance = QPixmap( (const char **)thp_entrance_xpm );
+  // thp= QPixmap( (const char **)thp__xpm );
 
+#ifdef OLD_POLYGON
   // polygon[THP_AIR].setPoints(
   //   11, -6,-3, -4,-4, -2,-2, 3,-2, 2,-3, 3,-4, 6,0, 3,4, 2,3, 3,2, -2,2); 
-  polygon[THP_BLOCK].setPoints(4,  6,6, -5, 5, -5, -6, 6, -5 );
-  polygon[THP_CLAY].setPoints(8, 7,-1, 5,-3, 3,0, -4,-4, -7,1, -5,3, -3,0, 4,4);
-  polygon[THP_DEBRIS].setPoints(5, -7,3, 7,3, 3,-4, 0,0, -3,-4 );
-  polygon[THP_LABEL].setPoints(6, -3,4, 4,4, 4,1, 0,1, 0,-7, -3,-7);
-  polygon[THP_SAND].setPoints(6, -5,0, -5,3, 0,3, 0,-3, 5,-3, 5,0);
-  polygon[THP_STALACTITE].setPoints(
+  polygon[Therion::THP_BLOCKS].setPoints(4,  6,6, -5, 5, -5, -6, 6, -5 );
+  polygon[Therion::THP_CLAY].setPoints(8, 7,-1, 5,-3, 3,0, -4,-4, -7,1, -5,3, -3,0, 4,4);
+  polygon[Therion::THP_DEBRIS].setPoints(5, -7,3, 7,3, 3,-4, 0,0, -3,-4 );
+  polygon[Therion::THP_PEBBLES].setPoints(
+    8, -7,1, -5,-4, -3,0, 0,6, 2,3, 4,-3, 7,2, -3,0 ); 
+  polygon[Therion::THP_LABEL].setPoints(6, -3,4, 4,4, 4,1, 0,1, 0,-7, -3,-7);
+  polygon[Therion::THP_SAND].setPoints(6, -5,0, -5,3, 0,3, 0,-3, 5,-3, 5,0);
+  polygon[Therion::THP_SNOW].setPoints(
+    9, -4,-2, 4,2, 0,0, 4,-2, -4,2, 0,0, 0,6, 0,-6, 0,0 );
+  polygon[Therion::THP_ICE].setPoints(
+    8, 0,5, -1,1, -5,0, -1,-1, 0,-5, 1,-1, 5,0, 1,1 );
+  polygon[Therion::THP_STALACTITE].setPoints(
     9, -3,-6, 0,-3, 3,-6, 4,-4, 1,-1, 1,5, -1,5, -1,-1, -4,-4 );
-  polygon[THP_USER].setPoints(
+  polygon[Therion::THP_STALAGMITE].setPoints(
+    9, -3, 6, 0, 3, 3, 6, 4, 4, 1, 1, 1,-5, -1,-5, -1,1, -4,4 );
+  polygon[Therion::THP_USER].setPoints(
     11, -4,-6, -2,-6, -2,0, 0,2, 2,0, 2,-6, 4,-6, 4,2, 2,4, -2,4, -4,2);
-  // polygon[THP_WATER]
-  // polygon[THP_ENTRANCE].setPoints(3, -2, 3, 0, -5, 2, 3 );
-  // polygon[THP_CONTINUATION].setPoints(...);
+  // polygon[Therion::THP_WATER]
+  // polygon[Therion::THP_ENTRANCE].setPoints(3, -2, 3, 0, -5, 2, 3 );
+  // polygon[Therion::THP_CONTINUATION].setPoints(...);
   /* stationmuts be last */
-  polygon[THP_STATION].setPoints(
-    12, 1,1, 1,6, -1,6, -1,1, -6,1, -6,-1, -1,-1, -1,-6, 1,-6, 1,-1, 6,-1, 6,1);
+  polygon[Therion::THP_STATION].setPoints(
+    12, 1,1, 1,6, -1,6, -1,1, -6,1, -6,-1, -1,-1, -1,-6, 1,-6, 1,-1, 6,-1, 6,1 );
 
   // arrows: air-draught and water-flow
   arrow[0].setPoints(7, -2, 7, -2,-2, -5,-2, 0,-7, 5,-2, 2,-2, 2, 7); // up
@@ -225,20 +314,24 @@ IconSet::IconSet()
   fat_arrow[6].setPoints(3,  5, 5,-10, 0,  5,-5);  // left
   fat_arrow[7].setPoints(3,  0, 6, -8,-8,  6, 0);
 
-  brush[THP_AIR] = QBrush( Qt::cyan );
-  brush[THP_BLOCK] = QBrush( Qt::gray );
-  brush[THP_CLAY] = QBrush( Qt::darkGray );
-  brush[THP_DEBRIS] = QBrush( Qt::lightGray );
-  brush[THP_LABEL] = QBrush( Qt::black );
-  brush[THP_SAND] = QBrush( Qt::darkYellow );
-  brush[THP_STALACTITE] = QBrush( Qt::black );
-  brush[THP_USER] = QBrush( Qt::green );
-  brush[THP_WATER] = QBrush( Qt::blue );
-  brush[THP_ENTRANCE] = QBrush( Qt::black );
-  brush[THP_CONTINUATION] = QBrush( Qt::black );
+  brush[Therion::THP_AIR_DRAUGHT] = QBrush( Qt::cyan );
+  brush[Therion::THP_BLOCKS] = QBrush( Qt::gray );
+  brush[Therion::THP_CLAY] = QBrush( Qt::darkGray );
+  brush[Therion::THP_DEBRIS] = QBrush( Qt::lightGray );
+  brush[Therion::THP_PEBBLES] = QBrush( Qt::lightGray );
+  brush[Therion::THP_LABEL] = QBrush( Qt::black );
+  brush[Therion::THP_SAND] = QBrush( Qt::darkYellow );
+  // brush[Therion::THP_SNOW] = QBrush( Qt::gray );
+  // brush[Therion::THP_ICE] = QBrush( Qt::gray );
+  // brush[Therion::THP_STALACTITE] = QBrush( Qt::black );
+  brush[Therion::THP_STALAGMITE] = QBrush( Qt::black );
+  brush[Therion::THP_USER] = QBrush( Qt::green );
+  brush[Therion::THP_WATER_FLOW] = QBrush( Qt::blue );
+  brush[Therion::THP_ENTRANCE] = QBrush( Qt::black );
+  brush[Therion::THP_CONTINUATION] = QBrush( Qt::black );
 
-  brush[THP_STATION] = QBrush( Qt::black );   // leave station at last
-
+  brush[Therion::THP_STATION] = QBrush( Qt::black );   // leave station at last
+#endif
 
   arrow_end[0].setPoints(3,  0,-3, 3,0, -3,0 );  // up
   arrow_end[1].setPoints(3,  2,-2, -3,-2, 2,3 ); // up/right
@@ -248,7 +341,6 @@ IconSet::IconSet()
   arrow_end[5].setPoints(3,  -2,2, -2,-3, 3,2 ); // down/left
   arrow_end[6].setPoints(3,  -3,0, 0,-3, 0,3 );  // left
   arrow_end[7].setPoints(3,  -2,-2, 3,-2, -2,3 );// up/left
-  
 
 }
 

@@ -77,8 +77,10 @@ struct Transform
   double clino_err_std;    // stddev error
   double err_compass_avg;  // average compass error (with sign)
   double err_compass_std;
+  double err_compass_max;
   double err_clino_avg;
   double err_clino_std;
+  double err_clino_max;
 
 
   Transform( const char * filename );
@@ -110,8 +112,10 @@ Transform::Transform( const char * filename )
   , clino_err_std( 0.0 )
   , err_compass_avg( 0.0 )
   , err_compass_std( 0.0 )
+  , err_compass_max( 0.0 )
   , err_clino_avg( 0.0 )
   , err_clino_std( 0.0 )
+  , err_clino_max( 0.0 )
 {
   FILE * fp = fopen( filename, "r" );
   if ( fp == NULL ) {
@@ -325,8 +329,12 @@ int main( int argc, char ** argv )
       transform[k]->clino_err_std   += clino_err*clino_err;
       transform[k]->err_compass_avg += err_compass;
       transform[k]->err_compass_std += err_compass*err_compass;
+      if ( transform[k]->err_compass_max < fabs( err_compass ) )
+        transform[k]->err_compass_max = fabs( err_compass );
       transform[k]->err_clino_avg   += err_clino;
       transform[k]->err_clino_std   += err_clino*err_clino;
+      if ( transform[k]->err_clino_max < fabs( err_clino ) )
+        transform[k]->err_clino_max = fabs( err_clino );
     }
     if ( verbose ) {
       fprintf(stderr, "%2d: %8.4f %8.4f \n", 
@@ -336,8 +344,8 @@ int main( int argc, char ** argv )
   fclose( fp );
 
   int nd =  data.size();
-  printf("    Errors avg-std %8s %8s %8s %8s  \n", 
-    "Absolute", "", "Signed", "" );
+  printf("    Errors avg-std %8s %8s %8s %8s %8s \n", 
+    "Absolute", "", "Signed", "", "Max" );
     
   for (int k=0; k<nk; ++k ) {
     transform[k]->EvalErrors( nd );
@@ -347,13 +355,15 @@ int main( int argc, char ** argv )
     double s3 = M_PI * transform[k]->clino_err_avg * transform[k]->clino_err_avg;
     double s4 = 2*M_PI/(M_PI-2.0) * transform[k]->clino_err_std * transform[k]->clino_err_std;
     */
-    printf("%2d: Errors compass %8.4f %8.4f %8.4f %8.4f   \n", k,
+    printf("%2d: Errors compass %8.4f %8.4f %8.4f %8.4f %8.4f  \n", k,
       transform[k]->compass_err_avg, transform[k]->compass_err_std,
-      transform[k]->err_compass_avg, transform[k]->err_compass_std );
+      transform[k]->err_compass_avg, transform[k]->err_compass_std,
+      transform[k]->err_compass_max );
       // s1, s2 );
-    printf("             clino %8.4f %8.4f %8.4f %8.4f   \n",
+    printf("             clino %8.4f %8.4f %8.4f %8.4f %8.4f  \n",
       transform[k]->clino_err_avg, transform[k]->clino_err_std,
-      transform[k]->err_clino_avg, transform[k]->err_clino_std );
+      transform[k]->err_clino_avg, transform[k]->err_clino_std,
+      transform[k]->err_clino_max );
       // s3, s4 );
     printf("\n");
   }

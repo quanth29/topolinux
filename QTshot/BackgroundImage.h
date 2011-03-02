@@ -18,113 +18,117 @@
 #include <string>
 #include <vector>
 
-#include "portability.h"
+// #include "portability.h"
+#include "shorthands.h"
 
 
 // #include <qvbox.h>
 // #include <qhbox.h>
 // #define QHBOX QHBox
 
-#include <qpainter.h>
-#include <qpixmap.h>
-#include <qpicture.h>
-#include <qdialog.h>
-#include <qlineedit.h>
+// #include <QPainter>
+#include <QPixmap>
+// #include <QPicture>
+#include <QDialog>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
+#include <QMainWindow>
+#include <QAction>
 
 #include "ImageTransform.h"
 #include "Language.h"
 
+#include "BackgroundImageStationSet.h"
+
+#define ZOOM_STEP 1.41
+
 class BackgroundImage;
+
+class BackgroundImageScene: public QGraphicsScene
+{
+  private:
+    BackgroundImageStationSet stations;
+    BackgroundImage * image;
+    QGraphicsPixmapItem * pixmap;
+    QPixmap * orig_pix; //!< original pixmap (N.B. caller must manage it FIXME)
+    bool do_add_station;
+    bool do_remove_station;
+    QString station_name;
+    
+  public:
+    BackgroundImageScene( BackgroundImage * my_image );
+
+    ~BackgroundImageScene();
+
+    /** accessor for the image
+     * @return the pointer to the background image
+     * FIXME
+     */
+    QPixmap * getImage() { return orig_pix; }
+    // const QPixmap & getPixmap() const { return pixmap->pixmap(); }
+
+
+    // callback for StationDialog
+    void setStationName( QString & name )
+    {
+      do_add_station = ! name.isEmpty();
+      station_name = name;
+    }
+    
+    void setRemoveStation( bool remove ) { do_remove_station = remove; }
+
+    const std::vector< BackgroundImageStation * > & getStations() 
+    {
+      return stations.getStations();
+    }
+
+    void mouseReleaseEvent( QGraphicsSceneMouseEvent * e0 );
+    void mousePressEvent( QGraphicsSceneMouseEvent * e0 );
+
+    /** load a PNG image
+     * @param name image filename
+     */
+    void loadImage( const char * name );
+
+    void changeStation( BackgroundImageStation * st, QString name )
+    {
+      st->setName( name );
+    }
+};
 
 /** sketch image display
  */
-class BackgroundImageShow : public QWidget
+class BackgroundImageView : public QGraphicsView
 {
     // Q_OBJECT
   private:
-    BackgroundImage * image;  //!< main window
-    QPixmap * orig_pix; //!< original pixmap (N.B. caller must manage it FIXME)
-    QPixmap pix;        //!< current pixmap
-    int xs, ys;         //!< temporary station coordinates
-    int zoom;         //!< zoom value
-    int xpos;         //!< X offset
-    int ypos;         //!< Y offset
+    BackgroundImage * image;      //!< main window
+    BackgroundImageScene * scene; //!< scene
 
   public:
     /** cstr
-     * @param my_image   image main window
+     * @param parent   image main window
+     * @param scene    image scene
      */
-    BackgroundImageShow( BackgroundImage * my_image );
+    BackgroundImageView( BackgroundImage * parent, BackgroundImageScene * scene );
 
     /** dstr
      * @note the original pixmap is not destroyed
      *       must be passed to the caller (or upper) before dstr
      *       and the caller must manage it
      */
-    ~BackgroundImageShow() { }
-
-    /** set the temporary station coordinates
-     * @param x  X
-     * @param y  Y
-     */
-    void setStation( int x = -1, int y = -1 ) 
-    {
-      xs = x;
-      ys = y;
-      if ( xs >= 0 ) showIt();
-    }
-  
-    /** load a PNG image
-     * @param name image filename
-     */
-    void LoadImage( const char * name );
-
-    /** apply the zoom and display the sketch
-     * @param in_out  zoom variation (pos. increase; neg. decrease)
-     */
-    void doZoom( int in_out );
-
-    /** mode the sketch
-     * @param dx  X displacement
-     * @param dy  Y displacement
-     */
-    void doMove( int dx, int dy );
-
-    /** accessor for the zoom value
-     * @return the value of the zoom
-     */
-    int Zoom() const { return zoom; }
-
-    /** accessor for the X position
-     * @return the value of the X position
-     */
-    int Xpos() const { return xpos; }
-
-    /** accessor for the Y position
-     * @return the value of the Y position
-     */
-    int Ypos() const { return ypos; }
-
-    /** accessor for the image
-     * @return the pointer to the background image
-     */
-    QPixmap * GetImage() { return orig_pix; }
-
-  private:
-    /** display
-     */
-    void showIt();
-
-    /** handle paint event
-     * @param e   paint event
-     */
-    void paintEvent( QPaintEvent * e );
+    ~BackgroundImageView() { }
 
 };
 
+
+
 /** sketch image main window
  */
-class BackgroundImage : public QMAINWINDOW
+class BackgroundImage : public QMainWindow
 {
   Q_OBJECT
   private:
@@ -132,8 +136,13 @@ class BackgroundImage : public QMAINWINDOW
     Language & lexicon;
     int offset_y;                         //!< Y offset of the image on the screen
     BackgroundImageCallback * callback;   //!<
-    BackgroundImageShow    * mis;         //!< sketch image display
-    std::vector< BackgroundImageStation > stations; //!< stations correspondences
+    BackgroundImageView     * view;        //!< sketch image display
+    BackgroundImageScene    * scene;
+
+    QAction * actOk;
+    QAction * actQuit;
+    QAction * actZoomIn;
+    QAction * actZoomOut;
 
   public:
     /** cstr
@@ -149,64 +158,6 @@ class BackgroundImage : public QMAINWINDOW
      */
     virtual ~BackgroundImage();
 
-    /** add a new station point (correspondence)
-     * @param name   station name
-     * @param x      X coord of the point on the pixmap
-     * @param y      Y coord of the point on the pixmap
-     */
-    void addStation( const QString & name, int x, int y )
-    { 
-      stations.push_back( BackgroundImageStation( name.latin1(), x, y) );
-      // update();
-    }
-
-    /** get the station at a point (actually close to)
-     * @param x   x coord
-     * @param y   y coord
-     * @return station or NULL
-     */
-    BackgroundImageStation * getStationAt( int x, int y )
-    { 
-      for ( std::vector< BackgroundImageStation >::iterator sit = stations.begin(),
-            end = stations.end();
-            sit != end;
-            ++sit ) {
-        if ( abs(x - sit->x) < 4 && abs(y - sit->y) < 4 ) 
-          return &(*sit);
-      }
-      return NULL;
-    }
-
-    void removeStation( BackgroundImageStation * st )
-    {
-      for ( std::vector< BackgroundImageStation >::iterator sit = stations.begin(),
-             end = stations.end();
-             sit != end;
-             ++sit ) {
-        if ( &(*sit) == st ) {
-           stations.erase( sit );
-           break;
-        }
-      }
-      // TODO update();
-    }
-
-    void changeStation( BackgroundImageStation * st, const char * name )
-    {
-      st->name = name;
-      // TODO update();
-    }
-    
-
-
-    /** get the vector of stations
-     * @return a ref. to the vector of stations
-     */
-    const std::vector< BackgroundImageStation > & getStations() const { return stations; }
-
-  private:
-    void mousePressEvent ( QMouseEvent * e );
-
   public slots:
     /** set the image as canvas background 
      */
@@ -216,17 +167,14 @@ class BackgroundImage : public QMAINWINDOW
      */
     void doQuit();
 
-    /** zoom in and out
-     */
-    void doZoomIn() { mis->doZoom( 1 ); }
-    void doZoomOut() { mis->doZoom( -1 ); }
+    void onZoomIn() { view->scale( ZOOM_STEP, ZOOM_STEP ); }
 
-    /** move the image left/right and up/down
-     */
-    void doDown() { mis->doMove( 0, -1 ); }
-    void doUp() { mis->doMove( 0, 1 ); }
-    void doRight() { mis->doMove( -1, 0 ); }
-    void doLeft() { mis->doMove( 1, 0 ); }
+    void onZoomOut() { view->scale( 1.0/ZOOM_STEP, 1.0/ZOOM_STEP ); }
+
+  private:
+    void createToolBar();
+
+    void createActions();
 };
 
 
@@ -236,18 +184,22 @@ class BackgroundImageStationDialog : public QDialog
 {
   Q_OBJECT
   private:
-    BackgroundImage * parent;
+    BackgroundImageScene * scene;
     QLineEdit * station;
-    int x;
-    int y;
 
   public:
-    BackgroundImageStationDialog( BackgroundImage * my_parent, int x0, int y0 );
+    BackgroundImageStationDialog( BackgroundImage * my_parent, 
+                                  BackgroundImageScene * scene );
 
   public slots:
     void doOK();
     
-    void doCancel() { delete this; }
+    void doCancel() 
+    { 
+      hide();
+      QString empty; // actually null
+      scene->setStationName( empty );
+    }
 };
 
 /** dialog to edit the station names
@@ -257,17 +209,23 @@ class BackgroundImageEditStationDialog : public QDialog
   Q_OBJECT
   private:
     BackgroundImage * parent;
+    BackgroundImageScene * scene;
     BackgroundImageStation * station;
     QLineEdit * st_name;
     QCheckBox * remove;
 
   public:
-    BackgroundImageEditStationDialog( BackgroundImage * my_parent, BackgroundImageStation * st );
+    BackgroundImageEditStationDialog( BackgroundImage * my_parent,
+                                      BackgroundImageScene * my_scene,
+                                      BackgroundImageStation * st );
 
   public slots:
     void doOK();
     
-    void doCancel() { delete this; }
+    void doCancel() 
+    {
+      hide();
+    }
 };
 
 #endif

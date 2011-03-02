@@ -28,14 +28,14 @@ struct DBlocklet
   double compass;
   double clino;
   double roll;       //!< roll
-  DBlocklet * next;
+  DBlocklet * next_blocklet;
 
     DBlocklet( double d, double b, double c, double r )
       : distance( d )
       , compass( b )
       , clino( c )
       , roll( r )
-      , next( NULL )
+      , next_blocklet( NULL )
     { 
       DBG_CHECK("new blocklet D: %.2f B: %.2f C: %.2f R %.2f\n", d, b, c, r );
     }
@@ -43,17 +43,17 @@ struct DBlocklet
     /** get the next blocklet on the list
      * @return the next blocklet (or NULL)
      */
-    DBlocklet * Next() { return next; }
+    DBlocklet * next() { return next_blocklet; }
 
     /** link a blocklet to the end of the list
      * @param blk blocklet to link to (may be NULL)
      */
-    void Link( DBlocklet * blk )
+    void link( DBlocklet * blk )
     {
       if ( blk ) {
         DBlocklet * b = this;
-        while ( b->next ) b=b->next;
-        b->next = blk;
+        while ( b->next_blocklet ) b=b->next_blocklet;
+        b->next_blocklet = blk;
       }
     }
 
@@ -69,6 +69,8 @@ struct LRUD
   double up;
   double down;
 
+  /** Default cstr: set all dimensions to 0.0
+   */
   LRUD( )
     : left( 0.0 )
     , right( 0.0 )
@@ -76,6 +78,12 @@ struct LRUD
     , down( 0.0 )
   { }
 
+  /** constructor
+   * @param l   left dimension
+   * @param r   right dimension
+   * @param u   up dimension
+   * @param d   down dimension
+   */
   LRUD( double l, double r, double u, double d )
     : left( l )
     , right( r )
@@ -83,6 +91,12 @@ struct LRUD
     , down( d )
   { }
 
+  /** Set the LURD dimensions values
+   * @param l   left dimension
+   * @param r   right dimension
+   * @param u   up dimension
+   * @param d   down dimension
+   */
   void Set( double l, double r, double u, double d )
   {
     left = l;
@@ -91,6 +105,9 @@ struct LRUD
     down = d;
   }
 
+  /** Merge with another LRUD: the values become the averages of the two LRUD
+   * @param lrud   the other LRUD
+   */
   void Merge( const LRUD * lrud )
   {
     if ( lrud == NULL ) return;
@@ -112,8 +129,8 @@ class DBlock
   friend class DataList;
 
   private:
-    std::string from;       //!< FROM station name
-    std::string to;         //!< TO station name
+    std::string from_station;  //!< FROM station name
+    std::string to_station;    //!< TO station name
     std::string comment;    //!< shot comment
     double distance;        //!< tape [meters]
     double compass;         //!< azimuth [degrees]
@@ -129,7 +146,7 @@ class DBlock
     LRUD * lrud_from;       //!< optional LRUD data
     LRUD * lrud_to;         //!< optional LRUD data
 #endif
-    DBlock * next;
+    DBlock * next_block;
 
   public:
   
@@ -160,10 +177,10 @@ class DBlock
     , lrud_from( NULL )
     , lrud_to( NULL )
 #endif
-    , next( NULL )
+    , next_block( NULL )
   {
-    setFrom( f );
-    setTo( t );
+    setFromStation( f );
+    setToStation( t );
     
     DBG_CHECK("new block D. %.2f B. %.2f C. %.2f R %.2f ext %d flag %d count %d\n",
               d, b, c, r, ext, flg, cnt );
@@ -173,7 +190,7 @@ class DBlock
      */
     ~DBlock()
     {
-      ClearBlocklets();
+      clearBlocklets();
       #ifdef HAS_LRUD
         if ( lrud_from ) delete lrud_from;
         if ( lrud_to ) delete lrud_to;
@@ -205,11 +222,11 @@ class DBlock
       }
     }
 
-    /** get the LRUD structure
+    /** Get the LRUD structure
+     * @param index   0: LRUD at from, 1: LRUD at to
      * @return the lrud
      */
-    LRUD * LRUD_From () { return lrud_from; }
-    LRUD * LRUD_To () { return lrud_to; }
+    LRUD * getLRUD( int index ) { return (index==0)? lrud_from: lrud_to; }
 
   private:
     /** release the LRUD to the caller 
@@ -233,14 +250,16 @@ class DBlock
   public:
     /** merge with the next block
      * @return true if merged
-     */
+     *
+     * NOTE not used
+     *
     bool mergeNext()
     {
-      if ( next == NULL ) return false;
+      if ( next_block == NULL ) return false;
       if ( count == 1 ) {
         blocklet = new DBlocklet( distance, compass, clino, roll );
       }
-      DBlock * n = next;
+      DBlock * n = next_block;
       size_t cn = n->count;
       size_t c2 = count + cn;
       distance  = ( count * distance + cn * n->distance )/c2;
@@ -259,9 +278,9 @@ class DBlock
       DBlocklet * b = blocklet;
       while ( b->Next() ) b=b->Next();
       if ( cn == 1 ) {
-        b->next = new DBlocklet( n->distance, n->compass, n->clino, n->roll );
+        b->next_blocklet = new DBlocklet( n->distance, n->compass, n->clino, n->roll );
       } else {
-        b->next = n->blocklet;
+        b->next_blocklet = n->blocklet;
       }
       #ifdef HAS_LRUD
         LRUD * lrud = n->ReleaseLRUD( true );
@@ -279,28 +298,31 @@ class DBlock
           lrud_to = lrud;
         }
       #endif
-      next = n->next;
+      next_block = n->next_block;
       delete n;
       return true;
     }
+    */
 
   /** split the block in the component blocklets
-   */
+   *
+   * NOTE not used
+   *
   bool split()
   {
     DBG_CHECK("DBlock::split() count %d \n", count );
     if ( count == 1 ) return false;
     DBlocklet * b = blocklet->Next();
-    DBlock * n  = next;
+    DBlock * n  = next_block;
     DBlock * b1 = this;
     while ( b ) {
-      b1->next = new DBlock( "", "",
+      b1->next_block = new DBlock( "", "",
                              b->distance, b->compass, b->clino, b->roll, 
                              extend, flag, 1 );
       b1 = b1->next;
       b  = b->next;
     }
-    b1->next = n;
+    b1->next_block = n;
     distance = blocklet->distance;
     compass  = blocklet->compass;
     clino    = blocklet->clino;
@@ -313,6 +335,7 @@ class DBlock
     }
     return true;
   }
+   */
     
 
   /** renumber from the following block
@@ -320,21 +343,21 @@ class DBlock
    */
   void renumber()
   {
-    size_t size = from.size();
-    size_t size_to = to.size();
+    size_t size = from_station.size();
+    size_t size_to = to_station.size();
     if ( size == 0 || size_to == 0 ) {
       return;
     }
-    if ( to.size() > size ) size = to.size();
+    if ( to_station.size() > size ) size = to_station.size();
     size += 8;
     char * from0 = (char *)malloc( size );
     char * to0   = (char *)malloc( size );
     char * tmp   = (char *)malloc( size );
-    strcpy( from0, from.c_str() );
-    strcpy( to0,   to.c_str() );
-    for ( DBlock * b = next; b; b=b->next ) {
-      if ( b->to.size() == 0 ) {
-        b->from = from0;
+    strcpy( from0, from_station.c_str() );
+    strcpy( to0,   to_station.c_str() );
+    for ( DBlock * b = next_block; b; b=b->next_block ) {
+      if ( b->to_station.size() == 0 ) {
+        b->from_station = from0;
       } else {
         int f=0, t=0;
         char * cf = from0;
@@ -367,8 +390,8 @@ class DBlock
         } else {
           sprintf(ct, "%d", t);
         }
-        b->from = from0;
-        b->to = to0;
+        b->from_station = from0;
+        b->to_station = to0;
       }
     }
     free( from0 );
@@ -387,19 +410,19 @@ class DBlock
       blocklet = blk;
     } else {
       DBlocklet * blk_prev = blocklet;
-      while ( blk_prev->next ) blk_prev = blk_prev->next;
-      blk_prev->next = blk;
+      while ( blk_prev->next_blocklet ) blk_prev = blk_prev->next_blocklet;
+      blk_prev->next_blocklet = blk;
     }
   }
 
   /** clear the list of blocklets (and delete them)
    */
-  void ClearBlocklets()
+  void clearBlocklets()
   {
     DBlocklet * blk = blocklet;
     DBlocklet * blk_next;
     while ( blk ) {
-      blk_next = blk->next;
+      blk_next = blk->next_blocklet;
       delete blk;
       blk = blk_next;
     }
@@ -415,43 +438,43 @@ class DBlock
     int evalNeedPaint()
     {
       need_paint = 0;
-      if ( from.size() > 0 ) need_paint += 1;
-      if ( to.size() > 0 ) need_paint += 2;
+      if ( from_station.size() > 0 ) need_paint += 1;
+      if ( to_station.size() > 0 ) need_paint += 2;
       return need_paint;
     }
 
-    int NeedPaint() const { return need_paint; }
+    int needPaint() const { return need_paint; }
 
     void setNeedPaint( int np ) { need_paint = np; }
 
     /** check if this shot is splay
      * @return true if the sjpt is splay or not-used
      */
-    bool isSplay() { return to.size() == 0 || from.size() == 0; }
+    bool isSplay() { return to_station.size() == 0 || from_station.size() == 0; }
  
-    bool hasNoStation() { return to.size() == 0 && from.size() == 0; }
+    bool hasNoStation() { return to_station.size() == 0 && from_station.size() == 0; }
 
-    bool hasFrom() const { return from.size() != 0; }
+    bool hasFromStation() const { return from_station.size() != 0; }
 
-    bool hasTo() const { return to.size() != 0; }
+    bool hasToStation() const { return to_station.size() != 0; }
 
-    bool hasFrom( const char * f ) const { return from == f; }
+    bool hasFromStation( const char * f ) const { return from_station == f; }
 
-    bool hasFrom( const std::string & f ) const { return from == f; }
+    bool hasFromStation( const std::string & f ) const { return from_station == f; }
 
-    bool hasTo( const char * t ) const { return to == t; }
+    bool hasToStation( const char * t ) const { return to_station == t; }
 
-    bool hasTo( const std::string & t ) const { return to == t; }
+    bool hasToStation( const std::string & t ) const { return to_station == t; }
 
     /** swaps stations
      * @return true if the two stations have been exchanged
      */
     bool swapStations()
     {
-      if ( to.size() > 0 && from.size() > 0 ) {
-        std::string tmp = to;
-        to = from;
-        from = tmp;
+      if ( to_station.size() > 0 && from_station.size() > 0 ) {
+        std::string tmp = to_station;
+        to_station = from_station;
+        from_station = tmp;
         return true;
       }
       return false;
@@ -460,14 +483,19 @@ class DBlock
   // ---------------------------------------------------
   // ACCESSORS
 
-    const char * From() const { return from.c_str(); }
+    bool hasSameStations( DBlock * b ) 
+    {
+      return from_station == b->from_station && to_station == b->to_station;
+    }
+
+    const char * fromStation() const { return from_station.c_str(); }
   
-    const char * To() const { return to.c_str(); }
+    const char * toStation() const { return to_station.c_str(); }
  
     /** accessor to the shot comment
      * @return the shot comment
      */
-    const char * Comment() const { return comment.c_str(); }
+    const char * getComment() const { return comment.c_str(); }
 
     bool hasComment() const { return comment.size() > 0; }
 
@@ -479,10 +507,10 @@ class DBlock
     unsigned char Extended() const { return extended; }
     unsigned char Flag() const { return flag; }
 
-    DBlock * Next() { return next; }
+    DBlock * next() { return next_block; }
 
-    DBlocklet * Blocklets() { return blocklet; }
-    int NrBlocklets() const { return count; }
+    DBlocklet * getBlocklets() { return blocklet; }
+    int nrBlocklets() const { return count; }
 
   // ---------------------------------------------------
   // modifiers
@@ -490,15 +518,15 @@ class DBlock
     /** set the name of the FROM station
      * @param f  new name of FROM
      */
-    void setFrom( const char * f )
+    void setFromStation( const char * f )
     {
       if ( f && strlen(f) > 0 ) {
         while ( f && *f != 0 && isspace( *f ) ) ++f;
         const char * ch = f + strlen(f);
         while ( ch > f && isspace( *(ch-1) ) ) --ch;
         if ( ch > f ) {
-          from = f;
-          from.resize( ch - f );
+          from_station = f;
+          from_station.resize( ch - f );
         }
       }
     }
@@ -506,15 +534,15 @@ class DBlock
     /** set the name of the TO station
      * @param t  new name of TO
      */
-    void setTo( const char * t )
+    void setToStation( const char * t )
     {
       if ( t && strlen(t) > 0 ) {
         while ( t && *t != 0 && isspace( *t ) ) ++t;
         const char * ch = t + strlen(t);
         while ( ch > t && isspace( *(ch-1) ) ) --ch;
         if ( ch > t ) {
-          to = t;
-          to.resize( ch - t );
+          to_station = t;
+          to_station.resize( ch - t );
         }
       }
     }
@@ -525,8 +553,8 @@ class DBlock
      */
     void setStations( const char * f, const char * t = NULL )
     {
-      setFrom( f );
-      setTo( t );
+      setFromStation( f );
+      setToStation( t );
     }
 
     /** accessor: modify the shot comment
@@ -543,6 +571,10 @@ class DBlock
     void setExtended( unsigned char e ) { extended = e; }
 
     void setFlag( unsigned char f ) { flag = f; }
+
+    void setDistance( double d ) { distance = d; }
+    void setCompass( double b ) { compass = b; }
+    void setClino( double c ) { clino = c; }
 
 };
 

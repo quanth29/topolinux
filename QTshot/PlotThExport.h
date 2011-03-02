@@ -16,43 +16,46 @@
 // #include <qstring.h>
 
 class Datalist; // forward
-class PlotStatus;
+struct PlotStatus;
 
 
-class PlotThExport
+namespace PlotThExport
 {
-  public:
-    static const char * ThPointName[];
-    static const char * ThLineName[];
+  // private:
+    // static int scrap_count;  //!< global scrap counter
 
-  private:
-    static int scrap_count;  //!< global scrap counter
-
-    std::string th2FileName;   //!< th2 file name (for saving)
-    int scrap_nr;           //!< scrap count nr. for this plot
-    std::string scrap_name; //!< name of the scrap (not save in the status)
+    // std::string th2FileName;   //!< th2 file name (for saving)
+    // int scrap_nr;              //!< scrap count nr. for this plot
+    // std::string scrap_name;    //!< name of the scrap (not save in the status)
 
 
-  public:
-    PlotThExport()
-      : scrap_nr ( ++scrap_count )
-      , scrap_name( "scrap" )
-    { }
+  // public:
+    // PlotThExport()
+      // : scrap_nr ( ++scrap_count )
+      // : scrap_name( "scrap" )
+    // { }
 
-    void setFilename( const char * filename ) { th2FileName = filename; }
+    // void setFileName( const char * filename ) { th2FileName = filename; }
 
-    const char * getFilename() const { return th2FileName.c_str(); }
+    // const char * getFileName() const { return th2FileName.c_str(); }
 
-    const char * getScrapname() const { return scrap_name.c_str(); }
+    // const char * getScrapName() const { return scrap_name.c_str(); }
 
-    void setScrapname( const char * name ) { scrap_name = name; }
+    // void setScrapName( const char * name ) 
+    // { 
+    //   scrap_name = name; 
+    //   th2FileName = name;
+    //   th2FileName += ".th2";
+    //   // FIXME scrap_name.replace( " ", "" );
+    // }
 
-    int getScrapNr() const { return scrap_nr; }
+    // int getScrapNr() const { return scrap_nr; }
 
     /** export the plot data as therion th2 file
      */
     void exportTherion( const char * proj, PlotStatus * status, DataList * list );
 
+    void exportImage( PlotStatus * status, DataList * list );
 
 };
 

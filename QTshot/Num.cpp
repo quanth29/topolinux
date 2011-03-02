@@ -22,11 +22,11 @@
 #include "ArgCheck.h"
 
 
-#define NEW_PT(PT) ((PT) = (point_t *)malloc(sizeof(point_t)))
-#define NEW_MS(MS) ((MS) = (measure_t *)malloc(sizeof(measure_t)))
-#define NEW_LP(LP) ((LP) = (loop_t *)malloc(sizeof(loop_t)))
-#define NEW_BR(BR) ((BR) = (branch_t *)malloc(sizeof(branch_t)))
-#define NEW_HM(HM) ((HM) = (homotopy_t *)malloc(sizeof(homotopy_t)))
+#define NEW_PT(PT) ((PT) = (NumPoint *)malloc(sizeof(NumPoint)))
+#define NEW_MS(MS) ((MS) = (NumMeasure *)malloc(sizeof(NumMeasure)))
+#define NEW_LP(LP) ((LP) = (NumLoop *)malloc(sizeof(NumLoop)))
+#define NEW_BR(BR) ((BR) = (NumBranch *)malloc(sizeof(NumBranch)))
+#define NEW_HM(HM) ((HM) = (NumHomotopy *)malloc(sizeof(NumHomotopy)))
 
 /*
 double Vmin,Vmax,Vmed,Vdif,
@@ -49,7 +49,7 @@ Num::Num()
 
 Num::~Num()
 {
-  ClearLists();
+  clearLists();
 }
 
 /* ----------------------------------------------------------------- */
@@ -95,35 +95,35 @@ void RECT_POLAR(double V, double N, double E, double * D, double * I, double * A
 
 /* ----------------------------------------------------------------- */
 void 
-Num::ClearLists()
+Num::clearLists()
 {
   while ( pt00 ) {
-    point_t * pt1 = pt00->next;
+    NumPoint * pt1 = pt00->next;
     free( pt00 );
     pt00 = pt1;
   }
 
   while ( ms00 ) {
-    measure_t * ms1 = ms00->next;
+    NumMeasure * ms1 = ms00->next;
     free( ms00 );
     ms00 = ms1;
   }
   ms20 = NULL;
 
   while ( br00 ) {
-    branch_t * br1 = br00->next;
+    NumBranch * br1 = br00->next;
     free( br00 );
     br00 = br1;
   }
 
   while ( hm00 ) {
-    loop_t * lp1 = hm00->lp;
+    NumLoop * lp1 = hm00->lp;
     while ( lp1 ) {
-      loop_t * lp2 = lp1->next;
+      NumLoop * lp2 = lp1->next;
       free( lp1 );
       lp1 = lp2;
     } 
-    homotopy_t * hm1 = hm00->next;
+    NumHomotopy * hm1 = hm00->next;
     free( hm00 );
     hm00 = hm1;
   }
@@ -135,7 +135,7 @@ Num::ClearLists()
 #if 0
 int FIND_BBOX()        /* Trova i limiti dei punti (in mm.) per      */
 {                      /* centrare il disegno.                       */
-  point_t *pt1;
+  NumPoint *pt1;
 
   Vmin = Vmax = pt00->V;
   Hmin = Hmax = pt00->H;
@@ -156,13 +156,13 @@ int FIND_BBOX()        /* Trova i limiti dei punti (in mm.) per      */
 }
 #endif
 /* ================================================================= */
-point_t * 
-Num::SecondPoint( measure_t * ms, point_t * pt )
+NumPoint * 
+Num::secondPoint( NumMeasure * ms, NumPoint * pt )
 {
-  ARG_CHECK( ms == NULL, NULL );
+  // ARG_CHECK( ms == NULL, NULL );
   ARG_CHECK( pt == NULL, NULL );
   
-  point_t *pt1, *pt2;
+  NumPoint *pt1, *pt2;
   if (ms == NULL) return(NULL);
   pt1 = ms->pt1;
   pt2 = ms->pt2;
@@ -171,13 +171,13 @@ Num::SecondPoint( measure_t * ms, point_t * pt )
   return NULL;
 }
 /* ----------------------------------------------------------------- */
-measure_t * 
-Num::SecondMeasure( point_t * pt, measure_t * ms)
+NumMeasure * 
+Num::secondMeasure( NumPoint * pt, NumMeasure * ms)
 {
   ARG_CHECK( pt == NULL, NULL );
   ARG_CHECK( ms == NULL, NULL );
   
-  measure_t *ms1, *ms2;
+  NumMeasure *ms1, *ms2;
   if (pt == NULL) return(NULL);
   ms1 = pt->ms[0];
   ms2 = pt->ms[1];
@@ -188,11 +188,11 @@ Num::SecondMeasure( point_t * pt, measure_t * ms)
 /* ----------------------------------------------------------------- */
 /* ----------------------------------------------------------------- */
 int 
-Num::AdjustHomotopy( homotopy_t * hm )
+Num::adjustHomotopy( NumHomotopy * hm )
 {
   ARG_CHECK( hm == NULL, 0 );
   
-  loop_t *lp1;
+  NumLoop *lp1;
   double V,N,E, V1,N1,E1, D,I,A;
 
   // printf("AdjustHomotopy \n");
@@ -228,72 +228,72 @@ Num::AdjustHomotopy( homotopy_t * hm )
 }
 /* ----------------------------------------------------------------- */
 void 
-Num::MakeHomotopy()
+Num::makeHomotopy()
 {
   int flag=1;
-  homotopy_t *hm1;
+  NumHomotopy *hm1;
   while (flag) {
     flag=0;
     for (hm1=hm00; hm1!=NULL; hm1=hm1->next) 
-      if (AdjustHomotopy(hm1)) flag=1;
+      if (adjustHomotopy(hm1)) flag=1;
   }
 }
 /* ================================================================= */
-measure_t * 
-Num::NextMeasure( loop_t * lp, measure_t * ms )
+NumMeasure * 
+Num::nextMeasure( NumLoop * lp, NumMeasure * ms )
 {
   ARG_CHECK( lp == NULL, NULL );
   ARG_CHECK( ms == NULL, NULL );
 
-  measure_t * ms1;
-  point_t   * pt1;
+  NumMeasure * ms1;
+  NumPoint   * pt1;
   pt1=lp->pt;
   if (lp->br) { 
     if ( lp->nms == lp->br->nms ) 
       return NULL;
     ms1 = (lp->br->ms)[ lp->nms ];
-    while ( SecondPoint(ms1,lp->pt) == (lp->prev)->pt) {
+    while ( secondPoint(ms1,lp->pt) == (lp->prev)->pt) {
       ++ lp->nms;
       if ( lp->nms == lp->br->nms ) 
         return NULL;
       ms1 = (lp->br->ms)[ lp->nms ];
     }
   } else {
-    ms1 = SecondMeasure(pt1,ms);
+    ms1 = secondMeasure(pt1,ms);
   }
   return(ms1);
 }
 /* ----------------------------------------------------------------- */
-measure_t * 
-Num::LoopMeasure( loop_t * lp )
+NumMeasure * 
+Num::loopMeasure( NumLoop * lp )
 {
   ARG_CHECK( lp == NULL, NULL );
 
-  measure_t *ms1;
+  NumMeasure * ms1 = NULL;
   if (lp->br) {
-    if ( lp->nms == lp->br->nms ) {
-      ms1 = NULL;
-    } else {
+    if ( lp->nms != lp->br->nms ) {
       ms1 = (lp->br->ms)[ lp->nms ];
+      // printf("LoopMeasure branch %s nms %d/%d ms1 %s %s\n",
+      //   lp->pt->tag, lp->nms, lp->br->nms, ms1->tag1, ms1->tag2 );
     }
-    // printf("LoopMeasure branch %s nms %d/%d ms1 %s %s\n",
-    //   lp->pt->tag, lp->nms, lp->br->nms, ms1->tag1, ms1->tag2 );
   } else {
-    ms1 = lp->pt->ms[ lp->nms ];
-    // printf("LoopMeasure point  %s nms %d ms1 %s %s\n",
-    //   lp->pt->tag, lp->nms, ms1->tag1, ms1->tag2 );
+    if ( lp->nms < lp->pt->nms ) {
+      ms1 = lp->pt->ms[ lp->nms ];
+      // printf("LoopMeasure point  %s nms %d ms1 %s %s\n",
+      //   lp->pt->tag, lp->nms, ms1->tag1, ms1->tag2 );
+    }
   }
   lp->ms = ms1;
   return(ms1);
 }
 /* ----------------------------------------------------------------- */
-loop_t * 
-Num::IsInLoop( point_t * pt, loop_t * lp )
+NumLoop * 
+Num::isInLoop( NumPoint * pt, NumLoop * lp )
 {
   ARG_CHECK( pt == NULL, NULL );
   ARG_CHECK( lp == NULL, NULL );
 
-  loop_t *lp1;
+  NumLoop *lp1;
   for (lp1=lp; lp1!=NULL; lp1=lp1->next)
     if (lp1->pt == pt) 
       return lp1;
@@ -301,14 +301,14 @@ Num::IsInLoop( point_t * pt, loop_t * lp )
 }
 /* ----------------------------------------------------------------- */
 void 
-Num::BranchNrMeasures( loop_t * lp )
+Num::branchNrMeasures( NumLoop * lp )
 { 
   ARG_CHECK( lp == NULL, );
 
   // if ( (lp->nms <= lp->br->nms) &&
   if ( (lp->nms < lp->br->nms) &&
        (lp->prev != NULL) &&
-       (SecondPoint( (lp->br->ms)[lp->nms], lp->pt ) ) )
+       (secondPoint( (lp->br->ms)[lp->nms], lp->pt ) == NULL ) )
        // FIXME original has: SECOND_PT(lp->br->ms+lp->nms, lp->pt)
      ++ lp->nms;
   // printf("after BranchNrMeasures %s nms %d/%d\n", 
@@ -316,21 +316,23 @@ Num::BranchNrMeasures( loop_t * lp )
 }
 /* ----------------------------------------------------------------- */
 void 
-Num::MakeLoop( point_t * pt2, point_t * pt1, measure_t * ms1)
+Num::makeLoop( NumPoint * pt2, NumPoint * pt1, NumMeasure * ms1)
 {
   ARG_CHECK( pt2 == NULL, );
   ARG_CHECK( pt1 == NULL, );
   ARG_CHECK( ms1 == NULL, );
 
-  point_t    *pt3, *pt4;
-  loop_t     *lp0, *lp2, *lp3, *lp4;
-  measure_t  *ms3; // , *ms4;
-  homotopy_t *hm1;
+
+  NumPoint    *pt3, *pt4;
+  NumLoop     *lp0, *lp2, *lp3, *lp4;
+  NumMeasure  *ms3; // , *ms4;
+  NumHomotopy *hm1;
   double     x;
   int forward = 1;
 
-  // printf("MakeLoop at %s %s ms %s %s \n",
-  //   pt2->tag, pt1->tag, ms1->tag1, ms1->tag2 );
+  // printf("MakeLoop at %s %s ms %s %s \n", pt2->tag, pt1->tag, ms1->tag1, ms1->tag2 );
+  // PrintPoints();
+  // { int i; scanf("%d", &i ); }
 
   NEW_LP(lp0);
   lp3 = lp0;
@@ -339,43 +341,56 @@ Num::MakeLoop( point_t * pt2, point_t * pt1, measure_t * ms1)
   lp3->br = pt2->br;
 
   lp3->nms = 0; // using measure nr. 0
-  ms3 = LoopMeasure(lp3);
+  ms3 = loopMeasure(lp3);
   // start from pt2 and try to get to pt1 following ms3
   while (pt3 != pt1) {
-    pt4 = SecondPoint(ms3,pt3);
-    // printf("  point %s \n", pt4 ? pt4->tag : "NULL" );
+    pt4 = secondPoint(ms3,pt3);
+    // printf("  next point %s \n", pt4 ? pt4->tag : "NULL" );
 
     if (pt4 == NULL) {
+      // printf("  NULL pt4: backtracing ...\n");
       while ((lp3!=lp0) && ((lp3->br==NULL) || (lp3->nms >= lp3->br->nms)) ) {
         lp4=lp3->prev; // backtrace
         free(lp3);
         lp3=lp4;
         lp3->next = NULL;
         ++ lp3->nms;
-        if (lp3->br) BranchNrMeasures(lp3);
+        if (lp3->br) branchNrMeasures(lp3);
+        // printf("  ... back to %s (nms %d) br->nms %d \n",
+        //   lp3 ? lp3->pt->tag : NULL,
+        //   lp3->nms,
+        //   lp3->br ? lp3->br->nms : 0  );
       }
       pt3 = lp3->pt;
-      ms3 = LoopMeasure(lp3);
-    } else if ( (lp2=IsInLoop(pt4,lp0)) != NULL ) {
+      // printf("  branched back to %s \n", pt3->tag );
+      ms3 = loopMeasure(lp3);
+      // { int i; scanf("%d", &i ); }
+    } else if ( (lp2 = isInLoop(pt4,lp0)) != NULL ) {
+      // printf("  lp2 %s is in loop %s - %s back to lp2\n", lp2->pt->tag, pt4->tag, lp0->pt->tag );
       ++ lp3->nms;
-      if (lp3->br) BranchNrMeasures(lp3);
+      if (lp3->br) branchNrMeasures(lp3);
       while ((lp3!=lp2) && ((lp3->br==NULL) || (lp3->nms >= lp3->br->nms)) ) {
-        lp4=lp3->prev;
+        lp4 = lp3->prev;
         free(lp3);
-        lp3=lp4;
+        lp3 = lp4;
         lp3->next = NULL;
         ++ lp3->nms;
-        if (lp3->br) BranchNrMeasures(lp3);
+        // printf("  ... back to %s\n", lp3 ? lp3->pt->tag : NULL );
+        if (lp3->br) branchNrMeasures(lp3);
       }
       pt3 = lp3->pt;
-      ms3 = LoopMeasure(lp3);
+      // printf("  point is in loop lp0: go to %s \n", pt3->tag );
+      ms3 = loopMeasure(lp3);
+      // { int i; scanf("%d", &i ); }
     } else {
       NEW_LP(lp4);
-      lp3->next=lp4; lp4->next=NULL; lp4->prev=lp3; lp3=lp4;
-      lp3->pt=pt3=pt4;
-      lp3->br=pt3->br;
+      lp3->next = lp4; lp4->next = NULL; lp4->prev = lp3;
+      lp3 = lp4;
+      lp3->pt = pt3 = pt4;
+      lp3->br = pt3->br;
       lp3->nms = 0;
-      if (pt4!=pt1) lp3->ms=ms3=NextMeasure(lp3,ms3);
+      // printf("  new loop point at %s \n", pt4->tag );
+      if (pt4 != pt1) lp3->ms=ms3=nextMeasure(lp3,ms3);
     }
   }
 
@@ -410,12 +425,12 @@ Num::MakeLoop( point_t * pt2, point_t * pt1, measure_t * ms1)
 }
 /* ================================================================= */
 void 
-Num::MakeBranch( point_t * pt, measure_t * ms )
+Num::makeBranch( NumPoint * pt, NumMeasure * ms )
 {
   ARG_CHECK( pt == NULL, );
   ARG_CHECK( ms == NULL, );
 
-  branch_t *br2;
+  NumBranch *br2;
 
   // printf("MakeBranch at %s \n", pt->tag );
   if ( (br2=pt->br) == NULL) {
@@ -425,11 +440,11 @@ Num::MakeBranch( point_t * pt, measure_t * ms )
     br2->nms = pt->nms;
     br2->pt  = pt;
     pt->br   = br2;
-    br2->ms  = (measure_t **)malloc((br2->nms)*sizeof(measure_t *));
+    br2->ms  = (NumMeasure **)malloc((br2->nms)*sizeof(NumMeasure *));
     (br2->ms)[0]   = pt->ms[0];
     (br2->ms)[1]   = pt->ms[1];
   } else {
-    br2->ms  = (measure_t **)realloc(br2->ms,(br2->nms+1)*sizeof(measure_t *));
+    br2->ms  = (NumMeasure **)realloc(br2->ms,(br2->nms+1)*sizeof(NumMeasure *));
   }
   (br2->ms)[br2->nms] = ms;
   ++ br2->nms;
@@ -443,12 +458,12 @@ Num::MakeBranch( point_t * pt, measure_t * ms )
   */
 }            
 /* ================================================================= */
-point_t * 
-Num::CheckPoint( const char * tag )
+NumPoint * 
+Num::checkPoint( const char * tag )
 { 
   ARG_CHECK( tag == NULL, NULL );
 
-  point_t *pt1;
+  NumPoint *pt1;
   for ( pt1=pt00; pt1!=NULL; pt1=pt1->next) {
     if ( strcmp(pt1->tag,tag) == 0 ) return pt1;
   }
@@ -456,9 +471,9 @@ Num::CheckPoint( const char * tag )
 }
 /* ----------------------------------------------------------------- */
 void 
-Num::ResetMeasures()
+Num::resetMeasures()
 { 
-  measure_t *ms1;
+  NumMeasure *ms1;
   for (ms1=ms00; ms1!=NULL; ms1=ms1->next) {
     // ms1->next=ms1->nest;
     // ms1->prev=ms1->prew;
@@ -469,14 +484,14 @@ Num::ResetMeasures()
 /* Crea il punto pt3 a partire dal punto pt1, con misura ms1.
  * Assegna i punti pt1 e pt3 alla misura ms1. 
  */
-point_t * 
-Num::MakePoint(point_t * ptlast, point_t * pt1, measure_t *ms1, int sign)
+NumPoint * 
+Num::makePoint(NumPoint * ptlast, NumPoint * pt1, NumMeasure *ms1, int sign)
 {
   ARG_CHECK( ptlast == NULL, NULL );
   ARG_CHECK( pt1 == NULL, NULL );
   ARG_CHECK( ms1 == NULL, NULL );
 
-  point_t *pt2;
+  NumPoint *pt2;
 
   // printf("MakePoint from %s with ms %s %s %.2f %.2f %.2f (sign %d)\n",
   //   pt1->tag, ms1->tag1, ms1->tag2, ms1->dist, ms1->nord, ms1->incl, sign );
@@ -494,7 +509,7 @@ Num::MakePoint(point_t * ptlast, point_t * pt1, measure_t *ms1, int sign)
   pt2->set=0;
 
   // add measure to point-1
-  if (pt1->nms > 1)  MakeBranch(pt1,ms1);
+  if (pt1->nms > 1)  makeBranch(pt1,ms1);
   else               pt1->ms[pt1->nms] = ms1;
   pt1->nms++;
 
@@ -509,12 +524,12 @@ Num::MakePoint(point_t * ptlast, point_t * pt1, measure_t *ms1, int sign)
 }
 /* ----------------------------------------------------------------- */
 int 
-Num::MakePoints( int i_lp, const char * fix_point )      /* Crea la lista dei punti:       */
+Num::makePoints( int i_lp, const char * fix_point )      /* Crea la lista dei punti:       */
 {                                  /* pt00 e` il primo punto,        */
-  point_t * pt1;
-  point_t * pt2;
-  point_t * ptlast;           
-  measure_t *ms0;
+  NumPoint * pt1;
+  NumPoint * pt2;
+  NumPoint * ptlast;           
+  NumMeasure *ms0;
   int added = 1;
   int pt_cnt = 1;
 
@@ -539,25 +554,26 @@ Num::MakePoints( int i_lp, const char * fix_point )      /* Crea la lista dei pu
   ptlast = pt00;
 
   added = 1;
-  ResetMeasures();
+  resetMeasures();
   while (added == 1) {
     // printf("MakePoints pts %d lp %d ms %d \n", pt_cnt, i_lp, measure_number );
     added = 0;
     for (ms0 = ms00; ms0!=NULL; ms0=ms0->next ) {
       if ( ms0->used == 1) continue;
-      pt1 = CheckPoint(ms0->tag1);
-      pt2 = CheckPoint(ms0->tag2);
+      pt1 = checkPoint(ms0->tag1); // point with tag ms0->tag1
+      pt2 = checkPoint(ms0->tag2);
       if (pt1 != NULL && pt2 != NULL ) {
-        if (i_lp) MakeLoop(pt2,pt1,ms0);
-        else      ptlast = MakePoint(ptlast,pt1,ms0,1);
+        // points pt1 and pt2 already inserted ==> make a loop
+        if (i_lp) makeLoop(pt2,pt1,ms0);
+        else      ptlast = makePoint(ptlast,pt1,ms0,1);
         ms0->used = 1;
       } else if (pt1 != NULL && pt2 == NULL ) {
-        ptlast = MakePoint(ptlast,pt1,ms0,1);
+        ptlast = makePoint(ptlast,pt1,ms0,1);
         ms0->used = 1;
         added = 1;
         ++ pt_cnt;
       } else if (pt1 == NULL && pt2 != NULL ) {
-        ptlast = MakePoint(ptlast,pt2,ms0,-1);
+        ptlast = makePoint(ptlast,pt2,ms0,-1);
         ms0->used = 1;
         added = 1;
         ++ pt_cnt;
@@ -566,15 +582,15 @@ Num::MakePoints( int i_lp, const char * fix_point )      /* Crea la lista dei pu
       }
     }
   } 
-  // ResetMeasures();
+  // resetMeasures();
   /* FIXME bug in MakeHomotopy() or used routines
    */
-  if (i_lp) MakeHomotopy();
+  if (i_lp) makeHomotopy();
   return pt_cnt;
 }
 /* ================================================================= */
 void 
-Num::SetPoint(point_t * pt3, point_t * pt1, measure_t * ms1, int sign)
+Num::setPoint(NumPoint * pt3, NumPoint * pt1, NumMeasure * ms1, int sign)
 {
   ARG_CHECK( pt3 == NULL, );
   ARG_CHECK( pt1 == NULL, );
@@ -596,9 +612,9 @@ Num::SetPoint(point_t * pt3, point_t * pt1, measure_t * ms1, int sign)
 /* ----------------------------------------------------------------- */
 #if 0
 void 
-Num::RescalePoints()
+Num::rescalePoints()
 { 
-  point_t *pt1;
+  NumPoint *pt1;
 
   for (pt1=pt00; pt1!=NULL; pt1=pt1->next) {
       pt1->V /= scala;    pt1->H /= scala;
@@ -608,22 +624,22 @@ Num::RescalePoints()
 #endif
 /* ----------------------------------------------------------------- */
 void 
-Num::ResetPoints()
+Num::resetPoints()
 { 
-  point_t *pt1;
+  NumPoint *pt1;
   for (pt1=pt00->next; pt1!=NULL; pt1=pt1->next) pt1->set=0;
   pt00->set = 1;
 }
 /* ----------------------------------------------------------------- */
 void 
-Num::SetPoints()
+Num::setPoints()
 { 
-  // measure_t *ms0;
-  measure_t *ms1;
-  point_t   *pt1, *pt2;
+  // NumMeasure *ms0;
+  NumMeasure *ms1;
+  NumPoint   *pt1, *pt2;
   int added = 1;
 
-  ResetPoints();
+  resetPoints();
   while ( added == 1 ) {
     added = 0;
     for ( ms1=ms00; ms1!=NULL; ms1=ms1->next ) {
@@ -632,10 +648,10 @@ Num::SetPoints()
       if ( pt1 == NULL || pt2 == NULL ) 
         continue;
       if ( (pt1->set) && !(pt2->set) ) {
-        SetPoint(pt2,pt1,ms1,1);
+        setPoint(pt2,pt1,ms1,1);
         added = 1;
       } else if ( !(pt1->set) && (pt2->set) ) {
-        SetPoint(pt1,pt2,ms1,-1);
+        setPoint(pt1,pt2,ms1,-1);
         added = 1;
       } else if ( (pt1->set) && (pt2->set) ) {
         // this is a loop
@@ -653,27 +669,27 @@ Num::SetPoints()
 }
 /* ----------------------------------------------------------------- */
 void 
-Num::PrintPoint( point_t * pt )
+Num::printPoint( NumPoint * pt )
 {
   ARG_CHECK( pt == NULL, );
   printf("%s: N %.2f E %.2f V %.2f \n", pt->tag, pt->N, pt->E, pt->V );
 }
 /* ----------------------------------------------------------------- */
 void 
-Num::PrintPoints()
+Num::printPoints()
 {
-  point_t *pt1;
+  NumPoint *pt1;
   for (pt1=pt00->next; pt1!=NULL; pt1=pt1->next) {
-    PrintPoint(pt1);
+    printPoint(pt1);
   }
 }
 /* ----------------------------------------------------------------- */
-const point_t * 
-Num::GetPoint( const char * name ) const
+const NumPoint * 
+Num::getPoint( const char * name ) const
 {
   ARG_CHECK( name == NULL, NULL );
 
-  point_t * pt;
+  NumPoint * pt;
   for ( pt = pt00; pt != NULL; pt=pt->next) {
     if ( strcmp( pt->tag, name ) == 0 ) return pt;
   }
@@ -681,13 +697,16 @@ Num::GetPoint( const char * name ) const
 }
 /* ----------------------------------------------------------------- */
 void 
-Num::AddMeasure( const char * from, const char * to, 
+Num::addMeasure( const char * from, const char * to, 
                  double dist, double nord, double incl )
 {
   ARG_CHECK( from == NULL, );
   ARG_CHECK( to == NULL, );
 
-  measure_t * ms1;
+  // skip shots with Dist=0 and identical stations
+  if ( strcmp(from, to) == 0 && dist < 0.00001 ) return;
+
+  NumMeasure * ms1;
   measure_number ++;
   // printf("Add measure %d: %s %s \n", measure_number, from, to );
   NEW_MS(ms1);

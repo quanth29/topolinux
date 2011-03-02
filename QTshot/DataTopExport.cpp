@@ -9,11 +9,15 @@
  *  See the file COPYING.
  */
 #include <stdio.h>
-
+// #include <sstream>
+// 
+// #include <QFileInfo>
+// #include <QFile>
+  
+#include "shorthands.h"
 #include "DataTopExport.h"
-
-#include "Flags.h"
 #include "Extend.h"
+#include "Flags.h"
   
 bool
 saveAsPocketTopo( DataList & data,
@@ -21,14 +25,14 @@ saveAsPocketTopo( DataList & data,
                   PlotStatus * plan,
                   PlotStatus * extended )
 {
-  FILE * fp = fopen( c_info.exportName.latin1(), "w" );
+  const SurveyInfo & info = c_info.surveyInfo;
+  FILE * fp = fopen( info.exportName.TO_CHAR(), "w" );
   if ( fp == NULL ) {
-    DBG_CHECK("Failed to open file \"%s\"\n", c_info.exportName.latin1() );
+    DBG_CHECK("Failed to open file \"%s\"\n", info.exportName.TO_CHAR() );
     return false;
   }
 
 #ifdef HAS_POCKETTOPO 
-  const SurveyInfo & info = c_info.surveyInfo;
   #include "../PTopo/PTexportDL.impl"
 #else
   plan = plan;

@@ -9,12 +9,16 @@ S S
 V V
 angle_units Unita` angoli
 append_shots Aggiungi 
+area Area
 azimuth Azimuth
 azimuth+ Azimuth +
 azimuth- Azimuth -
 backward  all'indietro
 bad_file_format Tipo file non riconosciuto. Deve essere: raw o TLX.
 base_station Inizia i disegni da qui
+calib_angle Angolo imm. M
+calib_delta Errore di calibrazione
+calib_max_iter N. massimo iterazioni
 calibration_data_no_save dati di calibrazione. Fallito salvataggio in 
 calibration_data_save dati di calibrazione. Salvati in 
 cancel Cancella
@@ -24,16 +28,20 @@ clean_scrap Vuoi davvero cancellare il disegno?
 clean_shots Vuoi davvero cancellare la poligonale?
 clear Pulisci
 clino Clino
+close Chiudi
 coeff_backup Salvata precedente calibrazione su file
 comment Commento
-cover Copertura
+cover Distribuzione
+coverage Distribuzione
 cross_section Sezione
 data_download_failed Fallito scaricamento dati da DistoX
+data_transformed Dati trasformati
 date Data
-default_none Tipo di export non gestito
+declination Declinazione
 default_dat Usato file /tmp/data.plt
 default_svx Usato file /tmp/data.svx
 default_th Usato file /tmp/data.th
+default_top Usato file /tmp/data.top
 deg gradi
 delete_shot Rimuovi tiro
 delta Delta 
@@ -41,6 +49,7 @@ description Descrizione
 device Device
 distox_backup  Backup precedente calibrazione
 distox_calib DistoX in modo calibrazione
+distox_device Dispositivo DistoX
 distox_download QTopo - DistoX
 distox_mode DistoX - Modo
 distox_normal DistoX in modo normale
@@ -61,6 +70,8 @@ ext Ext
 ext_box Svilluppo:
 extended Sez. Long.
 failed_backup Fallito salvatatggio precedente calibrazione
+failed_disto Fallita connessione DistoX
+failed_mode Fallita lettura stato DistoX
 failed_open Fallita scrittura file
 failed_read Fallita lettura calibrazione dal DistoX
 failed_read_default Fallita lettura calibrazione da DistoX.
@@ -75,6 +86,7 @@ ft ft
 grad gradi
 grid Reticolo
 guess_centerline Trova capisaldi
+guess_angle Angolo di tolleranza [deg]
 help Aiuto
 help_index Vedi file help\en\index.htm
 horizontal Orizzontale
@@ -93,12 +105,18 @@ line Linea
 m m
 merge_next Unisci al seguente
 mode Modo
+mode_calib Calibrazione
+mode_compass Azimuth/Clino 
+mode_grad Gradi sess. o cent.
+mode_silent "Silent"
 name Nome
+new Nuovo
 no No
 no_export_type Tipo file non supportato
-no_saved_dat Fallita scrittura file compass
-no_saved_svx Fallita scrittura file survex
-no_saved_th Fallita scrittura file therion
+no_saved_dat Fallita scrittura file Compass
+no_saved_svx Fallita scrittura file Survex
+no_saved_th Fallita scrittura file Therion
+no_saved_top Fallita scrittura file PocketTopo
 none Nessuno
 number Caposaldi
 ok OK
@@ -112,6 +130,7 @@ orientation Orientazione
 plan Pianta
 point Punto
 prefix Prefisso caposaldi
+prefix_too_long Nome con troppi caratteri (max. 12)
 properties Commento e opzioni
 qtopo_3d QTopo - 3D
 qtopo_centerline QTopo - Poligonale
@@ -119,9 +138,11 @@ qtopo_clean_scrap QTopo - Cancella scrap
 qtopo_clean_shots QTopo - Cancella polgonale
 qtopo_comment QTopo - Rilievo
 qtopo_continuation QTopo - Continuation
-qtopo_e_line QTopo Sez. Long. - Linea 
-qtopo_e_point QTopo Sez. Long. - Punto 
-qtopo_e_select QTopo Sez. Long. - Selezione
+qtopo_cover QTopo - Distribuzione Calibr.
+qtopo_e_area - Area
+qtopo_e_line - Linea 
+qtopo_e_point - Punto 
+qtopo_e_select - 
 qtopo_edit_station QTopo - Modifica caposaldo
 qtopo_exit QTopo - Esci
 qtopo_extend QTopo - Extend
@@ -130,9 +151,10 @@ qtopo_insert_LRUD - QTopo - LRUD
 qtopo_insert_shot QTopo - Inserimento tiro
 qtopo_label QTopo - Testo
 qtopo_options QTopo - Opzioni
-qtopo_p_line QTopo Pianta - Linea 
-qtopo_p_point QTopo Pianta - Punto 
-qtopo_p_select QTopo Pianta - Selezione
+qtopo_p_area - Area
+qtopo_p_line - Linea 
+qtopo_p_point - Punto 
+qtopo_p_select - 
 qtopo_plot QTopo - Disegno
 qtopo_scrap QTopo - Scrap
 qtopo_select QTopo Disegno - Selezione
@@ -140,9 +162,11 @@ qtopo_shot QTopo - Shot
 qtopo_sketch QTopo - Schizzo
 qtopo_station QTopo - Caposaldo
 qtopo_station_comment QTopo - Commento caposaldo
-qtopo_x_line QTopo Sezione - Linea 
-qtopo_x_point QTopo Sezione - Punto 
-qtopo_x_select QTopo Sezione - Selezione
+qtopo_toggle Impostazioni DistoX
+qtopo_x_area - Area 
+qtopo_x_line - Linea 
+qtopo_x_point - Punto 
+qtopo_x_select - 
 qtopoc_calib QTopo - Calib
 qtopoc_coeff QTopo - Calibrazione
 qtopoc_comment QTopo - Descrizione
@@ -157,17 +181,15 @@ remove_station Remuovi caposaldo
 renumber Renumera
 reversed  invertita
 right Destra
+roll Roll
 save Salva come
 save_file Salva file
 save_th2 Salva file th2
-saved_dat Salvato file compass
-saved_svx Salvato file survex
-saved_th Salvato file therion
+saved_dat Salvato file Compass
+saved_svx Salvato file Survex
+saved_th Salvato file Therion
+saved_top Salvato file PocketTopo
 scrap_name Nome del disegno
-scrap_prefix_e sezione
-scrap_prefix_h orizzontale
-scrap_prefix_p pianta
-scrap_prefix_x trasversale
 select Selezione
 set Gruppo
 shot_comment QTopo - Tiro
@@ -181,12 +203,14 @@ splay Laterali
 splay_shots Laterali al caposaldo
 split Dividi
 station Caposaldo
+status_mode Impostazione DistoX
 surface tiro di superficie
 survey_commands Comandi di rilievo
 survey_info QTopo - Informazioni rilievo
 swap_from_to Scambia capisaldi
 tape Distanza
 team Squadra
+thconfig Crea thconfig
 title Titolo
 tlx_read_failed Fallita lettura file TLX
 to A
@@ -196,14 +220,14 @@ too_few_data Insufficenti dati di calibrazione. Minimo 16
 undo Disfa
 up Su`
 vertical Verticale
+warning Attenzione!
+warn_null_block Attenzione! Tiro inesistente.
 warn_scrap ATTENZIONE. Il disegno ha meno di due punti di controllo
 what_do Cosa vuoi fare?
 write Scrivi
 write_LRUD Scrivi le trasversali
 write_no Calibrazione NON scritta su DistoX
 write_ok Scritta calibrazione su DistoX
-written Scritti
-x-section Sezione
 yes Si'
 zero_data Nessun dato di calibrazione.
 zoom_in Zoom in

@@ -11,11 +11,12 @@
 #ifndef PLOT_SCALE_H
 #define PLOT_SCALE_H
 
-#define SCALE 10
-#define PT_FACTOR 4     // PocketTopo drawings seems to be scaled by 4/10
-#define TH_FACTOR 5.0   // therion scrap export factor
+#define PLOT_SCALE    4
+#define BASE_SCALE   10
+#define PT_FACTOR     4   // PocketTopo drawings seems to be scaled by 4/10
+#define TH_FACTOR   5.0   // therion scrap export factor
 
-#define PT_SCALE ((PT_FACTOR * SCALE))
+#define PT_SCALE ((PT_FACTOR * BASE_SCALE))
 
 #endif
 

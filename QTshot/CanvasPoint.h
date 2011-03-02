@@ -22,54 +22,8 @@
 #include "ArgCheck.h"
 #include "Extend.h"
 #include "CanvasSegment.h"
+#include "CanvasExtend.h"
 
-
-/** difference between two angles in [0, 360)
- * @param a1 first angle
- * @param a2 second angle
- * @return the difference angle: a1 - a2
- */
-double difference( double a1, double a2 );
-
-/** A canvas extend is a value of "extend" associated to an interval
- * of angular directions. As the CanvasExtends are used only in arrays,
- * ordered around the circle, it is enough to record only the start angle
- * of the interval, the end angle being te start angle of the next
- * CanvasExtend in the array.
- */
-struct CanvasExtend
-{
-  int dir;      //!< direction: -1 left, 0 vertical, +1 right
-  double angle; //!< angle where this extend begins
-
-  CanvasExtend( int d, double a )
-    : dir( d )
-    , angle( a )
-  { }
-
-  /** operator less
-   * @param ce   the other CanvasExtend
-   * @return true if this angle is less than the other CanvasExtend angle
-   */
-  bool operator < ( const CanvasExtend & ce ) { return angle < ce.angle; }
-
-  double operator-( const CanvasExtend & ce ) { return difference( angle, ce.angle ); }
-
-  double operator-( double a ) { return difference( angle, a ); }
-
-};
-
-
-/** bisector of two angles in [0, 360)
- * @param a1 first angle
- * @param a2 second angle
- * @return the bisector angle (between a1 and a2)
- */
-double bisector( double a1, double a2 );
-
-double bisector( double a1, const CanvasExtend & a2 );
-double bisector( const CanvasExtend & a1, double a2 );
-double bisector( const CanvasExtend & a1, const CanvasExtend & a2 );
 
 /** Canvas point on the plots.
  *
@@ -151,25 +105,25 @@ public:
 
     /** get the extend for a given angle
      * @param a   angle [degrees]
+     * @return extend, as fraction of the right (+1) or left (-1)
      */
-    int getExtend( double a ) const
+    double getExtend( double a ) const
     {
       size_t n = extends.size();
       DBG_CHECK("point %s getExtend() for %.2f (size %d)\n", name, a, n );
 
       if ( n == 0 ) 
         return EXTEND_RIGHT;
-
       if ( a < extends[0].angle ) {
-        return extends[n-1].dir;
+        return interpolate_extend( extends[n-1], extends[0], a );
       }
-      size_t k=0;
+      size_t k=1;
       while ( k<n && a > extends[k].angle ) ++k;
-      --k;
-      // extends[k].angle < a
-      return extends[k].dir;
+      if ( k < n ) {
+        return interpolate_extend( extends[k-1], extends[k], a );
+      }
+      return interpolate_extend( extends[n-1], extends[0], a );
     }
-
 };
 
 #endif

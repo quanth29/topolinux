@@ -11,7 +11,7 @@
 #ifndef LOCALE_H
 #define LOCALE_H
 
-#include <qlocale.h>
+#include <QLocale>
 
 class Locale
 {

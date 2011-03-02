@@ -36,7 +36,7 @@ class DataList
   private:
     DBlock * head;        //!< head of the list
     DBlock * base_block;  //!< base shot for centerline numerics
-    int size;             //!< number of logical shots on the list
+    int list_size;             //!< number of logical shots on the list
     int shot;             //!< number of logical shots w. more than one measure
     std::map< std::string, std::string > station_comment;
 
@@ -48,7 +48,7 @@ class DataList
     DataList()
     : head( NULL )
     , base_block( NULL )
-    , size( 0 )
+    , list_size( 0 )
     , shot( 0 )
     , need_num( false )  // empty data list does not need num
     , num_measures( 0 )
@@ -62,34 +62,34 @@ class DataList
   /** get the head of the list of data
    * @return the head block
    */
-  DBlock * Head() { return head; }
+  DBlock * listHead() { return head; }
 
   /** get the number of shots
    * @return the size of the list
    */
-  int Size() const { return size; }
+  int listSize() const { return list_size; }
 
   /** get the number of centerline shots
    * @return the number of shots with more than one measure
    *
-  int CenterlineSize() const { return shot; }
+  int centerlineSize() const { return shot; }
    */
 
   /** check if a block is the base block
    * @param block block to check
    * @return true if the the block is the base block
    */
-  bool IsBaseBlock( DBlock * block ) const { return block == base_block; }
+  bool isBaseBlock( DBlock * block ) const { return block == base_block; }
 
   /** get the base block
    * @return the base block (or NULL if not set)
    */
-  DBlock * BaseBlock() { return base_block; }
+  DBlock * getBaseBlock() { return base_block; }
 
   /** set the base block
    * @param block  new base block (use NULL to unset)
    */
-  void SetBaseBlock( DBlock * block )
+  void setBaseBlock( DBlock * block )
   {
     base_block = block;
   }
@@ -97,16 +97,17 @@ class DataList
   /** get a reference to the numerical engine
    * @return a const ref to the numerical engine
    */
-  const Num & GetNum() const { return num; }
+  const Num & getNum() const { return num; }
 
   /** set the flag that indicates the need to recompute the survey
    */
   void resetNum() { need_num = true; }
 
   /** compute the survey
+   * @force  force recomputing the centerline [default false]
    * @return the number of measures (= centerline shots)
    */
-  int DoNum();
+  int doNum( bool force = false );
 
 
   /** check if the list has a shot with given stations
@@ -118,9 +119,9 @@ class DataList
   {
     DBlock * b = head;
     while ( b != NULL ) {
-      if ( b->from == from && b->to == to ) return true;
-      if ( b->from == to && b->to == from ) return true;
-      b = b->next;
+      if ( b->fromStation() == from && b->toStation() == to ) return true;
+      if ( b->fromStation() == to   && b->toStation() == from ) return true;
+      b = b->next_block;
     }
     return false;
   }
@@ -132,15 +133,15 @@ class DataList
   {
     if ( block != NULL ) {
       if ( head == block ) {
-        head = block->next;
-        -- size;
+        head = block->next_block;
+        -- list_size;
         if ( block->count > 1 ) --shot;
       } else {
         DBlock * b = head;
-        while ( b && b->next != block ) b=b->next;
+        while ( b && b->next_block != block ) b=b->next_block;
         if ( b != NULL ) {
-          b->next = block->next;
-          -- size;
+          b->next_block = block->next_block;
+          -- list_size;
           if ( block->count > 1 ) --shot;
         }
       }
@@ -168,13 +169,15 @@ class DataList
    */ 
   bool saveTlx( CenterlineInfo & c_info );
 
-  /** insert a block
-   * @param blk   where to insert
+  /** insert a block before or after another block
+   * @param blk   the block where to insert
    * @param d     distance
    * @param b     conmpass
    * @param c     clino
    * @param r     roll
    * @param before whether to insert before blk
+   *
+   * Used by QTshotWidget to insert a block before or after another.
    */
   void insertBlock( DBlock * blk, double d, double b, double c, double r, bool before );
 
@@ -208,6 +211,19 @@ class DataList
   bool loadDisto( DistoX & disto, bool append, bool smart, int splay, bool backward );
 
   private:
+    /** initialize the "from" and "to" values and the pointer to the
+     * last block of the list
+     * @param from    "from" index [output]
+     * @param to      "to"index [output]
+     * @param append   whether to append the data to the list
+     * @return last block of the l;ist, or NULL if the list is empty
+     *
+     * @note "from" and "to" are always initialized so that to > from
+     *       (usually, to = from+1); whether the shot is taken backward
+     *       or is a splay-shot is taken care by the method createBlock()
+     */
+   DBlock * initFromTo( int & from, int & to, bool append );
+
     /** load the data from a TopoLinux file
      * @param fp       file stream
      * @param append   whether to append the data to the list 
@@ -256,7 +272,7 @@ class DataList
   {
     // fprintf(stderr, "evalSplayExtended()\n");
     for ( DBlock * b = head; b != NULL; b=b->Next() ) {
-      if ( b->hasFrom() && ! b->hasTo() ) {
+      if ( b->hasFromStation() && ! b->hasToStation() ) {
         evalSplayExtended( b );
       }
     }
@@ -314,6 +330,12 @@ class DataList
      * @param backward whether shot is backward
      * @param last     last block
      * @param start    first block
+     *
+     * @note this method handles the forward/backward of the shots (in the
+     *       "backward" case the "from" and "to" are swapped), and when the
+     *       shot is splay. Notice that with backward sighting a play shot
+     *       at "to" means a splay at the sighting station, while a splay
+     *       at "from" is a splay at the sighted station.
      */
     void createBlock( int from, int to,
                       double * d0, double * b0, double * c0, double * r0, int cnt,
@@ -326,11 +348,11 @@ class DataList
         assert( head == NULL );
         head = bb; 
       } else {
-        (*last)->next = bb;
+        (*last)->next_block = bb;
       }
       if ( (*start) == NULL ) (*start) = bb;
       (*last) = bb;
-      ++ size;
+      ++ list_size;
       if ( bb->count > 1) ++shot;
       need_num = true;
     }
@@ -382,7 +404,7 @@ class DataList
     /** recompute the values for the multimeasure blocks
      * @param start where to start to recompute
      */
-    void RecomputeMultimeasureBlocks( DBlock * start );
+    void recomputeMultimeasureBlocks( DBlock * start );
 
 
 };

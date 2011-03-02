@@ -21,19 +21,18 @@
 
 #include "ArgCheck.h"
 #include "DataList.h"
-#include "CanvasPoint.h"
-
-#ifdef WIN32
-  #define M_PI 3.1415926536
-#endif
+#include "PlotPoint.h"
+#include "Factors.h"
 
 // #include <qwidget.h>
+
+class TherionScrap; // forward
 
 class Plot 
 {
   private:
-    CanvasSegment * segment;  //!< list of plotting segments
-    CanvasPoint * root;       //!< list of plotting points
+    PlotSegment * segment;  //!< list of plotting segments
+    PlotPoint * points;       //!< list of plotting points
     int x0min, x0max, y0min, y0max; //!< plot bounding box
     int z0min, z0max;
     // double scale;
@@ -41,9 +40,9 @@ class Plot
     /** sin/cos of viewing direction (for 3D plot)
      */
     double sin_phi, cos_phi, sin_theta, cos_theta;
-    int max_cnt;    //!< number of centerline segments
-    int tot_cnt;    //!< total number of segments
-    int num_pts;    //!< number of centerline points
+    int nr_centerline_segments;    //!< number of centerline segments
+    int nr_segments;    //!< total number of segments
+    int nr_centerline_points;    //!< number of centerline points
     #ifdef HAS_LRUD
       bool with_lrud; //!< whether to add LRUD shots
     #endif
@@ -55,11 +54,15 @@ class Plot
       Plot( double theta = 0.0, double phi = 0.0 )
     #endif
       : segment( NULL )
-      , root( NULL )
+      , points( NULL )
       // , scale( 1.0 )
-      , max_cnt( 0 )
-      , tot_cnt( 0 ) 
-      , num_pts( 0 )
+      , x0min( 0 )
+      , x0max( 0 )
+      , y0min( 0 )
+      , y0max( 0 )
+      , nr_centerline_segments( 0 )
+      , nr_segments( 0 ) 
+      , nr_centerline_points( 0 )
       #ifdef HAS_LRUD
         , with_lrud( lrud )
       #endif
@@ -84,8 +87,17 @@ class Plot
      */
     int getHeight() const { return y0max - y0min; }
 
-    int xOffset() const { return x0min; }
-    int yOffset() const { return y0min; }
+    /** get the plot X offset
+     * @return the plot minimum X
+     * @note called only in PlotCanvas::getPlotXOffset()
+     */
+    int getXOffset() const { return x0min; }
+
+    /** get the plot Y offset
+     * @return the plot minimum Y
+     * @note called only in PlotCanvas::getPlotYOffset()
+     */
+    int getYOffset() const { return y0min; }
 
     /** set theta and phi (viewpoint for the 3D)
      * @param theta   theta [degrees] = 90 - inclination
@@ -102,14 +114,21 @@ class Plot
     /** get the head of the list of canvas points
      * @return the root point pointer
      */
-    CanvasPoint * getPoints() { return root; }
+    PlotPoint * getPoints() { return points; }
 
     /** get the head of the list of canvas segments
      * @return the root segment pointer
      */
-    CanvasSegment * getSegments() { return segment; }
+    PlotSegment * getSegments() { return segment; }
 
     void dump();
+ 
+#ifdef IMPORT_TH2
+    /** adjust plot size to scrap (point and line-points)
+     * @param scrap therion scrap
+     */
+    void adjustToScrap( TherionScrap * scrap );
+#endif
 
     /** compute the plot for plan/extended section/3D
      * @param list   data list
@@ -134,7 +153,7 @@ class Plot
      * @param blk   data block (centerline shot)
      * @param reverse whether the shot is plotted reversed (swap Left/Right)
      */
-    void DrawLRUD( CanvasPoint * p0, LRUD * lrud, DBlock * blk, bool reversed );
+    void drawLRUD( PlotPoint * p0, LRUD * lrud, DBlock * blk, bool reversed );
 
     /** compute LRUD segments for plan/extended/3D
      * @param p0    base point (on the canvas)
@@ -144,18 +163,18 @@ class Plot
      * @param de    Delta-E between the canvas points of the shot
      * @param mode  plotting mode
      */
-    void DrawLRUD( CanvasPoint * p0, LRUD * lrud, DBlock * blk, 
+    void drawLRUD( PlotPoint * p0, LRUD * lrud, DBlock * blk, 
                    double dn, double de, int mode );
 #endif
 
 /*
     void shift( int x, int y ) 
     {
-      for ( CanvasPoint * p = root; p; p=p->next ) {
+      for ( PlotPoint * p = points; p; p=p->next ) {
         p->x0 += x;
         p->y0 += y;
       }
-      for ( CanvasSegment * s = segment; s; s=s->next ) {
+      for ( PlotSegment * s = segment; s; s=s->next ) {
         s->x0 += x;
         s->x1 += x;
         s->y0 += y;
@@ -178,33 +197,31 @@ class Plot
  
     void clearSegments()
     {
-      DBG_CHECK( "Plot::clearSegments() \n");
-      CanvasSegment * next;
+      DBG_CHECK( "Plot::ClearSegments() \n");
       while ( segment ) {
-        next = segment->next;
+        PlotSegment * next = segment->next;
         delete segment;
         segment = next;
       }
-      max_cnt = 0;
-      tot_cnt = 0;
+      nr_centerline_segments = 0;
+      nr_segments = 0;
     }
 
     void clearPoints()
     {
-      DBG_CHECK( "Plot::clearPoints() \n");
-      CanvasPoint * npt;
-      while ( root ) {
-        npt = root->next;
-        delete root;
-        root = npt;
+      DBG_CHECK( "Plot::ClearPoints() \n");
+      while ( points ) {
+        PlotPoint * npt = points->next;
+        delete points;
+        points = npt;
       }
-      num_pts = 0;
+      nr_centerline_points = 0;
     }
 
-    void DrawPoint2Point( CanvasPoint * p0, CanvasPoint * p1, // int col,
+    void drawPoint2Point( PlotPoint * p0, PlotPoint * p1, // int col,
                           DBlock * blk, unsigned char extend, int mode );
 
-    void DrawFromPoint( CanvasPoint * p0,
+    void drawFromPoint( PlotPoint * p0,
                      double dn, double de, double dh, double dz,
                      DBlock * blk, unsigned char extend, int mode );
 
@@ -213,15 +230,16 @@ class Plot
      * @param p1 second endpoint
      * @param blk block
      */
-    void DrawVerticalSegment( CanvasPoint * p0, CanvasPoint * p1, DBlock * blk );
+    void drawVerticalSegment( PlotPoint * p0, PlotPoint * p1, DBlock * blk );
 
     /** compute the amount of horizontal displacement for the extended section
      *  when no extend has been specified
      * @param p0   base point from which to compute DX
      * @param de   East displacement
      * @param dn   North displacement
+     * @return fraction of right (+1) or left (-1) extend
      */
-    int computeXExtend( CanvasPoint * p0, double de, double dn );
+    double computeXExtend( PlotPoint * p0, double de, double dn );
 };
 
 #endif // PLOT_H

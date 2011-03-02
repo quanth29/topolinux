@@ -17,6 +17,7 @@
 #include "Plot.h"
 #include "Extend.h"
 #include "CanvasMode.h"
+#include "TherionScrap.h"
 
 
 /** border for the 3D viewer: 30 pixels
@@ -38,12 +39,12 @@
 void
 Plot::dump()
 {
-  fprintf(stderr, "Plot segments %d / %d points %d\n", max_cnt, tot_cnt, num_pts );
-  for ( CanvasSegment * s = segment; s; s=s->next ) {
+  fprintf(stderr, "Plot segments %d / %d points %d\n", nr_centerline_segments, nr_segments, nr_centerline_points );
+  for ( PlotSegment * s = segment; s; s=s->next ) {
     fprintf(stderr, "Segment \"%s-%s\" %d %d  %d %d (%d)\n", 
       s->p0, s->p1, s->x0, s->y0, s->x1, s->y1, s->cs_extend );
   }
-  for ( CanvasPoint * p = root; p; p=p->next ) {
+  for ( PlotPoint * p = points; p; p=p->next ) {
     fprintf(stderr, "Point \"%s\" %d %d \n", p->name, p->x0, p->y0 );
   }
   
@@ -59,8 +60,8 @@ Plot::computeXSection( DataList * list, DBlock * block, bool reversed, double ve
   double to_rad = M_PI/180.0;
 
   // assert( block );
-  const char * from = block->From();
-  const char * to   = block->To();
+  const char * from = block->fromStation();
+  const char * to   = block->toStation();
   double compass = block->Compass() * to_rad;
   double clino   = block->Clino() * to_rad;
   double nz = sin( clino );
@@ -73,74 +74,74 @@ Plot::computeXSection( DataList * list, DBlock * block, bool reversed, double ve
     nn = -nn;
     ne = -ne;
   }
-  root = new CanvasPoint();
-  root->name = from;
-  root->x0 = 0; // midpoint of the canvas
-  root->y0 = 0;
-  root->z0 = 0; // depth origin
+  points = new PlotPoint();
+  points->name = from;
+  points->x0 = 0; // midpoint of the canvas
+  points->y0 = 0;
+  points->z0 = 0; // depth origin
   x0min = x0max = 0;
   y0min = y0max = 0;
   z0min = z0max = 0;
-  root->next = new CanvasPoint();
-  root->next->name = to;
-  root->next->next = NULL;
-  num_pts = 2;
+  points->next = new PlotPoint();
+  points->next->name = to;
+  points->next->next = NULL;
+  nr_centerline_points = 2;
   if ( fabs(block->Clino()) < vertical ) { // vertical section
     // DBG_CHECK("vertical cross section dist: %.2f \n", block->Tape() );
     cos_theta = 1.0;
     sin_theta = 0.0;
     cos_phi = nn / fabs(nh);
     sin_phi = ne / fabs(nh);
-    root->next->x0 = 0;
-    root->next->y0 = - (int)(block->Tape() * nz) * SCALE;
+    points->next->x0 = 0;
+    points->next->y0 = - (int)(block->Tape() * nz) * BASE_SCALE;
   } else { // horizontal section
     cos_theta = 0.0;
     sin_theta = -1.0;
     cos_phi = 1.0;
     sin_phi = 0.0;
-    root->next->x0 =   (int)(block->Tape() * ne * nh) * SCALE;
-    root->next->y0 = - (int)(block->Tape() * nn * nh) * SCALE;
+    points->next->x0 =   (int)(block->Tape() * ne * nh) * BASE_SCALE;
+    points->next->y0 = - (int)(block->Tape() * nn * nh) * BASE_SCALE;
   }
-  if ( root->next->x0 < x0min )      x0min = root->next->x0;
-  else if ( root->next->x0 > x0max ) x0max = root->next->x0;
-  if ( root->next->y0 < y0min )      y0min = root->next->y0;
-  else if ( root->next->y0 > y0max ) y0max = root->next->y0;
-  if ( root->next->z0 < z0min )      z0min = root->next->z0;
-  else if ( root->next->z0 > z0max ) z0max = root->next->z0;
+  if ( points->next->x0 < x0min )      x0min = points->next->x0;
+  else if ( points->next->x0 > x0max ) x0max = points->next->x0;
+  if ( points->next->y0 < y0min )      y0min = points->next->y0;
+  else if ( points->next->y0 > y0max ) y0max = points->next->y0;
+  if ( points->next->z0 < z0min )      z0min = points->next->z0;
+  else if ( points->next->z0 > z0max ) z0max = points->next->z0;
 
   // centerline shot ("vertical")
-  DrawVerticalSegment( root, root->next, block );
+  drawVerticalSegment( points, points->next, block );
 
   #ifdef HAS_LRUD
     if ( with_lrud ) {
-      if ( block->LRUD_From() ) {
-        DrawLRUD( root, block->LRUD_From(), block, reversed );
+      if ( block->getLRUD( 0 ) ) {
+        drawLRUD( points, block->getLRUD( 0 ), block, reversed );
       }
-      if ( block->LRUD_To() ) {
-        DrawLRUD( root->next, block->LRUD_To(), block, reversed );
+      if ( block->getLRUD( 1 ) ) {
+        drawLRUD( points->next, block->getLRUD( 1 ), block, reversed );
       }
     }
   #endif
 
   // splay shots
-  for ( DBlock * bl = list->Head(); bl; bl=bl->Next() ) {
+  for ( DBlock * bl = list->listHead(); bl; bl=bl->next() ) {
     if ( bl->hasNoStation() ) continue;
-    if ( ! bl->hasTo() ) { //
-      CanvasPoint * pt = NULL;
-      if ( bl->hasFrom( from ) ) { // add to root
-        pt = root;
-      } else if ( bl->hasFrom( to ) ) {
-        pt = root->next;
+    if ( ! bl->hasToStation() ) { //
+      PlotPoint * pt = NULL;
+      if ( bl->hasFromStation( from ) ) { // add to points
+        pt = points;
+      } else if ( bl->hasFromStation( to ) ) {
+        pt = points->next;
       }
       if ( pt ) {
-        double d = bl->Tape() * SCALE;
+        double d = bl->Tape() * BASE_SCALE;
         clino   = bl->Clino() * to_rad;
         compass = bl->Compass() * to_rad;
         double dz = d * sin( clino );
         double dh = d * cos( clino );
         double dn = dh * cos( compass );
         double de = dh * sin( compass );
-        DrawFromPoint( pt, dn, de, dh, dz, bl, bl->Extend(),  2 /*mode*/ );
+        drawFromPoint( pt, dn, de, dh, dz, bl, bl->Extend(),  2 /*mode*/ );
       }
     }
   }
@@ -153,7 +154,7 @@ Plot::computePlot( DataList * list, int mode, bool do_num )
   ARG_CHECK( list == NULL, false );
 
   double to_rad = M_PI / 180.0;
-  size_t size = list->Size();
+  size_t size = list->listSize();
   DBG_CHECK("Plot::computePlot() mode %d size %d do_num %d\n", mode, size, do_num );
   // list->dump();
   if ( size < 2 )
@@ -162,12 +163,12 @@ Plot::computePlot( DataList * list, int mode, bool do_num )
 
   if ( do_num ) {
     // DBG_CHECK("Plot::computePlot() do num \n");
-    if ( list->DoNum() == 0 ) return false;
+    if ( list->doNum() == 0 ) return false;
   }
 
   int idx = 0;
   int to_paint=0;
-  for ( DBlock * bl = list->Head(); bl; bl=bl->Next(), ++idx ) {
+  for ( DBlock * bl = list->listHead(); bl; bl=bl->next(), ++idx ) {
     if ( bl->evalNeedPaint() == 3 ) { // only centerline
       ++ to_paint;
     }
@@ -175,35 +176,34 @@ Plot::computePlot( DataList * list, int mode, bool do_num )
   DBG_CHECK("Plot::computePlot() centerline blocks to paint %d\n", to_paint);
 
   if ( segment != NULL ) clearSegments();
-  if ( root != NULL ) clearPoints();
+  if ( points != NULL ) clearPoints();
   bool redo_paint = true;
   int extend_sign = 1; // 1: to the right, -1: to the left
-  const Num & num = list->GetNum();
+  const Num & num = list->getNum();
   while ( redo_paint ) {
     redo_paint = false;
     idx = 0;
-    for ( DBlock * bl = list->Head(); bl; bl=bl->Next(), ++idx ) {
-      if ( bl->NeedPaint() < 3 ) // only centerline shots
+    for ( DBlock * bl = list->listHead(); bl; bl=bl->next(), ++idx ) {
+      if ( bl->needPaint() < 3 ) // only centerline shots
         continue;
-      const point_t * pt1 = num.GetPoint( bl->From() );
-      const point_t * pt2 = num.GetPoint( bl->To() );
-      if ( pt1 == NULL || pt2 == NULL ) {
-        // cannot paint block
+      const NumPoint * pt1 = num.getPoint( bl->fromStation() );
+      const NumPoint * pt2 = num.getPoint( bl->toStation() );
+      if ( pt1 == NULL || pt2 == NULL ) { // cannot paint block
         bl->setNeedPaint( 0 );
         continue;
       }
-      if (root == NULL) {
-        root = new CanvasPoint();
-        num_pts ++;
-        root->name = pt1->tag;
-        root->x0 = 0; // midpoint of the canvas
-        root->y0 = 0;
-        root->z0 = 0;
-        root->n = pt1->N * SCALE;
-        root->e = pt1->E * SCALE;
-        root->z = pt1->V * SCALE;
-        root->h = 0; // pt1->H * SCALE;
-        root->next = NULL;
+      if (points == NULL) {
+        points = new PlotPoint();
+        nr_centerline_points ++;
+        points->name = pt1->tag;
+        points->x0 = 0; // midpoint of the canvas
+        points->y0 = 0;
+        points->z0 = 0;
+        points->n = pt1->N * BASE_SCALE;
+        points->e = pt1->E * BASE_SCALE;
+        points->z = pt1->V * BASE_SCALE;
+        points->h = 0; // pt1->H * BASE_SCALE;
+        points->next = NULL;
       }
       // double dz = pt2->V - pt1->V;
       double dn = pt2->N - pt1->N;
@@ -235,72 +235,72 @@ Plot::computePlot( DataList * list, int mode, bool do_num )
         //   bl->from.c_str(), bl->to.c_str(), bl->extend, extend_sign, extend_flag );
       }
 
-      CanvasPoint * pt10 = root;
+      PlotPoint * pt10 = points;
       while ( pt10 && strcmp(pt10->name, pt1->tag) != 0 )
         pt10 = pt10->next;
-      CanvasPoint * pt20 = root;
+      PlotPoint * pt20 = points;
       while ( pt20 && strcmp(pt20->name, pt2->tag) != 0 )
         pt20 = pt20->next;
       if ( pt20 == NULL && pt10 != NULL ) {
-        pt20 =  new CanvasPoint();
-        num_pts ++;
-        pt20->next = root; // insert at head
-        root = pt20;
+        pt20 =  new PlotPoint();
+        nr_centerline_points ++;
+        pt20->next = points; // insert at head
+        points = pt20;
         pt20->name = pt2->tag;
-        pt20->z = pt2->V * SCALE;
-        pt20->h = pt10->h + dh * SCALE;
-        pt20->n = pt2->N * SCALE;
-        pt20->e = pt2->E * SCALE;
-        DrawPoint2Point( pt10, pt20, bl, extend_flag, mode );
+        pt20->z = pt2->V * BASE_SCALE;
+        pt20->h = pt10->h + dh * BASE_SCALE;
+        pt20->n = pt2->N * BASE_SCALE;
+        pt20->e = pt2->E * BASE_SCALE;
+        drawPoint2Point( pt10, pt20, bl, extend_flag, mode );
         redo_paint = true;
 
         #ifdef HAS_LRUD
           if ( with_lrud ) {
-            if ( bl->LRUD_From() ) {
-              DrawLRUD( pt10, bl->LRUD_From(), bl, dn, de, mode );
+            if ( bl->getLRUD( 0 ) ) {
+              drawLRUD( pt10, bl->getLRUD( 0 ), bl, dn, de, mode );
             }
-            if ( bl->LRUD_To() ) {
-              DrawLRUD( pt20, bl->LRUD_To(), bl, dn, de, mode );
+            if ( bl->getLRUD( 1 ) ) {
+              drawLRUD( pt20, bl->getLRUD( 1 ), bl, dn, de, mode );
             }
           }
         #endif
 
         bl->setNeedPaint( 0 ); // switch off
       } else if ( pt10 == NULL && pt20 != NULL ) {
-        pt10 =  new CanvasPoint();
-        num_pts ++;
-        pt10->next = root; // insert at head
-        root = pt10;
+        pt10 =  new PlotPoint();
+        nr_centerline_points ++;
+        pt10->next = points; // insert at head
+        points = pt10;
         pt10->name = pt1->tag;
-        pt10->z = pt1->V * SCALE;
-        pt10->h = pt20->h - dh * SCALE;
-        pt10->n = pt1->N * SCALE;
-        pt10->e = pt1->E * SCALE;
-        DrawPoint2Point( pt20, pt10, bl, extend_flag, mode );
+        pt10->z = pt1->V * BASE_SCALE;
+        pt10->h = pt20->h - dh * BASE_SCALE;
+        pt10->n = pt1->N * BASE_SCALE;
+        pt10->e = pt1->E * BASE_SCALE;
+        drawPoint2Point( pt20, pt10, bl, extend_flag, mode );
         redo_paint = true;
 
         #ifdef HAS_LRUD
           if ( with_lrud ) {
-            if ( bl->LRUD_From() ) {
-              DrawLRUD( pt10, bl->LRUD_From(), bl, dn, de, mode );
+            if ( bl->getLRUD( 0 ) ) {
+              drawLRUD( pt10, bl->getLRUD( 0 ), bl, dn, de, mode );
             }
-            if ( bl->LRUD_To() ) {
-              DrawLRUD( pt20, bl->LRUD_To(), bl, dn, de, mode );
+            if ( bl->getLRUD( 1 ) ) {
+              drawLRUD( pt20, bl->getLRUD( 1 ), bl, dn, de, mode );
             }
           }
         #endif
 
         bl->setNeedPaint( 0 );
       } else if ( pt10 != NULL && pt20 != NULL ) {
-        DrawPoint2Point( pt20, pt10, bl, extend_flag, mode );
+        drawPoint2Point( pt20, pt10, bl, extend_flag, mode );
 
         #ifdef HAS_LRUD
           if ( with_lrud ) {
-            if ( bl->LRUD_From() ) {
-              DrawLRUD( pt10, bl->LRUD_From(), bl, dn, de, mode );
+            if ( bl->getLRUD( 0 ) ) {
+              drawLRUD( pt10, bl->getLRUD( 0 ), bl, dn, de, mode );
             }
-            if ( bl->LRUD_To() ) {
-              DrawLRUD( pt20, bl->LRUD_To(), bl, dn, de, mode );
+            if ( bl->getLRUD( 1 ) ) {
+              drawLRUD( pt20, bl->getLRUD( 1 ), bl, dn, de, mode );
             }
           }
         #endif
@@ -312,28 +312,30 @@ Plot::computePlot( DataList * list, int mode, bool do_num )
   }
 #if 1
   idx = 0;
-  // TODO compute extend array for each CanvasPoint
-  for ( CanvasPoint * cp = root; cp; cp = cp->next ) {
+  // TODO compute extend array for each PlotPoint
+  for ( PlotPoint * cp = points; cp; cp = cp->next ) {
     cp->evalExtends();
   }
   // list->evalSplayExtended();
-  for ( DBlock * bl = list->Head(); bl; bl=bl->Next(), ++idx ) {
-    if ( bl->hasTo() ) continue; // skip centerline
-    double clino=0.0, compass=0.0;
-    CanvasPoint * pt = root;
+  for ( DBlock * bl = list->listHead(); bl; bl=bl->next(), ++idx ) {
+    if ( bl->hasToStation() /* && bl->hasFromStation() */ ) continue; // skip centerline
+    double clino   = 0.0;
+    double compass = 0.0;
+    PlotPoint * pt = points;
     for ( ; pt; pt=pt->next ) {
-      if ( bl->hasFrom( pt->name ) ) {
+      if ( bl->hasFromStation( pt->name ) ) {
         clino   = bl->Clino() * to_rad;
         compass = bl->Compass() * to_rad;
         break;
       }
     }
     if ( pt != NULL ) {
-      double dz = bl->Tape() * sin( clino ) * SCALE;
-      double dh = bl->Tape() * cos( clino ) * SCALE;
+      double dz = bl->Tape() * sin( clino ) * BASE_SCALE;
+      double dh = bl->Tape() * cos( clino ) * BASE_SCALE;
       double dn = dh * cos( compass ); // north
       double de = dh * sin( compass ); // east
-      DrawFromPoint( pt, dn, de, dh, dz, bl, bl->Extended(), mode );
+      // WRONG DrawFromPoint( pt, dn, de, dh, dz, bl, bl->Extended(), mode );
+      drawFromPoint( pt, dn, de, dh, dz, bl, bl->Extend(), mode );
     }
   }
 #endif
@@ -345,7 +347,7 @@ Plot::computePlot( DataList * list, int mode, bool do_num )
     // shift the bounding box [(0,0) .. (...)]
     //
     int dz = z0max - z0min;
-    for ( CanvasSegment * s = segment; s; s=s->next ) {
+    for ( PlotSegment * s = segment; s; s=s->next ) {
       s->x0 += PLOT_3D_BORDER - x0min;
       s->y0 += PLOT_3D_BORDER - y0min;
       s->z0 = ((s->z0-z0min)*100)/dz;
@@ -353,7 +355,7 @@ Plot::computePlot( DataList * list, int mode, bool do_num )
       s->y1 += PLOT_3D_BORDER - y0min;
       s->z1 = ((s->z1 - z0min)*100)/dz;
     }
-    for ( CanvasPoint * p = root; p; p=p->next ) {
+    for ( PlotPoint * p = points; p; p=p->next ) {
       p->x0 += PLOT_3D_BORDER - x0min;
       p->y0 += PLOT_3D_BORDER - y0min;
       p->z0 = ((p->z0 - z0min)*100)/dz;
@@ -371,7 +373,7 @@ Plot::computePlot( DataList * list, int mode, bool do_num )
 }
 
 void
-Plot::DrawPoint2Point( CanvasPoint * p0, CanvasPoint * p1, // int col,
+Plot::drawPoint2Point( PlotPoint * p0, PlotPoint * p1, // int col,
                        DBlock * blk, unsigned char extend_flag, int mode )
 {
   ARG_CHECK( p0 == NULL, );
@@ -423,7 +425,7 @@ Plot::DrawPoint2Point( CanvasPoint * p0, CanvasPoint * p1, // int col,
   if ( p1->z0 < z0min )      z0min = p1->z0;
   else if ( p1->z0 > z0max ) z0max = p1->z0;
 
-  CanvasSegment * s = new CanvasSegment;
+  PlotSegment * s = new PlotSegment;
   s->next = NULL;
   s->x0 = p0->x0;
   s->y0 = p0->y0;
@@ -447,8 +449,8 @@ Plot::DrawPoint2Point( CanvasPoint * p0, CanvasPoint * p1, // int col,
     s->next = segment;
   }
   segment = s;
-  ++ tot_cnt;
-  ++ max_cnt;
+  ++ nr_segments;
+  ++ nr_centerline_segments;
 }
 
 double expand( double i, double istart, double iend, double from, double to )
@@ -467,14 +469,14 @@ double expand( double i, double istart, double iend, double from, double to )
   return cos( (to-delta + is)*M_PI/180.);
 }
 
-int
-Plot::computeXExtend( CanvasPoint * p0, double de, double dn )
+double
+Plot::computeXExtend( PlotPoint * p0, double de, double dn )
 {
   ARG_CHECK( p0 == NULL, 0);
 
   double alpha = 180.0/M_PI*( atan2( de, dn ) ); // angle in horizontal plane with the North
   if ( alpha < 0 ) alpha += 360;
-  // DBG_CHECK("Plot::computeXExtend() %.2f from %s\n", alpha, p0->name);
+  // DBG_CHECK("Plot::ComputeXExtend() %.2f from %s\n", alpha, p0->name);
 
   return p0->getExtend( alpha );
   // return (int)( dh * ext );
@@ -485,7 +487,7 @@ Plot::computeXExtend( CanvasPoint * p0, double de, double dn )
   size_t nr = 0; // number of right
   size_t nl = 0; // number of left
   // compute left's and right's
-  for ( std::vector< CanvasSegment * >::iterator it = p0->segments.begin();
+  for ( std::vector< PlotSegment * >::iterator it = p0->segments.begin();
         it != p0->segments.end();
         ++ it ) {
     if ( (*it)->cs_extend == EXTEND_LEFT ) {
@@ -663,7 +665,7 @@ Plot::computeXExtend( CanvasPoint * p0, double de, double dn )
 }
 
 void
-Plot::DrawFromPoint( CanvasPoint * p0,
+Plot::drawFromPoint( PlotPoint * p0,
                      double dn, double de, double dh, double dz,
                      DBlock * blk, unsigned char extend, int mode )
 {
@@ -689,16 +691,17 @@ Plot::DrawFromPoint( CanvasPoint * p0,
       case EXTEND_VERT:
         // x0 += 0; // horiz.
         y0 -= (int)(dz); // vert down.
+        break;
       case EXTEND_IGNORE:
         return;
       default:
         {
-          int ext = computeXExtend( p0, de, dn );
+          double ext = computeXExtend( p0, de, dn );
           x0 += (int)(dh * ext);
           y0 -= (int)(dz); // vert down.
-          extend = (ext == -1)? EXTEND_LEFT 
-                              : (ext == 1)? EXTEND_RIGHT
-                                          : EXTEND_VERT;
+          extend = (ext < -0.25)? EXTEND_LEFT 
+                                : (ext > 0.25)? EXTEND_RIGHT
+                                              : EXTEND_VERT;
           blk->setExtended( extend );
         }
         break;
@@ -727,7 +730,7 @@ Plot::DrawFromPoint( CanvasPoint * p0,
   if ( y0 < y0min )      y0min = y0;
   else if ( y0 > y0max ) y0max = y0;
 
-  CanvasSegment * s = new CanvasSegment;
+  PlotSegment * s = new PlotSegment;
   s->next = NULL;
   s->x0 = p0->x0;
   s->y0 = p0->y0;
@@ -745,13 +748,13 @@ Plot::DrawFromPoint( CanvasPoint * p0,
     s->next = segment;
   }
   segment = s;
-  ++ tot_cnt;
+  ++ nr_segments;
   // draw_point_2_point( p0->x0, p0->y0, x0, y0 );
 }
 
 #ifdef HAS_LRUD
 void
-Plot::DrawLRUD( CanvasPoint * p0, LRUD * lrud, DBlock * blk, 
+Plot::drawLRUD( PlotPoint * p0, LRUD * lrud, DBlock * blk, 
                 double dn0, double de0, int mode )
 {
   ARG_CHECK( p0 == NULL, );
@@ -762,9 +765,9 @@ Plot::DrawLRUD( CanvasPoint * p0, LRUD * lrud, DBlock * blk,
     double dd = ( dn0*dn0 + de0*de0 );
     if ( dd < 0.00000001 ) return;
     dd = sqrt( dd );
-    de0 = de0 * SCALE / dd;
-    dn0 = dn0 * SCALE / dd;
-    CanvasSegment * s = new CanvasSegment; // RIGHT
+    de0 = de0 * BASE_SCALE / dd;
+    dn0 = dn0 * BASE_SCALE / dd;
+    PlotSegment * s = new PlotSegment; // RIGHT
     s->next = NULL;
     s->x0 = p0->x0;
     s->y0 = p0->y0;
@@ -781,8 +784,8 @@ Plot::DrawLRUD( CanvasPoint * p0, LRUD * lrud, DBlock * blk,
       s->next = segment;
     }
     segment = s;
-    ++ tot_cnt;
-    s = new CanvasSegment; // LEFT
+    ++ nr_segments;
+    s = new PlotSegment; // LEFT
     s->next = NULL;
     s->x0 = p0->x0;
     s->y0 = p0->y0;
@@ -799,15 +802,15 @@ Plot::DrawLRUD( CanvasPoint * p0, LRUD * lrud, DBlock * blk,
       s->next = segment;
     }
     segment = s;
-    ++ tot_cnt;
+    ++ nr_segments;
   } else if ( mode == MODE_EXT ) {
-    CanvasSegment * s = new CanvasSegment; // UP
+    PlotSegment * s = new PlotSegment; // UP
     s->next = NULL;
     s->x0 = p0->x0;
     s->y0 = p0->y0;
     s->z0 = p0->z0;
     s->x1 = p0->x0;
-    s->y1 = p0->y0 - (int)(lrud->up * SCALE);
+    s->y1 = p0->y0 - (int)(lrud->up * BASE_SCALE);
     s->z1 = p0->z0;
     s->p0 = p0->name;           // endpoints names
     s->p1 = NULL;
@@ -818,14 +821,14 @@ Plot::DrawLRUD( CanvasPoint * p0, LRUD * lrud, DBlock * blk,
       s->next = segment;
     }
     segment = s;
-    ++ tot_cnt;
-    s = new CanvasSegment; // DOWN
+    ++ nr_segments;
+    s = new PlotSegment; // DOWN
     s->next = NULL;
     s->x0 = p0->x0;
     s->y0 = p0->y0;
     s->z0 = p0->z0;
     s->x1 = p0->x0;
-    s->y1 = p0->y0 + (int)(lrud->down * SCALE);
+    s->y1 = p0->y0 + (int)(lrud->down * BASE_SCALE);
     s->z1 = p0->z0;
     s->p0 = p0->name;           // endpoints names
     s->p1 = NULL;
@@ -836,20 +839,20 @@ Plot::DrawLRUD( CanvasPoint * p0, LRUD * lrud, DBlock * blk,
       s->next = segment;
     }
     segment = s;
-    ++ tot_cnt;
+    ++ nr_segments;
   } else if ( mode == MODE_3D ) {
     double dd = ( dn0*dn0 + de0*de0 );
     if ( dd < 0.00000001 ) return;
     dd = sqrt( dd );
-    de0 = de0 * SCALE / dd;
-    dn0 = dn0 * SCALE / dd;
+    de0 = de0 * BASE_SCALE / dd;
+    dn0 = dn0 * BASE_SCALE / dd;
     double de = lrud->right * dn0;   // DE
     double dn = - lrud->right * de0; // DN
     double dz = 0.0;
     double np = NP( dn, de);     // phi displacement
     double nt = NT( dn, de, dz); // theta displacement
     double nd = ND( dn, de, dz); // depth displacement
-    CanvasSegment * s = new CanvasSegment; // RIGHT
+    PlotSegment * s = new PlotSegment; // RIGHT
     s->next = NULL;
     s->x0 = p0->x0;
     s->y0 = p0->y0;
@@ -866,14 +869,14 @@ Plot::DrawLRUD( CanvasPoint * p0, LRUD * lrud, DBlock * blk,
       s->next = segment;
     }
     segment = s;
-    ++ tot_cnt;
+    ++ nr_segments;
     de = - lrud->left * dn0;   // DE
     dn = lrud->left * de0; // DN: this must be subtracted to Y
     dz = 0.0;
     np = NP( dn, de);     // phi displacement
     nt = NT( dn, de, dz); // theta displacement
     nd = ND( dn, de, dz); // depth displacement
-    s = new CanvasSegment; // LEFT
+    s = new PlotSegment; // LEFT
     s->next = NULL;
     s->x0 = p0->x0;
     s->y0 = p0->y0;
@@ -890,14 +893,14 @@ Plot::DrawLRUD( CanvasPoint * p0, LRUD * lrud, DBlock * blk,
       s->next = segment;
     }
     segment = s;
-    ++ tot_cnt;
+    ++ nr_segments;
     dn = 0.0;
     de = 0.0;
-    dz = lrud->up * SCALE;
+    dz = lrud->up * BASE_SCALE;
     np = NP( dn, de);     // phi displacement
     nt = NT( dn, de, dz); // theta displacement
     nd = ND( dn, de, dz); // depth displacement
-    s = new CanvasSegment; // UP
+    s = new PlotSegment; // UP
     s->next = NULL;
     s->x0 = p0->x0;
     s->y0 = p0->y0;
@@ -914,14 +917,14 @@ Plot::DrawLRUD( CanvasPoint * p0, LRUD * lrud, DBlock * blk,
       s->next = segment;
     }
     segment = s;
-    ++ tot_cnt;
+    ++ nr_segments;
     dn = 0.0;
     de = 0.0;
-    dz = -lrud->down * SCALE;
+    dz = -lrud->down * BASE_SCALE;
     np = NP( dn, de);     // phi displacement
     nt = NT( dn, de, dz); // theta displacement
     nd = ND( dn, de, dz); // depth displacement
-    s = new CanvasSegment; // DOWN
+    s = new PlotSegment; // DOWN
     s->next = NULL;
     s->x0 = p0->x0;
     s->y0 = p0->y0;
@@ -938,22 +941,22 @@ Plot::DrawLRUD( CanvasPoint * p0, LRUD * lrud, DBlock * blk,
       s->next = segment;
     }
     segment = s;
-    ++ tot_cnt;
+    ++ nr_segments;
   }
 }
 
 void
-Plot::DrawLRUD( CanvasPoint * p0, LRUD * lrud, DBlock * blk, bool reversed )
+Plot::drawLRUD( PlotPoint * p0, LRUD * lrud, DBlock * blk, bool reversed )
 {
   ARG_CHECK( p0 == NULL, );
   ARG_CHECK( blk == NULL, );
 
-  CanvasSegment * s = new CanvasSegment; // RIGHT
+  PlotSegment * s = new PlotSegment; // RIGHT
   s->next = NULL;
   s->x0 = p0->x0;
   s->y0 = p0->y0;
   s->z0 = p0->z0;
-  s->x1 = p0->x0 + (int)((reversed? lrud->right : lrud->left) * SCALE);
+  s->x1 = p0->x0 + (int)((reversed? lrud->right : lrud->left) * BASE_SCALE);
   s->y1 = p0->y0;
   s->z1 = p0->z0;
   s->p0 = p0->name;           // endpoints names
@@ -965,13 +968,13 @@ Plot::DrawLRUD( CanvasPoint * p0, LRUD * lrud, DBlock * blk, bool reversed )
     s->next = segment;
   }
   segment = s;
-  ++ tot_cnt;
-  s = new CanvasSegment; // LEFT
+  ++ nr_segments;
+  s = new PlotSegment; // LEFT
   s->next = NULL;
   s->x0 = p0->x0;
   s->y0 = p0->y0;
   s->z0 = p0->z0;
-  s->x1 = p0->x0 - (int)((reversed? lrud->left : lrud->right) * SCALE);
+  s->x1 = p0->x0 - (int)((reversed? lrud->left : lrud->right) * BASE_SCALE);
   s->y1 = p0->y0;
   s->z1 = p0->z0;
   s->p0 = p0->name;           // endpoints names
@@ -983,14 +986,14 @@ Plot::DrawLRUD( CanvasPoint * p0, LRUD * lrud, DBlock * blk, bool reversed )
     s->next = segment;
   }
   segment = s;
-  ++ tot_cnt;
-  s = new CanvasSegment; // UP
+  ++ nr_segments;
+  s = new PlotSegment; // UP
   s->next = NULL;
   s->x0 = p0->x0;
   s->y0 = p0->y0;
   s->z0 = p0->z0;
   s->x1 = p0->x0;
-  s->y1 = p0->y0 - (int)(lrud->up * SCALE); 
+  s->y1 = p0->y0 - (int)(lrud->up * BASE_SCALE); 
   s->z1 = p0->z0;
   s->p0 = p0->name;           // endpoints names
   s->p1 = NULL;
@@ -1001,14 +1004,14 @@ Plot::DrawLRUD( CanvasPoint * p0, LRUD * lrud, DBlock * blk, bool reversed )
     s->next = segment;
   }
   segment = s;
-  ++ tot_cnt;
-  s = new CanvasSegment; // DOWN
+  ++ nr_segments;
+  s = new PlotSegment; // DOWN
   s->next = NULL;
   s->x0 = p0->x0;
   s->y0 = p0->y0;
   s->z0 = p0->z0;
   s->x1 = p0->x0;
-  s->y1 = p0->y0 + (int)(lrud->down * SCALE);
+  s->y1 = p0->y0 + (int)(lrud->down * BASE_SCALE);
   s->z1 = p0->z0;
   s->p0 = p0->name;           // endpoints names
   s->p1 = NULL;
@@ -1019,19 +1022,19 @@ Plot::DrawLRUD( CanvasPoint * p0, LRUD * lrud, DBlock * blk, bool reversed )
     s->next = segment;
   }
   segment = s;
-  ++ tot_cnt;
+  ++ nr_segments;
 }
 
 #endif // HAS_LRUD
 
 void
-Plot::DrawVerticalSegment( CanvasPoint * p0, CanvasPoint * p1, DBlock * blk )
+Plot::drawVerticalSegment( PlotPoint * p0, PlotPoint * p1, DBlock * blk )
 {
   ARG_CHECK( p0 == NULL, );
   ARG_CHECK( p1 == NULL, );
   ARG_CHECK( blk == NULL, );
 
-  CanvasSegment * s = new CanvasSegment;
+  PlotSegment * s = new PlotSegment;
   s->next = NULL;
   s->x0 = p0->x0;
   s->y0 = p0->y0;
@@ -1055,6 +1058,65 @@ Plot::DrawVerticalSegment( CanvasPoint * p0, CanvasPoint * p1, DBlock * blk )
     s->next = segment;
   }
   segment = s;
-  ++ tot_cnt;
-  ++ max_cnt;
+  ++ nr_segments;
+  ++ nr_centerline_segments;
 }
+
+
+#ifdef IMPORT_TH2
+/** The bounding box is used to compute the plot width and height
+ *      width  = xmax - xmin
+ *      height = ymax - ymin
+ * The plot size is used to cmpute the offset(s) (@see PlotCanvasScene::setOffset() ), eg,
+ *      offset_X = width / PERCENT_OFFSET - xmin
+ * so that for any point
+ *      X + offset_X >= width / PERCENT_OFFSET
+ *
+ * The PlotCanvasScene sets the width to
+ *      scene_width =  2*offset_X + plot_width
+ *     
+ * Points coords (in ThPoint2D) are divided by PLOT_SCALE with respect to the
+ * scene points. Line-point coords (ThLinePoint in ThLine2D) are the same as in
+ * the scene.
+ *    @see PlotCanvasScene::insertPoint and PlotCanvasScene::insertLinePoint
+ *
+ * stations labels:
+ *   X_num --> X_scene = PLOT_SCALE * ( X_num + X_offset )
+ * station points @see PlotCanvas::insertStationPoint
+ *   X_scene --> X_scrap = X_scene + X_offset
+ * other points
+ *   X_scene --> X_scrap = X_scene / PLOT_SCALE
+ *
+ */
+void
+Plot::adjustToScrap( TherionScrap * scrap )
+{
+  if ( scrap == NULL ) return;
+  for ( std::vector< ThPoint2D * >::const_iterator pit = scrap->pointsBegin(), end = scrap->pointsEnd();
+          pit != end; ++pit ) {
+    ThPoint2D * pt = *pit;
+    double x = pt->x;
+    double y = pt->y;
+    if ( x0min < x ) { x0min = x; }
+    if ( x0max > x ) { x0max = x; }
+    if ( y0min < y ) { y0min = y; }
+    if ( y0max > y ) { y0max = y; }
+  }
+  for ( std::vector< ThLine2D * >::const_iterator lit = scrap->linesBegin(), end = scrap->linesEnd();
+        lit != end;
+        ++lit ) {
+    for ( std::vector< ThLinePoint * >::const_iterator pit = (*lit)->pointBegin(), pend = (*lit)->pointEnd();
+          pit != pend;
+          ++pit ) {
+      ThLinePoint * pt = *pit;
+      double x = pt->x / PLOT_SCALE;
+      double y = pt->y / PLOT_SCALE;
+      if ( x0min < x ) { x0min = x; }
+      if ( x0max > x ) { x0max = x; }
+      if ( y0min < y ) { y0min = y; }
+      if ( y0max > y ) { y0max = y; }
+    }
+  }
+  // TODO for areas
+} 
+#endif

@@ -13,12 +13,13 @@
 
 #include <stdlib.h>
 
-#include <qpixmap.h>
-#include <qcursor.h>
-#include <qpen.h>
-#include <qbrush.h>
+#include <QPixmap>
+#include <QCursor>
+#include <QPen>
+#include <QBrush>
 
-#include "portability.h"
+// #include "portability.h"
+#include "ThPointType.h" // THP_PLACEMARK
 
 class IconSet
 {
@@ -40,7 +41,7 @@ class IconSet
           _3dIcon, _3dOffIcon, gridIcon,
           dataIcon, data3Icon, data4Icon,
           zoomInIcon, zoomOutIcon,
-          mode1Icon, mode2Icon, mode3Icon,
+          mode1Icon, mode2Icon, mode3Icon, mode4Icon,
           thetaPlusIcon, thetaMinusIcon,
           phiPlusIcon, phiMinusIcon,
           undoIcon, undoOffIcon, imageIcon,
@@ -48,20 +49,36 @@ class IconSet
           readIcon, writeIcon, toggleIcon, 
           coverIcon, coverOffIcon,
           commentIcon, commentOffIcon, numberIcon,
-          okIcon, leftIcon, rightIcon, upIcon, downIcon;
+          okIcon, leftIcon, rightIcon, upIcon, downIcon,
+          scrapIcon, selectIcon, pointIcon, lineIcon, areaIcon;
+
+      QPixmap thpAirDraught, thpBlocks, thpClay, // thpContinuation,
+              thpDebris, thpEntrance,  thpIce, // thpLabel,
+              thpPebbles, thpSand, thpSnow,
+              thpStalactite, thpStalagmite,
+              thpUser, thpWaterFlow,
+              thpStation;
       QPixmap whiteIcon, blueIcon, greenIcon, darkBlueIcon;
+      QBrush  T_brush, C_brush;
+      QBrush  brush_wavy;
+      QBrush  brush_star;
+      QBrush  brush_cross;
+      QBrush  brush_dot;
 
       QPixmap penUpIcon, penDownIcon;
       QCursor penUpCursor, penDownCursor;
 
-      QPOINTARRAY polygon[12];  //!< point-type shapes
-      QBrush brush[12];         //!< point brushes
-      QPOINTARRAY arrow[8];     //!< orientation arrows
-      QPOINTARRAY fat_arrow[8]; //!< orientation fat arrows
+#ifdef OLD_POLYGON
+      QPolygon polygon[ Therion::THP_PLACEMARK ];  //!< point-type shapes
+      QBrush brush[ Therion::THP_PLACEMARK ];      //!< point brushes
+      QPolygon arrow[8];     //!< orientation arrows
+      QPolygon fat_arrow[8]; //!< orientation fat arrows
+#endif
       QPen pen_red;          //!< pens
       QPen pen_black;
       QPen pen_blue;
       QPen pen_violet;
+      QPen pen_yellow;
       QPen pen_green;
       QPen pen_gray;
       QPen dash_black;
@@ -70,11 +87,14 @@ class IconSet
       QPen dark_red;
       QPen dark_gray;
 
+      QPen pen_pit;
+      QPen pen_chimney;
+
       // QPixmap pit_pixmap;
       // QBrush pit_brush;
       // QPen pit_pen;
 
-      QPOINTARRAY arrow_end[8];
+      QPolygon arrow_end[8];
 
   private:
     IconSet();
@@ -90,23 +110,32 @@ class IconSet
     /* const */ int Max() const { return  10; }
     /* const */ int Size() const { return 21; }
 
-    const QPOINTARRAY & Symbol(int i) const { return polygon[i]; }
-    const QPOINTARRAY & Arrow(int i) const { return arrow[i%8]; }
-    const QPOINTARRAY & FatArrow(int i) const { return fat_arrow[i%8]; }
+#ifdef OLF_POLYGON
+    const QPolygon & Symbol(int i) const { return polygon[i]; }
+    const QPolygon & Arrow(int i) const { return arrow[i%8]; }
+    const QPolygon & FatArrow(int i) const { return fat_arrow[i%8]; }
     const QBrush & Brush(int i) const { return brush[i]; }
+#endif
+    const QBrush & BrushWavy() const { return brush_wavy; }
+    const QBrush & BrushStar() const { return brush_star; }
+    const QBrush & BrushCross() const { return brush_cross; }
+    const QBrush & BrushDot() const { return brush_dot; }
 
     const QPen & PenRed() const { return pen_red; }
     const QPen & PenBlack() const { return pen_black; }
     const QPen & PenBlue() const { return pen_blue; }
     const QPen & PenViolet() const { return pen_violet; }
+    const QPen & PenYellow() const { return pen_yellow; }
     const QPen & PenGray() const { return pen_gray; }
     const QPen & DashBlack() const { return dash_black; }
     const QPen & DashBlue() const { return dash_blue; }
     const QPen & DashViolet() const { return dash_violet; }
     const QPen & PenGreen() const { return pen_green; }
-    const QPen & PenPit() const { return dash_black /* pit_pen */; }
+    // const QPen & PenPit() const { return dash_black /* pit_pen */; }
     const QPen & DarkRed() const { return dark_red; }
     const QPen & DarkGray() const { return dark_gray; }
+    const QPen & PenPit() const { return pen_pit; }
+    const QPen & PenChimney() const { return pen_chimney; }
 
     const QPixmap & QTshot() const { return qtshotIcon; }
     const QPixmap & QTcalib() const { return qtcalibIcon; }
@@ -144,6 +173,7 @@ class IconSet
     const QPixmap & Mode1() const { return mode1Icon; }
     const QPixmap & Mode2() const { return mode2Icon; }
     const QPixmap & Mode3() const { return mode3Icon; }
+    const QPixmap & Mode4() const { return mode4Icon; }
     const QPixmap & Grid() const { return gridIcon; }
     const QPixmap & Number() const { return numberIcon; }
     const QPixmap & Undo() const { return undoIcon; }
@@ -168,15 +198,38 @@ class IconSet
     const QPixmap & Down() const { return downIcon; }
     const QPixmap & Ok() const { return okIcon; }
 
+    const QPixmap & Scrap() const { return scrapIcon; }
+    const QPixmap & Select() const { return selectIcon; }
+    const QPixmap & Point() const { return pointIcon; }
+    const QPixmap & Line() const { return lineIcon; }
+    const QPixmap & Area() const { return areaIcon; }
+
     const QPixmap & White() const { return whiteIcon; }
     const QPixmap & Blue() const { return blueIcon; }
     const QPixmap & Green() const { return greenIcon; }
     const QPixmap & DarkBlue() const { return darkBlueIcon; }
 
+    const QPixmap & ThpAirDraught() const { return thpAirDraught; }
+    const QPixmap & ThpBlocks() const { return thpBlocks; }
+    const QPixmap & ThpClay() const { return thpClay; }
+    // const QPixmap & ThpContinuation() const
+    const QPixmap & ThpDebris() const { return thpDebris; }
+    const QPixmap & ThpEntrance() const { return thpEntrance; }
+    const QPixmap & ThpIce() const { return thpIce; }
+    // const QPixmap & ThpLabel() const 
+    const QPixmap & ThpPebbles() const { return thpPebbles; }
+    const QPixmap & ThpSand() const { return thpSand; }
+    const QPixmap & ThpSnow() const { return thpSnow; }
+    const QPixmap & ThpStalactite() const { return thpStalactite; }
+    const QPixmap & ThpStalagmite() const { return thpStalagmite; }
+    const QPixmap & ThpUser() const { return thpUser; }
+    const QPixmap & ThpWaterFlow() const { return thpWaterFlow; }
+    // const QPixmap & Thp() const { return thp; }
+
     const QCursor & PenUp() const { return penUpCursor; }
     const QCursor & PenDown() const { return penDownCursor; }
 
-    const QPOINTARRAY & ArrowEnd( int i ) const { return arrow_end[i]; }
+    const QPolygon & ArrowEnd( int i ) const { return arrow_end[i]; }
 
     static IconSet * Get() 
     {

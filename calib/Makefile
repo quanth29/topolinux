@@ -7,11 +7,11 @@ CC = g++
 CCC = gcc
 STRIP = strip
 
-# USE_GUI = 1
+USE_GUI = 1
 
-CFLAGS = -g -O2 -Wall -I../distox
+CFLAGS = -g -O2 -Wall -I../distox -I.
 
-# CFLAGS += -DEXPEARIMENTAL
+CFLAGS += -DEXPERIMENTAL
 # CFLAGS += -DARM
 
 EXES = tlx_calib \
@@ -20,7 +20,8 @@ EXES = tlx_calib \
        tlx_check_calib \
        tlx_int2hex \
        tlx_check_coverage \
-       tlx_two_calib
+       tlx_two_calib \
+       tlx_inspect_calib
 
 
 VECTOR_OBJS = \
@@ -84,6 +85,13 @@ tlx_check_coverage: check_coverage.cpp $(VECTOR_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ -lm -lstdc++
 	$(STRIP) $@
 
+tlx_inspect_calib: inspect_calib.c 
+	$(CC) $(CFLAGS) -o $@ $^ -lm 
+	$(STRIP) $@
+
+
 clean:
 	rm -f *.o $(EXES) $(EXTRA_EXES)
 
+distclean:
+	rm -f *.o $(EXES) $(EXTRA_EXES)

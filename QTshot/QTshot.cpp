@@ -19,8 +19,10 @@
 #include <sstream>
 
 #if defined WIN32
+  #include <direct.h>
   #define QTOPO_RC "C:\\Program Files\\qtopo\\qtopo.rc"
   #define strcasecmp strcmp
+  #define chdir _chdir
 #elif defined ARM
   #define QTOPO_RC "/opt/QtPalmtop/etc/qtopo.rc"
 #else
@@ -29,6 +31,8 @@
 #endif
 
 
+#include <QMenu>
+#include <QRegExp>
 #include <qlayout.h>
 // #include <qtoolbar.h>
 #include <qmenubar.h>
@@ -63,6 +67,7 @@ bool do_debug = false; // enable with -d command option
 #include "Locale.h"
 #include "QTshot.h"
 #include "PlotCanvas.h"
+#include "PlotCanvasScene.h"
 #include "CanvasMode.h"
 
 #include "DataThExport.h"
@@ -70,13 +75,12 @@ bool do_debug = false; // enable with -d command option
 #include "DataSvxExport.h"
 #include "DataTopExport.h"
 
+#define TABLE_ROW_HEIGHT 16
+
 // FIXME LANGUAGE
 const char * extends[] = { "-", "L", "R", "V", "I" };
 const char * flags[]   = { "-", "S", "D" };
 
-#if 0
-  #include "Programs.h"
-#endif
 
 /** default comment size
  */
@@ -86,22 +90,28 @@ const char * flags[]   = { "-", "S", "D" };
 // Main Widget
 
 
-QTshotWidget::QTshotWidget( QWidget * parent, const char * name, WFLAGS fl )
-  : QMAINWINDOW( parent, name, fl )
+QTshotWidget::QTshotWidget( QWidget * parent, const char * /* name */, WFLAGS fl )
+  : QMainWindow( parent,  fl )
   , config( Config::Get() )
   , lexicon( Language::Get() )
   , table( NULL )
-  , planCanvas( NULL )
-  , extCanvas( NULL )
-  , crossCanvas( NULL )
+  , plan_cnt( 1 )
+  , ext_cnt( 1 )
+  , xsect_cnt( 1 )
+  , hsect_cnt( 1 )
+  // , planCanvas( NULL )
+  // , extCanvas( NULL )
+  // , crossCanvas( NULL )
   , _3DCanvas( NULL )
   , collapse( true )              // default onCollapse action
   , append( true )                // downloaded data are appended
   , smart( true )                 // smart-process downloaded data 
-  , splay_at( SPLAY_AT_FROM )                 // splay at station FROM
+  , splay_at( SPLAY_AT_FROM )     // splay at station FROM
   , backward( false )             // station numbers are forward
   , comment_size( COMMENT_SIZE )  // comment width displayed in the table 
 {
+  connect( this, SIGNAL( signalActData(int) ), this, SLOT( updateActData(int) ) );
+
   info.fileName = config("DEFAULT_DATA");
   
   const char * u = config("LENGTH_UNITS");
@@ -120,12 +130,12 @@ QTshotWidget::QTshotWidget( QWidget * parent, const char * name, WFLAGS fl )
       units.setAngle( ANGLE_GRAD );
     }
   }
+  // TODO setIconSize( size );
 
   const char * colors = config("PT_POINTS");
   pt_colors.setPoints( colors );
   colors = config("PT_LINES");
   pt_colors.setLines( colors );
-
 
   memset( device, 0, 32 );
   strncpy(device, config("DEVICE" ), 31 );
@@ -138,9 +148,9 @@ QTshotWidget::QTshotWidget( QWidget * parent, const char * name, WFLAGS fl )
   }
 
   icon = IconSet::Get();
-  setIcon( icon->QTshot() );
+  setWindowIcon( icon->QTshot() );
 
-  setCaption( lexicon("qtopo_shot") );
+  setWindowTitle( lexicon("qtopo_shot") );
   extends[0] = lexicon("N");
   extends[1] = lexicon("L");
   extends[2] = lexicon("R");
@@ -150,6 +160,8 @@ QTshotWidget::QTshotWidget( QWidget * parent, const char * name, WFLAGS fl )
   flags[1] = lexicon("S");
   flags[2] = lexicon("D");
   
+  createActions();
+  createToolBar();
 
   const char * geometry = config("GEOMETRY");
   int w = WIDGET_WIDTH;
@@ -159,95 +171,146 @@ QTshotWidget::QTshotWidget( QWidget * parent, const char * name, WFLAGS fl )
     h = WIDGET_HEIGHT;
   } 
   resize(w, h);
-
-  // QMenuBar * menubar = this->menuBar();
-  QTOOLBAR * toolbar = new QTOOLBAR( this );
-  btnNew =
-    new QTOOLBUTTON( icon->NewOff(), lexicon("clear"), QString::null,
-                     this, SLOT(doNew()), toolbar, lexicon("clear") );
-  // QTOOLBUTTON * _open =
-    new QTOOLBUTTON( icon->Open(), lexicon("open"), QString::null,
-                     this, SLOT(doOpen()), toolbar, lexicon("open") );
-  btnSave =
-    new QTOOLBUTTON( icon->SaveOff(), lexicon("save"), QString::null,
-                     this, SLOT(doSave()), toolbar, lexicon("save") );
-  btnData = 
-    new QTOOLBUTTON( icon->Data(), lexicon("download"), QString::null,
-                     this, SLOT(doData()), toolbar, lexicon("download") );
-  btnExport =
-    new QTOOLBUTTON( icon->ExportThOff(), lexicon("export"), QString::null,
-                     this, SLOT(doExport()), toolbar, lexicon("export") );
-  btnCollapse =
-    new QTOOLBUTTON( icon->CollapseOff(), lexicon("splay"), QString::null,
-                     this, SLOT(doCollapse()), toolbar, lexicon("splay") );
-  btnPlan =
-    new QTOOLBUTTON( icon->PlanOff(), lexicon("plan"), QString::null,
-                     this, SLOT(doPlan()), toolbar, lexicon("plan") );
-  btnExtended =
-    new QTOOLBUTTON( icon->ExtendedOff(), lexicon("extended"), QString::null,
-                     this, SLOT(doExtended()), toolbar, lexicon("extended") );
-  btn3D = 
-    new QTOOLBUTTON( icon->_3dOff(), lexicon("3d"), QString::null,
-                     this, SLOT(do3D()), toolbar, lexicon("3d") );
-
-    new QTOOLBUTTON( icon->Toggle(), lexicon("toggle"), QString::null,
-                     this, SLOT(doToggle()), toolbar, lexicon("toggle") );
-
-    new QTOOLBUTTON( icon->Options(), lexicon("options"), QString::null,
-                     this, SLOT(doOptions()), toolbar, lexicon("options") );
-
-    new QTOOLBUTTON( icon->Help(), lexicon("help"), QString::null,
-                     this, SLOT(doHelp()), toolbar, lexicon("help") );
-
-    new QTOOLBUTTON( icon->Quit(), lexicon("exit"), QString::null,
-                     this, SLOT(doQuit()), toolbar, lexicon("exit") );
-
-/*
-  (void)QWhatsThis::whatsThisButton( toolbar );
-  QWhatsThis::add( _open, "open" );
-  QWhatsThis::add( _save, "save" );
-  QWhatsThis::add( _data, "data" );
-  QWhatsThis::add( _export, "export" );
-  QWhatsThis::add( _quit, "quit" );
-*/
-
-/*
-  QPOPUPMENU * menu  = new QPOPUPMENU( this, "File" );
-  menubar->insertItem( "&File", menu );
-  menu->insertItem( "&Open", this, SLOT( doOpen() ), 0, 1 );
-  menu->insertItem( "&Save", this, SLOT( doSave() ), 0, 1 );
-  menu->insertItem( "&Quit", this, SLOT( doQuit() ), 0, 1 );
-*/
-  // CWidget * cwidget = new CWidget( this );
-  // setCentralWidget( cwidget );
   
+  /*
   if ( (u = config("EXPORT")) != NULL ) {
     if ( strcmp(u, "compass") == 0 ) {
-      export_type = ExportCompass;
+      export_type = EXPORT_COMPASS;
     } else if ( strcmp(u, "pockettopo") == 0 ) {
-      export_type = ExportPocketTopo;
+      export_type = EXPORT_POCKETTOPO;
     } else if ( strcmp(u, "survex") == 0 ) {
-      export_type = ExportSurvex;
+      export_type = EXPORT_SURVEX;
     } else {
-      export_type = ExportTherion;
+      export_type = EXPORT_THERION;
     }
     onOffButtonExport( false );
   }
+  */
 
   show();
   if ( strcmp( config("NEWBY"), "yes") == 0 ) {
-    new SplashWidget( this );
+    SplashWidget( this );
   }
 }
 
+// -----------------------------------------------------
+void
+QTshotWidget::createToolBar()
+{
+  QToolBar * toolbar = addToolBar( tr("") );
+  setToolButtonStyle( Qt::ToolButtonIconOnly ); // this is the default
+
+  toolbar->addAction( actNew );
+  toolbar->addAction( actOpen );
+  toolbar->addAction( actSave );
+  toolbar->addAction( actData );
+  // toolbar->addAction( actExport );
+  toolbar->addAction( actCollapse );
+  toolbar->addAction( actPlan );
+  toolbar->addAction( actExtended );
+  toolbar->addAction( act3D );
+  toolbar->addAction( actToggle );
+  toolbar->addAction( actOptions );
+  toolbar->addAction( actHelp );
+  toolbar->addAction( actQuit );
+}
+
+// -----------------------------------------------------
+void
+QTshotWidget::createActions()
+{
+  actNew      = new QAction( icon->NewOff(), lexicon("clear"), this);
+  actOpen     = new QAction( icon->Open(), lexicon("open"), this);
+  actSave     = new QAction( icon->SaveOff(), lexicon("save"), this );
+  QMenu * save_menu = new QMenu( this );
+  save_menu->addAction( lexicon("topolinux") );
+  save_menu->addAction( lexicon("therion") );
+  save_menu->addAction( lexicon("compass") );
+  save_menu->addAction( lexicon("survex") );
+  save_menu->addAction( lexicon("pockettopo") );
+  connect( save_menu, SIGNAL(triggered(QAction*)), this, SLOT(doExport(QAction*)) ); 
+  actSave->setMenu( save_menu );
+
+  actData     = new QAction( icon->Data(), lexicon("download"), this );
+  // actExport   = new QAction( icon->ExportThOff(), lexicon("export"), this );
+  actCollapse = new QAction( icon->CollapseOff(), lexicon("splay"), this );
+  actPlan     = new QAction( icon->PlanOff(), lexicon("plan"), this );
+  plan_menu = new QMenu( this );
+  plan_menu->addAction( lexicon("new") );
+  for ( size_t k = 0; k < planCanvases.plotsSize(); ++k ) {
+    plan_menu->addAction( planCanvases.getName(k) );
+  }
+  connect( plan_menu, SIGNAL(triggered(QAction*)), this, SLOT(doPlan(QAction*)) ); 
+  actPlan->setMenu( plan_menu );
+
+  actExtended = new QAction( icon->ExtendedOff(), lexicon("extended"), this );
+  ext_menu = new QMenu( this );
+  ext_menu->addAction( lexicon("new") );
+  for ( size_t k = 0; k < extCanvases.plotsSize(); ++k ) {
+    plan_menu->addAction( extCanvases.getName(k) );
+  }
+  connect( ext_menu, SIGNAL(triggered(QAction*)), this, SLOT(doExtended(QAction*)) ); 
+  actExtended->setMenu( ext_menu );
+
+  act3D       = new QAction( icon->_3dOff(), lexicon("3d"), this );
+  actToggle   = new QAction( icon->Toggle(), lexicon("toggle"), this );
+  actOptions  = new QAction( icon->Options(), lexicon("options"), this );
+  actHelp     = new QAction( icon->Help(), lexicon("help"), this );
+  actQuit     = new QAction( icon->Quit(), lexicon("exit"), this );
+  // actQuit->setShortcuts( QKeySequence::Quit );
+  // actQuit->setStatusTip( tr("...") );
+
+  connect( actNew,     SIGNAL(triggered()),  this, SLOT(doNew()) );
+  connect( actOpen,    SIGNAL(triggered()), this, SLOT(doOpen()) );
+  connect( actSave,    SIGNAL(triggered()), this, SLOT(doSave()) );
+  connect( actData,    SIGNAL(triggered()), this, SLOT(doData()) );
+  // connect( actExport,  SIGNAL(triggered()), this, SLOT(doExport()) );
+  connect( actCollapse, SIGNAL(triggered()), this, SLOT(doCollapse()) );
+  connect( actPlan,    SIGNAL(triggered()), this, SLOT(doPlanScrap()) );
+  connect( actExtended, SIGNAL(triggered()), this, SLOT(doExtendedScrap()) );
+  connect( act3D,      SIGNAL(triggered()), this, SLOT(do3D()) );
+  connect( actToggle,  SIGNAL(triggered()), this, SLOT(doToggle()) );
+  connect( actOptions, SIGNAL(triggered()), this, SLOT(doOptions()) );
+  connect( actHelp,    SIGNAL(triggered()), this, SLOT(doHelp()) );
+  connect( actQuit,    SIGNAL(triggered()), this, SLOT(doQuit()) );
+
+  actNew->setVisible( true );
+  actOpen->setVisible( true );
+  actSave->setVisible( true );
+  actData->setVisible( true );
+  // actExport->setVisible( true );
+  actCollapse->setVisible( true );
+  actPlan->setVisible( true );
+  actExtended->setVisible( true );
+  act3D->setVisible( true );
+  actToggle->setVisible( true );
+  actOptions->setVisible( true );
+  actHelp->setVisible( true );
+  actQuit->setVisible( true );
+}
+
+// -----------------------------------------------------
+void
+QTshotWidget::updateActData( int c )
+{
+  switch ( c ) {
+    case 3:
+      actData->setIcon( icon->Data3() );
+      break;
+    case 4:
+      actData->setIcon( icon->Data4() );
+      break;
+    default:
+      actData->setIcon( icon->Data() );
+  }
+}
+      
+  
 void
 QTshotWidget::distoxReset()
 {
   DBG_CHECK("QTshotWidget::distoxReset()\n");
-  btnData->setPixmap( icon->Data3() );
-  btnData->update();
-  // btnData->repaint(0,0, -1,-1);
-  // btnData->show();
+  signalActData( 3 );
 }
 
 void
@@ -255,22 +318,18 @@ QTshotWidget::distoxDownload( size_t nr )
 {
   DBG_CHECK("QTshotWidget::distoxDownload() %d\n", nr );
   if ( ( nr % 2 ) == 1 ) {
-    btnData->setPixmap( icon->Data4() );
+    signalActData( 4 );
   } else {
-    btnData->setPixmap( icon->Data3() );
+    signalActData( 3 );
   }
-  // btnData->repaint(0,0, -1,-1);
-  // btnData->show();
 }
 
 void
 QTshotWidget::distoxDone()
 {
   DBG_CHECK("QTshotWidget::distoxDone()\n");
-  btnData->setPixmap( icon->Data() );
-  // repaint(0,0, -1,-1);
-
-  onOffButtons( dlist.Size() > 0 );
+  signalActData( 0 );
+  onOffButtons( dlist.listSize() > 0 );
 }
 
 
@@ -279,7 +338,7 @@ QTshotWidget::value_changed( int r, int c )
 {
   DBG_CHECK("value_changed row %d column %d \n", r, c );
   if ( c == 0 || c == 1 || c == 5 || c == 6 ) {
-    dlist.updateBlock( r, c, table->text(r,c) );
+    dlist.updateBlock( r, c, table->item(r,c)->text().TO_CHAR() );
   /*
   } else if ( c == 4 ) {
     int ignore = dlist.toggleIgnore( r );
@@ -289,153 +348,167 @@ QTshotWidget::value_changed( int r, int c )
 }
 
 void
-QTshotWidget::SetBaseBlock( DBlock * base )
+QTshotWidget::setBaseBlock( DBlock * base )
 {
   if ( table != NULL ) {
     int row = 0;
-    for (DBlock * b = dlist.Head(); b != NULL; b=b->Next() ) {
-      if ( dlist.IsBaseBlock( b ) ) {
+    for (DBlock * b = dlist.listHead(); b != NULL; b=b->next() ) {
+      if ( dlist.isBaseBlock( b ) ) {
         #ifdef HAS_LRUD
           if ( do_lrud ) {
-            if ( b->LRUD_From() ) {
-              table->setPixmap( row, 0, icon->Blue() );
+            if ( b->getLRUD( 0 ) ) {
+              table->item( row, 0 )->setIcon( icon->Blue() );
             } else {
-              table->setPixmap( row, 0, icon->White() );
-              table->updateCell( row, 0 );
+              table->item( row, 0 )->setIcon( icon->White() );
+              // FIXME table->updateCell( row, 0 );
             }
           } else {
             // fprintf(stderr, "paint row %d white\n", row );
-            table->setPixmap( row, 0, icon->White() );
-            table->updateCell( row, 0 );
+            table->item( row, 0 )->setIcon( icon->White() );
+            // FIXME table->updateCell( row, 0 );
           }
         #else
-          table->setPixmap( row, 0, icon->White() );
-          table->updateCell( row, 0 );
+          table->item( row, 0)->setIcon( icon->White() );
+          // FIXME table->updateCell( row, 0 );
         #endif
         break;
       }
       ++ row;
     }
   }
-  dlist.SetBaseBlock( base );
+  dlist.setBaseBlock( base );
 }
+
 
 void
 QTshotWidget::showData( )
 {
   DBG_CHECK("showData() table %p \n", (void *)table );
+  createTable();
+
+  double ls = units.length_factor;
+  double as = units.angle_factor;
+
+  QTableWidgetItem * item;
+  int row = 0;
+  for (DBlock * b = dlist.listHead(); b != NULL; b=b->next() ) {
+    table->setRowHeight( row, TABLE_ROW_HEIGHT );
+
+    item = new QTableWidgetItem( b->fromStation() );
+    table->setItem( row, 0, item);
+    item = new QTableWidgetItem( b->toStation() );
+    table->setItem( row, 1, item);
+    item = new QTableWidgetItem( Locale::ToString(b->Tape() * ls, 2) );
+    table->setItem( row, 2, item);
+    item = new QTableWidgetItem( Locale::ToString(b->Compass() * as, 1) );
+    table->setItem( row, 3, item);
+    item = new QTableWidgetItem( Locale::ToString(b->Clino() * as, 1) );
+    table->setItem( row, 4, item);
+    item = new QTableWidgetItem( tr( extends[ b->Extend() ] ) );
+    table->setItem( row, 5, item);
+    item = new QTableWidgetItem( tr( flags[ b->Flag() ] ) );
+    table->setItem( row, 6, item);
+    if ( b->hasComment() ) {
+      QString c( b->getComment() );
+      c.truncate( comment_size ); 
+      item = new QTableWidgetItem( c );
+      table->setItem( row, 7, item );
+    }
+
+    #ifdef HAS_LRUD
+      if ( do_lrud ) {
+        if ( dlist.IsBaseBlock( b ) ) { 
+          if ( b->getLRUD( 0 ) ) {
+            table->item( row, 0)->setIcon( icon->DarkBlue() );
+          } else {
+            table->item( row, 0)->setIcon( icon->Green() );
+          }
+        } else {
+          if ( b->getLRUD( 0 ) ) {
+            table->item( row, 0)->setIcon( icon->Blue() );
+          } else {
+            // table->item( row, 0)->setIcon( icon->White() );
+          }
+        }
+        if ( b->getLRUD( 1 ) ) {
+          table->item( row, 1)->setIcon( icon->Blue() );
+        } else {
+          // table->item( row, 0)->setIcon( icon->White() );
+        }
+      } else { // do_lrud == false
+        if ( dlist.IsBaseBlock( b ) ) {
+          table->item( row, 0)->setIcon( icon->Green() );
+        } else {
+          // table->item( row, 0)->setIcon( icon->White() );
+        }
+      }
+    #else
+      if ( dlist.isBaseBlock( b ) ) {
+        table->item( row, 0 )->setIcon( icon->Green() );
+      } else {
+        // table->setPixmap( row, 0, icon->White() );
+      }
+    #endif
+
+    ++ row;
+  }
+}
+
+
+void
+QTshotWidget::createTable()
+{
+  int rows = dlist.listSize();
+  int cols = 8;
   if ( table == NULL ) {
-    table = new QTABLE( dlist.Size(), 8, this);
-    QHEADER * header = table->horizontalHeader ();
-    header->setLabel( 0, lexicon("from"),    STATION_WIDTH );
-    header->setLabel( 1, lexicon("to"),      STATION_WIDTH );
-    header->setLabel( 2, lexicon("tape"),    DATA_WIDTH );
-    header->setLabel( 3, lexicon("azimuth"), DATA_WIDTH );
-    header->setLabel( 4, lexicon("clino"),   DATA_WIDTH );
-    header->setLabel( 5, lexicon("ext"),     FLAG_WIDTH );
-    header->setLabel( 6, lexicon("flag"),    FLAG_WIDTH );
-    header->setLabel( 7, lexicon("comment"), FLAG_WIDTH );
+    
+    table = new QTableWidget( rows, cols, this);
+    table->setHorizontalHeaderItem( 0, new QTableWidgetItem( lexicon("from") ) ); // ,    STATION_WIDTH );
+    table->setHorizontalHeaderItem( 1, new QTableWidgetItem( lexicon("to") ) ); // ,      STATION_WIDTH );
+    table->setHorizontalHeaderItem( 2, new QTableWidgetItem( lexicon("tape") ) ); // ,    DATA_WIDTH );
+    table->setHorizontalHeaderItem( 3, new QTableWidgetItem( lexicon("azimuth") ) ); // , DATA_WIDTH );
+    table->setHorizontalHeaderItem( 4, new QTableWidgetItem( lexicon("clino") ) ); // ,   DATA_WIDTH );
+    table->setHorizontalHeaderItem( 5, new QTableWidgetItem( lexicon("ext") ) ); // ,     FLAG_WIDTH );
+    table->setHorizontalHeaderItem( 6, new QTableWidgetItem( lexicon("flag") ) ); // ,    FLAG_WIDTH );
+    table->setHorizontalHeaderItem( 7, new QTableWidgetItem( lexicon("comment") ) ); // , FLAG_WIDTH );
+    table->setColumnWidth( 0, STATION_WIDTH );
+    table->setColumnWidth( 1, STATION_WIDTH );
+    table->setColumnWidth( 2, DATA_WIDTH );
+    table->setColumnWidth( 3, DATA_WIDTH );
+    table->setColumnWidth( 4, DATA_WIDTH );
+    table->setColumnWidth( 5, FLAG_WIDTH );
+    table->setColumnWidth( 6, FLAG_WIDTH );
     table->setColumnWidth( 7, 100 );
+    table->setRowHeight( 0, TABLE_ROW_HEIGHT );
     // header->setClickEnabled( TRUE, 0 );
     // header->setClickEnabled( TRUE, 1 );
     // connect( table, SIGNAL(clicked(int, int, int, const QPoint &)), 
     //          this, SLOT(clicked( int, int, int, const QPoint & ) ) );
-    connect( table, SIGNAL(valueChanged(int, int)), 
-             this, SLOT(value_changed(int,int)) );
-    connect( table, SIGNAL(doubleClicked(int, int, int, const QPoint & ) ),
-             this, SLOT(double_clicked( int, int, int, const QPoint & ) ) );
+    table->setItemPrototype( table->item( 0, 0 ) );
+    connect( table, SIGNAL(cellChanged(int, int)), this, SLOT(value_changed(int,int)) );
+    connect( table, SIGNAL(cellDoubleClicked(int, int ) ), this, SLOT(double_clicked( int, int ) ) );
     table->show();
     setCentralWidget( table );
 
     // table->setSorting( TRUE );
     DBG_CHECK("showData() created table, rows %d \n", dlist.Size() );
   } else {
-    table->setNumRows( dlist.Size() );
+    table->setRowCount( dlist.listSize() );
     DBG_CHECK("showData() table set rows %d \n", dlist.Size() );
-  }
-
-  double ls = units.length_factor;
-  double as = units.angle_factor;
-
-#if 0 // QT_VERSION >= 0x40200
-  QString color_black( "QTextItem{ color: black }" );
-  QString color_red  ( "QTextItem{ color: red }" );
-  QString color_blue ( "QTextItem{ color: blue }" );
-#endif
-
-  int row = 0;
-  for (DBlock * b = dlist.Head(); b != NULL; b=b->Next() ) {
-#if 0 // QT_VERSION >= 0x040200
-    if ( b->NrBlocklets() <= 1 ) {
-      table->cellWidget( row, 0 )->setStyleSheet( color_black );
-    } else {
-      table->cellWidget( row, 0 )->setStyleSheet( color_red );
-    }
-#endif
-
-    #ifdef HAS_LRUD
-      if ( do_lrud ) {
-        if ( dlist.IsBaseBlock( b ) ) { 
-          if ( b->LRUD_From() ) {
-            table->setPixmap( row, 0, icon->DarkBlue() );
-          } else {
-            table->setPixmap( row, 0, icon->Green() );
-          }
-        } else {
-          if ( b->LRUD_From() ) {
-            table->setPixmap( row, 0, icon->Blue() );
-          } else {
-            // table->setPixmap( row, 0, icon->White() );
-          }
-        }
-        if ( b->LRUD_To() ) {
-          table->setPixmap( row, 1, icon->Blue() );
-        } else {
-          // table->setPixmap( row, 0, icon->White() );
-        }
-      } else { // do_lrud == false
-        if ( dlist.IsBaseBlock( b ) ) {
-          table->setPixmap( row, 0, icon->Green() );
-        } else {
-          // table->setPixmap( row, 0, icon->White() );
-        }
-      }
-    #else
-      if ( dlist.IsBaseBlock( b ) ) {
-        table->setPixmap( row, 0, icon->Green() );
-      } else {
-        // table->setPixmap( row, 0, icon->White() );
-      }
-    #endif
-
-    table->setText( row, 0, b->From() );
-    table->setText( row, 1, b->To() );
-    table->setText( row, 2, Locale::ToString(b->Tape() * ls, 2) );
-    table->setText( row, 3, Locale::ToString(b->Compass() * as, 1) );
-    table->setText( row, 4, Locale::ToString(b->Clino() * as, 1) );
-    table->setText( row, 5, extends[ b->Extend() ] );
-    table->setText( row, 6, flags[ b->Flag() ] );
-    if ( b->hasComment() ) {
-      QString c( b->Comment() );
-      c.truncate( comment_size ); // FIXME 10 chars only
-      table->setText( row, 7, c );
-    }
-    ++ row;
   }
 }
 
 void 
-QTshotWidget::double_clicked( int row, int col, int button, const QPoint & )
+QTshotWidget::double_clicked( int row, int col )
 {
-  DBG_CHECK("QTshotWidget::double_clicked %d %d Button %d \n", row, col, button );
+  DBG_CHECK("QTshotWidget::double_clicked %d %d \n", row, col );
   col = col;  // avoid gcc warnings
-  button = button;
   // comment input dialog
   DBlock * b = dlist.getBlock( row );
   #ifdef HAS_LRUD
-    new CommentWidget( this, b, do_lrud );
+    CommentWidget dialog( this, b, do_lrud );
   #else
-    new CommentWidget( this, b );
+    CommentWidget dialog( this, b );
   #endif
 }
 
@@ -450,22 +523,22 @@ QTshotWidget::clicked( int row, int col, int button, const QPoint & )
 void 
 QTshotWidget::doCollapse()
 {
-  if ( dlist.Size() == 0 ) return;
+  if ( dlist.listSize() == 0 ) return;
   DBG_CHECK("doCollapse() %s \n", collapse? "yes" : "no" );
   if ( ! table ) return;
   if ( collapse ) {
-    for (int row = 0; row <table->numRows(); ++row ) {
-      if ( table->text(row, 1).isEmpty() ) {
+    for (int row = 0; row <table->rowCount(); ++row ) {
+      if ( table->item(row, 1)->text().isEmpty() ) {
         table->hideRow( row );
       } else {
-        table->setRowHeight(row, 16);
+        table->setRowHeight(row, TABLE_ROW_HEIGHT);
       }
     }
     collapse = false;
   } else {
-    for (int row = 0; row <table->numRows(); ++row ) {
+    for (int row = 0; row <table->rowCount(); ++row ) {
       table->showRow( row );
-      table->setRowHeight(row, 16);
+      table->setRowHeight(row, TABLE_ROW_HEIGHT);
     }
     collapse = true;
   }
@@ -476,10 +549,8 @@ QTshotWidget::doNew()
 {
   DBG_CHECK("doNew \n" );
 
-  if ( dlist.Size() > 0 ) {
-    CleanShotsWidget * csw = new CleanShotsWidget( this );
-    // csw->show();
-    csw->exec();
+  if ( dlist.listSize() > 0 ) {
+    CleanShotsWidget dialog( this );
   }
 }
   
@@ -488,7 +559,7 @@ void
 QTshotWidget::doRealNew()
 {
   dlist.clear();
-  onOffButtons( dlist.Size() > 0 );
+  onOffButtons( dlist.listSize() > 0 );
   closePlots();
   showData();
 }
@@ -499,27 +570,37 @@ QTshotWidget::doRealNew()
 void
 QTshotWidget::closePlots()
 {
-  DBG_CHECK("closePlots() %p %p %p %p\n",
-      (void*)planCanvas, (void*)extCanvas, (void*)crossCanvas, (void*)_3DCanvas );
+  // DBG_CHECK("closePlots() %p %p %p %p\n",
+  //     (void*)planCanvas, (void*)extCanvas, (void*)crossCanvas, (void*)_3DCanvas );
 
-  if ( planCanvas ) {
-    planCanvas->hide();
-    planCanvas->ClearTh2PointsAndLines();
-    delete planCanvas;
-    planCanvas = NULL;
-  }
-  if ( extCanvas ) {
-    extCanvas->hide();
-    extCanvas->ClearTh2PointsAndLines();
-    delete extCanvas;
-    extCanvas = NULL;
-  }
-  if ( crossCanvas ) {
-    crossCanvas->hide();
-    crossCanvas->ClearTh2PointsAndLines();
-    delete crossCanvas;
-    crossCanvas = NULL;
-  }
+  // if ( planCanvas ) {
+  //   planCanvas->hide();
+  //   planCanvas->ClearTh2PointsAndLines();
+  //   delete planCanvas;
+  //   planCanvas = NULL;
+  // }
+  planCanvases.clear();
+  plan_menu->clear();
+  plan_menu->addAction( lexicon("new") );
+
+  // if ( extCanvas ) {
+  //   extCanvas->hide();
+  //   extCanvas->ClearTh2PointsAndLines();
+  //   delete extCanvas;
+  //   extCanvas = NULL;
+  // }
+  extCanvases.clear();
+  ext_menu->clear();
+  ext_menu->addAction( lexicon("new") );
+
+  // if ( crossCanvas ) {
+  //   crossCanvas->hide();
+  //   crossCanvas->ClearTh2PointsAndLines();
+  //   delete crossCanvas;
+  //   crossCanvas = NULL;
+  // }
+  crossCanvases.clear();
+
   if ( _3DCanvas ) {
     _3DCanvas->hide();
     // _3DCanvas->ClearTh2PointsAndLines();
@@ -528,73 +609,88 @@ QTshotWidget::closePlots()
   }
 }
 
-void 
-QTshotWidget::openPlot( int mode )
+PlotCanvas *
+QTshotWidget::openPlot( int mode, const char * pname, const char * sname )
 {
-  if ( mode == MODE_PLAN && planCanvas == NULL ) {
-    planCanvas = new PlotCanvas( this, MODE_PLAN /*, true */ );
-  } else if ( mode == MODE_EXT && extCanvas == NULL ) {
-    extCanvas = new PlotCanvas( this, MODE_EXT /*, true */ );
-  }
+  fprintf( stderr, "QTshotWidget::openPlot() mode %d name %s %s\n", mode, pname, sname ); // FIXME
+  PlotCanvas * canvas = NULL;
+  if ( mode == MODE_PLAN ) {
+    canvas = new PlotCanvas( this, MODE_PLAN, pname, sname /*, true */ );
+    planCanvases.addPlot( pname, canvas );
+    plan_menu->addAction( pname );
+  } else if ( mode == MODE_EXT ) {
+    canvas = new PlotCanvas( this, MODE_EXT, pname, sname /*, true */ );
+    extCanvases.addPlot( pname, canvas ); 
+    ext_menu->addAction( pname );
+  } else {
+    fprintf(stderr, "QTshotWidget::openPlot() not supported mode %d name %s %s\n",
+      mode, pname, sname );
+  } 
+  return canvas;
 }
 
 
 void 
-QTshotWidget::insertPoint( int x, int y, ThPointType type, int mode )
+QTshotWidget::insertPoint( int x, int y, Therion::PointType type, PlotCanvas * canvas )
 {
-  if ( mode == MODE_PLAN && planCanvas ) {
-    planCanvas->insertPoint( x, y, type, 0, 0, true );
-  } else if ( mode == MODE_EXT && extCanvas ) {
-    extCanvas->insertPoint( x, y, type, 0, 0, true );
-  }
+  canvas->getScene()->insertPoint( x, y, type, 0, 0, true );
 }
  
 void 
-QTshotWidget::insertLinePoint( int x, int y, ThLineType type, int mode )
+QTshotWidget::insertLinePoint( int x, int y, Therion::LineType type, PlotCanvas * canvas )
 {
-  if ( mode == MODE_PLAN && planCanvas ) {
-    // DBG_CHECK("insertLinePoint %d %d \n", x, y );
-    planCanvas->insertLinePoint( x, y, type, true );
-  } else if ( mode == MODE_EXT && extCanvas ) {
-    extCanvas->insertLinePoint( x, y, type, true );
-  }
+  canvas->getScene()->insertLinePoint( x, y, type, true );
 }
 
+void
+QTshotWidget::updateCanvases()
+{
+  // if ( planCanvas ) planCanvas->redrawPlot();
+  // if ( extCanvas )  extCanvas->redrawPlot();
+  for ( size_t k=0; k<planCanvases.plotsSize(); ++k ) {
+    planCanvases[k] ->redrawPlot();
+  }
+  for ( size_t k=0; k < extCanvases.plotsSize(); ++k ) {
+    extCanvases[k] -> redrawPlot();
+  } 
+  // FIXME
+  // if ( _3DCanvas )  _3DCanvas->redrawPlot();
+  // if ( crossCanvas ) crossCanvas->redrawPlot();
+}
+
+
 // ---------------------------------------------------------
+// FILE -> OPEN
 
 void
 QTshotWidget::doOpen()
 {
   DBG_CHECK("doOpen \n" );
-#ifdef QT_NO_FILEDIALOG
-  // MyFileDialog * dialog = 
-    new MyFileDialog( this, lexicon("open_file"), 0 );
-  // dialog->show();
-  // dialog->exec();
-#else
-  onOpenFile( QFileDialog::getOpenFileName( info.fileName,
-    "Tlx files (*.tlx)\nRaw files (*.txt)\nPocketTopo (*.top)\nAll (*.*)", this ) );
-#endif
+  onOpenFile( QFileDialog::getOpenFileName( this,
+      lexicon("open_file"),
+      info.fileName,
+      "Tlx files (*.tlx)\nRaw files (*.txt)\nPocketTopo (*.top)\nAll (*.*)"
+      ) );
 }
 
 void
 QTshotWidget::onOpenFile( const QString & file )
 {
   info.fileName = file;
-  DBG_CHECK("onOpenFile file \"%s\"\n", info.fileName.latin1() );
+  DBG_CHECK("onOpenFile file \"%s\"\n", info.fileName.TO_CHAR() );
   if ( ! info.fileName.isEmpty() ) {
     closePlots();           // close all plots
-    SetBaseBlock( NULL );   // erase base block pixmap
+    setBaseBlock( NULL );   // erase base block pixmap
     collapse = true;        // reset onCollapse action
     if ( table != NULL ) {  // set all table rows visible
-      for (int row = 0; row <table->numRows(); ++row ) {
+      for (int row = 0; row <table->rowCount(); ++row ) {
         table->showRow( row );
       }
     }
 
-    int ret = dlist.loadFile( this, info.fileName, false, &info ); // do not append but replace data
+    int ret = dlist.loadFile( this, info.fileName.TO_CHAR(), false, &info ); // do not append but replace data
     if ( ret == 0 ) {
-      onOffButtons( dlist.Size() > 0 );
+      onOffButtons( dlist.listSize() > 0 );
       showData();
     } else {
       switch (ret) {
@@ -615,57 +711,63 @@ QTshotWidget::onOpenFile( const QString & file )
   }
 }
 
-void
-QTshotWidget::updateCanvases()
-{
-  if ( planCanvas ) planCanvas->redrawPlot();
-  if ( extCanvas )  extCanvas->redrawPlot();
-  // FIXME
-  // if ( _3DCanvas )  _3DCanvas->redrawPlot();
-  // if ( crossCanvas ) crossCanvas->redrawPlot();
-}
+// ---------------------------------------------------------
+// FILE -> SAVE
 
 void
 QTshotWidget::doSave()
 {
-  if ( dlist.Size() == 0 ) return;
-#ifdef QT_NO_FILEDIALOG
-  // MyFileDialog * dialog = 
-    new MyFileDialog( this, lexicon("save_file"), 1 );
-  // dialog->show();
-  // dialog->exec();
-#else
-  onSaveFile( QFileDialog::getSaveFileName( info.fileName,
-    "Tlx files (*.tlx)\nAll (*.*)", this ) );
-#endif
+  if ( dlist.listSize() == 0 ) return;
+  onSaveFile( QFileDialog::getSaveFileName( this,
+    lexicon("save_file"),
+    info.fileName,
+    "Tlx files (*.tlx)\nAll (*.*)" ) );
 }
 
 void
 QTshotWidget::onSaveFile( const QString & file )
 {
   info.fileName = file;
-  DBG_CHECK("onSaveFile file \"%s\"\n", info.fileName.latin1() );
+  DBG_CHECK("onSaveFile file \"%s\"\n", info.fileName.TO_CHAR() );
   if ( !info.fileName.isEmpty() ) {                 // got a file name
     
     // TODO get optional comment to write to TLX file
     if ( info.description.size() == 0 ) {
       // info.surveyComment = 
       QString descr = 
-        QInputDialog::getText( lexicon("qtopo_comment"), 
+        QInputDialog::getText( this,
+                               lexicon("qtopo_comment"), 
                                lexicon("comment"),
                                QLineEdit::Normal, 
                                "" // info.description // info.surveyComment
       );
-      info.description = descr.latin1();
+      info.description = descr.TO_CHAR();
     }
     dlist.saveTlx( info );
+  }
+}
+
+void 
+QTshotWidget::getSurveyText( std::ostringstream & oss ) 
+{
+  for ( size_t k=0; k<planCanvases.plotsSize(); ++k ) {
+    PlotCanvas * canvas = planCanvases[k];
+    oss << " input " << canvas->getFileName() << "\n";
+  }
+  for ( size_t k=0; k<extCanvases.plotsSize(); ++k ) {
+    PlotCanvas * canvas = extCanvases[k];
+    oss << " input " << canvas->getFileName() << "\n";
+  }
+  for ( size_t k=0; k<crossCanvases.plotsSize(); ++k ) {
+    PlotCanvas * canvas = crossCanvases[k];
+    oss << " input " << canvas->getFileName() << "\n";
   }
 }
 
 void
 QTshotWidget::doInsertBlock( DBlock * block )
 {
-  new InsertWidget( this, block );
+  InsertWidget dialog( this, block );
 }
 
 void 
@@ -698,7 +800,7 @@ QTshotWidget::doInsertLRUD( DBlock * block,
   if ( ! at_from ) a += 180.0;
   double d, b, c;
   if ( ! L.isEmpty() ) {
-    // if ( (d = atof( L.latin1() )) > 0.0 ) {
+    // if ( (d = atof( L.TO_CHAR() )) > 0.0 ) {
     if ( (d = Locale::ToDouble( L )) > 0.0 ) {
       b = a + 270; while ( b >= 360.0 ) b-= 360.0;
       c = 0.0;
@@ -706,7 +808,7 @@ QTshotWidget::doInsertLRUD( DBlock * block,
     }
   }
   if ( ! R.isEmpty() ) {
-    // if ( (d = atof( R.latin1() )) > 0.0 ) {
+    // if ( (d = atof( R.TO_CHAR() )) > 0.0 ) {
     if ( (d = Locale::ToDouble( R )) > 0.0 ) {
       b = a + 90; while ( b >= 360.0 ) b-= 360.0;
       c = 0.0;
@@ -714,7 +816,7 @@ QTshotWidget::doInsertLRUD( DBlock * block,
     }
   }
   if ( ! U.isEmpty() ) {
-    // if ( (d = atof( U.latin1() )) > 0.0 ) {
+    // if ( (d = atof( U.TO_CHAR() )) > 0.0 ) {
     if ( (d = Locale::ToDouble( U )) > 0.0 ) {
       b = 0.0;
       c = 90.0;
@@ -722,7 +824,7 @@ QTshotWidget::doInsertLRUD( DBlock * block,
     }
   }
   if ( ! D.isEmpty() ) {
-    // if ( (d = atof( D.latin1() )) > 0.0 ) {
+    // if ( (d = atof( D.TO_CHAR() )) > 0.0 ) {
     if ( (d = Locale::ToDouble( D )) > 0.0 ) {
       b = 0.0;
       c = -90.0;
@@ -761,15 +863,15 @@ QTshotWidget::doInsertLRUD( DBlock * block,
 #endif // HAS_LRUD
 
 void
-QTshotWidget::updateExtCanvas( DBlock * b )
+QTshotWidget::updateExtCanvases( DBlock * b )
 { 
   DBG_CHECK("updateExtCanvas() block %s %s \n", b->From(), b->To() );
 
   dlist.resetNum();
-  if ( extCanvas ) 
-    extCanvas->doExtend( b, b->Extend(), false );
-  if ( planCanvas )
-    planCanvas->redrawPlot();
+  for ( size_t k=0; k<extCanvases.plotsSize(); ++k ) 
+    extCanvases[k] -> doExtend( b, b->Extend(), false );
+  for ( size_t k=0; k<planCanvases.plotsSize(); ++k ) 
+    planCanvases[k] -> redrawPlot();
   if ( _3DCanvas )
     _3DCanvas->redrawPlot();
 }
@@ -780,14 +882,14 @@ QTshotWidget::doData()
 {
   DBG_CHECK("doData begin\n");
   download = false;
-  new DataWidget( this );
+  DataWidget data_dialog( this );
   if ( download ) {
     distoxReset();
     downloadData( );
-    onOffButtons( dlist.Size() > 0 );
-    if ( !append && dlist.Size() > 0 ) {
+    onOffButtons( dlist.listSize() > 0 );
+    if ( !append && dlist.listSize() > 0 ) {
       // TODO ask date and description
-      new CenterlineWidget( this );
+      CenterlineWidget dialog( this );
     }
   }
 }
@@ -811,24 +913,30 @@ class DownloadThread : public QThread
 void
 DownloadThread::run()
 {
-  status = ( disto->download() ) ? 1 : -1;
+  // -1: ask the number of data to the distox
+  status = ( disto->download( -1 ) ) ? 1 : -1;
 }
 
 bool
-QTshotWidget::GetDistoModes( bool & calib, bool & silent )
+QTshotWidget::getDistoModes( bool & calib, bool & silent,
+                             bool & grad, bool & compass )
 {
   const char * disto_log = config("DISTO_LOG");
   bool log = (disto_log[0] == 'y');
   DistoX disto( device, log );
   int mode = disto.readMode();
   if ( mode < 0 ) return false;
-  calib  = (mode & 0x08) != 0;
-  silent = (mode & 0x10) != 0;
+  // TODO use other distox status info
+  // bt = IS_STATUS_BT(mode);
+  grad   = IS_STATUS_GRAD(mode);
+  compass = IS_STATUS_COMPASS(mode);
+  calib  = IS_STATUS_CALIB(mode);
+  silent = IS_STATUS_SILENT(mode);
   return true;
 }
 
 bool 
-QTshotWidget::SetCalibMode( bool on )
+QTshotWidget::setCalibMode( bool on )
 {
   const char * disto_log = config("DISTO_LOG");
   bool log = (disto_log[0] == 'y');
@@ -838,7 +946,7 @@ QTshotWidget::SetCalibMode( bool on )
 }
 
 bool 
-QTshotWidget::SetSilentMode( bool on )
+QTshotWidget::setSilentMode( bool on )
 {
   const char * disto_log = config("DISTO_LOG");
   bool log = (disto_log[0] == 'y');
@@ -847,6 +955,26 @@ QTshotWidget::SetSilentMode( bool on )
   return ( on == ( mode == 1 ) );
 }
 
+bool 
+QTshotWidget::setGradMode( bool on )
+{
+  const char * disto_log = config("DISTO_LOG");
+  bool log = (disto_log[0] == 'y');
+  DistoX disto( device, log );
+  int mode = disto.setGrad( on );
+  return ( on == ( mode == 1 ) );
+}
+
+
+bool 
+QTshotWidget::setCompassMode( bool on )
+{
+  const char * disto_log = config("DISTO_LOG");
+  bool log = (disto_log[0] == 'y');
+  DistoX disto( device, log );
+  int mode = disto.setCompass( on );
+  return ( on == ( mode == 1 ) );
+}
 
 void 
 QTshotWidget::downloadData( )
@@ -903,10 +1031,10 @@ QTshotWidget::downloadData( )
     // append, smart, backward
     if ( !append ) {
       closePlots();           // close all plots
-      SetBaseBlock( NULL );   // erase base block pixmap
+      setBaseBlock( NULL );   // erase base block pixmap
       collapse = true;        // reset onCollapse action
       if ( table != NULL ) {  // set all table rows visible
-        for (int row = 0; row <table->numRows(); ++row ) {
+        for (int row = 0; row <table->rowCount(); ++row ) {
           table->showRow( row );
         }
       }
@@ -919,32 +1047,41 @@ QTshotWidget::downloadData( )
 // Centerline info  widget
 
 CenterlineWidget::CenterlineWidget( QTshotWidget * my_parent )
-  : QDialog( my_parent, "CenterlineWidget", true ) 
+  : QDialog( my_parent )
   , parent( my_parent )
 {
   Language & lexicon = Language::Get();
-  setCaption( lexicon("qtopo_centerline") );
-  QVBoxLayout* vb = new QVBoxLayout(this, 8);
-  vb->setAutoAdd(TRUE);
-  QHBOX * hb = new QHBOX(this);
+  setWindowTitle( lexicon("qtopo_centerline") );
+  QVBoxLayout* vbl = new QVBoxLayout();
+  setLayout( vbl );
+  // vb->setAutoAdd(TRUE);
+  DEFINE_HB;
+
+  CREATE_HB;
   int y,m,d;
   GetDate( &d, &m, &y );
   char dstr[16];
   // sprintf(dstr, "%04d-%02d-%02d", y, m, d); 
   Locale::ToDate( dstr, y, m, d );
-  new QLabel( lexicon("date"), hb );
+  hbl->addWidget( new QLabel( lexicon("date"), hb ) );
   date  = new QLineEdit( dstr, hb );
-  hb = new QHBOX(this);
-  new QLabel( lexicon("description"), hb );
-  hb = new QHBOX(this);
-  descr = new QLineEdit( "", hb );
+  hbl->addWidget( date );
+  vbl->addWidget( hb );
 
-  hb = new QHBOX(this);
+  CREATE_HB;
+  hbl->addWidget( new QLabel( lexicon("description"), hb ) );
+  descr = new QLineEdit( "", hb );
+  hbl->addWidget( descr );
+  vbl->addWidget( hb );
+
+  CREATE_HB;
   QPushButton * c1 = new QPushButton( tr( lexicon("ok") ), hb );
   connect( c1, SIGNAL(clicked()), this, SLOT(doOK()) );
+  hbl->addWidget( c1 );
   QPushButton * c2 = new QPushButton( tr( lexicon("cancel") ), hb );
   connect( c2, SIGNAL(clicked()), this, SLOT(doCancel()) );
-  vb->addWidget( hb );
+  hbl->addWidget( c2 );
+  vbl->addWidget( hb );
 
   exec();
 }
@@ -953,48 +1090,61 @@ void
 CenterlineWidget::doOK()
 {
   hide();
-  parent->setDateAndDescription( date->text().latin1(), descr->text().latin1() );
-  delete this;
+  parent->setDateAndDescription( date->text().TO_CHAR(), descr->text().TO_CHAR() );
 }
 
 // ----------------------------------------------------------------------
 // Toggle widget: DistoX modes
 
 ToggleWidget::ToggleWidget( QTshotWidget * my_parent )
-  : QDialog( my_parent, "ToggleWidget", true ) 
+  : QDialog( my_parent )
   , parent( my_parent )
   , isCalib( false )
   , isSilent( false )
+  , isGrad( false )
+  , isCompass( true )
   , calibBtn( NULL )
   , silentBtn( NULL )
+  , gradBtn( NULL )
+  , compassBtn( NULL )
 {
   Language & lexicon = Language::Get();
-  setCaption( lexicon("qtopo_toggle") );
-  if ( ! parent->GetDistoModes( isCalib, isSilent ) ) {
-    QVBoxLayout* vb = new QVBoxLayout(this);
-    vb->setAutoAdd(TRUE);
-    new QLabel( lexicon("toggle_mode"), this );
-    new QLabel( lexicon("failed_mode"), this );
+  setWindowTitle( lexicon("qtopo_toggle") );
+  if ( ! parent->getDistoModes( isCalib, isSilent, isGrad, isCompass ) ) {
+    QVBoxLayout* vbl = new QVBoxLayout(this);
+    // vb->setAutoAdd(TRUE);
+    vbl->addWidget( new QLabel( lexicon("status_mode"), this ) );
+    vbl->addWidget( new QLabel( lexicon("failed_mode"), this ) );
     QPushButton * c2 = new QPushButton( tr( lexicon("close") ), this );
     connect( c2, SIGNAL(clicked()), this, SLOT(doClose()) );
+    vbl->addWidget( c2 );
   } else {
     QLabel * label;
-    QGridLayout * vb = new QGridLayout( this, 2 );
-    label = new QLabel( lexicon("toggle_mode"), this );
-    vb->addWidget( label,    0, 0 );
+    QGridLayout * gbl = new QGridLayout( this );
+    label = new QLabel( lexicon("status_mode"), this );
+    gbl->addWidget( label,    0, 0 );
     calibBtn = new QCheckBox( lexicon("mode_calib"), this );
     calibBtn->setCheckState ( isCalib ? Qt::Checked : Qt::Unchecked ); 
-    vb->addWidget( calibBtn, 1, 0 );
+    gbl->addWidget( calibBtn, 1, 0 );
     silentBtn = new QCheckBox( lexicon("mode_silent"), this );
     silentBtn->setCheckState ( isSilent ? Qt::Checked : Qt::Unchecked ); 
-    vb->addWidget( silentBtn, 2, 0 );
+    gbl->addWidget( silentBtn, 2, 0 );
+    gradBtn = new QCheckBox( lexicon("mode_grad"), this );
+    gradBtn->setCheckState ( isGrad ? Qt::Checked : Qt::Unchecked ); 
+    gbl->addWidget( gradBtn, 3, 0 );
+    compassBtn = new QCheckBox( lexicon("mode_compass"), this );
+    compassBtn->setCheckState ( isCompass ? Qt::Checked : Qt::Unchecked ); 
+    gbl->addWidget( compassBtn, 4, 0 );
 
     connect( calibBtn, SIGNAL(stateChanged(int)), this, SLOT(doCalib(int)) );
     connect( silentBtn, SIGNAL(stateChanged(int)), this, SLOT(doSilent(int)) );
-    
+    // TODO
+    // connect( gradBtn, SIGNAL(stateChanged(int)), this, SLOT(doGrad(int)) );
+    // connect( compassBtn, SIGNAL(stateChanged(int)), this, SLOT(doCompass(int)) );
+   
 
     QPushButton * c2 = new QPushButton( tr( lexicon("close") ), this );
-    vb->addWidget( c2, 3, 0 );
+    gbl->addWidget( c2, 5, 0 );
     connect( c2, SIGNAL(clicked()), this, SLOT(doClose()) );
   }
 
@@ -1005,7 +1155,7 @@ void
 ToggleWidget::doCalib(int state) 
 {
   bool calib = (state == Qt::Checked);
-  if ( parent->SetCalibMode( calib ) ) {
+  if ( parent->setCalibMode( calib ) ) {
     isCalib = calib;
   } else {
     Language & lexicon = Language::Get();
@@ -1018,7 +1168,7 @@ void
 ToggleWidget::doSilent(int state) 
 {
   bool silent = (state == Qt::Checked);
-  if ( parent->SetSilentMode( silent ) ) {
+  if ( parent->setSilentMode( silent ) ) {
     isSilent = silent;
   } else {
     Language & lexicon = Language::Get();
@@ -1027,45 +1177,120 @@ ToggleWidget::doSilent(int state)
   }
 }
 
+void
+ToggleWidget::doGrad(int state) 
+{
+#if 0
+  bool grad = (state == Qt::Checked);
+  if ( parent->SetGradMode( grad ) ) {
+    isGrad = grad;
+  } else {
+    Language & lexicon = Language::Get();
+    QMessageBox::warning(this, lexicon("failed_disto"), lexicon("failed_toggle") );
+    gradBtn->setCheckState ( isGrad ? Qt::Checked : Qt::Unchecked );
+  }
+#else
+  state = state;
+  gradBtn->setCheckState ( isGrad ? Qt::Checked : Qt::Unchecked );
+#endif
+}
+
+void
+ToggleWidget::doCompass(int state) 
+{
+#if 0
+  bool compass = (state == Qt::Checked);
+  if ( parent->SetCompassMode( silent ) ) {
+    isCompass = compass;
+  } else {
+    Language & lexicon = Language::Get();
+    QMessageBox::warning(this, lexicon("failed_disto"), lexicon("failed_toggle") );
+    compassBtn->setCheckState ( isCompass ? Qt::Checked : Qt::Unchecked );
+  }
+#else
+  state = state;
+  compassBtn->setCheckState ( isCompass ? Qt::Checked : Qt::Unchecked );
+#endif
+}
+
 // ----------------------------------------------------------------------
 // Option widget
 
 OptionsWidget::OptionsWidget( QTshotWidget * my_parent )
-  : QDialog( my_parent, "OptionsWidget", true ) 
+  : QDialog( my_parent )
   , parent( my_parent )
 {
   Language & lexicon = Language::Get();
-  setCaption( lexicon("qtopo_options") );
+  setWindowTitle( lexicon("qtopo_options") );
   // QVBoxLayout* vb = new QVBoxLayout(this, 8);
   // vb->setAutoAdd(TRUE);
   // QHBOX * hb = new QHBOX(this);
-  QGridLayout * vb = new QGridLayout( this, 8 );
+  QGridLayout * gbl = new QGridLayout( this );
   QLabel * label;
   label = new QLabel( lexicon("length_units"), this );
   length_btn[0] = new QRadioButton( lexicon("m"), this );
   length_btn[1] = new QRadioButton( lexicon("ft"), this );
-  vb->addWidget( label,    0, 0 );
-  vb->addWidget( length_btn[0], 0, 1 );
-  vb->addWidget( length_btn[1],  0, 2 );
-  QBUTTONGROUP * m_group_length = new QBUTTONGROUP( );
-  m_group_length->insert( length_btn[0] );
-  m_group_length->insert( length_btn[1] );
+  gbl->addWidget( label,    0, 0 );
+  gbl->addWidget( length_btn[0], 0, 1 );
+  gbl->addWidget( length_btn[1],  0, 2 );
+  QButtonGroup * m_group_length = new QButtonGroup( );
+  m_group_length->addButton( length_btn[0] );
+  m_group_length->addButton( length_btn[1] );
 
+  label = new QLabel( lexicon("angle_units"), this);
+  angle_btn[0] = new QRadioButton( lexicon("deg"), this );
+  angle_btn[1] = new QRadioButton( lexicon("grad"), this );
+  gbl->addWidget( label,    1, 0 );
+  gbl->addWidget( angle_btn[0],   1, 1 );
+  gbl->addWidget( angle_btn[1],  1, 2 );
+  QButtonGroup * m_group_angle = new QButtonGroup( );
+  m_group_angle->addButton( angle_btn[0] );
+  m_group_angle->addButton( angle_btn[1] );
+ 
+/*  
+  label = new QLabel( lexicon("export"), this );
+  QButtonGroup * m_group_export = new QButtonGroup( );
+  export_btn[0] = new QRadioButton( "th", this);
+  export_btn[1] = new QRadioButton( "svx", this);
+  export_btn[2] = new QRadioButton( "dat", this);
+  export_btn[3] = new QRadioButton( "top", this);
+  m_group_export->addButton( export_btn[0] );
+  m_group_export->addButton( export_btn[1] );
+  m_group_export->addButton( export_btn[2] );
+  m_group_export->addButton( export_btn[3] );
+
+  gbl->addWidget( label,     2, 0 );
+  gbl->addWidget( export_btn[0], 2, 1 );
+  gbl->addWidget( export_btn[1], 2, 2 );
+  gbl->addWidget( export_btn[2], 2, 3 );
+  gbl->addWidget( export_btn[3], 2, 4 );
+*/
+
+  label = new QLabel( lexicon("distox_device"), this );
+  m_device = new QLineEdit( parent->getDevice(), this ); 
+  gbl->addWidget( label, 3, 0 );
+  gbl->addWidget( m_device, 3, 1, 1, 4 );
+
+  // hb = new QHBOX(this);
+  QPushButton * c1 = new QPushButton( tr( lexicon("ok") ), this );
+  connect( c1, SIGNAL(clicked()), this, SLOT(doOK()) );
+  QPushButton * c2 = new QPushButton( tr( lexicon("cancel") ), this );
+  connect( c2, SIGNAL(clicked()), this, SLOT(doCancel()) );
+  gbl->addWidget( c1, 4, 0 );
+  gbl->addWidget( c2, 4, 1 );
+
+  SetValues();
+
+}
+
+void
+OptionsWidget::SetValues()
+{
   if ( parent->lengthUnits() == LENGTH_METER ) {
     length_btn[0]->setChecked( TRUE );
   } else if ( parent->lengthUnits() == LENGTH_FEET ) {
     length_btn[1]->setChecked( TRUE );
   }
-
-  label = new QLabel( lexicon("angle_units"), this);
-  angle_btn[0] = new QRadioButton( lexicon("deg"), this );
-  angle_btn[1] = new QRadioButton( lexicon("grad"), this );
-  vb->addWidget( label,    1, 0 );
-  vb->addWidget( angle_btn[0],   1, 1 );
-  vb->addWidget( angle_btn[1],  1, 2 );
-  QBUTTONGROUP * m_group_angle = new QBUTTONGROUP( );
-  m_group_angle->insert( angle_btn[0] );
-  m_group_angle->insert( angle_btn[1] );
 
   if ( parent->angleUnits() == ANGLE_DEGREE ) {
     angle_btn[0]->setChecked( TRUE );
@@ -1073,36 +1298,15 @@ OptionsWidget::OptionsWidget( QTshotWidget * my_parent )
     angle_btn[1]->setChecked( TRUE );
   }
 
-  label = new QLabel( lexicon("export"), this );
-  QBUTTONGROUP * m_group_export = new QBUTTONGROUP( );
-  export_btn[0] = new QRadioButton( "th", this);
-  export_btn[1] = new QRadioButton( "svx", this);
-  export_btn[2] = new QRadioButton( "dat", this);
-  export_btn[3] = new QRadioButton( "top", this);
-  m_group_export->insert( export_btn[0] );
-  m_group_export->insert( export_btn[1] );
-  m_group_export->insert( export_btn[2] );
-  m_group_export->insert( export_btn[3] );
+/*
   switch ( parent->exportType() ) {
-    case ExportTherion:    export_btn[0]->setChecked( TRUE ); break;
-    case ExportSurvex:     export_btn[1]->setChecked( TRUE ); break;
-    case ExportCompass:    export_btn[2]->setChecked( TRUE ); break;
-    case ExportPocketTopo: export_btn[3]->setChecked( TRUE ); break;
+    case EXPORT_THERION:    export_btn[0]->setChecked( TRUE ); break;
+    case EXPORT_SURVEX:     export_btn[1]->setChecked( TRUE ); break;
+    case EXPORT_COMPASS:    export_btn[2]->setChecked( TRUE ); break;
+    case EXPORT_POCKETTOPO: export_btn[3]->setChecked( TRUE ); break;
     default: break;
   }
-  vb->addWidget( label,     2, 0 );
-  vb->addWidget( export_btn[0], 2, 1 );
-  vb->addWidget( export_btn[1], 2, 2 );
-  vb->addWidget( export_btn[2], 2, 3 );
-  vb->addWidget( export_btn[3], 2, 4 );
-
-  // hb = new QHBOX(this);
-  QPushButton * c1 = new QPushButton( tr( lexicon("ok") ), this );
-  connect( c1, SIGNAL(clicked()), this, SLOT(doOK()) );
-  QPushButton * c2 = new QPushButton( tr( lexicon("cancel") ), this );
-  connect( c2, SIGNAL(clicked()), this, SLOT(doCancel()) );
-  vb->addWidget( c1, 3, 0 );
-  vb->addWidget( c2, 3, 1 );
+*/
 
   exec();
 }
@@ -1110,6 +1314,7 @@ OptionsWidget::OptionsWidget( QTshotWidget * my_parent )
 void
 OptionsWidget::doOK()
 {
+  hide();
   if ( length_btn[0]->isChecked() ) {
     parent->setLengthUnits( LENGTH_METER );
   } else if ( length_btn[1]->isChecked() ) {
@@ -1122,178 +1327,242 @@ OptionsWidget::doOK()
     parent->setAngleUnits( ANGLE_GRAD );
   }
 
+/*
   if ( export_btn[0]->isChecked() ) {
-    parent->setExportType( ExportTherion ); 
+    parent->setExportType( EXPORT_THERION ); 
   } else if ( export_btn[1]->isChecked() ) {
-    parent->setExportType( ExportSurvex );
+    parent->setExportType( EXPORT_SURVEX );
   } else if ( export_btn[2]->isChecked() ) {
-    parent->setExportType( ExportCompass );
+    parent->setExportType( EXPORT_COMPASS );
   } else if ( export_btn[3]->isChecked() ) {
-    parent->setExportType( ExportPocketTopo );
+    parent->setExportType( EXPORT_POCKETTOPO );
+  }
+*/
+
+  if ( ! m_device->text().isEmpty() ) {
+    parent->setDevice( m_device->text().TO_CHAR() );
   }
 
   parent->showData();
-  delete this;
 }
 
 // ----------------------------------------------------------------------
 // Comment
 
-#ifdef HAD_LRUD
+#define COMMENT_ITEM_HEIGHT 30
+
+#ifdef HAS_LRUD
 CommentWidget::CommentWidget( QTshotWidget * my_parent, DBlock * b, bool do_lrud )
 #else
 CommentWidget::CommentWidget( QTshotWidget * my_parent, DBlock * b )
 #endif
-  : QDialog( my_parent, "CommentWidget", true ) 
+  : QDialog( my_parent )
   , parent( my_parent )
   , block( b )
 {
   double ls = parent->lengthFactor();
   double as = parent->angleFactor();
   Language & lexicon = Language::Get();
-  setCaption( lexicon("shot_comment") );
+  setWindowTitle( lexicon("shot_comment") );
+
   std::ostringstream oss;
   int n_stations = 0; // number of stations
-  if ( block->hasFrom() ) {
+  if ( block->hasFromStation() ) {
     ++ n_stations;
-    oss << " " << lexicon("from") << " " << block->From();
+    oss << " " << lexicon("from") << " " << block->fromStation();
   }
-  if ( block->hasTo() ) {
+  if ( block->hasToStation() ) {
     ++ n_stations;
-    oss << " " << lexicon("to") << " " << block->To();
+    oss << " " << lexicon("to") << " " << block->toStation();
   }
 
-  QVBoxLayout* vb = new QVBoxLayout(this, 8);
-  vb->setAutoAdd(TRUE);
-  QHBOX * hb;
+  QVBoxLayout* vbl = new QVBoxLayout(this);
+  vbl->setSpacing( 0 );
+  // vb->setAutoAdd(TRUE);
+  
+  DEFINE_HB;
 
-  new QLabel( oss.str().c_str(), this );
+  vbl->addWidget( new QLabel( oss.str().c_str(), this ) );
 
-  if ( block->NrBlocklets() > 1 ) {
-    DBlocklet * bl = block->Blocklets();
+  if ( block->nrBlocklets() > 1 ) {
+    QWidget * vb1 = new QWidget( this );
+    QVBoxLayout * vbl1 = new QVBoxLayout( vb1 );
+    vbl1->setSpacing( 0 );
+    DBlocklet * bl = block->getBlocklets();
     while ( bl ) {
       QString str = Locale::ToString( bl->distance * ls, 2 )
           + "   " + Locale::ToString( bl->compass * as, 1 )
           + "   " + Locale::ToString( bl->clino * as, 1 );
-      new QLabel( str, this );
-      bl = bl->next;
+      vbl1->addWidget( new QLabel( str, vb1 ) );
+      bl = bl->next();
     }
+    vbl->addWidget( vb1 );
   }
 
   QButtonGroup * m_group = new QButtonGroup( );
   properties = new QRadioButton( lexicon("properties"), this );
+  vbl->addWidget( properties );
   properties->setChecked( false );
-  m_group->insert( properties );
-  comment = new QLineEdit( b->Comment(), this );
+  m_group->addButton( properties );
+  comment = new QLineEdit( b->getComment(), this );
   connect( comment, SIGNAL(textChanged(const QString &)), this, SLOT(doComment(const QString &)) );
+  vbl->addWidget( comment );
 
-  hb = new QHBOX(this);
-  new QLabel( lexicon("ext_box"), hb );
+  CREATE_HB;
+  hb->setMaximumHeight( COMMENT_ITEM_HEIGHT );
+  hbl->addWidget( new QLabel( lexicon("ext_box"), hb ) );
   extBox = new QComboBox( hb );
   connect( extBox, SIGNAL(activated(int)), this, SLOT(doExtend(int)) );
-  extBox->insertItem( lexicon("none") );  // addItem( lexicon("none") );
-  extBox->insertItem( lexicon("left") );
-  extBox->insertItem( lexicon("right") );
-  extBox->insertItem( lexicon("vertical") );
-  extBox->insertItem( lexicon("ignore") );
-  extBox->setCurrentItem( b->Extend() );
+  extBox->addItem( lexicon("none") );  // addItem( lexicon("none") );
+  extBox->addItem( lexicon("left") );
+  extBox->addItem( lexicon("right") );
+  extBox->addItem( lexicon("vertical") );
+  extBox->addItem( lexicon("ignore") );
+  extBox->setCurrentIndex( b->Extend() );
+  hbl->addWidget( extBox );
+  vbl->addWidget( hb );
 
-  hb = new QHBOX(this);
-  new QLabel( lexicon("flag_box"), hb );
+  CREATE_HB;
+  hb->setMaximumHeight( COMMENT_ITEM_HEIGHT );
+  hbl->addWidget( new QLabel( lexicon("flag_box"), hb ) );
   flagBox = new QComboBox( hb );
   connect( flagBox, SIGNAL(activated(int)), this, SLOT(doFlag(int)) );
-  flagBox->insertItem( lexicon("none") );
-  flagBox->insertItem( lexicon("surface") );
-  flagBox->insertItem( lexicon("duplicate") );
-  flagBox->setCurrentItem( b->Flag() );
+  flagBox->addItem( lexicon("none") );
+  flagBox->addItem( lexicon("surface") );
+  flagBox->addItem( lexicon("duplicate") );
+  flagBox->setCurrentIndex( b->Flag() );
+  hbl->addWidget( flagBox );
+  vbl->addWidget( hb );
 
-  hb = new QHBOX(this);
-  swapBox = new QCheckBox( lexicon("swap_from_to"), hb );
-  connect( swapBox, SIGNAL(toggled(bool)), this, SLOT(doSwap(bool)) );
+  // CREATE_HB;
+  // swapBox = new QCheckBox( lexicon("swap_from_to"), hb );
+  // connect( swapBox, SIGNAL(toggled(bool)), this, SLOT(doSwap(bool)) );
+  // hbl->addWidget( swapBox );
+  // vbl->addWidget( hb );
 
   #ifdef HAS_LRUD
     if ( do_lrud ) {
-      hb = new QHBOX(this);
+      CREATE_HB;
+      hb->setMaximumHeight( COMMENT_ITEM_HEIGHT );
       lrud = new QRadioButton( lexicon("LRUD"), hb );
       lrud->setChecked( false );
-      m_group->insert( lrud );
+      m_group->addButton( lrud );
+      hbl->addWidget( lrud );
+      vbl->addWidget( hb );
     } else {
       lrud = NULL;
     }
   #endif
 
-  if ( block->hasFrom() ) {
-    hb = new QHBOX(this);
+  if ( block->hasFromStation() ) {
+    CREATE_HB;
+    hb->setMaximumHeight( COMMENT_ITEM_HEIGHT );
     base_station = new QRadioButton( lexicon("base_station"), hb );
     base_station->setChecked( false );
-    m_group->insert( base_station );
+    m_group->addButton( base_station );
+    hbl->addWidget( base_station );
+    vbl->addWidget( hb );
   } else {
     base_station = NULL;
   }
 
-  hb = new QHBOX(this);
+  CREATE_HB;
+  hb->setMaximumHeight( COMMENT_ITEM_HEIGHT );
   renumber = new QRadioButton( lexicon("renumber"), hb );
   renumber->setChecked( false );
-  m_group->insert( renumber );
+  m_group->addButton( renumber );
+  hbl->addWidget( renumber );
+  vbl->addWidget( hb );
 
-  hb = new QHBOX(this);
+  CREATE_HB;
+  hb->setMaximumHeight( COMMENT_ITEM_HEIGHT );
   tomerge = new QRadioButton( lexicon("merge_next"), hb );
   tomerge->setChecked( false );
-  m_group->insert( tomerge );
+  m_group->addButton( tomerge );
+  hbl->addWidget( tomerge );
+  vbl->addWidget( hb );
 
-  if ( block->NrBlocklets() > 1 ) {
-    hb = new QHBOX(this);
+  if ( block->nrBlocklets() > 1 ) {
+    CREATE_HB;
+    hb->setMaximumHeight( COMMENT_ITEM_HEIGHT );
     tosplit = new QRadioButton( lexicon("split"), hb );
     tosplit->setChecked( false );
-    m_group->insert( tosplit );
+    m_group->addButton( tosplit );
+    hbl->addWidget( tosplit );
+    vbl->addWidget( hb );
   } else {
     tosplit = NULL;
   }
 
-  hb = new QHBOX(this);
+  CREATE_HB;
+  hb->setMaximumHeight( COMMENT_ITEM_HEIGHT );
   toinsert = new QRadioButton( lexicon("insert_shot"), hb );
   toinsert->setChecked( false );
-  m_group->insert( toinsert );
+  m_group->addButton( toinsert );
+  hbl->addWidget( toinsert );
+  vbl->addWidget( hb );
 
-  hb = new QHBOX(this);
+  CREATE_HB;
+  hb->setMaximumHeight( COMMENT_ITEM_HEIGHT );
   todrop = new QRadioButton( lexicon("delete_shot"), hb );
   todrop->setChecked( false );
-  m_group->insert( todrop );
+  m_group->addButton( todrop );
+  hbl->addWidget( todrop );
+  vbl->addWidget( hb );
 
   if ( n_stations == 2 ) {
-    hb = new QHBOX(this);
+    CREATE_HB;
+    hb->setMaximumHeight( COMMENT_ITEM_HEIGHT );
     cross_section = new QRadioButton( lexicon("cross_section"), hb );
     cross_section->setChecked( false );
-    m_group->insert( cross_section );
-#ifdef USER_HORIZONTAL_SECTION
-    QVBOX * vb1 = new QVBOX( hb );
-    reversed = new QCheckBox( lexicon("reversed"), vb1 );
-    horizontal = new QCheckBox( lexicon("horizontal"), vb1 );
-#else
+    section_name = new QLineEdit( "xsect", hb );
+    m_group->addButton( cross_section );
+    hbl->addWidget( cross_section );
+    hbl->addWidget( section_name );
+#if 0 // not defined  USER_HORIZONTAL_SECTION
     reversed = new QCheckBox( lexicon("reversed"), hb );
+    hbl->addWidget( reversed );
+#else
+    vbl->addWidget( hb );
+    CREATE_HB;
+    reversed = new QCheckBox( lexicon("reversed"), hb );
+    horizontal = new QCheckBox( lexicon("horizontal"), hb );
+    hbl->addWidget( reversed );
+    hbl->addWidget( horizontal );
 #endif
+    vbl->addWidget( hb );
   } else {
     cross_section = NULL;
     reversed = NULL;
-#ifdef USER_HORIZONTAL_SECTION
+#if 0 // not defined  USER_HORIZONTAL_SECTION
+#else
     horizontal = NULL;
 #endif
   }
 
-  hb = new QHBOX(this);
+  CREATE_HB;
+  // hb->setMaximumHeight( COMMENT_ITEM_HEIGHT );
   QPushButton * c;
   c = new QPushButton( tr( lexicon("ok") ), hb );
   connect( c, SIGNAL(clicked()), this, SLOT(doOK()) );
+  hbl->addWidget( c );
   c = new QPushButton( tr( lexicon("cancel") ), hb);
   connect( c, SIGNAL(clicked()), this, SLOT(doCancel()) );
+  hbl->addWidget( c );
+  vbl->addWidget( hb );
 
   exec();
 }
 
 void
+CommentWidget::SetValues()
+{
+}
+
+void
 CommentWidget::doComment( const QString & DBG(text) )
 {
-  DBG_CHECK("CommentWidget::doComment() %s\n", text.latin1() );
+  DBG_CHECK("CommentWidget::doComment() %s\n", text.TO_CHAR() );
   properties->setChecked( true );
 }
 
@@ -1311,11 +1580,11 @@ CommentWidget::doFlag( int DBG(flag) )
   properties->setChecked( true );
 }
 
-void
-CommentWidget::doSwap( bool /* status */ )
-{
-  properties->setChecked( true );
-}
+// void
+// CommentWidget::doSwap( bool /* status */ )
+// {
+//   properties->setChecked( true );
+// }
 
 
 void
@@ -1326,40 +1595,40 @@ CommentWidget::doOK()
   bool need_to_compute_data = false;
   if ( properties->isChecked() ) {
     need_to_show_data = true;
-    block->setComment( comment->text().latin1() );
-    if ( block->Extend() != extBox->currentItem() ) {
+    block->setComment( comment->text().TO_CHAR() );
+    if ( block->Extend() != extBox->currentIndex() ) {
       need_to_compute_data = true;
-      block->setExtend( extBox->currentItem() ); // currentIndex()
+      block->setExtend( extBox->currentIndex() ); // currentIndex()
     }
-    if ( block->Flag() != flagBox->currentItem() ) {
-      block->setFlag( flagBox->currentItem() );
+    if ( block->Flag() != flagBox->currentIndex() ) {
+      block->setFlag( flagBox->currentIndex() );
     }
-    if ( swapBox->isChecked() ) {
-      if ( ! block->isSplay() ) { // not necessary because block can swap only if it has both stations
-        if ( block->swapStations() ) {
-          need_to_compute_data = true;
-        }
-      }
-    }
+    // if ( swapBox->isChecked() ) {
+    //   if ( ! block->isSplay() ) { // not necessary because block can swap only if it has both stations
+    //     if ( block->swapStations() ) {
+    //       need_to_compute_data = true;
+    //     }
+    //   }
+    // }
   } else if ( base_station && base_station->isChecked() ) {
-    parent->SetBaseBlock( block );
+    parent->setBaseBlock( block );
     need_to_show_data = true;
     need_to_compute_data = true;
 #ifdef HAS_HLRUD
   } else if ( lrud && lrud->isChecked() ) {
     need_to_show_data = true;
     need_to_compute_data = true;
-    new LRUDWidget( parent, block );
+    LRUDWidget lrud_dialog( parent, block );
 #endif
   } else if ( renumber->isChecked() ) {
     need_to_show_data = true;
     block->renumber();
   } else if ( tomerge->isChecked() ) {
     need_to_show_data = true;
-    parent->GetList()->mergeBlock( block );
+    parent->getList()->mergeBlock( block );
   } else if ( tosplit && tosplit->isChecked() ) {
     need_to_show_data = true;
-    parent->GetList()->splitBlock( block );
+    parent->getList()->splitBlock( block );
   } else if ( toinsert->isChecked() ) {
     need_to_show_data = true;
     need_to_compute_data = true;
@@ -1369,21 +1638,21 @@ CommentWidget::doOK()
     need_to_show_data = true;
     need_to_compute_data = true;
     parent->drop( block );
-  } else if ( cross_section && cross_section->isChecked() ) {
-#ifdef USER_HORIZONTAL_SECTION
-    parent->doCrossSection( block, reversed->isChecked(), ! horizontal->isChecked() );
-#else
+  } else if ( cross_section && cross_section->isChecked() && ! section_name->text().isEmpty()) {
+#if 0 // not defined  USER_HORIZONTAL_SECTION
     parent->doCrossSection( block, reversed->isChecked() );
+#else
+    parent->doCrossSection( block, section_name->text(),
+                             reversed->isChecked(), ! horizontal->isChecked() );
 #endif
   }
 
   if ( need_to_show_data ) {
     if ( need_to_compute_data ) {
-      parent->updateExtCanvas( block );
+      parent->updateExtCanvases( block );
     }
     parent->showData();
   }
-  delete this;
 }
 
 
@@ -1391,11 +1660,11 @@ CommentWidget::doOK()
 // DistoX Data download dialog
 
 DataWidget::DataWidget( QTshotWidget * my_parent )
-  : QDialog( my_parent, "DataWidget", true ) 
+  : QDialog( my_parent )
   , parent( my_parent )
 {
   Language & lexicon = Language::Get();
-  setCaption( lexicon("distox_download") ); // setWindowTitle( lexicon("distox_download") );
+  setWindowTitle( lexicon("distox_download") ); // setWindowTitle( lexicon("distox_download") );
 
   QGridLayout* vb = new QGridLayout( this );
   QLabel * label;
@@ -1410,30 +1679,30 @@ DataWidget::DataWidget( QTshotWidget * my_parent )
   label = new QLabel( lexicon("description"), this );
   description = new QLineEdit( parent->getDescription(), this );
   vb->addWidget( label,  1, 0 );
-  vb->addMultiCellWidget( description,  2, 2, 0, 1 );
+  vb->addWidget( description,  1, 1 );
 
   label = new QLabel( lexicon("device"), this );
   device = new QLineEdit( parent->getDevice(), this );
-  vb->addWidget( label,  3, 0 );
-  vb->addWidget( device, 3, 1 );
+  vb->addWidget( label,  2, 0 );
+  vb->addWidget( device, 2, 1 );
 
   label  = new QLabel( lexicon("append_shots"), this );
   append = new QCheckBox( "", this );
   append->setChecked( parent->getAppend() );
-  vb->addWidget( label,  4, 0 );
-  vb->addWidget( append, 4, 1 );
+  vb->addWidget( label,  3, 0 );
+  vb->addWidget( append, 3, 1 );
 
   label = new QLabel( lexicon("guess_centerline"), this );
   smart = new QCheckBox( "", this );
   smart->setChecked( parent->getSmart() );
-  vb->addWidget( label, 5, 0 );
-  vb->addWidget( smart, 5, 1 );
+  vb->addWidget( label, 4, 0 );
+  vb->addWidget( smart, 4, 1 );
 
   label    = new QLabel( "...   ", this );
   backward = new QCheckBox( lexicon("backward"), this );
   backward->setChecked( parent->getBackward() );
-  vb->addWidget( label,    6, 0 );
-  vb->addWidget( backward, 6, 1 );
+  vb->addWidget( label,    5, 0 );
+  vb->addWidget( backward, 5, 1 );
 
   label  = new QLabel( lexicon("splay_shots"), this );
   splay1 = new QCheckBox( lexicon("from_station"), this );
@@ -1442,18 +1711,18 @@ DataWidget::DataWidget( QTshotWidget * my_parent )
   splay2->setChecked( parent->getSplay() == SPLAY_AT_TO );
   connect( splay1, SIGNAL(toggled(bool)), this, SLOT(doSplay1(bool)) );
   connect( splay2, SIGNAL(toggled(bool)), this, SLOT(doSplay2(bool)) );
-  vb->addWidget( label,  7, 0 );
-  vb->addWidget( splay1, 7, 1 );
+  vb->addWidget( label,  6, 0 );
+  vb->addWidget( splay1, 6, 1 );
   label  = new QLabel( "   ", this );
-  vb->addWidget( label,  8, 0 );
-  vb->addWidget( splay2, 8, 1 );
+  vb->addWidget( label,  7, 0 );
+  vb->addWidget( splay2, 7, 1 );
 
   QPushButton * c1 = new QPushButton( tr( lexicon("ok") ), this );
   connect( c1, SIGNAL(clicked()), this, SLOT(doOK()) );
   QPushButton * c2 = new QPushButton( tr( lexicon("cancel") ), this);
   connect( c2, SIGNAL(clicked()), this, SLOT(doCancel()) );
-  vb->addWidget( c1, 9, 0 );
-  vb->addWidget( c2, 9, 1 );
+  vb->addWidget( c1, 8, 0 );
+  vb->addWidget( c2, 8, 1 );
 
   exec();
 }
@@ -1474,71 +1743,68 @@ DataWidget::doSplay2( bool ok )
 void
 DataWidget::doOK()
 {
-  // hide();
-  parent->setDateAndDescription( date->text().latin1(),
-                                 description->text().latin1() );
+  hide();
+  parent->setDateAndDescription( date->text().TO_CHAR(),
+                                 description->text().TO_CHAR() );
   parent->setDownload( true,
-                       device->text().latin1(),
+                       device->text().TO_CHAR(),
                        append->isChecked(),
                        smart->isChecked(), 
                        splay1->isChecked(),
                        splay2->isChecked(),
                        backward->isChecked() );
   // parent->downloadData( );
-  delete this;
 }
 
 // ----------------------------------------------------------------
 //
 
 ExitWidget::ExitWidget( QTshotWidget * p )
-  : QDialog( p, "ExitWidget", true )
+  : QDialog( p )
   , parent( p )
 {
   Language & lexicon = Language::Get();
-  setCaption( lexicon("qtopo_exit") );
-  QVBoxLayout* vb = new QVBoxLayout(this, 8);
-  vb->setAutoAdd(TRUE);
-  QHBOX *hb;
-  hb = new QHBOX(this);
-  QString label( lexicon("exit_question") );
-  new QLabel( label, hb );
+  setWindowTitle( lexicon("qtopo_exit") );
+  QVBoxLayout* vbl = new QVBoxLayout(this);
+  DEFINE_HB;
+  vbl->addWidget( new QLabel( lexicon("exit_question"), this ) );
 
-  hb = new QHBOX(this);
+  CREATE_HB;
   QPushButton * c;
   c = new QPushButton( tr( lexicon("yes") ), hb );
   connect( c, SIGNAL(clicked()), this, SLOT(doOK()) );
+  hbl->addWidget( c );
   c = new QPushButton( tr( lexicon("no") ), hb);
   connect( c, SIGNAL(clicked()), this, SLOT(doCancel()) );
+  hbl->addWidget( c );
+  vbl->addWidget( hb );
   
   exec();
 }
 
 SplashWidget::SplashWidget( QTshotWidget * p )
-  : QDialog( p, "SplashWidget", true )
+  : QDialog( p )
   , parent( p )
 {
   Language & lexicon = Language::Get();
   IconSet * icon = IconSet::Get();
-  setCaption( lexicon("qtopo_shot") );
-  QVBoxLayout* vb = new QVBoxLayout(this, 8);
-  vb->setAutoAdd(TRUE);
-  QHBOX *hb;
-  QPushButton * c;
-  hb = new QHBOX(this);
-  QLabel label( lexicon("what_do"), hb );
+  setWindowTitle( lexicon("qtopo_shot") );
+  QVBoxLayout* vbl = new QVBoxLayout(this);
   
-  hb = new QHBOX(this);
-  c = new QPushButton( icon->Open(), lexicon("open_survey"), hb );
+  vbl->addWidget( new QLabel( lexicon("what_do"), this ) );
+  
+  QPushButton * c;
+  c = new QPushButton( icon->Open(), lexicon("open_survey"), this );
   connect( c, SIGNAL(clicked()), this, SLOT(doOpen()) );
+  vbl->addWidget( c );
 
-  hb = new QHBOX(this);
-  c = new QPushButton( icon->Data(), lexicon("download_shots"), hb );
+  c = new QPushButton( icon->Data(), lexicon("download_shots"), this );
   connect( c, SIGNAL(clicked()), this, SLOT(doData()) );
+  vbl->addWidget( c );
 
-  hb = new QHBOX(this);
-  c = new QPushButton( tr( lexicon("cancel") ), hb);
+  c = new QPushButton( tr( lexicon("cancel") ), this);
   connect( c, SIGNAL(clicked()), this, SLOT(doCancel()) );
+  vbl->addWidget( c );
 
   exec();
 }
@@ -1547,41 +1813,56 @@ SplashWidget::SplashWidget( QTshotWidget * p )
 // Insert Shot Widget
 
 InsertWidget::InsertWidget( QTshotWidget * p, DBlock * blk ) 
-  : QDialog( p, "InsertWidget", true ) 
+  : QDialog( p )
   , parent( p )
   , block( blk )
 {
   Language & lexicon = Language::Get();
-  setCaption( lexicon("qtopo_insert_shot") );
-  QVBoxLayout* vb = new QVBoxLayout(this, 8);
-  vb->setAutoAdd(TRUE);
-  QHBOX *hb;
-  hb = new QHBOX(this);
+  setWindowTitle( lexicon("qtopo_insert_shot") );
+  QVBoxLayout* vbl = new QVBoxLayout(this);
+  
   QString label( lexicon("insert_shot_at") );
-  label += blk->hasFrom() ? blk->From() : "..." ;
+  label += blk->hasFromStation() ? blk->fromStation() : "..." ;
   label += " - ";
-  label += blk->hasTo()? blk->To() : "..." ;
-  new QLabel( label, hb );
-  hb = new QHBOX(this);
-  new QLabel( lexicon("tape"), hb );
+  label += blk->hasToStation()? blk->toStation() : "..." ;
+  vbl->addWidget( new QLabel( label, this ) );
+  
+  DEFINE_HB;
+
+  CREATE_HB;
+  hbl->addWidget( new QLabel( lexicon("tape"), hb ) );
   distance = new QLineEdit( "", hb );
-  hb = new QHBOX(this);
-  new QLabel( lexicon("azimuth"), hb );
+  hbl->addWidget( distance );
+  vbl->addWidget( hb );
+
+  CREATE_HB;
+  hbl->addWidget( new QLabel( lexicon("azimuth"), hb ) );
   compass = new QLineEdit( "", hb );
-  hb = new QHBOX(this);
-  new QLabel( lexicon("clino"), hb );
+  hbl->addWidget( compass );
+  vbl->addWidget( hb );
+
+  CREATE_HB;
+  hbl->addWidget( new QLabel( lexicon("clino"), hb ) );
   clino = new QLineEdit( "", hb );
-  hb = new QHBOX(this);
-  new QLabel( lexicon("insert_before"), hb );
+  hbl->addWidget( clino );
+  vbl->addWidget( hb );
+
+  CREATE_HB;
+  hbl->addWidget( new QLabel( lexicon("insert_before"), hb ) );
   before = new QCheckBox( "", hb );
   before->setChecked( false );
+  hbl->addWidget( before );
+  vbl->addWidget( hb );
 
-  hb = new QHBOX(this);
+  CREATE_HB;
   QPushButton * c;
   c = new QPushButton( tr( lexicon("ok") ), hb );
   connect( c, SIGNAL(clicked()), this, SLOT(doOK()) );
+  hbl->addWidget( c );
   c = new QPushButton( tr( lexicon("cancel") ), hb);
   connect( c, SIGNAL(clicked()), this, SLOT(doCancel()) );
+  hbl->addWidget( c );
+  vbl->addWidget( hb );
 
   exec();
 }
@@ -1591,11 +1872,10 @@ InsertWidget::doOK()
 {
   hide();
   parent->doInsertBlock( block,
-                       distance->text().latin1(),
-                       compass->text().latin1(),
-                       clino->text().latin1(),
+                       distance->text().TO_CHAR(),
+                       compass->text().TO_CHAR(),
+                       clino->text().TO_CHAR(),
                        before->isChecked() );
-  delete this;
 }
 
 #ifdef HAS_LRUD
@@ -1607,7 +1887,7 @@ LRUDWidget::LRUDWidget( QTshotWidget * p, DBlock * b )
   double ls = parent->lengthFactor();
   bool ok = false;
   Language & lexicon = Language::Get();
-  setCaption( lexicon("qtopo_insert_LRUD") );
+  setWindowTitle( lexicon("qtopo_insert_LRUD") );
   QGridLayout* vb = new QGridLayout(this, 8);
   QLabel label( lexicon("write_LRUD"), this );
   vb->addMultiCellWidget( &label, 0, 0, 0, 5);
@@ -1616,10 +1896,10 @@ LRUDWidget::LRUDWidget( QTshotWidget * p, DBlock * b )
   vb->addWidget( new QLabel( lexicon("right"), this), 1, 2 );
   vb->addWidget( new QLabel( lexicon("up"), this), 1, 3 );
   vb->addWidget( new QLabel( lexicon("down"), this), 1, 4 );
-  if ( blk->hasFrom() ) {
+  if ( blk->hasFromStation() ) {
     ok = true;
     vb->addWidget( new QLabel( blk->From(), this), 2, 0 );
-    LRUD * lrud = blk->LRUD_From(); // "From" LRUD
+    LRUD * lrud = blk->getLRUD( 0 ); // "From" LRUD
     if ( lrud == NULL ) {
       L1 = new QLineEdit("", this );
       R1 = new QLineEdit("", this );
@@ -1640,10 +1920,10 @@ LRUDWidget::LRUDWidget( QTshotWidget * p, DBlock * b )
   } else {
     L1 = R1 = U1 = D1 = NULL;
   }
-  if ( blk->hasTo() ) {
+  if ( blk->hasToStation() ) {
     ok = true;
     vb->addWidget( new QLabel( blk->To(), this), 3, 0 );
-    LRUD * lrud = blk->LRUD_To(); // "To" LRUD
+    LRUD * lrud = blk->getLRUD( 1 ); // "To" LRUD
     if ( lrud == NULL ) {
       L2 = new QLineEdit("", this );
       R2 = new QLineEdit("", this );
@@ -1678,22 +1958,20 @@ void
 LRUDWidget::doOK()
 {
   hide();
-  if ( blk->hasFrom() ) {
+  if ( blk->hasFromStation() ) {
     DBG_CHECK("LRUD From %s %s %s %s\n",
-        L1->text().latin1(), R1->text().latin1(), U1->text().latin1(), D1->text().latin1() );
+        L1->text().TO_CHAR(), R1->text().TO_CHAR(), U1->text().TO_CHAR(), D1->text().TO_CHAR() );
     parent->doInsertLRUD( blk, 
                           L1->text(), R1->text(), U1->text(), D1->text(),
                           true ); // at from
   }
-  if ( blk->hasTo() ) {
+  if ( blk->hasToStation() ) {
     DBG_CHECK("LRUD To %s %s %s %s\n", 
-        L2->text().latin1(), R2->text().latin1(), U2->text().latin1(), D2->text().latin1() );
+        L2->text().TO_CHAR(), R2->text().TO_CHAR(), U2->text().TO_CHAR(), D2->text().TO_CHAR() );
     parent->doInsertLRUD( blk, 
                           L2->text(), R2->text(), U2->text(), D2->text(),
                           false ); // at to
   }
-  // FIXME this should be here but it segfaults
-  // delete this; 
 }
 #endif // HAS_LRUD
 
@@ -1701,61 +1979,90 @@ LRUDWidget::doOK()
 // Survey Info
 
 SurveyInfoWidget::SurveyInfoWidget( QTshotWidget * my_parent )
-  : QDialog( my_parent, "SurveyInfoWidget", true ) 
+  : QDialog( my_parent )
   , parent( my_parent )
-  , team( NULL )
-  , prefix( NULL )
-  , single_survey( NULL )
+  , edit_team( NULL )
+  , edit_prefix( NULL )
+  , box_single_survey( NULL )
   , centerline( NULL )
   , survey( NULL )
 {
   Language & lexicon = Language::Get();
-  setCaption( lexicon("survey_info") );
-  SurveyInfo * survey_info = parent->GetSurveyInfo();
-  QVBoxLayout* vb = new QVBoxLayout(this, 8);
-  vb->setAutoAdd(TRUE);
-  QHBOX *hb;
-  hb = new QHBOX(this);
-  // QWidget * label1 = 
-    new QLabel( lexicon("name"), hb );
-  name = new QLineEdit( survey_info->name, hb );
-  hb = new QHBOX(this);
-  // QWidget * label2 = 
-    new QLabel( lexicon("title"), hb );
-  title = new QLineEdit( survey_info->title, hb );
+  setWindowTitle( lexicon("survey_info") );
+  SurveyInfo * survey_info = parent->getSurveyInfo();
+  QVBoxLayout* vbl = new QVBoxLayout(this);
+  DEFINE_HB;
+
+  CREATE_HB;
+  hbl->addWidget( new QLabel( lexicon("name"), hb ) );
+  edit_name = new QLineEdit( survey_info->name, hb );
+  hbl->addWidget( edit_name );
+  vbl->addWidget( hb );
+
+  CREATE_HB;
+  hbl->addWidget( new QLabel( lexicon("title"), hb ) );
+  edit_title = new QLineEdit( survey_info->title, hb );
+  hbl->addWidget( edit_title );
+  vbl->addWidget( hb );
   
   ExportType e = parent->exportType();
 
-  if ( e == ExportTherion || e == ExportSurvex ) { // CENTERLINE COMMANDS --> Therion, Survex
-    new QLabel( lexicon("centerline_commands"), this );
-    centerline = new QMULTILINEEDIT( this );
-    centerline->insertLine( survey_info->centerlineCommand.c_str() );
-  } else if ( e == ExportCompass ) { // TEAM --> Compass
-    new QLabel( lexicon("team"), this );
-    team = new QLineEdit( survey_info->team, this );
+  if ( e == EXPORT_THERION || e == EXPORT_SURVEX ) { // CENTERLINE COMMANDS --> Therion, Survex
+    vbl->addWidget( new QLabel( lexicon("centerline_commands"), this ) );
+    centerline = new QTextEdit( this );
+    centerline->append( survey_info->therionCenterlineCommand.c_str() ); // FIXME
+    vbl->addWidget( centerline );
+  } else if ( e == EXPORT_COMPASS ) { // TEAM --> Compass
+    vbl->addWidget( new QLabel( lexicon("team"), this ) );
+    edit_team = new QLineEdit( survey_info->team, this );
+    vbl->addWidget( edit_team );
   }
-  if ( e == ExportTherion ) { // SURVEY COMMANDS --> Therion
-    new QLabel( lexicon("survey_commands"), this );
-    survey = new QMULTILINEEDIT( this );
-    survey->insertLine( survey_info->surveyCommand.c_str() );
-  } else if ( e == ExportCompass ) { // STATION PREFIX --> Compass
-    new QLabel( lexicon("prefix"), this );
-    prefix = new QLineEdit( survey_info->prefix, this );
-    single_survey = new QCheckBox( lexicon("single_survey"), this );
-    single_survey->setChecked( survey_info->single_survey ); 
+  if ( e == EXPORT_THERION ) { // SURVEY COMMANDS --> Therion
+    vbl->addWidget( new QLabel( lexicon("survey_commands"), this ) );
+    survey = new QTextEdit( this );
+    if ( survey_info->therionSurveyCommand.empty() ) {
+      std::ostringstream oss;
+      parent->getSurveyText( oss );
+      survey_info->therionSurveyCommand = oss.str();
+    }
+    survey->append( survey_info->therionSurveyCommand.c_str() );
+    vbl->addWidget( survey );
+  } else if ( e == EXPORT_COMPASS ) { // STATION PREFIX --> Compass
+    vbl->addWidget( new QLabel( lexicon("prefix"), this ) );
+    edit_prefix = new QLineEdit( survey_info->compassPrefix, this );
+    box_single_survey = new QCheckBox( lexicon("single_survey"), this );
+    box_single_survey->setChecked( survey_info->compassSingleSurvey ); 
+    vbl->addWidget( edit_prefix );
+    vbl->addWidget( box_single_survey );
   }
 
-  hb = new QHBOX(this);
+  CREATE_HB;
   double as = parent->angleFactor();
-  new QLabel( lexicon("declination"), hb );
-  declination = new QLineEdit( Locale::ToString( survey_info->declination * as, 2 ), hb );
+  hbl->addWidget( new QLabel( lexicon("declination"), hb ) );
+  if ( survey_info->declination != DECLINATION_UNDEF ) {
+    edit_declination = new QLineEdit( Locale::ToString( survey_info->declination * as, 2 ), hb );
+  } else {
+    edit_declination = new QLineEdit( "", hb );
+  }
+  hbl->addWidget( edit_declination );
+  vbl->addWidget( hb );
 
-  hb = new QHBOX(this);
+  if (  e == EXPORT_THERION ) { // export THCONFIG
+    CREATE_HB;
+    box_thconfig =  new QCheckBox( lexicon("thconfig"), hb ); 
+    box_thconfig->setChecked( survey_info->therionThconfig );
+    vbl->addWidget( box_thconfig );
+  }
+
+  CREATE_HB;
   QPushButton * c;
   c = new QPushButton( tr( lexicon("ok") ), hb );
   connect( c, SIGNAL(clicked()), this, SLOT(doOK()) );
+  hbl->addWidget( c );
   c = new QPushButton( tr( lexicon("cancel") ), hb);
   connect( c, SIGNAL(clicked()), this, SLOT(doCancel()) );
+  hbl->addWidget( c );
+  vbl->addWidget( hb );
 
   exec();
 }
@@ -1763,62 +2070,59 @@ SurveyInfoWidget::SurveyInfoWidget( QTshotWidget * my_parent )
 void
 SurveyInfoWidget::doOK()
 {
-  SurveyInfo * survey_info = parent->GetSurveyInfo();
-  survey_info->name  = name->text();
-  survey_info->title = title->text();
+  hide();
+  SurveyInfo * survey_info = parent->getSurveyInfo();
+  survey_info->name  = edit_name->text();
+  survey_info->title = edit_title->text();
   if ( centerline ) {
-    int k0 = centerline->numLines();
-    if ( k0 > 0 ) {
-      std::ostringstream oss;
-      oss << centerline->textLine(0).latin1();
-      for ( int k = 1; k < k0; ++k ) {
-        oss << "\n" << centerline->textLine(k).latin1();
-      }
-      survey_info->centerlineCommand = oss.str();
+    QString txt = centerline->toPlainText();
+    if ( ! txt.isEmpty() ) {
+      survey_info->therionCenterlineCommand = txt.TO_CHAR();
     } else {
-      survey_info->centerlineCommand = "";
+      survey_info->therionCenterlineCommand = "";
     }
   } else {
-    survey_info->centerlineCommand = "";
+    survey_info->therionCenterlineCommand = "";
   }
 
   if ( survey ) {
-    int k0 = survey->numLines();
-    if ( k0 > 0 ) {
-      std::ostringstream oss;
-      oss << survey->textLine(0).latin1();
-      for ( int k = 1; k < k0; ++k ) {
-        oss << "\n" << survey->textLine(k).latin1();
-      }
-      survey_info->surveyCommand = oss.str();
+    QString txt = survey->toPlainText();
+    if ( ! txt.isEmpty() ) {
+      survey_info->therionSurveyCommand = txt.TO_CHAR();
     } else {
-      survey_info->surveyCommand = "";
+      survey_info->therionSurveyCommand = "";
     }
   } else {
-    survey_info->surveyCommand = "";
+    survey_info->therionSurveyCommand = "";
   }
 
-  if ( team ) {
-    survey_info->team = team->text();
+  if ( edit_team ) {
+    survey_info->team = edit_team->text();
   } else {
     survey_info->team = "";
   }
 
-  if ( prefix ) {
-    survey_info->prefix = prefix->text();
+  if ( edit_prefix ) {
+    survey_info->compassPrefix = edit_prefix->text();
   }
-  if ( single_survey ) {
-    survey_info->single_survey = single_survey->isChecked();
+  if ( box_single_survey ) {
+    survey_info->compassSingleSurvey = box_single_survey->isChecked();
   }
-  if ( declination && ! declination->text().isEmpty() ) {
-    double as = parent->angleFactor();
-    survey_info->declination = Locale::ToDouble( declination->text() ) / as;
-    printf("Set declination %s to %.2f as %.2f\n", 
-      declination->text().latin1(), survey_info->declination, as );
+  if ( edit_declination ) {
+    if ( edit_declination->text().isEmpty() ) {
+      survey_info->declination = DECLINATION_UNDEF;
+    } else {
+      double as = parent->angleFactor();
+      survey_info->declination = Locale::ToDouble( edit_declination->text().TO_CHAR() ) / as;
+      printf("Set declination %s to %.2f as %.2f\n", 
+        edit_declination->text().TO_CHAR(), survey_info->declination, as );
+    }
+  }
+  if ( box_thconfig ) {
+    survey_info->therionThconfig = box_thconfig->isChecked();
   }
 
   parent->doExportOK();
-  delete this;
 }
 
 
@@ -1826,71 +2130,63 @@ SurveyInfoWidget::doOK()
 // main widget
 
 void
-QTshotWidget::doExport()
+QTshotWidget::doExport( QAction * action )
 {
-  if ( dlist.Size() == 0 ) return;
-#ifdef QT_NO_FILEDIALOG
-  if ( export_type == ExportTherion ) { // therion
-    QMessageBox::warning(this, lexicon("qtopo_shot"), lexicon("default_th") );
-  } else if ( export_type == ExportSurvex ) { // survex
-    QMessageBox::warning(this, lexicon("qtopo_shot"), lexicon("default_svx") );
-  } else if ( export_type == ExportCompass ) {
-    QMessageBox::warning(this, lexicon("qtopo_shot"), lexicon("default_dat") );
-  } else if ( export_type == ExportPocketTopo ) {
-    QMessageBox::warning(this, lexicon("qtopo_shot"), lexicon("default_top") );
+  DBG_CHECK("doExport() list size %d\n", dlist.listSize() );
+  if ( dlist.listSize() == 0 ) return;
+  SurveyInfo & survey_info = info.surveyInfo;
+  if ( action->text() == lexicon("topolinux") ) {
+    doSave();
+  } else if ( action->text() == lexicon("therion") ) {
+    export_type = EXPORT_THERION;
+    survey_info.exportName = QFileDialog::getSaveFileName( this,
+      lexicon("default_th"),
+      survey_info.exportName,
+      "Therion files (*.th)\nAll (*.*)" );
+  } else if ( action->text() == lexicon("compass") ) {
+    export_type = EXPORT_COMPASS;
+    survey_info.exportName = QFileDialog::getSaveFileName( this,
+      lexicon("default_dat"),
+      survey_info.exportName,
+      "Compass files (*.dat)\nAll (*.*)" );
+  } else if ( action->text() == lexicon("survex") ) {
+    export_type = EXPORT_SURVEX;
+    survey_info.exportName = QFileDialog::getSaveFileName( this,
+      lexicon("default_svx"),
+      survey_info.exportName,
+      "Survex files (*.svx)\nAll (*.*)" );
+  } else if ( action->text() == lexicon("pockettopo") ) {
+    export_type = EXPORT_POCKETTOPO;
+    survey_info.exportName = QFileDialog::getSaveFileName( this,
+      lexicon("default_top"),
+      survey_info.exportName,
+      "PocketTopo files (*.top)\nAll (*.*)" );
   } else {
-    QMessageBox::warning(this, lexicon("qtopo_shot"), lexicon("default_none") );
+    fprintf(stderr, "ERROR unknown export type %s\n", action->text().TO_CHAR() );
     return;
   }
-#else
-  if ( export_type == ExportTherion ) { // therion
-    info.exportName = QFileDialog::getSaveFileName( info.exportName,
-      "Therion files (*.th)\nAll (*.*)", this );
-  } else if ( export_type == ExportSurvex ) { // survex
-    info.exportName = QFileDialog::getSaveFileName( info.exportName,
-      "Survex files (*.svx)\nAll (*.*)", this );
-  } else if ( export_type == ExportCompass ) {
-    info.exportName = QFileDialog::getSaveFileName( info.exportName,
-      "Compass files (*.dat)\nAll (*.*)", this );
-  } else if ( export_type == ExportPocketTopo ) {
-    info.exportName = QFileDialog::getSaveFileName( info.exportName,
-      "PocketTopo files (*.top)\nAll (*.*)", this );
-  } else {
-    return;
-  }
-#endif
-  DBG_CHECK("doExport()\n");
-  if ( ! info.exportName.isEmpty() ) { // got a file name
-    new SurveyInfoWidget( this );
+  
+  if ( ! survey_info.exportName.isEmpty() ) { // got a file name
+    SurveyInfoWidget dialog( this );
   }
 }
 
-/*
-void 
-QTshotWidget::showCanvas( int mode, DBlock * block, bool reversed )
-{
-  DBG_CHECK("showCanvas mode %d\n", mode );
-
-  new PlotCanvas( this, mode, block, reversed );
-}
-*/
-    
 void
 QTshotWidget::doExportOK()
 {
-  if ( export_type == ExportTherion ) {
+  if ( export_type == EXPORT_THERION ) {
     if ( saveAsTherion( dlist, info, units ) ) {
       QMessageBox::information(this, lexicon("qtopo_shot"), lexicon("saved_th") );
     } else {
       QMessageBox::warning(this, lexicon("qtopo_shot"), lexicon("no_saved_th") );
     }
-  } else if ( export_type == ExportSurvex ) { // survex
+  } else if ( export_type == EXPORT_SURVEX ) { // survex
     if ( saveAsSurvex( dlist, info, units ) ) {
       QMessageBox::information(this, lexicon("qtopo_shot"), lexicon("saved_svx") );
     } else {
       QMessageBox::warning(this, lexicon("qtopo_shot"), lexicon("no_saved_svx") );
     }
-  } else if ( export_type == ExportCompass ) { // compass
+  } else if ( export_type == EXPORT_COMPASS ) { // compass
     int max_len;
     if ( saveAsCompass( dlist, info, units, max_len ) ) {
       if ( max_len > 12 ) {
@@ -1901,10 +2197,10 @@ QTshotWidget::doExportOK()
     } else {
       QMessageBox::warning(this, lexicon("qtopo_shot"), lexicon("no_saved_dat") );
     }
-  } else if ( export_type == ExportPocketTopo ) { // PocketTopo
-    if ( saveAsPocketTopo( dlist, info,
-                           planCanvas ? planCanvas->getStatus() : NULL,
-                           extCanvas ? extCanvas->getStatus() : NULL ) ) {
+  } else if ( export_type == EXPORT_POCKETTOPO ) { // PocketTopo
+    if ( saveAsPocketTopo( dlist, info,  // FIXME
+                           planCanvases.plotsSize() > 0 ? planCanvases[0]->getStatus() : NULL,
+                           extCanvases.plotsSize() > 0 ? extCanvases[0]->getStatus() : NULL ) ) {
       QMessageBox::information(this, lexicon("qtopo_shot"), lexicon("saved_top") );
     } else {
       QMessageBox::warning(this, lexicon("qtopo_shot"), lexicon("no_saved_top") );
@@ -1914,66 +2210,144 @@ QTshotWidget::doExportOK()
   }
 }
 
-void
-QTshotWidget::doPlan()
+
+
+void 
+QTshotWidget::doPlanScrap()
 {
-  if ( dlist.Size() == 0 ) return;
-  if ( planCanvas == NULL ) {
-    planCanvas = new PlotCanvas( this, MODE_PLAN );
+  if ( dlist.listSize() == 0 ) return;
+  if ( temp_plan_name.isEmpty() ) {
+    temp_plan_name.sprintf( "plan-%d", plan_cnt );
+    ++plan_cnt;
+  } else {
+    temp_plan_name = temp_plan_name.simplified();
+    temp_plan_name.replace(' ', '_' );
+    int last = temp_plan_name.lastIndexOf( QRegExp("[0-9]") );
+    QString suffix;
+    if ( last >= 0 ) {
+      QString prefix = temp_plan_name.left( last );
+      suffix = temp_plan_name.right( temp_plan_name.length() - last );
+      plan_cnt = suffix.toInt() + 1;
+      temp_plan_name = prefix + suffix.sprintf( "%d", plan_cnt );
+    } else {
+      ++plan_cnt;
+      temp_plan_name = temp_plan_name  + suffix.sprintf( "%d", plan_cnt );
+    }
   }
-  planCanvas->show();
-  // this->showCanvas( MODE_PLAN );
+  ScrapNameWidget dialog( this, temp_plan_name, MODE_PLAN );
+}
+
+void 
+QTshotWidget::doExtendedScrap()
+{
+  if ( dlist.listSize() == 0 ) return;
+  if ( temp_ext_name.isEmpty() ) {
+    temp_ext_name.sprintf( "ext-%d", ext_cnt );
+    ++ext_cnt;
+  } else {
+    temp_ext_name = temp_ext_name.simplified();
+    temp_ext_name.replace(' ', '_' );
+    int last = temp_ext_name.lastIndexOf( QRegExp("[0-9]") );
+    QString suffix;
+    if ( last >= 0 ) {
+      QString prefix = temp_ext_name.left( last );
+      suffix = temp_ext_name.right( temp_ext_name.length() - last );
+      ext_cnt = suffix.toInt() + 1;
+      temp_ext_name = prefix + suffix.sprintf( "%d", ext_cnt );
+    } else {
+      ++ext_cnt;
+      temp_ext_name = temp_ext_name  + suffix.sprintf( "%d", ext_cnt );
+    }
+  }
+  ScrapNameWidget dialog( this, temp_ext_name, MODE_EXT );
+}
+
+
+
+void
+QTshotWidget::doNewPlot( QString pname, QString sname, int mode )
+{
+  if ( dlist.listSize() == 0 ) return;
+  PlotCanvas * canvas;
+  if ( mode == MODE_PLAN ) {
+    temp_plan_name = pname;
+    canvas = new PlotCanvas( this, mode, temp_plan_name.TO_CHAR(), sname.TO_CHAR() );
+    planCanvases.addPlot( temp_plan_name, canvas ); 
+    plan_menu->addAction( temp_plan_name );
+    canvas->show();
+  } else if ( mode == MODE_EXT ) {
+    temp_ext_name = pname;
+    canvas = new PlotCanvas( this, mode, temp_ext_name.TO_CHAR(), sname.TO_CHAR() );
+    extCanvases.addPlot( temp_ext_name, canvas ); 
+    ext_menu->addAction( temp_ext_name );
+    canvas->show();
+  }
 }
 
 void
-QTshotWidget::doExtended()
+QTshotWidget::doPlan( QAction * action )
 {
-  if ( dlist.Size() == 0 ) return;
-  if ( extCanvas == NULL ) {
-    extCanvas = new PlotCanvas( this, MODE_EXT );
+  if ( action->text() == lexicon("new") ) {
+    doPlanScrap();
+    return;
   }
-  extCanvas->show();
-  // this->showCanvas( MODE_EXT );
+  PlotCanvas * canvas = planCanvases.getPlot( action->text().TO_CHAR() );
+  if ( canvas ) {
+    canvas->show();
+  }
+}
+
+
+void
+QTshotWidget::doExtended( QAction * action )
+{
+  if ( action->text() == lexicon("new") ) {
+    doExtendedScrap();
+    return;
+  }
+  PlotCanvas * canvas = extCanvases.getPlot( action->text().TO_CHAR() );
+  if ( canvas ) {
+    canvas->show();
+  }
 }
 
 void
 QTshotWidget::do3D()
 {
-  if ( dlist.Size() == 0 ) return;
+  if ( dlist.listSize() == 0 ) return;
   if ( _3DCanvas == NULL ) {
-    _3DCanvas = new PlotCanvas( this, MODE_3D );
+    _3DCanvas = new PlotCanvas( this, MODE_3D, "3d", "3d" );
   } 
   _3DCanvas->show();
   // this->showCanvas( MODE_3D );
 }
 
 void
-QTshotWidget::doCrossSection( DBlock * block, bool reversed, bool vertical )
+QTshotWidget::doCrossSection( DBlock * block, QString name, bool reversed, bool vertical )
 {
-  if ( dlist.Size() == 0 ) return;
-  assert( block != NULL );
-  // if ( block == NULL ) return;
-
-  PlotCanvas * xsectionCanvas;
-  if ( vertical ) {
-    xsectionCanvas = new PlotCanvas( this, MODE_CROSS, block, reversed );
-    // this->showCanvas( MODE_CROSS, block, reversed );
-  } else { // horizontal X-section
-    xsectionCanvas = new PlotCanvas( this, MODE_HCROSS, block, reversed );
+  if ( dlist.listSize() == 0 ) return;
+  // assert( block != NULL );
+  if ( block == NULL ) {
+    QMessageBox::warning( this, lexicon("warning"), lexicon("warn_null_block") );
+    return;
   }
-  xsectionCanvas->show();
+  PlotCanvas * crossCanvas;
+  int mode = ( vertical )? MODE_CROSS : MODE_HCROSS;
+  crossCanvas = new PlotCanvas( this, mode, name.TO_CHAR(), name.TO_CHAR(), block, reversed );
+  crossCanvases.addPlot( name, crossCanvas ); // FIXME used by POCKETTOPO
+  crossCanvas->show();
 }
 
 void
 QTshotWidget::doToggle()
 {
-  new ToggleWidget( this );
+  ToggleWidget dialog( this );
 }
 
 void
 QTshotWidget::doOptions()
 {
-  new OptionsWidget( this );
+  OptionsWidget dialog( this );
 }
 
 void 
@@ -2013,7 +2387,7 @@ QTshotWidget::doHelp()
 void
 QTshotWidget::doQuit()
 {
-  new ExitWidget( this );
+  ExitWidget dialog( this );
 }
 
 void
@@ -2023,22 +2397,27 @@ QTshotWidget::doRealExit()
 }
 
 CleanShotsWidget::CleanShotsWidget( QTshotWidget * p )
-  : QDialog( p, "CleanShotsWidget", true )
+  : QDialog( p )
   , parent( p )
 {
   Language & lexicon = Language::Get();
-  setCaption( lexicon("qtopo_clean_shots") );
-  QVBoxLayout* vb = new QVBoxLayout(this, 8);
-  vb->setAutoAdd(TRUE);
-  new QLabel( lexicon("clean_shots"), this );
+  setWindowTitle( lexicon("qtopo_clean_shots") );
+  QVBoxLayout* vbl = new QVBoxLayout(this);
+  vbl->addWidget( new QLabel( lexicon("clean_shots"), this ) );
 
-  QHBOX *hb;
-  hb = new QHBOX(this);
+  DEFINE_HB;
+  CREATE_HB;
   QPushButton * c;
   c = new QPushButton( tr( lexicon("yes") ), hb );
   connect( c, SIGNAL(clicked()), this, SLOT(doOK()) );
+  hbl->addWidget( c );
   c = new QPushButton( tr( lexicon("no") ), hb);
   connect( c, SIGNAL(clicked()), this, SLOT(doCancel()) );
+  hbl->addWidget( c );
+  vbl->addWidget( hb );
+
+  show();
+  exec();
 }
 
 // ------------------------------------------------------------------------
@@ -2050,7 +2429,7 @@ int qtshot_main( int argc, char ** argv )
 int main( int argc, char ** argv )
 #endif
 {
-  QAPPLICATION app( argc, argv );
+  QApplication app( argc, argv );
 
 /*
   int ac = 1;
@@ -2103,41 +2482,76 @@ int main( int argc, char ** argv )
   }
 
   QTshotWidget widget;
-  /*
   QPixmap icon;
   if ( icon.load( config("QTDATA_ICON") ) ) {
     // printf( "loaded icon\n");
-    widget.setIcon( icon );
+    widget.setWindowIcon( icon );
   }
-  */
-  app.setMainWidget( &widget );
+  // app.setMainWidget( &widget );
   widget.show();
   return app.exec();
 }
 
 
 
-MyFileDialog::MyFileDialog( QTshotWidget * parent, const char * title, int m )
-      : QDialog( parent, title, TRUE )
-      , widget( parent )
-      , mode( m )
+// ===========================================================================
+// SCRAP NAME WIDGET
+// get the scrap name on save (export as therion file)
+
+ScrapNameWidget::ScrapNameWidget( QTshotWidget * p, QString & name, int type )
+  : QDialog( p )
+  , parent( p )
+  , plot_type( type )
 {
   Language & lexicon = Language::Get();
-  QVBoxLayout* vbl = new QVBoxLayout(this, 8);
-  vbl->setAutoAdd(TRUE);
-  QHBOX * hb = new QHBOX(this);
-  new QLabel( lexicon("enter_filename"), hb );
-  hb = new QHBOX(this);
-  line = new QLineEdit( hb );
-  hb = new QHBOX(this);
-  QPushButton * c = new QPushButton( tr(lexicon("ok")), hb );
-  connect( c, SIGNAL(clicked()), this, SLOT(doOK()) );
-  c = new QPushButton( tr(lexicon("cancel")), hb);
-  connect( c, SIGNAL(clicked()), this, SLOT(doCancel()) );
+  setWindowTitle( lexicon("qtopo_scrap") );
+  QVBoxLayout* vbl = new QVBoxLayout(this);
 
+  vbl->addWidget( new QLabel( lexicon("plot_name"), this ) );
+  pname = new QLineEdit( name, this );
+  vbl->addWidget( pname );
+
+  vbl->addWidget( new QLabel( lexicon("scrap_name"), this ) );
+  sname = new QLineEdit( name, this );
+  vbl->addWidget( sname );
+
+  QWidget * hb;
+  QHBoxLayout * hbl;
+
+  hb = new QWidget(this);
+  hbl = new QHBoxLayout( hb );
+  
+  QPushButton * c;
+  c = new QPushButton( tr( lexicon("ok") ), hb );
+  connect( c, SIGNAL(clicked()), this, SLOT(doOK()) );
+  hbl->addWidget( c );
+
+  c = new QPushButton( tr( lexicon("cancel") ), hb);
+  connect( c, SIGNAL(clicked()), this, SLOT(doCancel()) );
+  hbl->addWidget( c );
+  vbl->addWidget( hb );
+
+  // show();
   exec();
 }
 
-
+void
+ScrapNameWidget::doOK()
+{
+  hide();
+  if ( pname->text().isEmpty() || sname->text().isEmpty() ) return;
+  switch ( plot_type ) {
+    case MODE_PLAN:
+      parent->doNewPlot( pname->text(), sname->text(), MODE_PLAN );
+      break;
+    case MODE_EXT:
+      parent->doNewPlot( pname->text(), sname->text(), MODE_EXT );
+      break;
+    case MODE_3D:
+    case MODE_CROSS:
+      /* nothing */
+      break;
+  }
+}
 
 
