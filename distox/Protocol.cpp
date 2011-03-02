@@ -61,7 +61,7 @@ Protocol::SendCommand( Command cmd )
           // fprintf(stderr, "Protocol SendCommand() SILENT_STOP\n");
           byte = 0x32; break;
   }
-  fprintf(stderr, "Protocol SendCommand() byte 0x%02x\n", byte );
+  // fprintf(stderr, "Protocol SendCommand() byte 0x%02x\n", byte );
   if ( byte == 0 ) {
     return PROTO_COMMAND;
   }
@@ -69,8 +69,45 @@ Protocol::SendCommand( Command cmd )
   if ( ! SendCommandByte( byte ) ) {
     return PROTO_WRITE;
   }
-  fprintf(stderr, "Protocol SendCommand() ok \n");
+  // fprintf(stderr, "Protocol SendCommand() ok \n");
   return PROTO_OK;
+}
+    
+bool 
+Protocol::ReadHeadTail( uint16_t * head, uint16_t * tail )
+{
+  unsigned long addr = HEAD_TAIL;
+  unsigned long reply_addr;
+  unsigned char buf[8];
+  unsigned char * reply = buf + 3;
+  ssize_t nr;
+
+  buf[0] = 0x38;
+  buf[1] = (unsigned char)( addr & 0xff );
+  buf[2] = (unsigned char)( (addr>>8) & 0xff );
+  nr = serial.Write( buf, 3 ); // read data
+  nr = serial.Read( buf, 8 );
+  if ( nr > 0 ) {
+    if ( buf[0] != 0x38 ) {
+      printd("ERROR: read() wrong reply packet at addr %04lx\n", addr);
+      return false;
+    }
+    reply_addr = ((unsigned long)(buf[2]))<<8 | buf[1];
+    if ( reply_addr != addr ) {
+      printd( "ERROR: read() wrong reply addr %04lx at addr %04lx\n", reply_addr, addr);
+      return false;
+    }
+    // for (i=0; i<4; ++i) old_byte[4*k+i] = buf[3+i];
+    *head = HEAD( reply );
+    *tail = TAIL( reply );
+  } else if ( nr < 0 ) {
+    printd("ERROR: read() error \n");
+    return false;
+  } else {
+    printd("ERROR: read() returns 0 bytes\n");
+    return false;
+  }
+  return true;
 }
 
 bool 
@@ -121,7 +158,7 @@ Protocol::Acknowledge( unsigned char byte )
 ProtoError
 Protocol::ReadData( )
 {
-  printd("Protocol ReadData() \n");
+  // fprintf(stderr, "Protocol ReadData() \n");
   unsigned char b[8];
   ssize_t n; 
   if ( (n = serial.Read( b, 8 )) != 8 ) {
@@ -135,14 +172,20 @@ Protocol::ReadData( )
   unsigned char type = b[0] & 0x3f;
   switch ( type ) {
     case 0x01: // data
+      // fprintf(stderr,
+      //   "ReadData() data packet 0x%02x (0x%02x 0x%02x 0x%02x 0x%02x ...)\n",
+      //   type, b[1], b[2], b[3], b[4] );
       data_queue.Put( b );
       break;
     case 0x02: // calib G
     case 0x03: // calib M
+      // fprintf(stderr,
+      //   "ReadData() calib packet 0x%02x (0x%02x 0x%02x 0x%02x 0x%02x ...)\n",
+      //   type, b[1], b[2], b[3], b[4] );
       calib_queue.Put( b );
       break;
     default:
-      printd("ReadData() wrong packet type 0x%02x\n", type );
+      // fprintf(stderr, "ReadData() wrong packet type 0x%02x\n", type );
       return PROTO_PACKET;
   }
   return PROTO_OK;

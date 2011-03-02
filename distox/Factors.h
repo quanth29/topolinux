@@ -11,6 +11,12 @@
 #ifndef FACTORS_H
 #define FACTORS_H
 
+#include <math.h>
+
+#ifdef WIN32
+  #define M_PI 3.1415926536
+#endif
+
 #define DELTA_V 10   /* vector size increment */
 #define FV 24000.0   /* vector scale factor */
 #define FM 16384.0   /* matrix scale factor */

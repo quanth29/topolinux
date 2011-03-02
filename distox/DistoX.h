@@ -29,6 +29,8 @@
 
 #define C_2_D( c, k ) ((int16_t)(((uint16_t)(c[k])) | (uint16_t)(c[k+1])<< 8))
 
+/** Calibration coefficients transform from u16_t to real number
+ */
 #define COEFF2BGX( c ) (  C_2_D( c,  0) / FV )
 #define COEFF2AGXX( c ) ( C_2_D( c,  2) / FM )
 #define COEFF2AGXY( c ) ( C_2_D( c,  4) / FM )
@@ -54,6 +56,22 @@
 #define COEFF2AMZX( c ) ( C_2_D( c, 42) / FM )
 #define COEFF2AMZY( c ) ( C_2_D( c, 44) / FM )
 #define COEFF2AMZZ( c ) ( C_2_D( c, 46) / FM )
+
+/** DistoX status bits
+ */
+#define STATUS_GRAD    0x01
+#define STATUS_BT      0x02
+#define STATUS_COMPASS 0x04
+#define STATUS_CALIB   0x08
+#define STATUS_SILENT  0x10
+
+/** Disto status byte tests
+ */
+#define IS_STATUS_GRAD( s )    ((( (s) & STATUS_GRAD ) == STATUS_GRAD ))
+#define IS_STATUS_BT( s )      ((( (s) & STATUS_BT ) == STATUS_BT ))
+#define IS_STATUS_COMPASS( s ) ((( (s) & STATUS_COMPASS ) == STATUS_COMPASS ))
+#define IS_STATUS_CALIB( s )   ((( (s) & STATUS_CALIB ) == STATUS_CALIB ))
+#define IS_STATUS_SILENT( s )  ((( (s) & STATUS_SILENT ) == STATUS_SILENT ))
 
 class DistoXListener
 {
@@ -106,15 +124,26 @@ class DistoX
      */
     bool download( int number = 0 )
     {
+      // fprintf(stderr, "***** DistoX::download(%d)\n", number);
       if ( ! mProto.Open() ) {
-        // fprintf(stderr, "ERROR: failed to open protocol \n");
+        fprintf(stderr, "ERROR: failed to open protocol \n");
         return false;
       }
 
       ProtoError err = PROTO_OK;
       size_t cnt = 0;
-      for ( size_t retry=0; retry<1; ++retry ) {
-        while ( ( err = mProto.ReadData() ) == PROTO_OK ) {
+      bool ask = ( number == -1 ); // whether to ask distox the number of data
+      // fprintf( stderr, "***** ask number: %s\n", ask? "true" : "false" );
+      if ( ask ) {
+        number = mProto.ReadDataNumber();
+        // fprintf(stderr, "***** number %d\n", number );
+      } else {
+        if ( number == 0 ) { // infinity
+          number = -1;
+        }
+      }
+      for ( int retry=0; ; ++retry) {
+        while ( number != 0 && ( err = mProto.ReadData() ) == PROTO_OK ) {
           cnt ++;
           number --;
           if ( mListener ) {
@@ -122,13 +151,22 @@ class DistoX
           }
           if ( number == 0 ) break;
         }
-        if ( err == PROTO_TIMEOUT ) {
+        if ( err == PROTO_TIMEOUT ) { // read timeout
           // fprintf(stderr, "timeout: retry n. %d\n", retry );
-          continue;
+          if ( retry < 0 ) continue;
         }
         if ( err != PROTO_OK ) {
-          // fprintf(stderr, "ERROR: Read failed: %s\n", ProtoErrorStr(err) );
+          fprintf(stderr, "ERROR: Read failed: %s\n", ProtoErrorStr(err) );
         }
+        if ( ask ) {
+          number = mProto.ReadDataNumber();
+          // fprintf(stderr, "number %d\n", number );
+          if ( number > 0 ) {
+            -- retry;
+            continue;
+          } 
+        }
+        break;
       }
       if ( mListener ) {
         mListener->distoxDone();
@@ -193,6 +231,7 @@ class DistoX
 
     /** read DistoX user mode
      * @return neg. if failed, otherwise the mode
+     *
      */
     int readMode( )
     {
@@ -224,13 +263,13 @@ class DistoX
       if ( mode != 0x00 ) {
         unsigned char mode1 = 0x00;
         unsigned char mode2 = mode;
-        if ( mode2 & 0x08 ) {
+        if ( mode2 & STATUS_CALIB ) {
           mode2 &= 0xf7;
         } else {
-          mode2 |= 0x08;
+          mode2 |= STATUS_CALIB;
         }
         for (int k = 0; k<3; ++k ) {
-          if ( mode & 0x08 ) { // calib on: switch off
+          if ( mode & STATUS_CALIB ) { // calib on: switch off
             mProto.SendCommandByte( 0x30 );
           } else {
             mProto.SendCommandByte( 0x31 );
@@ -240,7 +279,7 @@ class DistoX
           }
         }
         if ( mode1 == mode2 ) {
-          if ( mode & 0x08 ) {
+          if ( mode & STATUS_CALIB ) {
             ret = 0;
             // fprintf(stdout, "DistoX in normal mode\n");
           } else {
@@ -268,14 +307,14 @@ class DistoX
       // for (int k = 0; k<3; ++k ) 
       {
         if ( mProto.Read8000( &mode ) ) {
-          bool calib = ( mode & 0x08 ) != 0;
+          bool calib = ( mode & STATUS_CALIB ) != 0;
           if ( calib != on) {
             unsigned char mode1 = 0x00;
-            unsigned char mode2 = mode ^ 0x08; // expected mode: toggle calib bit
+            unsigned char mode2 = mode ^ STATUS_CALIB; // expected mode: toggle calib bit
             for (int k = 0; k<3; ++k ) {
               mProto.SendCommandByte( on ? 0x31 : 0x30 ); // start|stop calib
               if ( mProto.Read8000( &mode1 ) && mode1 == mode2 ) {
-                ret = ( ( mode1 & 0x08 ) != 0 )? 1 : 0;
+                ret = ( ( mode1 & STATUS_CALIB ) != 0 )? 1 : 0;
                 break;
               }
             }
@@ -300,15 +339,15 @@ class DistoX
       // for (int k = 0; k<3; ++k )
       {
         if ( mProto.Read8000( &mode ) ) {
-          fprintf(stderr, "mode %02x \n", mode );
-          bool silent = ( mode & 0x10 ) == 0; 
+          // fprintf(stderr, "mode %02x \n", mode );
+          bool silent = ( mode & STATUS_SILENT ) == 0; 
           if ( silent != on) {
             unsigned char mode1 = 0x00;
-            unsigned char mode2 = mode ^ 0x10;
+            unsigned char mode2 = mode ^ STATUS_SILENT;
             for (int k = 0; k<3; ++k ) {
               mProto.SendCommandByte( on ? 0x33 : 0x32 ); // start|stop silent
               if ( mProto.Read8000( &mode1 ) && mode1 == mode2 ) {
-                ret = ( ( mode1 & 0x10 ) != 0 )? 1 : 0;
+                ret = ( ( mode1 & STATUS_SILENT ) != 0 )? 1 : 0;
                 break;
               }
             }
@@ -319,6 +358,26 @@ class DistoX
       }
       mProto.Close();
       return ret;
+    }
+
+    /** toggle Disto X grad mode [not supported]
+     * @param on   whether to turn silent mode on or off
+     * @return 0 normal mode, 1 silent mode, -1 error
+     */
+    int setGrad( bool on )
+    {
+      on = on; // silence gcc complaint
+      return -1;
+    }
+
+    /** toggle Disto X compass/clino mode [not supported]
+     * @param on   whether to turn silent mode on or off
+     * @return 0 normal mode, 1 silent mode, -1 error
+     */
+    int setCompass( bool on )
+    {
+      on = on; // silence gcc complaint
+      return -1;
     }
 
 

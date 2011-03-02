@@ -11,6 +11,12 @@
 #ifndef PROTOCOL_H
 #define PROTOCOL_H
 
+#ifdef _WIN32
+  #include "stdint.h"
+#else
+  #include <stdint.h>
+#endif
+
 #include "Serial.h"
 #include "BufferQueue.h"
 
@@ -65,6 +71,13 @@ const char * ProtoErrorStr( ProtoError err );
 #define CALIB_2_Z( b ) \
   (int16_t)( (uint16_t)(b[5]) | ( ( (uint16_t)(b[6]) ) << 8 ) )
 
+// address of the head/tail bytes
+#define HEAD_TAIL 0xC020
+
+#define HEAD( b ) \
+  (((uint16_t)(b[0])) | (((uint16_t)(b[1])) << 8 ))
+#define TAIL( b ) \
+  (((uint16_t)(b[2])) | (((uint16_t)(b[3])) << 8 ))
 
 class Protocol
 {
@@ -122,11 +135,33 @@ class Protocol
     bool SendCommandByte( unsigned char byte );
 
     /** read from memory 4 bytes at a time the eight bytes at address 0x8000
-     * @param mode   mode byte (output)
+     * @param mode   distox status byte (output)
      * @return true if successful
      */
     bool Read8000( unsigned char * mode );
 
+    /** read head/tail of the distox internal data queue
+     * @param head   head [output]
+     * @param tail   tail [output]
+     * @return true if successful
+     */
+    bool ReadHeadTail( uint16_t * head, uint16_t * tail );
+
+    /** get the number of data on the DistoX
+     * @return the number of data (-1 on error)
+     */
+    int ReadDataNumber()
+    {
+      uint16_t head;
+      uint16_t tail;
+      if ( ! ReadHeadTail( &head, &tail ) ) {
+        return -1;
+      }
+      // data queue wraps at 0x8000,
+      // 8 bytes per packet
+      return (int)( (head + 0x8000 - tail) % 0x8000 )/8;
+    }
+ 
     /** read a data packet
      * @return protocol error code
      */
