@@ -111,7 +111,7 @@ void usage()
 {
   static bool printed_usage = false;
   if ( ! printed_usage ) {
-    fprintf(stderr, "Usage: write_calib [-d device] [-z] [-h] coeff_file\n");
+    fprintf(stderr, "Usage: tlx_write_calib [-d device] [-z] [-h] coeff_file\n");
     fprintf(stderr, "Options:\n");
     fprintf(stderr, "  -d device serail device [%s]\n", DEFAULT_DEVICE );
     fprintf(stderr, "  -z        default calibration coeffs\n");
