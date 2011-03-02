@@ -16,14 +16,19 @@
 #include <string>
 #include <sstream>
 
+#include "Factors.h"
 #include "CTransform.h"
 
 struct CBlock 
 {
-  std::string group;
+  private:
+    std::string group;
+  
+  public:
   int gx, gy, gz, mx, my, mz;
   double compass;
   double clino;
+  double roll;
   double error;
   bool ignore;
   CBlock * next;
@@ -38,10 +43,12 @@ struct CBlock
     , my( _my )
     , mz( _mz )
     , error( err ) 
-    , ignore( ign )
+    , ignore( ign != 0 )
     , next( NULL )
   {
-    ComputeCompassAndClino();
+    Vector g0( gx/FV, gy/FV, gz/FV );
+    Vector m0( mx/FV, my/FV, mz/FV );
+    CTransform::DefaultCompassAndClino( g0, m0, compass, clino, roll );
   }
 
   CBlock( int _gx, int _gy, int _gz, int _mx, int _my, int _mz, const CTransform & t )
@@ -53,20 +60,26 @@ struct CBlock
     , my( _my )
     , mz( _mz )
     , error( -1.0 )
-    , ignore( 0 )
+    , ignore( false )
     , next( NULL )
   {
-    ComputeCompassAndClino( t );
+    computeCompassAndClino( t );
   }
 
   /** compute compass and clino values 
-   */
+   *
   void ComputeCompassAndClino();
+   */
 
   /** compute compass and clino values using a calibration transform
    * @param t the calibration transform
    */
-  void ComputeCompassAndClino( const CTransform & t );
+  void computeCompassAndClino( const CTransform & t )
+  {
+    Vector g0( gx/FV, gy/FV, gz/FV );
+    Vector m0( mx/FV, my/FV, mz/FV );
+    t.ComputeCompassAndClino( g0, m0, compass, clino, roll );
+  }
 
   /** debug 
    */
@@ -83,6 +96,13 @@ struct CBlock
     oss << g;
     group = oss.str();
   }
+
+  void SetGroup( const char * g ) 
+  {
+    group = g;
+  }
+
+  const char * Group() const { return group.c_str(); }
 
 };
 

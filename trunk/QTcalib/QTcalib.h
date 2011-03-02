@@ -13,22 +13,17 @@
 
 #include <string>
 
-#include <qmainwindow.h>
-#include <qpushbutton.h>
-#include <qlabel.h>
-// #include <qaction.h>
-#include <qmenubar.h>
-#include <qlcdnumber.h>
-#include <qlayout.h>
-#include <qlineedit.h>
-#include <qcheckbox.h>
-// #include <qabstractlayout.h>
-#include <qwidget.h>
-#include <qstring.h>
-#include <qdialog.h>
+#include <QMainWindow>
+#include <QLabel>
+#include <QAction>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QWidget>
+#include <QString>
+#include <QDialog>
+#include <QTableWidgetItem>
 
-#include "portability2.h"
-#include "portability.h"
+#include "shorthands.h"
 
 #include "CalibList.h"
 #include "Coverage.h"
@@ -40,14 +35,16 @@
 /**
  * calibation data table
  */
-class CalibTable : public QTABLE
+class CalibTable : public QTableWidget
 {
   Q_OBJECT
   public:
     CalibTable( int rows, int cols, QWidget * parent );
 
+    void updateData( const CalibList & list );
+
   public slots:
-    void cell_clicked( int row, int col, int button, const QPoint & pos );
+    void cell_clicked(  QTableWidgetItem * cell );
 
     void header_clicked( int section );
 };
@@ -55,14 +52,13 @@ class CalibTable : public QTABLE
 /** 
  * main calibration window
  */
-class QTcalibWidget : public QMAINWINDOW
+class QTcalibWidget : public QMainWindow
                     , public DistoXListener
 {  
   Q_OBJECT
   public:
     QTcalibWidget( Config & config, 
               QWidget * parent = 0, 
-              const char * name = 0,
               WFLAGS fl = 0 );
 
     // ~QTcalibWidget()
@@ -76,21 +72,32 @@ class QTcalibWidget : public QMAINWINDOW
     Language & lexicon;
     IconSet * icon;
     QString fileName;      //!< in/out filename
-    const char * device;
-    CalibList clist;       //!< calibration data
-    CalibTable * data_table;  //!< data table
+    std::string device;
+    CalibList clist;           //!< calibration data
+    CalibTable * data_table;   //!< data table
+    CTransform data_transform; //!< data calibration transform
     Coverage  coverage;  
     bool guessing;         //!< whether to perform the group guess when downloading the data
     bool guess_on_old;     //!< use old DistoX values to guess the calib groups
     int guess_angle;       //!< group guess discrepancy angle
     std::string calibration_description; //!< calibration_description string
+    bool data_transformed; //!< whether to use transformed compess/clino/roll
+    double calib_delta;
+    int calib_max_iter;
 
-    QTOOLBUTTON * btnNew;
-    QTOOLBUTTON * btnSave;
-    QTOOLBUTTON * btnData;
-    QTOOLBUTTON * btnEval;
-    QTOOLBUTTON * btnCover;
-    QTOOLBUTTON * btnComment;
+    QAction * actNew;
+    QAction * actOpen;
+    QAction * actSave;
+    QAction * actData;
+    QAction * actEval;
+    QAction * actCover;
+    QAction * actComment;
+    QAction * actToggle;
+    QAction * actRead;
+    QAction * actWrite;
+    QAction * actOptions;
+    QAction * actHelp;
+    QAction * actQuit;
 
   private:
     void showData();
@@ -98,6 +105,31 @@ class QTcalibWidget : public QMAINWINDOW
     void showCoeff( const QString & comment );
 
   public:
+    /** set the disto rfcomm device
+     * @param dev   new device
+     */
+    void setDevice( const char * dev ) { device = dev; }
+
+    /** get the disto comm device
+     * @return the device
+     */
+    const char * getDevice() const { return device.c_str(); }
+
+    void setDataTransformed( bool t );
+    bool getDataTransformed() const { return data_transformed; }
+
+    void setCalibDelta( double d ) { calib_delta = d; }
+    double getCalibDelta() const { return calib_delta; }
+
+    void setCalibMaxIter( int iter ) { calib_max_iter = iter; }
+    int getCalibMaxIter() const { return calib_max_iter; }
+
+    void setGuessAngle( int angle ) { 
+      if ( angle > 0 ) guess_angle = angle;
+    }
+
+    int getGuessAngle() const { return guess_angle; }
+
     /** turn buttons on/off
       * @param on_off   whether tu turn buttons on or off
       */
@@ -105,24 +137,24 @@ class QTcalibWidget : public QMAINWINDOW
      {
        // fprintf(stderr, "onOffButtons() %s \n", on_off ? "true" : "false" );
        if ( on_off ) {
-         btnNew->setPixmap( icon->New() );
-         btnSave->setPixmap( icon->Save() );
-         btnEval->setPixmap( icon->Eval() );
-         btnCover->setPixmap( icon->Cover() );
-         btnComment->setPixmap( icon->Comment() );
+         actNew->setIcon( icon->New() );
+         actSave->setIcon( icon->Save() );
+         actEval->setIcon( icon->Eval() );
+         actCover->setIcon( icon->Cover() );
+         actComment->setIcon( icon->Comment() );
        } else {
-         btnNew->setPixmap( icon->NewOff() );
-         btnSave->setPixmap( icon->SaveOff() );
-         btnEval->setPixmap( icon->EvalOff() );
-         btnCover->setPixmap( icon->CoverOff() );
-         btnComment->setPixmap( icon->CommentOff() );
+         actNew->setIcon( icon->NewOff() );
+         actSave->setIcon( icon->SaveOff() );
+         actEval->setIcon( icon->EvalOff() );
+         actCover->setIcon( icon->CoverOff() );
+         actComment->setIcon( icon->CommentOff() );
        }
 
-       btnNew->setToggleButton( on_off );
-       btnSave->setToggleButton( on_off );
-       btnEval->setToggleButton( on_off );
-       btnCover->setToggleButton( on_off );
-       btnComment->setToggleButton( on_off );
+       actNew->setCheckable( on_off );
+       actSave->setCheckable( on_off );
+       actEval->setCheckable( on_off );
+       actCover->setCheckable( on_off );
+       actComment->setCheckable( on_off );
     } 
 
     void doOpenFile( const QString & file );
@@ -182,8 +214,34 @@ class QTcalibWidget : public QMAINWINDOW
 
     void doComment();
 
-    void value_changed( int row, int col );
+    void doOptions();
 
+    void value_changed( QTableWidgetItem * item );
+
+  private:
+    void createActions();
+    void createToolbar();
+
+};
+
+class OptionsWidget : public QDialog
+{
+  Q_OBJECT
+  private:
+    QTcalibWidget * parent;
+    QLineEdit * m_device;  //!< DistoX device
+    QLineEdit * m_angle;   //!< guess tolerance angle
+    QCheckBox * mb_transf; //!< whether to show transformed data
+    QLineEdit * m_delta;
+    QLineEdit * m_max_iter;
+
+  public:
+    OptionsWidget( QTcalibWidget * my_parent );
+
+  public slots:
+    void doOK();
+
+    void doCancel() { hide(); }
 };
 
 class CommentWidget : public QDialog
@@ -199,11 +257,11 @@ class CommentWidget : public QDialog
   public slots:
     void doOK()
     {
-      widget->setDescription( description->text().latin1() );
-      delete this;
+      hide();
+      widget->setDescription( description->text().TO_CHAR() );
     } 
 
-    void doCancel() { delete this; }
+    void doCancel() { hide(); }
 };
 
 class DownloadDialog : public QDialog
@@ -220,11 +278,11 @@ class DownloadDialog : public QDialog
   public slots:
     void doOK()
     {
+      hide();
       widget->downloadData( do_guess->isChecked(), do_on_old->isChecked() );
-      delete this;
     }
 
-    void doCancel() { delete this; }
+    void doCancel() { hide(); }
 };
 
 class WriteDialog : public QDialog
@@ -241,9 +299,10 @@ class WriteDialog : public QDialog
   public slots:
     void doOK();
   
-    void doCancel() { delete this; }
+    void doCancel() { hide(); }
 };
 
+#ifdef QT_NO_FILEDIALOG
 class MyFileDialog : public QDialog
 {
   Q_OBJECT
@@ -257,8 +316,9 @@ class MyFileDialog : public QDialog
 
   public slots:
     void doOK();
-    void doCancel() { delete this; }
+    void doCancel() { hide(); }
 };
+#endif
 
 
 class CoeffWidget : public QDialog
@@ -271,7 +331,7 @@ class CoeffWidget : public QDialog
     CoeffWidget( QTcalibWidget * p, double * c, const QString & comment );
 
   public slots:
-    void doOK() { delete this; }
+    void doOK() { hide(); }
 };
 
 /** dialog to confirm exit action
@@ -286,10 +346,22 @@ class ExitWidget : public QDialog
     ExitWidget( QTcalibWidget * p);
 
   public slots:
-    void doOK() { hide(); parent->close(); /* delete this; */ }
-    void doCancel() { delete this; }
+    void doOK() { hide(); parent->close(); }
+    void doCancel() { hide(); }
 };
 
+class CoverageWidget : public QDialog
+{
+ Q_OBJECT
+  private:
+    Coverage & coverage;
+
+  public:
+    CoverageWidget( QTcalibWidget * p, Coverage & c );
+
+  public slots:
+    void doOK() { hide(); }
+};
 
 
 #endif // TL_CALIB_H

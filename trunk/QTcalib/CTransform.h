@@ -13,6 +13,8 @@
 
 #include <stdio.h>
 
+class Calibration;
+
 struct CTransform
 {
   double G[3][4]; // bGx aGx[x] aGx[y] aGx[z]
@@ -23,11 +25,19 @@ struct CTransform
   CTransform();
 
   /** cstr
+   * @param byte   byte array of the transform coeffs
    */
   CTransform( const unsigned char * byte )
   {
     setValue( byte );
   }
+
+  CTransform( const Calibration * calib )
+  {
+    setValue( calib );
+  }
+
+  void setValue( const Calibration * calib );
 
   void setValue( const unsigned char * byte );
 
@@ -42,6 +52,14 @@ struct CTransform
         i+1, M[i][0], M[i][1], M[i][2], M[i][3] );
     }
   }
+
+  void ComputeCompassAndClino( const Vector & g0, const Vector & m0, 
+             double & compass, double & clino, double & roll ) const;
+       
+  /** Compute the default (T= identity) compass/clino/roll
+   */
+  static void DefaultCompassAndClino( const Vector & g0, const Vector & m0, 
+             double & compass, double & clino, double & roll );
 
   private:
     double GetCoeff( const unsigned char * byte );

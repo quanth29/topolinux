@@ -115,6 +115,8 @@
       std::vector< double > vCompass;
       std::vector< double > vClino;
       unsigned int num;         //!< size of the vectors
+      double optimize_eps;
+      double dip_angle;         //!< M dip angle
 
       /** calibration coefficients
        */
@@ -130,6 +132,9 @@
        */
       Calibration()
         : num( 0 )
+        #ifdef EXPERIMENTAL
+        , show_gui( false )
+        #endif
       { }
 
       void SetGCoeffs( Matrix & a, Vector & b )
@@ -137,7 +142,12 @@
         aG = a;
         bG = b;
       }
-       
+
+      const Matrix & GetAG() const { return aG; }
+      const Vector & GetBG() const { return bG; }
+      const Matrix & GetAM() const { return aM; }
+      const Vector & GetBM() const { return bM; }
+
       /** clear the vectors of G and M
        */
       void Clear();
@@ -157,6 +167,8 @@
       int GetGroup( size_t k ) const { return vGroup[k]; }
 
       int GetIgnore( size_t k ) const { return vIgnore[k]; }
+
+      double GetDipAngle() const { return dip_angle; }
 
       /** copy a coefficient value in a pair of bytes
        * @param data array of two bytes
@@ -245,6 +257,8 @@
       unsigned int Optimize( double & delta, double & error, unsigned int max_it = MAX_IT );
 
 #ifdef EXPERIMENTAL
+    private:
+      bool show_gui;
       #include "../experimental/ExperimentalCalibration.h"
 #endif
 

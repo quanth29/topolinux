@@ -12,17 +12,32 @@
 #include <math.h>
 #include <sstream>
 
-#include <qmessagebox.h>
+#include <QWidget>
+#include <QMessageBox>
 
 #include "Factors.h"
 #include "Vector.h"
 #include "CalibList.h"
 
-#define RAD2GRAD_FACTOR (180.0/M_PI)
 
 typedef unsigned short uint16_t;
 
 // ================================================================
+
+void
+CalibList::computeData( const CTransform * t )
+{
+  if ( t ) {
+    for ( CBlock * b = head; b != NULL; b=b->next ) {
+      b->computeCompassAndClino( *t );
+    }
+  } else {
+    CTransform t;
+    for ( CBlock * b = head; b != NULL; b=b->next ) {
+      b->computeCompassAndClino( t );
+    }
+  }
+}
 
 void 
 CalibList::clear()
@@ -60,7 +75,7 @@ CalibList::save( const char * filename, std::string & comment )
     fprintf(fp, "Calibration input data.\n");
     for ( CBlock * b = head; b != NULL; b=b->next ) {
       fprintf(fp, "G: %d %d %d M: %d %d %d Set %s %d %.4f\n",
-        b->gx, b->gy, b->gz, b->mx, b->my, b->mz, b->group.c_str(),
+        b->gx, b->gy, b->gz, b->mx, b->my, b->mz, b->Group(),
         (b->ignore)? 1 : 0, b->error );
     }
     if ( comment.size() > 0 ) {
@@ -74,7 +89,7 @@ CalibList::save( const char * filename, std::string & comment )
 }
 
 bool 
-CalibList::load( const char * filename, std::string & comment )
+CalibList::load( const char * filename, std::string & comment, int angle )
 {
   // if ( do_debug )
   //   fprintf(stderr, "CalibList::load() %s\n", filename );
@@ -89,7 +104,7 @@ CalibList::load( const char * filename, std::string & comment )
     return false;
   }
   if ( line[0] != '0' || line[1] != 'x' ) { // wrong format
-    // fprintf(stderr, "CalibList::load() wrong file format. Line %s", line );
+    fprintf(stderr, "CalibList::load() wrong file format. Line %s", line );
     fclose( fp );
     return false;
   }
@@ -99,14 +114,14 @@ CalibList::load( const char * filename, std::string & comment )
     return loadCoeff( fp, comment );
   } 
   // fprintf(stderr, "CalibList::load() data file %s\n", filename );
-  size_t ret = loadData( fp );
+  size_t ret = loadData( fp, angle );
   fclose( fp );
   return ret > 0;
 }
 
 
 size_t
-CalibList::loadData( FILE * fp )
+CalibList::loadData( FILE * fp, int angle )
 {
   CBlock * b0 = NULL;
   char line[256];
@@ -144,7 +159,7 @@ CalibList::loadData( FILE * fp )
 */
   }
   if ( auto_guess ) {
-    guessGroups( 20 );
+    guessGroups( angle );
   }
 
   return ret;
@@ -341,20 +356,20 @@ CalibList::writeData( const char * filename )
     my0 = (uint16_t)(b->my);
     mz0 = (uint16_t)(b->mz);
     fprintf(fp, "0x%04x 0x%04x 0x%04x 0x%04x 0x%04x 0x%04x %s %d\n",
-      gx0, gy0, gz0, mx0, my0, mz0, b->group.c_str(), b->ignore );
+      gx0, gy0, gz0, mx0, my0, mz0, b->Group(), b->ignore );
   }
   fclose( fp );
   return true;
 }
 
 void
-CalibList::readData( const char * filename )
+CalibList::readData( const char * filename, int angle )
 {
   FILE * fp = fopen( filename, "r" );
   if ( fp == NULL ) {
     return;
   }
-  loadData( fp );
+  loadData( fp, angle );
   fclose( fp );
 }
 
@@ -364,7 +379,7 @@ CalibList::initCalib( Calibration & calib )
   CBlock * b = head;
   int cnt = 0;
   for ( ; b; b=b->next ) {
-    int grp = atoi(  b->group.c_str() );
+    int grp = atoi(  b->Group() );
     calib.AddValues( b->gx, b->gy, b->gz, b->mx, b->my, b->mz, 
       cnt, grp, b->ignore );
     cnt ++;
@@ -395,6 +410,7 @@ CalibList::toggleIgnore( int r )
   return ret;
 }
   
+/*
 void
 CalibList::updateGroup( int r, const char * txt )
 {
@@ -404,5 +420,6 @@ CalibList::updateGroup( int r, const char * txt )
     b->group = txt;
   }
 }
+*/
 
 
