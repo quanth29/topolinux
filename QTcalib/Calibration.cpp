@@ -18,7 +18,7 @@
 #include "Calibration.h"
 #include "Factors.h"
 
-#if defined ARM
+#ifdef WIN32
   int round( double x ) 
   {
     return ( x > 0.0 )? (int)(x+0.5) : (int)(x-0.5);
@@ -113,9 +113,15 @@ void
 Calibration::PutCoeff( unsigned char * data, double value )
 {
   short ival = (short)( round( value ) );
+  #ifdef WIN32
+  if ( abs( round( value ) ) >= (1<<15) ) {
+    fprintf(stderr, "ERROR coefficient too big: %.2f Value %d \n", value, ival );
+  }
+  #else
   if ( fabs( round( value ) ) >= (1<<15) ) {
     fprintf(stderr, "ERROR coefficient too big: %.2f Value %d \n", value, ival );
   }
+  #endif
   data[0] = (unsigned char)(ival & 0xff);
   data[1] = (unsigned char)((ival>>8) & 0xff);
 }
@@ -305,6 +311,10 @@ Calibration::OptVectors(
   gx = mr * ca + (mr % no) * sa + gr;
   gx.normalize();
   mx = gx * ca + (no % gx) * sa; // rotate by -alpha
+  // Note this step of the algorithm can be done starting with mx or with gx indifferently
+  // mx = gr * ca - (gr % no) * sa + mr;
+  // mx.normalize();
+  // gx = mx * ca - (no % mx) * sa; // rotate by +alpha
 };
 
 /** turn a pair of vectors (gxp, mxp) around the X-axis
@@ -349,7 +359,7 @@ Calibration::Optimize( double & delta, double & error, unsigned int max_it )
   Vector * gx = new Vector[ num ];
   Vector * mx = new Vector[ num ];
 
-
+  optimize_eps = EPS * delta;
   it = OptimizeCore( gr, mr, gx, mx, max_it, &sin_alpha, &cos_alpha );
 
   int jmax;
@@ -429,10 +439,13 @@ Calibration::OptimizeCore( Vector * gr, Vector * mr, Vector * gx, Vector * mx,
   }
   #endif
 
+  // aG = aM = Id-matrix
+  // bG = bM = 0-vector
   PrepareOptimize();
 
   #ifdef USE_GUI
-    CalibrationGui gui( this, num );
+    CalibrationGui * gui = NULL;
+    if ( show_gui ) gui = new CalibrationGui( this, num );
   #endif
 
   unsigned int it = 0; // iteration number
@@ -447,7 +460,10 @@ Calibration::OptimizeCore( Vector * gr, Vector * mr, Vector * gx, Vector * mx,
     }
 
     #ifdef USE_GUI
-      gui.DisplayGM( gr, mr );
+      if ( gui ) {
+        // gui->DisplayGM( gr, mr );
+        gui->DisplayCompassClino( gr, mr );
+      }
     #endif
 
     sa = ca = 0.0;
@@ -569,13 +585,16 @@ Calibration::OptimizeCore( Vector * gr, Vector * mr, Vector * gx, Vector * mx,
       // printf("check %.8f \n", CheckInput(false) );
       // scanf("%d", &jmax );
     #endif
-  } while ( it < max_it && ( mdG > EPS || mdM > EPS ) );
+  } while ( it < max_it && ( mdG > optimize_eps || mdM > optimize_eps ) );
 
   *sin_alpha0 = sin_alpha;
   *cos_alpha0 = cos_alpha;
 
   #ifdef USE_GUI
-    gui.Wait();
+    if ( gui ) {
+      gui->Wait();
+      delete gui;
+    }
   #endif
 
   return it;
@@ -588,6 +607,7 @@ Calibration::ComputeDelta( // Vector * gx, Vector * mx,
 {
   double delta = 0.0;
   double alpha = atan2( sin_alpha, cos_alpha );
+  dip_angle = alpha * 180/M_PI;
   error = 0.0;
   int cnt=0;
   int n = 0;

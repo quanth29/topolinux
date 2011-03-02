@@ -20,7 +20,11 @@
 #include "CTransform.h"
 #include "CBlock.h"
 
-#include <qwidget.h>
+#ifdef WIN32
+  #include "stdint.h"
+#endif
+
+class QWidget; // forward
 
 
 struct CalibList
@@ -39,6 +43,11 @@ struct CalibList
     clear();
   }
 
+  /** compute data compass/clino/roll
+   * @param transformed whether to use the calibration transformation to compute
+   */
+  void computeData( const CTransform * t );
+
   /** clear the list of calibration data
    */
   void clear();
@@ -53,9 +62,10 @@ struct CalibList
   /** read the calibration coeff and data from a file (TopoLinux format)
    * @param filename name of the file
    * @param comment  description string (out)
+   * @param angle guess tolerance angle
    * @return true if OK
    */
-  bool load( const char * filename, std::string & comment );
+  bool load( const char * filename, std::string & comment, int angle );
 
     /** write the calibration data to a file (raw format)
      * @param filename name of the file
@@ -64,8 +74,9 @@ struct CalibList
 
     /** read the calibration data from a file (raw format)
      * @param filename name of the file
+     * @param angle guess tolerance angle
      */
-    void readData(  const char * filename );
+    void readData(  const char * filename, int angle );
 
     /** add a calibration data
      * @param b0    previous block
@@ -94,7 +105,7 @@ struct CalibList
 
     int toggleIgnore( int r );
 
-    void updateGroup( int r, const char * txt );
+    // void updateGroup( int r, const char * txt );
 
     void initCalib( Calibration & calib );
 
@@ -119,10 +130,11 @@ struct CalibList
 
   private:
     /** load a calibration data file 
-     * @param fp   open file pointer
+     * @param fp    open file pointer
+     * @param angle guess tolerance angle
      * @return number of read data
      */
-    size_t loadData( FILE * fp );
+    size_t loadData( FILE * fp, int angle );
 
     /** load a calibration coeff file
      * @param fp   open file pointer

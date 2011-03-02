@@ -22,37 +22,6 @@ typedef unsigned short uint16_t;
 // ================================================================
 
 #if 0
-struct Vector
-{
-   double x, y, z;
-
-   Vector( double x0, double y0, double z0 )
-     : x( x0 )
-     , y( y0 )
-     , z( z0 )
-   { }
-
-   Vector operator%( const Vector & v ) const
-   {
-     double x1 = y * v.z - z * v.y;
-     double y1 = z * v.x - x * v.z;
-     double z1 = x * v.y - y * v.x;
-     return Vector( x1, y1, z1 );
-   }
-
-   double operator*( const Vector & v ) const
-   {
-     return x*v.x + y*v.y + z*v.z;
-   }
-
-   double length() const
-   {
-     return sqrt( x*x + y*y + z*z );
-   }
-
-};
-#endif
-
 void
 CBlock::ComputeCompassAndClino()
 {
@@ -62,15 +31,24 @@ CBlock::ComputeCompassAndClino()
   Vector m0 = g % (m % g);
   Vector e0 = g % (e % g);
   clino = acos( g.X() / g.length() ) - M_PI/2;
+  // double sc = sin( clino );
+  // double cc = cos( clino );
   Vector em0 = e0 % m0;
-  double s = em0.length() * ( ( em0*g > 0 ) ? -1.0 : 1.0 );
-  double c = e0 * m0;
-  compass = atan2( s, c );
+  double sb = em0.length() * ( ( em0*g > 0 ) ? -1.0 : 1.0 );
+  double cb = e0 * m0;
+  compass = atan2( sb, cb );
   if ( compass < 0.0 ) compass += 2*M_PI;
-  clino *= RAD2GRAD_FACTOR;
+  double sr = gy;
+  double cr = gz;
+  roll = atan2( sr, cr);
+  if ( roll < 0.0 ) roll += 2*M_PI;
+  clino   *= RAD2GRAD_FACTOR;
   compass *= RAD2GRAD_FACTOR;
+  roll    *= RAD2GRAD_FACTOR;
 }
+#endif
 
+#if 0
 void
 CBlock::ComputeCompassAndClino( const CTransform & t )
 {
@@ -88,14 +66,22 @@ CBlock::ComputeCompassAndClino( const CTransform & t )
   Vector m0 = g % (m % g);
   Vector e0 = g % (e % g);
   clino = acos( g.X() / g.length() ) - M_PI/2;
+  // double sc = sin( clino );
+  // double cc = cos( clino );
   Vector em0 = e0 % m0;
-  double s = em0.length() * ( ( em0*g > 0 ) ? -1.0 : 1.0 );
-  double c = e0 * m0;
-  compass = atan2( s, c );
+  double sb = em0.length() * ( ( em0*g > 0 ) ? -1.0 : 1.0 );
+  double cb = e0 * m0;
+  compass = atan2( sb, cb );
   if ( compass < 0.0 ) compass += 2*M_PI;
+  double sr = gy;
+  double cr = gz;
+  roll = atan2( sr, cr);
+  if ( roll < 0.0 ) roll += 2*M_PI;
   clino *= RAD2GRAD_FACTOR;
   compass *= RAD2GRAD_FACTOR;
+  roll *= RAD2GRAD_FACTOR;
 }
+#endif
 
 
 

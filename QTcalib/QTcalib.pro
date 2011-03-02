@@ -4,12 +4,12 @@
 
 CONFIG += qt
 
-QT += qt3support
+# QT += qt3support
 
 TEMPLATE = app
-INCLUDEPATH += . ../distox ../utils
+INCLUDEPATH += . ../distox ../utils 
 
-DEFINES += EXPERIMENTAL
+# DEFINES += EXPERIMENTAL
 
 # Input
 HEADERS += CalibList.h CBlock.h CTransform.h \
@@ -20,7 +20,7 @@ HEADERS += CalibList.h CBlock.h CTransform.h \
 # BufferQueue.h Serial.h Protocol.h DistoX.h
 # config.h
 
-SOURCES += CalibList.cpp CBlock.cpp CTransform.cpp \
+SOURCES += CalibList.cpp CTransform.cpp \
            Coverage.cpp IconSet.cpp \
            Locale.cpp QTcalib.cpp Calibration.cpp 
 

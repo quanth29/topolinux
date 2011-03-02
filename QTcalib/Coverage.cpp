@@ -10,6 +10,7 @@
  *
  */
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 
 // #include "Programs.h"
@@ -19,15 +20,20 @@
   #define M_PI 3.14159265358979323846
 #endif
 
-#define BYTES 4
+#define BYTES 4 /* RGB need 32 bits */
+#define AZIMUTH_BIT 16
 
 Coverage::Coverage()
   : t_dim( 0 )
 {
-  for ( int i=0; i<19; ++i ) { clino_angles[i] = 90 - 10*i; }
+  for ( int i=0; i<19; ++i ) { // clino angles: from +90 to -90
+    clino_angles[i] = 90 - 10*i;
+  }
   t_size[ 0 ] = t_size[18] = 1;
-  for ( int i=1; i<9; ++i ) { t_size[i] = t_size[18-i] = 6*i; }
-  t_size[ 9 ] = 9*6;
+  for ( int i=1; i<9; ++i ) {
+    t_size[i] = t_size[18-i] = AZIMUTH_BIT * i;
+  }
+  t_size[ 9 ] = AZIMUTH_BIT * 9; // max azimuth steps 54 at clino 0
 
   t_offset[0] = 0;
   for (int k=1; k<19; ++k ) {
@@ -38,7 +44,7 @@ Coverage::Coverage()
   for (int k = 0; k<19; ++k ){
     for (int j=t_offset[k]; j<t_offset[k]+t_size[k]; ++j ) {
       angles[j].clino   = clino_angles[k] * M_PI / 180.0;
-      angles[j].compass = ( 2.0 * M_PI * (j - t_offset[k]) ) / t_size[k];
+      angles[j].compass = M_PI + ( 2.0 * M_PI * (j - t_offset[k]) ) / t_size[k];
     }
   }
   img = new unsigned char [ COVERAGE_WIDTH * COVERAGE_HEIGHT * BYTES ]; // 0xff-RGB
@@ -46,14 +52,14 @@ Coverage::Coverage()
 
 double Cosine( double compass1, double clino1, double compass2, double clino2 )
 {
-  double c1 = cos( clino1 );
+  double h1 = cos( clino1 );
   double z1 = sin( clino1 );
-  double x1 = c1 * cos( compass1 );
-  double y1 = c1 * sin( compass1 );
-  double c2 = cos( clino2 );
+  double x1 = h1 * cos( compass1 );
+  double y1 = h1 * sin( compass1 );
+  double h2 = cos( clino2 );
   double z2 = sin( clino2 );
-  double x2 = c2 * cos( compass2 );
-  double y2 = c2 * sin( compass2 );
+  double x2 = h2 * cos( compass2 );
+  double y2 = h2 * sin( compass2 );
   return x1*x2 + y1*y2 + z1*z2; // cosine of the angle
 }
 
@@ -75,6 +81,7 @@ double
 Coverage::EvaluateCoverage( CalibList & clist )
 {
   for (int j=0; j<t_dim; ++j ) angles[j].value   = 1.0;
+  CTransform t( clist.getCoeff() );
 
   const char * old_grp = NULL;
   double compass_avg = 0.0;
@@ -82,9 +89,13 @@ Coverage::EvaluateCoverage( CalibList & clist )
   int cnt_avg = 0;
   for (CBlock * b = clist.head; b != NULL; b=b->next ) {
     if ( b->ignore != 0 ) continue;
-    double compass = b->compass * M_PI/180.0; // GRAD2RAD_FACTOR;
-    double clino   = b->clino   * M_PI/180.0; // GRAD2RAD_FACTOR;
-    if ( b->group.size()>0 && old_grp && b->group == old_grp ) {
+    Vector g( b->gx, b->gy, b->gz );
+    Vector m( b->mx, b->my, b->mz );
+    double compass, clino, roll;
+    t.ComputeCompassAndClino( g, m, compass, clino, roll );
+    compass *= M_PI/180.0; // GRAD2RAD_FACTOR;
+    clino   *= M_PI/180.0; // GRAD2RAD_FACTOR;
+    if ( old_grp && strcmp( b->Group(), old_grp ) == 0 ) {
       if ( cnt_avg > 0 && fabs( compass - compass_avg / cnt_avg ) > 1.5*M_PI ) {
         if ( compass > M_PI ) {
           compass -= 2.0 * M_PI; // average around 0
@@ -92,6 +103,7 @@ Coverage::EvaluateCoverage( CalibList & clist )
           compass += 2.0 * M_PI; // average around 360
         }
       }
+      // printf("cnt %2d add  clino %8.2f compass %8.2f\n", cnt_avg, clino, compass ); 
       clino_avg   += clino;
       compass_avg += compass;
       cnt_avg     ++;
@@ -104,7 +116,8 @@ Coverage::EvaluateCoverage( CalibList & clist )
       clino_avg   = clino;
       compass_avg = compass;
       cnt_avg     = 1;
-      old_grp = b->group.c_str();
+      // printf("cnt %2d init clino %8.2f compass %8.2f\n", cnt_avg, clino, compass ); 
+      old_grp = b->Group();
     }
   }
   if ( cnt_avg > 0 ) {
@@ -127,7 +140,7 @@ Coverage::EvaluateCoverage( CalibList & clist )
 unsigned char * 
 Coverage::FillImage( const char * filename )
 {
-  memset( img, 0xff, COVERAGE_WIDTH * COVERAGE_HEIGHT * BYTES );
+  memset( img, 0xcc, COVERAGE_WIDTH * COVERAGE_HEIGHT * BYTES ); // grey
   for (int j0=0; j0<COVERAGE_HEIGHT; ++j0) {
     int j = 2 * j0;
     double clino = j - 90.0;
@@ -166,14 +179,11 @@ Coverage::FillImage( const char * filename )
       //   printf("J0 %d j %d j1 %d j2 %d I0 %d i %d i11 %d i21 %d i12 %d i22 %d col %d\n",
       //     j0, j, j1, j2, i0, i, i11, i21, i12, i22, col );
       // }
-      #if BYTES == 4
-      img[off+0] = col;
-      img[off+1] = col;
+      img[off+0] = 0;
+      img[off+1] = 0xff-col;
       img[off+2] = col;
-      img[off+3] = col; // col;
-      #else 
-      img[off+0] = col;
-      #endif
+      img[off+3] = 0xff;
+      // // img[off+3] = alpha; 
       
     }
   }
@@ -197,12 +207,9 @@ Coverage::FillImage( const char * filename )
       fprintf(fp, "\"ff\tc #808080\",\n");
       for ( int j=0; j<COVERAGE_HEIGHT; ++j) {
         fprintf(fp, "\"");
-        for (int i=0; i<COVERAGE_WIDTH; ++i) 
-          #if BYTES == 4
-            fprintf(fp, "%02x", img[1+(j*COVERAGE_WIDTH+i)*BYTES] );
-          #else
-            fprintf(fp, "%02x", img[j*COVERAGE_WIDTH+i] );
-          #endif
+        for (int i=0; i<COVERAGE_WIDTH; ++i) {
+          fprintf(fp, "%02x", img[0+(j*COVERAGE_WIDTH+i)*BYTES] );
+        }
         fprintf(fp, (j<COVERAGE_HEIGHT-1) ? "\",\n" : "\"\n");
       }
       fprintf(fp, "};\n");
