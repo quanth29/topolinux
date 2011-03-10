@@ -9,13 +9,22 @@ Only a few Therion point types are supported and there is only a limited support
 
     * _station_. This is somewhat special. You insert a station point by clicking on its name in Select mode. If you click again on the name of a station point you have already added, a point-comment dialog shows up where you can enter a description for the station.
     * _air-draught_. Displayed as a light-blue arrow. It has an orientation.
-    * _blocks_. Displayed as a gray square.
+    * _blocks_. Displayed as a couple of overlapping gray squares.
+    * _clay_, displayed as a wiggle
     * _continuation_. Displayed as a question mark '?'. When you add a continuation point a dialog box opens up for the optional text of the point. Type it in and press the "Enter" key.
+    * _crystal_, displayed as a six-point star
     * _debris_. Displayed as a pair of gray triangles.
-    * _sand_. Displayed as a pair of gray rectangles.
     * _entrance_. Displayed as a big black triangle. It has an orientation.
-    * _clay_. Displayed as a gray curly shape.
-    * _stalactite_. Displayed as a black 'Y'.
+    * _flowstone_. Displayed as three short segments.
+    * _helictite_, Displayed as in Therion.
+    * _ice_. Displayed as a four-point star
     * _label_. When you add a label a dialog box opens up for the lebel text. Type it in and press the "Enter" key. The label is displayed with its text.
+    * _pebbles_, Displayed as three small squares
+    * _sand_. Displayed as three brown little circles.
+    * _snow_. Displayed as a snow flake
+    * _stalactite_. Displayed as a black 'Y'.
+    * _stalagmite:. Displayed as an inverted black 'Y'
     * _water-flow_. Displayed as a blue arrow. It has an orientation.
     * _user_. Displayed as a green 'U'.
+    
+When you select a point (ie, click on it) a red dot appears over it. To move to point to another position click on the new position. Station points cannot be moved. To edit the point attributes click on the red dot. The point properties that can be modified depend on the point type. For example, four points have an orientation: air_draught, entrance, label, water_flow. You modify the point orientation with a dial.
