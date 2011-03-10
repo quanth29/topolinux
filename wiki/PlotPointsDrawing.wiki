@@ -23,7 +23,7 @@ Only a few Therion point types are supported and there is only a limited support
     * _sand_. Displayed as three brown little circles.
     * _snow_. Displayed as a snow flake
     * _stalactite_. Displayed as a black 'Y'.
-    * _stalagmite:. Displayed as an inverted black 'Y'
+    * _stalagmite_. Displayed as an inverted black 'Y'
     * _water-flow_. Displayed as a blue arrow. It has an orientation.
     * _user_. Displayed as a green 'U'.
     
