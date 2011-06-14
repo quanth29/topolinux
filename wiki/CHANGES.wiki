@@ -4,6 +4,42 @@
 
 Change-log
 
+20110606 QTshot toolbar and menus
+Moved Download and Toggle in a menu under Download.
+Moved Info, Options, nd Help in a menu undef Info.
+
+20110606 Survey Info Widget
+Added a widget to display the survey infos: nr of shots, nr. of stations,
+nr. of loops, and the delta Z, north, east.
+
+20110603 QTshot export bug fix
+Fixed export TLX menu ("Save As"): used to present export info dialog.
+
+20110507 PlotCanvas toolbar + grid
+Reunited actions Collapse, Grid and Numbers under the menu View.
+Improved grid visibility by making lighter 1m lines wrt 10m lines.
+
+20110506 PlotAreaItem and PlotLineItem
+Encompass area and line graophics items.
+Area and line point now have CP.
+
+20110505 PlotPainter
+New class PlotPainter: the idea is
+to move all the scene rendering to the PlotPainter class.
+Started with lines and area border.
+
+20110505 Therion line control points
+Fixed import of control points for line points.
+
+20110503 Therion line control points
+Control points can be inserted: press the mouse on the line point
+and release it on the control point.
+There is still no visual feedback of them.
+However they are exported in the th2 file.
+Compile with DO_CP (see PlotCanvasScene.cpp).
+So far only lines, not area border (which is probably ok
+for invisible borders, but may be important for visible
+ones).
 
 20110428 Therion Area
 Therion area options dialog.
