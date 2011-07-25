@@ -1,0 +1,94 @@
+#summary DistoX on android
+#labels Featured
+
+= DISCLAIMER =
+
+This code is provided under GPL v.2 licence.
+It as provided as it is, with no guarantee.
+I do NOT take resoponsability for any loss of your data.
+
+This software is VERY experimental and unstable.
+If you plan to use it for a real cave survey,
+you should be ready to use TopoLinux command line tools
+to recover your data, in case something goes wrong.
+I repeat: I do NOT take resoponsability for any loss
+of your data.
+
+= INSTALL =
+
+You need an android sdk to compile and install the package.
+TopoDroid requires bluetooth, and cannot run on a droid emulator.
+You need a real device.
+Edit the AndroidMakefile.xml to suit your device.
+Then compile and install
+{{{
+   $ ant debug
+   # adb install -r bin/DistoX-debug.apk
+}}}
+
+If you want to install the sample DB
+{{{
+   # adb push distox.db /mnt/sdcard/DB
+}}}
+If you do not do it create the directory /mnt/sdcard/DB
+and TopoDroid will create an empty database on the first run.
+{{{
+   # adb shell
+   > cd /mnt/sdcard
+   > mkdir DB
+   > exit
+}}}
+
+= HOWTO = 
+
+When you start TopoDroid you are presented with an empty screen.
+Tap the "MENU" to bring up the options:
+  * Devices
+  * Surveys
+  * Calibs
+  * Refresh
+
+With the first, "Devices", you can scan for DistoX devices, or simply
+list paired devices (a device is paired after you connect to it once).
+When you tap on a device in the list, you have a choice of actions:
+  * Connect: if the device is NOT CONNECTED, tries to connect to it
+  * Reconnect: tries to connect to the device
+  * Disconnect: if the device is CONNECTED, close the connection
+  * Toggle calib mode: use when the device is NOT CONNECTED
+  * Write calibration to device (only if a calibrationis loaded): use when the device is NOT CONNECTED.
+
+With the "Surveys" option you can list the surveys, and check whether to
+display splay shots and centerline shot as groups or individual shots
+(these last two options are not implemented as of 2011-07-25).
+When you tap on the survey name in the list, the survey dialog is brought
+up: you can edit the survey name (effectively creating a new survey with
+the new name), or select the survey for display. The shots of the selected
+survey are displayed as
+{{{
+   id <name> distance compass clino
+}}}
+The "name" must be al alphanumeric string WITH NO SPACES: for a centerline
+shot use the two station name joined by a dash '-', eg, "13-14".
+For a splay shot use a single station name, eg, "13".
+Initially the shot names are empty.
+To assign a name to the shot tap on it and edit the name in the dialog.
+
+With the "Calibs" option you manage calibrations. As for surveys you can
+select the name of the current calibration. Once a calibration is selected
+its data are diosplayed in the list as
+{{{
+   id <group> compass clino roll error
+}}}
+The group is used to define groups of data with the same direction: to assign
+the group tap on the data line and edit the group name in the dialog.
+The groups can be guessed with a menu in the "Calibs" option.
+The calibration is computed with another menu in the "Calibs" option:
+the calibration result is displayed, together with the average error,
+and other infos. After the calibration has been computed it can be written
+to the DistoX device.
+
+Finally tap the "Refresh" option to refresh the lists.
+When TopoDroid is connected to a DistoX it download the data as they come
+and stores them in the DB, but the list is not automatically refreshed.
+
+
