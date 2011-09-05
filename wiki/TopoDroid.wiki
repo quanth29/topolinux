@@ -45,8 +45,10 @@ When you start TopoDroid you are presented with an empty screen.
 Tap the "MENU" to bring up the options:
   * Devices
   * Surveys
+  * Scraps
   * Calibs
   * Refresh
+  * Options
 
 With the first, "Devices", you can scan for DistoX devices, or simply
 list paired devices (a device is paired after you connect to it once).
@@ -73,9 +75,28 @@ For a splay shot use a single station name, eg, "13".
 Initially the shot names are empty.
 To assign a name to the shot tap on it and edit the name in the dialog.
 
+With "Scraps" you can list the scraps of the current survey, or create a new scrap.
+On a scrap you can draw lines and points (speleo symbols). These are the analogue of the Therion lines and points. Currently only a few line and point types are supported.
+
+Available point types:
+  * air-draught (orientable)
+  * blocks
+  * clay
+  * continuation
+  * debris
+  * entrance (orientable)
+  * ice
+  * label (with text)
+  * sand
+  * stal: either stalactite or stalagmite (if rotated by 180 degrees)
+  * water-flow (orientable)
+
+Available line types:
+  * wall
+
 With the "Calibs" option you manage calibrations. As for surveys you can
 select the name of the current calibration. Once a calibration is selected
-its data are diosplayed in the list as
+its data are displayed in the list as
 {{{
    id <group> compass clino roll error
 }}}
@@ -91,4 +112,4 @@ Finally tap the "Refresh" option to refresh the lists.
 When TopoDroid is connected to a DistoX it download the data as they come
 and stores them in the DB, but the list is not automatically refreshed.
 
-
+The "Options" option allows to set some TopoDroid options.
