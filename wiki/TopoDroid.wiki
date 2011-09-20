@@ -26,12 +26,10 @@ Then compile and install
    # adb install -r bin/DistoX-debug.apk
 }}}
 
-If you want to install the sample DB
-{{{
-   # adb push distox.db /mnt/sdcard/DB
-}}}
-If you do not do it create the directory /mnt/sdcard/DB
-and TopoDroid will create an empty database on the first run.
+
+Create the directory /mnt/sdcard/DB
+and TopoDroid will create an empty database on the first run,
+as well as two additional files (for its configuration and state).
 {{{
    # adb shell
    > cd /mnt/sdcard
@@ -41,16 +39,19 @@ and TopoDroid will create an empty database on the first run.
 
 = HOWTO = 
 
-When you start TopoDroid you are presented with an empty screen.
+When you start TopoDroid the first time you are presented with a greeting screen.
+This will not show again unless there is no survey to display.
+If there is a survey TopoDroid opnes up listing the survey shots.
+
 Tap the "MENU" to bring up the options:
-  * Devices
+  * DistoX
   * Surveys
   * Scraps
-  * Calibs
   * Refresh
+  * Calibs
   * Options
 
-With the first, "Devices", you can scan for DistoX devices, or simply
+With the first option, *DistoX*, you can scan for DistoX devices, or simply
 list paired devices (a device is paired after you connect to it once).
 When you tap on a device in the list, you have a choice of actions:
   * Connect: if the device is NOT CONNECTED, tries to connect to it
@@ -58,25 +59,33 @@ When you tap on a device in the list, you have a choice of actions:
   * Disconnect: if the device is CONNECTED, close the connection
   * Toggle calib mode: use when the device is NOT CONNECTED
   * Write calibration to device (only if a calibrationis loaded): use when the device is NOT CONNECTED.
+When a DistoX is connected the downloaded data go into the active survey or the active calibration depending on the type of the data.
+The last-used DistoX device is also listed in the menu options so that you can go immediately to manage it.
 
-With the "Surveys" option you can list the surveys, and check whether to
-display splay shots and centerline shot as groups or individual shots
-(these last two options are not implemented as of 2011-07-25).
-When you tap on the survey name in the list, the survey dialog is brought
-up: you can edit the survey name (effectively creating a new survey with
-the new name), or select the survey for display. The shots of the selected
+With the *Surveys* menu option you can manage the shot list display,
+export the survey as Therion th file, define a new scrap for the survey,
+list the surveys, define a new survey.
+When you tap on the survey name in the list of surveys, the survey becomes the active survey and its shots are displayed. When you define a new survey, you must
+specify its name in the survey dialog; it becomes the active survey. Initially it has no shot; the shot list is empty. Connect to the DistoX to download the data
+that go in the shot list. The shots of the selected
 survey are displayed as
 {{{
-   id <name> distance compass clino
+   id <name> distance compass clino [extend]
 }}}
+
 The "name" must be al alphanumeric string WITH NO SPACES: for a centerline
 shot use the two station name joined by a dash '-', eg, "13-14".
 For a splay shot use a single station name, eg, "13".
 Initially the shot names are empty.
 To assign a name to the shot tap on it and edit the name in the dialog.
 
-With "Scraps" you can list the scraps of the current survey, or create a new scrap.
-On a scrap you can draw lines and points (speleo symbols). These are the analogue of the Therion lines and points. Currently only a few line and point types are supported.
+The extend is one of [<] (left), [>] (right) or [|] vertical.
+
+By tapping on the shot line you bring up the shot dialog, throgh which you can
+edit the shot "name" and select its extend.
+
+With "Scraps" you can list the scraps of the current survey.
+On a scrap you can draw lines and points (speleo symbols). These are the analogue of the Therion lines and points. Currently only a few line and point types are supported. 
 
 Available point types:
   * air-draught (orientable)
@@ -85,6 +94,7 @@ Available point types:
   * continuation
   * debris
   * entrance (orientable)
+  * flowstone
   * ice
   * label (with text)
   * sand
@@ -92,7 +102,23 @@ Available point types:
   * water-flow (orientable)
 
 Available line types:
-  * wall
+  * wall (red)
+  * pit (pink)
+  * arrow (white)
+  * rock-border (gray)
+  * border (green)
+
+The buttons on the drawing canvas allow to
+  * toggle between moving the canvas or drawing on it
+  * undo the last drawn object
+  * zoom in/out
+  * select the point symbol
+  * select the line type
+Additionally there are the menus
+  * redo
+  * save the plot (scrap) as therion th2 file
+  * export the plot as PNG image
+  * ...
 
 With the "Calibs" option you manage calibrations. As for surveys you can
 select the name of the current calibration. Once a calibration is selected
@@ -112,4 +138,9 @@ Finally tap the "Refresh" option to refresh the lists.
 When TopoDroid is connected to a DistoX it download the data as they come
 and stores them in the DB, but the list is not automatically refreshed.
 
-The "Options" option allows to set some TopoDroid options.
+The "Options" option allows to set some TopoDroid configuration options
+and save them.
+  * tolerance among centerline data to define a single shot
+  * calibration minimum error
+  * calibration maximum number of iterations
+  * tolerance among calibration data to belong to the same group
