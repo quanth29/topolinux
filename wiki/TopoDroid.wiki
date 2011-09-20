@@ -79,7 +79,7 @@ For a splay shot use a single station name, eg, "13".
 Initially the shot names are empty.
 To assign a name to the shot tap on it and edit the name in the dialog.
 
-The extend is one of [<] (left), [>] (right) or [|] vertical.
+The extend is one of '<' (left), '>' (right) or '|' vertical (enclosed in square brackets).
 
 By tapping on the shot line you bring up the shot dialog, throgh which you can
 edit the shot "name" and select its extend.
@@ -89,6 +89,7 @@ On a scrap you can draw lines and points (speleo symbols). These are the analogu
 
 Available point types:
   * air-draught (orientable)
+  * anchor
   * blocks
   * clay
   * continuation
