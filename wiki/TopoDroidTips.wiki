@@ -1,0 +1,60 @@
+#summary TopoDroid tips
+
+= TopoDroid tips =
+
+Tips and tricks to work with TopoDroid profitably.
+
+
+= DistoX =
+
+DistoX devices are identified by their BlueTooth addresses.
+Once you have selected a DistoX device, that device appear in the
+options of the "DistoX" menu, so that you can go to the device
+management interface with three taps (menus, the "DistoX" menu and
+device option).
+ 
+TopoDroid can be either connected or disconnected to a DistoX.
+When it is connected it downloads the data. These are assigned to the 
+current survey or the current calibration. It is therefore *important* to 
+open a survey (and/or a calibration) before you connect to the DistoX.
+Otherwise your data will be lost.
+
+The other device functions (reading and writing the calibration, reading the
+head/tail of the dat a queue, toggle the device in calibration mode)
+operates only when the device is "disconnected".
+
+= Survey =
+
+Suver management is rather complex. TopoDroid offers a few options that
+determine how the srvey data are displayed. In particular TopoDroid 
+distinguishes between centerline shots (two or more consecutive shots
+with similar values) and splay shots. Furthermore a shot is "blank" if its
+stations have not been specified.
+
+TopoDroid can automatically assign the "from" station to the splay shots between
+two centerline shots. In this case the splay shots get the "from" station from the
+second centerline shot. Therefore it's a good practice to take the splay shots
+*before* the centerline shots when surveyin in the cave.
+
+TopoDroid can export the survey data as Therion "th" file. The filename is the
+same as the survey name (plus the extension ".th"), and the files are saved
+in the "th" dircetory.
+
+The exported Therion file misses a lot of important commands, in particular the
+input command for the scrap files.
+
+= Plots (scraps) =
+
+Plots are saved in Therion ".th2" format, and are stored in the "th2" directory.
+The name of the scrap files is composed of the survey name and the scrap name.
+
+TopoDroid does not use cubic splines (as Therion), and all lines are composed
+of straight segments. However these are samall enough to make the result
+smooth.
+
+It is *important* that drawings are done Therion-style. In particular the 
+wall lines must circle the cave on the left, and the pit must circle the
+drops on the left.
+
+
+ 
