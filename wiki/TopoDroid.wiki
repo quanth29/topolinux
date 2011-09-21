@@ -145,3 +145,7 @@ and save them.
   * calibration minimum error
   * calibration maximum number of iterations
   * tolerance among calibration data to belong to the same group
+
+= FURTHER DOCS =
+
+[TopoDroid-tips]
