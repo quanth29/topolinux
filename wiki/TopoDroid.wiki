@@ -148,4 +148,4 @@ and save them.
 
 = FURTHER DOCS =
 
-[TopoDroid-tips]
+[TopoDroidTips|TopoDroid tips]
