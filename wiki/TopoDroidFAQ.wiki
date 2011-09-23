@@ -1,0 +1,59 @@
+TopoDroid FAQ
+
+= TopoDroid FAQ =
+
+= Why TopoDroid saves the survey (data and sketches) in Therion format ? =
+
+Mainly because I use Therion to put together my cave survey.
+
+
+= How can I erase the TopoDroid data ? =
+
+TopoDroid keeps the survey data and the calibration data
+in a SQLite database, namely in the file _/mnt/sdcard/DB/distox.db_
+
+You can edit this database with any SQLite manager. I use the 
+_aSQLiteManager_ app, which is free. You can also pull the database
+to your PC, edit it, and push it back to the android.
+
+
+= Why I don't see the "welcome message" any more ? = 
+
+The welcome message is shown, at start, only when no
+survey is selected. TopoDroid saves the selected survey in the
+"instance" file _/mnt/sdcard/DB/distox.instance_
+
+If you remov ethis file you get the "welcome message" again
+(until you select a survey).
+
+
+= Why is TopoDroid not on the market ? =
+
+The market is a place where a developper sells its work to users.
+One pays to put apps on the market, expecting to get something
+in return for that.
+So far it seems that TopoDroid will have enough buyers to pay 
+for its stay on the market.
+
+
+= How can I help TopoDroid ? =
+
+There are several ways you can help TopoDroid:
+  * sending an email with your comments, even if you do use it. 
+  * you may donate money. This is the easiest way to tell me that
+    you are interested in it and want it to continue.
+  * writing some documentaton. This requires more time on your side
+    but it also means that yo uare more involved in it.
+  * developing the software. Definitely this is a major involvement,
+    and requires a lot of time.
+
+
+= How can I be assured that TopoDroid will continue ? =
+
+If I get enough feedbacks, one way or another, I will feel 
+sort of obliged to do a better effort to keep TopoDroid going,
+because of the people that rely on it.
+
+If other developpers get involved, that will be an even stronger
+basis for the project.
+
