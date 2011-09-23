@@ -40,12 +40,9 @@ for its stay on the market.
 
 There are several ways you can help TopoDroid:
   * sending an email with your comments, even if you do use it. 
-  * you may donate money. This is the easiest way to tell me that
-    you are interested in it and want it to continue.
-  * writing some documentaton. This requires more time on your side
-    but it also means that yo uare more involved in it.
-  * developing the software. Definitely this is a major involvement,
-    and requires a lot of time.
+  * you may donate money. This is the easiest way to tell me that you are interested in it and want it to continue.
+  * writing some documentaton. This requires more time on your side but it also means that yo uare more involved in it.
+  * developing the software. Definitely this is a major involvement, and requires a lot of time.
 
 
 == How can I be assured that TopoDroid will continue ? ==
