@@ -49,12 +49,14 @@ Plots are saved in Therion ".th2" format, and are stored in the "th2" directory.
 The name of the scrap files is composed of the survey name and the scrap name.
 
 TopoDroid does not use cubic splines (as Therion), and all lines are composed
-of straight segments. However these are samall enough to make the result
+of straight segments. However these are small enough to make the result
 smooth.
 
 It is *important* that drawings are done Therion-style. In particular the 
 wall lines must circle the cave on the left, and the pit must circle the
 drops on the left.
+
+There is no support for "area" symbols.
 
 
  
