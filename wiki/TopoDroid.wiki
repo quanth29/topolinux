@@ -81,7 +81,7 @@ To assign a name to the shot tap on it and edit the name in the dialog.
 
 The extend is one of '<' (left), '>' (right) or '|' vertical (enclosed in square brackets).
 
-An asterisk "*" follows the _extend_ if the shot is marked as "duplicate".
+An asterisk "`*`" follows the _extend_ if the shot is marked as "duplicate".
 
 By tapping on the shot line you bring up the shot dialog, throgh which you can
 edit the shot "name" and select its extend.
