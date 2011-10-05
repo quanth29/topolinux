@@ -1,0 +1,65 @@
+#TopoDroid database.
+
+== TopoDroid DB ==
+
+TopoDroid stores the data in a SQLite database, in the file
+_/mnt/sdcard/DB/distox.db_.
+
+The database contains the following tables
+  * surveys: list of surveys
+  * shots: the surveys shots
+  * plots: the surveys plot metadata
+  * calibs: list of calibrations
+  * gms: the calibrations data
+
+The *surveys* table contains the following fields
+  * id: unique identifier of the survey (integer)
+  * name: survey nickname (text, one word)
+  * date: survey date (yyyy-mm-dd)
+  * comment: survey description (text)
+
+The *shots* table contains the following fields
+  * surveyId: id of the survey to which the shot belongs (integer)
+  * id: unique shot identifier (integer)
+  * name: shot name (text). It can have several formats
+     - "from-to", centerline shot
+     - "from-" or "from", or "-to" splay shot
+     - "-" or empty, blank shot
+  * distance (double) as tranferred from the DistoX
+  * bearing (double) as tranferred from the DistoX
+  * clino (double) as tranferred from the DistoX
+  * roll (double) as tranferred from the DistoX
+  * extend (integer). It can be
+     - -1 (left)
+     - +1 (right)
+     - 0  (vertical)
+  * flag (integer): it can be
+     - 0 cave (normal) shot
+     - 1 surface shot
+     - 2 duplicate shot
+  * comment (text)
+
+The *plots* table has the following fields
+  * surveyId: id of the survey to which the plot belongs (integer)
+  * id: unique plot identifier (integer)
+  * name (text) plot/scrap name
+  * type (integer), scrap type: 
+      - 0 (none)
+      - 1 (plan)
+      - 2 (extended)
+      - 3 (x-section) 
+  * start (text) plot reference station. The plot data are relative to this station which is the origin of the plot coordinate system.
+
+The *calibs* table has the following fields
+  * id (integer) unique identifier
+  * name (text) calibration name
+  * day (text) calibration date (yyyy-mm-dd)
+  * comment (text) additional description
+
+The *gms* table has the following fields
+  * calibId (integer) id of the calibration to which this data belongs
+  * id (integer) unique identifier
+  * gx, gy, gz (integer)
+  * mx, my, mz (integer)
+  * grp (integer) group. It must be positive; data with group "0" are not used to compute the calibration
+  * error (double) error of this data, in the computation of the calibration
