@@ -22,21 +22,21 @@ The *shots* table contains the following fields
   * surveyId: id of the survey to which the shot belongs (integer)
   * id: unique shot identifier (integer)
   * name: shot name (text). It can have several formats
-     - "from-to", centerline shot
-     - "from-" or "from", or "-to" splay shot
-     - "-" or empty, blank shot
+     * "from-to", centerline shot
+     * "from-" or "from", or "-to" splay shot
+     * "-" or empty, blank shot
   * distance (double) as tranferred from the DistoX
   * bearing (double) as tranferred from the DistoX
   * clino (double) as tranferred from the DistoX
   * roll (double) as tranferred from the DistoX
   * extend (integer). It can be
-     - -1 (left)
-     - +1 (right)
-     - 0  (vertical)
+     * -1 (left)
+     * +1 (right)
+     * 0  (vertical)
   * flag (integer): it can be
-     - 0 cave (normal) shot
-     - 1 surface shot
-     - 2 duplicate shot
+     * 0 cave (normal) shot
+     * 1 surface shot
+     * 2 duplicate shot
   * comment (text)
 
 The *plots* table has the following fields
@@ -44,10 +44,10 @@ The *plots* table has the following fields
   * id: unique plot identifier (integer)
   * name (text) plot/scrap name
   * type (integer), scrap type: 
-      - 0 (none)
-      - 1 (plan)
-      - 2 (extended)
-      - 3 (x-section) 
+      * 0 (none)
+      * 1 (plan)
+      * 2 (extended)
+      * 3 (x-section) 
   * start (text) plot reference station. The plot data are relative to this station which is the origin of the plot coordinate system.
 
 The *calibs* table has the following fields
