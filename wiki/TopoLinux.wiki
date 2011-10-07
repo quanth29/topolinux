@@ -68,3 +68,8 @@ the calibration coefficients, which can be uploaded to the DistoX.
   * [Linux] installation
   * [Windows] installation
   * [CHANGES] program development log
+
+= Files =
+
+  * [survey.tlx] TopoLinux sample survey file
+  * [calib.txt] TopoLinux sample calibration file
