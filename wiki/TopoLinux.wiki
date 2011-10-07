@@ -71,5 +71,5 @@ the calibration coefficients, which can be uploaded to the DistoX.
 
 = Files =
 
-  * [survey-tlx] TopoLinux sample survey file
-  * [calib-txt] TopoLinux sample calibration file
+  * [TlxSurvey] TopoLinux sample survey file
+  * [TlxCalib] TopoLinux sample calibration file
