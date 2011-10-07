@@ -1,5 +1,3 @@
-#TopoLinux sample survey file
-
 = TopoLinux sample survey file =
 
 This is a sample TopoLinux file, version 2.
