@@ -1,5 +1,3 @@
-#TopoLinux sample calibration file
-
 = TopoLinux sample calibration file =
 
 This is a sample Topolinux calibration file. 
