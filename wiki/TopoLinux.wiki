@@ -1,4 +1,5 @@
 #summary TopoLinux. Portable programs for DistoX.
+#labels Featured
 
 = Introduction =
 
