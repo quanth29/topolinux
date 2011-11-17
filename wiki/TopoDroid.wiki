@@ -1,7 +1,6 @@
 #summary DistoX on android
-#labels Featured
 
-= DISCLAIMER =
+== DISCLAIMER ==
 
 This code is provided under GPL v.2 licence.
 It as provided as it is, with no guarantee.
@@ -14,11 +13,21 @@ to recover your data, in case something goes wrong.
 I repeat: I do NOT take resoponsability for any loss
 of your data.
 
-= INSTALL =
+== IMPORTANT NOTICE ==
+
+_From Nov. 15, 2011, TopoDroid use a new database,_ "distox2.db".
+_Your data in the old database,_ "distox.db", _cannot be used by
+the current version of TopoDroid._
+
+_To use the data from previous databases with the current version
+of TopoDroid
+they must be converted to the current database format.
+This can be done by exporting the data to a file, suitably modifying the file
+(eg, with PERL), and loading it in the new database._
+
+== COMPILE and INSTALL ==
 
 You need an android sdk to compile and install the package.
-TopoDroid requires bluetooth, and cannot run on a droid emulator.
-You need a real device.
 Edit the AndroidMakefile.xml to suit your device.
 Then compile and install
 {{{
@@ -26,10 +35,11 @@ Then compile and install
    # adb install -r bin/DistoX-debug.apk
 }}}
 
+TopoDroid requires bluetooth, and cannot run on a droid emulator.
+You need a real device.
 
 Create the directory /mnt/sdcard/DB
-and TopoDroid will create an empty database on the first run,
-as well as two additional files (for its configuration and state).
+and TopoDroid will create an empty database on the first run.
 {{{
    # adb shell
    > cd /mnt/sdcard
@@ -37,7 +47,7 @@ as well as two additional files (for its configuration and state).
    > exit
 }}}
 
-= HOWTO = 
+== HOWTO == 
 
 When you start TopoDroid the first time you are presented with a greeting screen.
 This will not show again unless there is no survey to display.
@@ -89,24 +99,29 @@ edit the shot "name" and select its extend.
 With "Scraps" you can list the scraps of the current survey.
 On a scrap you can draw lines and points (speleo symbols). These are the analogue of the Therion lines and points. Currently only a few line and point types are supported. 
 
-Available point types:
+Available point typesi (Nov. 2011):
   * air-draught (orientable)
   * anchor
   * blocks
   * clay
   * continuation
+  * danger
   * debris
   * entrance (orientable)
   * flowstone
+  * gradient (orientable)
   * ice
   * label (with text)
+  * popcorn
   * sand
   * stal: either stalactite or stalagmite (if rotated by 180 degrees)
+  * water
   * water-flow (orientable)
 
-Available line types:
+Available line types (Nov. 2011):
   * wall (red)
   * pit (pink)
+  * chimney (dark pink)
   * arrow (white)
   * rock-border (gray)
   * border (green)
@@ -121,7 +136,9 @@ Additionally there are the menus
   * redo
   * save the plot (scrap) as therion th2 file
   * export the plot as PNG image
-  * ...
+  * toggle display mode
+  * stats
+  * delete
 
 With the "Calibs" option you manage calibrations. As for surveys you can
 select the name of the current calibration. Once a calibration is selected
@@ -148,10 +165,12 @@ and save them.
   * calibration maximum number of iterations
   * tolerance among calibration data to belong to the same group
 
-= FURTHER DOCS =
+== FURTHER DOCS ==
 
 [TopoDroidTips TopoDroid Tips]
 
 [TopoDroidFAQ TopoDroid FAQ]
 
 [TopoDroidDB TopoDroid DB]
+
+The PDF docs in the download section.
