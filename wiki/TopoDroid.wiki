@@ -174,3 +174,10 @@ and save them.
 [TopoDroidDB TopoDroid DB]
 
 The PDF docs in the download section.
+
+== BUGS REPORT ==
+
+If you discover a bug or a problem please file an issue on this site.
+
+If you have comments and suggestions feel free to drop me an email: 
+marco dot corvi at gmail dot com
