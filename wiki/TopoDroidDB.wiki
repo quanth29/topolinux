@@ -3,7 +3,11 @@
 == TopoDroid DB ==
 
 TopoDroid stores the data in a SQLite database, in the file
-_/mnt/sdcard/DB/distox.db_.
+_/mnt/sdcard/DB/distox2.db_.
+
+This page describes TopoDroid db v 0.2. Starting from his version
+TopoDroid stores also the configuration and instance informations
+in this database.
 
 The database contains the following tables
   * surveys: list of surveys
@@ -21,10 +25,8 @@ The *surveys* table contains the following fields
 The *shots* table contains the following fields
   * surveyId: id of the survey to which the shot belongs (integer)
   * id: unique shot identifier (integer)
-  * name: shot name (text). It can have several formats
-     * "from-to", centerline shot
-     * "from-" or "from", or "-to" splay shot
-     * "-" or empty, blank shot
+  * from: shot from station
+  * to: shot to station (blank for splay shots)
   * distance (double) as tranferred from the DistoX
   * bearing (double) as tranferred from the DistoX
   * clino (double) as tranferred from the DistoX
