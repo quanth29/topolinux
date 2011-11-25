@@ -45,16 +45,18 @@ input command for the scrap files.
 
 == Plots (scraps) ==
 
+TopoDroid supports only a limited set of therion points and line. Furthermore, it does not supports many points and lines attributes. Therfore it can be used only to draw very simple scraps. These scraps are proper therion format, and could be used for preliminary maps. However they should be edited in xtherion to fill in most of the detailed information, in particular to clean the cave outline.
+
 Plots are saved in Therion ".th2" format, and are stored in the "th2" directory.
 The name of the scrap files is composed of the survey name and the scrap name.
+Try to use short names for surveys and for scraps. I use the cave cadastral code (or the nickname) followed by two digits for the survey and "p1"
+"p2", ..., "s1" and so on for the scraps. For example scrap "p1" of survey "164801" gets stored in the file "164801-p1.th2"
 
-TopoDroid does not use cubic splines (as Therion), and all lines are composed
-of straight segments. However these are small enough to make the result
-smooth.
+Starting version 0.2 TopoDroid uses cubic splines (as Therion). If necessary the lines can be easily edited with xtherion.
 
 It is *important* that drawings are done Therion-style. In particular the 
-wall lines must circle the cave on the left, and the pit must circle the
-drops on the left.
+wall lines must circle the cave on the left, and the pits must leave the
+drop on the left.
 
 There is no support for "area" symbols.
 
@@ -72,3 +74,5 @@ Of course you need bluetooth to communicate with the DistoX.
 There is an android app that lets you turn bluetooth on in "airplane mode".
 In my case when I start TopoDroid in "airplane mode" i get a message asking if I
 want to turn on bluetooth: I say "yes" and I get bluetooth in "airplane mode" :-)
+
+Don't forget to turn your android off again when you are done with the survey, so that is has some charge when you get out of the cave. 
