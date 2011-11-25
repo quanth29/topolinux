@@ -2,6 +2,13 @@ TopoDroid FAQ
 
 = TopoDroid FAQ =
 
+== I cannot install TopoDroid ==
+
+Make sure that you have selected the followwing settings on your device
+(I use adb to install the apk file to the device):
+  * Applications -> Unknown sources
+  * Applications -> Development -> USB debugging
+
 == Why TopoDroid saves the survey (data and sketches) in Therion format ? ==
 
 Mainly because I use Therion to put together my cave survey.
