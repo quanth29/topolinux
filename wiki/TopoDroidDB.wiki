@@ -5,9 +5,13 @@
 TopoDroid stores the data in a SQLite database, in the file
 _/mnt/sdcard/DB/distox2.db_.
 
-This page describes TopoDroid db v 0.2. Starting from his version
+This page describes TopoDroid db v 0.3. Starting from version 0.2
 TopoDroid stores also the configuration and instance informations
 in this database.
+
+WARNING.
+The only changes in the DB from version 0.2 to version 0.3
+are the "status" columns in the "plots" and "shots" tables.
 
 The database contains the following tables
   * surveys: list of surveys
@@ -31,6 +35,7 @@ The *shots* table contains the following fields
   * bearing (double) as tranferred from the DistoX
   * clino (double) as tranferred from the DistoX
   * roll (double) as tranferred from the DistoX
+  * status (integer), can be 0 (normal) or 1 (deleted)
   * extend (integer). It can be
      * -1 (left)
      * +1 (right)
@@ -49,7 +54,8 @@ The *plots* table has the following fields
       * 0 (none)
       * 1 (plan)
       * 2 (extended)
-      * 3 (x-section) 
+      * 3 (x-section)
+  * status (integer), can be 0 (normal) or 1 (deleted)
   * start (text) plot reference station. The plot data are relative to this station which is the origin of the plot coordinate system.
 
 The *calibs* table has the following fields
