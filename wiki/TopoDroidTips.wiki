@@ -21,7 +21,7 @@ Otherwise your data will be lost.
 
 The other device functions (reading and writing the calibration, reading the
 head/tail of the dat a queue, toggle the device in calibration mode)
-operates only when the device is "disconnected".
+works only when the device is "disconnected".
 
 == Survey ==
 
@@ -45,7 +45,8 @@ input command for the scrap files.
 
 == Plots (scraps) ==
 
-TopoDroid supports only a limited set of therion points and line. Furthermore, it does not supports many points and lines attributes. Therfore it can be used only to draw very simple scraps. These scraps are proper therion format, and could be used for preliminary maps. However they should be edited in xtherion to fill in most of the detailed information, in particular to clean the cave outline.
+TopoDroid supports only a limited set of therion points and line. Furthermore, it does not supports many points and lines attributes. Therefore it can be used only to draw very simple scraps. These scraps are saved in therion format, and can be used to create preliminary maps with _therion_. However they should be edited in _xtherion_ to fill in most of the details, and, in particular, to clean up the cave outline. Scrap join's and the organization of the map structure are not managed
+by TopoDroid.
 
 Plots are saved in Therion ".th2" format, and are stored in the "th2" directory.
 The name of the scrap files is composed of the survey name and the scrap name.
@@ -59,6 +60,16 @@ wall lines must circle the cave on the left, and the pits must leave the
 drop on the left.
 
 There is no support for "area" symbols.
+
+== 3D viewer ==
+
+TopoDroid does not have 3D displaying capabilities. The therion files
+of the centerline can be displayed in 3D using Cave3D. 
+
+If you keep a main th file for the cave you are surveying, and you add
+an equate command to it to tie the survey you are making with the previous
+surveys, you can get a 3D view of the cave and the survey while
+surveying.
 
 == "Cave mode" ==
 
