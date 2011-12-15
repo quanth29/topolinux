@@ -4,7 +4,7 @@ TopoDroid FAQ
 
 == I cannot install TopoDroid ==
 
-Make sure that you have selected the followwing settings on your device
+Make sure that you have selected the following settings on your device
 (I use adb to install the apk file to the device):
   * Applications -> Unknown sources
   * Applications -> Development -> USB debugging
@@ -12,6 +12,11 @@ Make sure that you have selected the followwing settings on your device
 == Why TopoDroid saves the survey (data and sketches) in Therion format ? ==
 
 Mainly because I use Therion to put together my cave survey.
+
+
+== Will TopoDroid save data in other formats (Survex, Compass, VisualTopo, ...) in the future ? ==
+
+Do not know.
 
 
 == I got an update and now TopoDroid crashes ==
@@ -40,11 +45,7 @@ to your PC, edit it, and push it back to the android.
 
 The welcome message is shown, at start, only when no
 survey is selected. TopoDroid saves the selected survey in the
-"instance" file _/mnt/sdcard/DB/distox.instance_
-
-If you remov ethis file you get the "welcome message" again
-(until you select a survey).
-
+database.
 
 == Why is TopoDroid not on the market ? ==
 
@@ -72,4 +73,4 @@ sort of obliged to do a better effort to keep TopoDroid going,
 because of the people that rely on it.
 
 If other developpers get involved, that will be an even stronger
-basis for the project.
+basis for the project, because it will not rely on me.
