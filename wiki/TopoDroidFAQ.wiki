@@ -1,4 +1,4 @@
-TopoDroid FAQ
+#summary TopoDroid FAQ
 
 = TopoDroid FAQ =
 
