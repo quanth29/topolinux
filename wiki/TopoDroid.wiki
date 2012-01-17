@@ -177,6 +177,11 @@ The PDF docs in the download section.
 
 == BUGS REPORT ==
 
+If you have a crash or the app does not work as expected, please send me
+a logcat-dump. To generate a logcat-dump, connect a desktop with Android SDK
+to yout device and run "adb logcat | grep DistoX".
+
+
 If you discover a bug or a problem please file an issue on this site.
 
 If you have comments and suggestions feel free to drop me an email: 
