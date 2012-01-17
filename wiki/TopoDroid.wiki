@@ -27,7 +27,10 @@ This can be done by exporting the data to a file, suitably modifying the file
 
 == COMPILE and INSTALL ==
 
-You need an android sdk to compile and install the package.
+To install the compiled app on a device, copy (or download) the latest apk on the
+sdcard.
+
+To compile the package you need an android SDK.
 Edit the AndroidMakefile.xml to suit your device.
 Then compile and install
 {{{
@@ -38,14 +41,11 @@ Then compile and install
 TopoDroid requires bluetooth, and cannot run on a droid emulator.
 You need a real device.
 
-Create the directory /mnt/sdcard/DB
-and TopoDroid will create an empty database on the first run.
-{{{
-   # adb shell
-   > cd /mnt/sdcard
-   > mkdir DB
-   > exit
-}}}
+TopoDroid creates the directory /mnt/sdcard/TopoDroid, some subdirectories,
+and an empty database on the first run. Your data will be saved here
+and will not be erased even if you uninstall the app. This means that you
+should download the data to your PC now and then, and clean the database
+(using SQLite).
 
 == HOWTO == 
 
@@ -57,9 +57,9 @@ Tap the "MENU" to bring up the options:
   * DistoX
   * Surveys
   * Scraps
-  * Refresh
-  * Calibs
-  * Options
+  * Download
+  * Notes
+  * More
 
 With the first option, *DistoX*, you can scan for DistoX devices, or simply
 list paired devices (a device is paired after you connect to it once).
@@ -67,6 +67,7 @@ When you tap on a device in the list, you have a choice of actions:
   * Connect: if the device is NOT CONNECTED, tries to connect to it
   * Reconnect: tries to connect to the device
   * Disconnect: if the device is CONNECTED, close the connection
+  * Reset the connection
   * Toggle calib mode: use when the device is NOT CONNECTED
   * Write calibration to device (only if a calibrationis loaded): use when the device is NOT CONNECTED.
 When a DistoX is connected the downloaded data go into the active survey or the active calibration depending on the type of the data.
@@ -83,18 +84,20 @@ survey are displayed as
    id <name> distance compass clino [extend]
 }}}
 
-The "name" must be al alphanumeric string WITH NO SPACES: for a centerline
-shot use the two station name joined by a dash '-', eg, "13-14".
-For a splay shot use a single station name, eg, "13".
-Initially the shot names are empty.
-To assign a name to the shot tap on it and edit the name in the dialog.
+The "name" is an alphanumeric string WITH NO SPACES: for a centerline
+shot the two stations are joined by a dash '-', eg, "13-14".
+For a splay shot the name is the station followed by a dash, eg, "13-".
+Initially the shot names are empty (only the dash "-").
+To assign a name to the shot tap on it and edit the stations in the dialog.
 
-The extend is one of '<' (left), '>' (right) or '|' vertical (enclosed in square brackets).
+The extend is one of '<' (left), '>' (right) or '|' vertical (enclosed in square brackets). The shot extend can be changed in the edit dialog.
 
 An asterisk "`*`" follows the _extend_ if the shot is marked as "duplicate".
+The duplicate flag can be toggled in the shot edit dialog.
 
-By tapping on the shot line you bring up the shot dialog, throgh which you can
-edit the shot "name" and select its extend.
+By tapping on the shot line you bring up the shot edit dialog, throgh which you can
+edit the shot stations and select its extend, toggle the duplicate flag, and
+add a comment to the shot.
 
 With "Scraps" you can list the scraps of the current survey.
 On a scrap you can draw lines and points (speleo symbols). These are the analogue of the Therion lines and points. Currently only a few line and point types are supported. 
