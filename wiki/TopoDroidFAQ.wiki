@@ -11,12 +11,14 @@ Make sure that you have selected the following settings on your device
 
 == Why TopoDroid saves the survey (data and sketches) in Therion format ? ==
 
-Mainly because I use Therion to put together my cave survey.
+Mainly because Therion is my primary tool to put together the maps of 
+my cave surveys.
 
 
-== Will TopoDroid save data in other formats (Survex, Compass, VisualTopo, ...) in the future ? ==
+== Does TopoDroid save data in other formats (Survex, Compass, VisualTopo, ...) ? ==
 
-Do not know.
+Compass and Survex export are now (2012.02) available.
+VisualTopo export is planned for some time in the future.
 
 
 == I got an update and now TopoDroid crashes ==
