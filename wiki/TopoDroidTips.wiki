@@ -45,21 +45,27 @@ input command for the scrap files.
 
 == Plots (scraps) ==
 
-TopoDroid supports only a limited set of therion points and line. Furthermore, it does not supports many points and lines attributes. Therefore it can be used only to draw very simple scraps. These scraps are saved in therion format, and can be used to create preliminary maps with _therion_. However they should be edited in _xtherion_ to fill in most of the details, and, in particular, to clean up the cave outline. Scrap join's and the organization of the map structure are not managed
-by TopoDroid.
-
-Plots are saved in Therion ".th2" format, and are stored in the "th2" directory.
-The name of the scrap files is composed of the survey name and the scrap name.
-Try to use short names for surveys and for scraps. I use the cave cadastral code (or the nickname) followed by two digits for the survey and "p1"
-"p2", ..., "s1" and so on for the scraps. For example scrap "p1" of survey "164801" gets stored in the file "164801-p1.th2"
-
-Starting version 0.2 TopoDroid uses cubic splines (as Therion). If necessary the lines can be easily edited with xtherion.
+With TopoDroid you can draw survey scketches in the cave. TopoDrois scketches are 
+compliant Therion scraps, and should be drawn as such. Therion scraps have three
+categories of drawing elements: points, lines and areas. Points are used for point-like features, mostly conventional speleological map symbols. Lines are linear features, like the walls of the cave. Areas are regions in the map filled with something, for example water, or blocks.
 
 It is *important* that drawings are done Therion-style. In particular the 
 wall lines must circle the cave on the left, and the pits must leave the
 drop on the left.
+ 
+TopoDroid supports only a limited set of therion points, lines and areas. Furthermore, it does not supports many points and lines attributes (e.g. subtypes, alignment, size and scale), and areas are bounded by a single line. Therefore it can be used only to draw simple scraps. However any missing info can be saved in the
+survey annotations or as short text in the scrap. If you need additional Therion symbols send an email.
 
-There is no support for "area" symbols.
+The scraps are saved in therion format, and can be used to create preliminary maps with _therion_. However they should be edited in _xtherion_ to fill the missing details, and, in particular, to clean up the cave outline. Scrap join's and the organization of the map structure are not managed by TopoDroid.
+
+The scrap, saved in Therion ".th2" format, are stored in the "th2" directory.
+The name of the scrap files is composed of the survey name and the scrap name.
+Try to use short names for surveys and for scraps. I use the cave cadastral code (or the nickname) followed by two digits for the survey and "p1"
+"p2", ..., "s1" and so on for the scraps. For example scrap "p1" of survey "164801" gets stored in the file "164801-p1.th2"
+
+Starting version 0.2 TopoDroid can use cubic splines (as Therion). If necessary the lines can be easily edited with xtherion.
+
+
 
 == 3D viewer ==
 
