@@ -5,10 +5,10 @@
 
 TopoLinux is a set of caving programs and app.
 It consists of 
-  * two PC graphical applications, QTopoShot and QTopoCalib, and a number of command-line utilities for the DistoX
-  * an Android app, TopoDroid, for the DistoX
-  * an Android app, Cave3D, to display cave centerlines in 3D
-  * an Android app, InGrigna, for the Speleological Database of InGrigna 
+  * two PC graphical applications, [QTopoShot] and QTopoCalib, and a number of command-line utilities for the DistoX
+  * an Android app, [TopoDroid], for the DistoX
+  * an Android app, [Cave3D], to display cave centerlines in 3D
+  * an Android app, [InGrigna], for the Speleological Database of InGrigna 
 
 The PC graphical applications are based on the
 Qt graphics libraries and aim to be portable. They have been successfully 
