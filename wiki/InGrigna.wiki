@@ -1,0 +1,59 @@
+#summary InGrigna
+
+= InGrigna app =
+
+The InGrigna app is an Android app to browse the Speleological database
+of InGrigna.
+
+
+== The database ==
+
+The Speleological database of InGrigna contains data of
+  * the caves of the Grigne area: survey data, maps, photoes, description (almost 1000)
+  * the speleological published works (articles, books, etc.) (almost 500)
+  * the cadastrial data
+  * the InGrigna activity reports since 2007
+  * maps and other material
+
+There are cross references between caves and publications, and in particular 
+pablications containing maps of caves. The activity reports are georefernced and cross-referenced with caves.
+
+
+== The app ==
+
+The app interface is a Google map with overlaid a portion of the CTR map and the
+cave positions. 
+
+The cave marks carry a color/shape code. If the cave is "vertical" the mark is
+a circle, if it is "horizontal" the mark is a semicircle. The color codes are 
+  * grey: re-visited, no continuation
+  * violet: not revisited yet
+  * red: need digging
+  * yellow: to revisit, need digging
+  * green: to revisit with less snow,
+  * dark green: to revisit
+  * light blue: continue
+  * blue: in exploration
+
+Tapping on a cave mark opens the "cave dialog" with a summary of the data of the
+cave and buttons to access the relevat documentation:
+  * description
+  * entrance photo
+  * survey maps (either as image or pdf)
+  * survey data (???)
+  * cadastrial form
+  * bibliography
+  * survey bibliography
+There is also a butto to center the map on the cave.
+
+The app menus:
+  * Locate
+  * Reports: list the reports for the displayed area
+  * Overlays: opena dialog to load the overlays
+  * Save center: store away the map center
+  * Search: query in the database
+  * Legend: see the cave color legend
+  * Move to: move to a position
+  * Coord convert: coordinate conversion (between Gauss Boaga and Long./Lat)
+  * Credit: check the user credit
+  * Options: app preferences
