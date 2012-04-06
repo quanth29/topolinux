@@ -1,4 +1,5 @@
 #summary Cave3D
+#labels Featured
 
 = Cave3D =
 
@@ -7,4 +8,21 @@ Cave3D is an Android app that displays 3D views of cave centerlines.
 
 = Details =
 
-TODO
+Cave3D displays 3D views of survey data in Therion format.
+The opened file is parsed as it were "source-d" in THerion, ie,
+recursively going to the files that are "input-ed".
+
+The app displays centerline and splay shots (no LRUD).
+The display can be
+  * zoomed in/out
+  * moved,
+  * rotated.
+
+It is possible to display an orthogonal view or a perspective
+view. In any casa a horizontal grid is shown underneath the cave.
+The red axis is the east, the blue one is the north.
+The vertical axis is displayed as a green line.
+
+The cave can be colored by depth or just white.
+
+The display of splay shots can be toggled on/off.
