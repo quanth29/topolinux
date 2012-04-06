@@ -1,28 +1,30 @@
 #summary InGrigna
+#labels Featured
 
-= InGrigna app =
+== InGrigna app ==
 
 The InGrigna app is an Android app to browse the Speleological database
 of InGrigna.
 
 
-== The database ==
+=== The database ===
 
 The Speleological database of InGrigna contains data of
-  * the caves of the Grigne area: survey data, maps, photoes, description (almost 1000)
-  * the speleological published works (articles, books, etc.) (almost 500)
+  * the caves of the Grigne area: survey data, maps, photoes, description (over 1000)
+  * the speleological published works (articles, books, etc.) (more than 500)
   * the cadastrial data
+  * sources in the area
   * the InGrigna activity reports since 2007
   * maps and other material
 
 There are cross references between caves and publications, and in particular 
-pablications containing maps of caves. The activity reports are georefernced and cross-referenced with caves.
+publications containing maps of caves. The activity reports are geo-referenced and cross-referenced with caves.
 
 
-== The app ==
+=== The app ===
 
 The app interface is a Google map with overlaid a portion of the CTR map and the
-cave positions. 
+cave and source positions. 
 
 The cave marks carry a color/shape code. If the cave is "vertical" the mark is
 a circle, if it is "horizontal" the mark is a semicircle. The color codes are 
@@ -36,7 +38,7 @@ a circle, if it is "horizontal" the mark is a semicircle. The color codes are
   * blue: in exploration
 
 Tapping on a cave mark opens the "cave dialog" with a summary of the data of the
-cave and buttons to access the relevat documentation:
+cave and buttons to access the relevant documentation:
   * description
   * entrance photo
   * survey maps (either as image or pdf)
@@ -44,7 +46,7 @@ cave and buttons to access the relevat documentation:
   * cadastrial form
   * bibliography
   * survey bibliography
-There is also a butto to center the map on the cave.
+There is also a button to center the map on the cave.
 
 The app menus:
   * Locate
@@ -57,3 +59,30 @@ The app menus:
   * Coord convert: coordinate conversion (between Gauss Boaga and Long./Lat)
   * Credit: check the user credit
   * Options: app preferences
+
+The app preferences include:
+  * the location of the current center (east, north)
+  * the default range for geo-queries
+  * the tapping range (focus)
+  * whether to overlay caves
+  * whether to overlay sources
+  * whether to overlay the CTR map
+  * whether to get the satellite Google map
+  * whether to get the street Google map
+  * whether to use the app engine CTR or a locally installed CTR
+  * whether to use the app engine DB or a locally installed DB
+  * the code for the engine
+  * the device code
+
+In order to access the data on the engine you must set the engine code.
+The engine code is specific for each device. 
+To get the engine code for your device, you need to send me the device
+code so that I can compute the corresponding engine code.
+
+You also need some credit at the engine.
+The app uses the engine code when it gets data from the app engine.
+Each request to the engine uses one credit.
+When your credit is over the engine will not serve the data to your app.
+Credits are available at a charge, as the engine is not free.
+At the moment I cannot tell what the charge will be.
+ 
