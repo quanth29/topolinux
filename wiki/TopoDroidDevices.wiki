@@ -1,0 +1,19 @@
+#summary TopoDroid Working devices
+
+== TopoDroid Working devices ==
+
+This page collects the list of the devices where TopoDroid works,
+and those where users experienced problems.
+
+If your device is not in this list, please
+send me an email about how TopoDroid works on it.
+Include the device model, the android version, and
+any comment that might be useful to others. 
+
+
+=== Haiwei Vodaphone 858 Smart ===
+
+OS Android 2.2
+
+Fully working
+
