@@ -1,0 +1,15 @@
+#summary TopoDroid troubleshooting
+
+== TopoDroid troubleshooting ==
+
+
+
+=== TopoDroid does not detect DistoX ===
+
+You may try to detect and pair your android with the DistoX
+using the "Settings" app. Under the item Wireless and Network,
+select Bluetooth and scan for devices.
+
+If this app fails there is no chance that TopoDroid will detect 
+the DistoX. After the Settings app can pair to the DistoX, you should
+be able to see it with TopoDroid in the list of "Paired devices".
