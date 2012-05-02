@@ -9,19 +9,22 @@ Make sure that you have selected the following settings on your device
   * Applications -> Unknown sources
   * Applications -> Development -> USB debugging
 
+
 === Why TopoDroid saves the survey (data and sketches) in Therion format ? ===
 
 Mainly because Therion is my primary tool to put together the maps of 
-my cave surveys.
+cave surveys.
 
 
 === Why loops do not close in the plots ? ===
 
-TopoDroid does non implement loop closure yet.
+TopoDroid does non implement loop closure.
 Working with the DistoX loop usually close rather well and I could do
-without loop closure. I use similar names for the closing station in the
-two (or more) shots, eg, "14" and "14a".
-When I complete the work with Therion, I close
+without loop closure.
+As a matter of fact loop closure is not allowed in TopoDroid.
+I use similar names for the closure station, eg, "14" and "14a".
+This way I can see the misclosures in the scraps.
+The when I complete the work with Therion, I close
 the loops with "equate" commands.
 
 === Why are areas only single-line bordered ? ===
@@ -35,35 +38,29 @@ way for areas.
 Note that TopoDroid closes the line bordering the area. However
 xtherion needs that the first point is repeated at the end and may
 display a "strange" error dialog.
-The repeated point is not required by therion.
+The repeated point is not required by the therion language, but if it
+is missing xtherion complaints.
 
 
 === Does TopoDroid save data in other formats (Survex, Compass, VisualTopo, ...) ? ===
 
 Compass and Survex export are now (2012.02) available.
-VisualTopo export is planned for some time in the future.
-
-
-=== I got an update and now TopoDroid crashes ===
-
-This may be due to a change in the database tables.
-When you uninstall TopoDroid android does not erase 
-the old database _distox.db_. You have to remove it by hand.
-You may remove the whole TopoDroid directory _/mnt/sdcard/DB_
-for a fresh start.
-
-You may also update the old database to the new structure, but this
-requires some knowledge of SQL, and, possibly, tricks.
+I was considering also VisualTopo export: it will be included
+when the VisualTopo developers provide the file format specs.
 
 
 === How can I erase the TopoDroid data ? ===
 
 TopoDroid keeps the survey data and the calibration data
-in a SQLite database, namely in the file _/mnt/sdcard/DB/distox.db_
+in a SQLite database, namely in the file _/mnt/sdcard/TopoDroid/distox3.db_
 
 You can edit this database with any SQLite manager. I use the 
 _aSQLiteManager_ app, which is free. You can also pull the database
 to your PC, edit it, and push it back to the android.
+
+Scrap, annotation and exports files are stored in subdirectories
+in _/mnt/sdcard/TopoDroid/_. These files are not cleared automatically.
+You should clear up these directories now and then.
 
 
 === Why I don't see the "welcome message" any more ? === 
