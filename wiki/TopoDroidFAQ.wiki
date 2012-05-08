@@ -4,10 +4,11 @@
 
 === I cannot install TopoDroid ===
 
-Make sure that you have selected the following settings on your device
-(I use adb to install the apk file to the device):
+Make sure that you have selected the following settings on your device:
   * Applications -> Unknown sources
-  * Applications -> Development -> USB debugging
+  * Applications -> Development -> USB debugging (if you are using adb)
+
+Next copy the apk to your device, or if you use adb do "adb install TopoDroid.apk".
 
 
 === Why TopoDroid saves the survey (data and sketches) in Therion format ? ===
@@ -46,7 +47,7 @@ is missing xtherion complaints.
 
 Compass and Survex export are now (2012.02) available.
 I was considering also VisualTopo export: it will be included
-when the VisualTopo developers provide the file format specs.
+when the VisualTopo developer(s) provide the file format specs.
 
 
 === How can I erase the TopoDroid data ? ===
@@ -68,6 +69,28 @@ You should clear up these directories now and then.
 The welcome message is shown, at start, only when no
 survey is selected. TopoDroid saves the selected survey in the
 database.
+
+
+=== Why can't toggle the DistoX in calibration mode ? ===
+
+First of all make sure that your device is paired with the DistoX.
+You can check this in the "Settings" of th e device, under 
+"Wireless and Networks | Bluetooth settings".
+
+Next make sure that TopoDroid is talking to the correct DistoX device.
+TopoDroid talks to one DistoX at a time: the address of the DistoX is
+displayed in the "device window", at the top.
+
+Last TopoDroid should not be connected to the DistoX.
+When "connected" TopoDroid downloads data (both survey and calibration data)
+continuosly, and stores them in the database.
+In this mode it does not send other commands to the DistoX. 
+In particular it does not toggle the DistoX mode, nor read/write the
+calibration coefficients.
+
+There is no need to keep TopoDroid connected to a DistoX.
+You can use TopoDroid downloading data from the DistoX
+only when you are ready to work on them, through the "Download" menu.
 
 
 === What can i do if TopoDroid crashes ? ===
