@@ -62,7 +62,7 @@ computeLRUD( DBlock * b, DataList & data,
  *    SURVEY DATE: mm dd yyyy
  *    SURVEY TEAM:
  *    team_line
- *    DECLINATION: declination  FORMAT: DMMDLRUDLADN  CORRECTIONS:  0.00 0.00 0.00
+ *    DECLINATION: declination  FORMAT: DMMDLUDRLADN  CORRECTIONS:  0.00 0.00 0.00
  *    FROM TO LENGTH BEARING INC FLAGS COMMENTS
  *    ...
  *    0x0c
@@ -92,13 +92,14 @@ saveAsCompass( DataList & data,
 // TODO use RB-tree
   std::map<std::string, int> station_names;
   int survey_nr = 0;
-  const char * prefix = info.compassPrefix.TO_CHAR();
-  int prefix_len = strlen( prefix );
+  std::string prefix = info.compassPrefix.TO_CHAR();
+  int prefix_len = prefix.length();
   // int day, month, year;
   // GetDate( &day, &month, &year);
 
   bool in_file = false;
-  std::string survey_name = info.title.isEmpty()? info.name.TO_CHAR() : info.title.TO_CHAR();
+  std::string survey_name = info.title.isEmpty()? info.name.trimmed().TO_CHAR()
+                             : info.title.trimmed().TO_CHAR();
 
   std::ostringstream oss;
   oss.setf( std::ios::fixed );
@@ -114,7 +115,7 @@ saveAsCompass( DataList & data,
     oss << ( info.team.isEmpty()? "..." : info.team.TO_CHAR() ) << "\r\n";
     oss << "DECLINATION: "
         << ( (info.declination != DECLINATION_UNDEF)? info.declination : 0.0 )
-        << "  FORMAT: DMMDLRUDLADN  CORRECTIONS:  0.00 0.00 0.00\r\n";
+        << "  FORMAT: DMMDLUDRLADN  CORRECTIONS:  0.00 0.00 0.00\r\n";
     oss << "\r\n";
     oss << "FROM TO LENGTH BEARING INC FLAGS COMMENTS\r\n";
     oss << "\r\n";
@@ -272,9 +273,9 @@ saveAsCompass( DataList & data,
           << b->Compass() << " "
           << b->Clino() << " "
           << l * M2FT << " "
-          << r * M2FT << " "
           << u * M2FT << " "
-          << d * M2FT << " ";
+          << d * M2FT << " "
+          << r * M2FT << " ";
     } else {
       oss << b->Tape() * M2FT << " "
           << b->Compass() << " "

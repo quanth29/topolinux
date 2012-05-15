@@ -75,6 +75,8 @@ bool do_debug = false; // enable with -d command option
 #include "DataSvxExport.h"
 #include "DataTopExport.h"
 
+#include "PlotTh2Import.h"
+
 #define TABLE_ROW_HEIGHT 16
 
 // FIXME LANGUAGE
@@ -106,13 +108,18 @@ QTshotWidget::QTshotWidget( QWidget * parent, const char * /* name */, WFLAGS fl
   , collapse( true )              // default onCollapse action
   , append( true )                // downloaded data are appended
   , smart( true )                 // smart-process downloaded data 
-  , splay_at( SPLAY_AT_FROM )     // splay at station FROM
+  , splay_at( SPLAY_BEFORE_SHOT ) // splay at station TO
   , backward( false )             // station numbers are forward
   , comment_size( COMMENT_SIZE )  // comment width displayed in the table 
 {
   connect( this, SIGNAL( signalActData(int) ), this, SLOT( updateActData(int) ) );
+  brushes[0] = QBrush( Qt::red );
+  brushes[1] = QBrush( Qt::blue );
+  brushes[2] = QBrush( Qt::black );
+  brushes[3] = QBrush( Qt::gray );
 
-  info.fileName = config("DEFAULT_DATA");
+  info.fileSaveName = config("DEFAULT_DATA");
+  // info.fileExportName = "";
   
   const char * u = config("LENGTH_UNITS");
   if ( u ) {
@@ -209,9 +216,10 @@ QTshotWidget::createToolBar()
   toolbar->addAction( actPlan );
   toolbar->addAction( actExtended );
   toolbar->addAction( act3D );
-  toolbar->addAction( actToggle );
-  toolbar->addAction( actOptions );
-  toolbar->addAction( actHelp );
+  // toolbar->addAction( actToggle );
+  toolbar->addAction( actInfo );
+  // toolbar->addAction( actOptions );
+  // toolbar->addAction( actHelp );
   toolbar->addAction( actQuit );
 }
 
@@ -232,11 +240,20 @@ QTshotWidget::createActions()
   actSave->setMenu( save_menu );
 
   actData     = new QAction( icon->Data(), lexicon("download"), this );
+  QMenu * disto_menu = new QMenu( this );
+  QAction * act_download = disto_menu->addAction( lexicon("download") );
+  QAction * act_toggle   = disto_menu->addAction( lexicon("toggle") );
+  connect( act_download, SIGNAL(triggered()), this, SLOT(doData()) );
+  connect( act_toggle, SIGNAL(triggered()), this, SLOT(doToggle()) );
+  actData->setMenu( disto_menu );
+
+
   // actExport   = new QAction( icon->ExportThOff(), lexicon("export"), this );
   actCollapse = new QAction( icon->CollapseOff(), lexicon("splay"), this );
   actPlan     = new QAction( icon->PlanOff(), lexicon("plan"), this );
   plan_menu = new QMenu( this );
   plan_menu->addAction( lexicon("new") );
+  plan_menu->addAction( lexicon("open") );
   for ( size_t k = 0; k < planCanvases.plotsSize(); ++k ) {
     plan_menu->addAction( planCanvases.getName(k) );
   }
@@ -246,6 +263,7 @@ QTshotWidget::createActions()
   actExtended = new QAction( icon->ExtendedOff(), lexicon("extended"), this );
   ext_menu = new QMenu( this );
   ext_menu->addAction( lexicon("new") );
+  ext_menu->addAction( lexicon("open") );
   for ( size_t k = 0; k < extCanvases.plotsSize(); ++k ) {
     plan_menu->addAction( extCanvases.getName(k) );
   }
@@ -253,9 +271,19 @@ QTshotWidget::createActions()
   actExtended->setMenu( ext_menu );
 
   act3D       = new QAction( icon->_3dOff(), lexicon("3d"), this );
-  actToggle   = new QAction( icon->Toggle(), lexicon("toggle"), this );
-  actOptions  = new QAction( icon->Options(), lexicon("options"), this );
-  actHelp     = new QAction( icon->Help(), lexicon("help"), this );
+  // actToggle   = new QAction( icon->Toggle(), lexicon("toggle"), this );
+  actInfo     = new QAction( icon->View(), lexicon("info"), this );
+  // actOptions  = new QAction( icon->Options(), lexicon("options"), this );
+  // actHelp     = new QAction( icon->Help(), lexicon("help"), this );
+  QMenu * info_menu = new QMenu( this );
+  QAction * act_info    = info_menu->addAction( lexicon("info") );
+  QAction * act_options = info_menu->addAction( lexicon("options") );
+  QAction * act_help    = info_menu->addAction( lexicon("help") );
+  connect( act_info, SIGNAL(triggered()), this, SLOT(doInfo()) );
+  connect( act_options, SIGNAL(triggered()), this, SLOT(doOptions()) );
+  connect( act_help, SIGNAL(triggered()), this, SLOT(doHelp()) );
+  actInfo->setMenu( info_menu );
+
   actQuit     = new QAction( icon->Quit(), lexicon("exit"), this );
   // actQuit->setShortcuts( QKeySequence::Quit );
   // actQuit->setStatusTip( tr("...") );
@@ -269,9 +297,10 @@ QTshotWidget::createActions()
   connect( actPlan,    SIGNAL(triggered()), this, SLOT(doPlanScrap()) );
   connect( actExtended, SIGNAL(triggered()), this, SLOT(doExtendedScrap()) );
   connect( act3D,      SIGNAL(triggered()), this, SLOT(do3D()) );
-  connect( actToggle,  SIGNAL(triggered()), this, SLOT(doToggle()) );
-  connect( actOptions, SIGNAL(triggered()), this, SLOT(doOptions()) );
-  connect( actHelp,    SIGNAL(triggered()), this, SLOT(doHelp()) );
+  // connect( actToggle,  SIGNAL(triggered()), this, SLOT(doToggle()) );
+  connect( actInfo,    SIGNAL(triggered()), this, SLOT(doInfo()) );
+  // connect( actOptions, SIGNAL(triggered()), this, SLOT(doOptions()) );
+  // connect( actHelp,    SIGNAL(triggered()), this, SLOT(doHelp()) );
   connect( actQuit,    SIGNAL(triggered()), this, SLOT(doQuit()) );
 
   actNew->setVisible( true );
@@ -283,9 +312,10 @@ QTshotWidget::createActions()
   actPlan->setVisible( true );
   actExtended->setVisible( true );
   act3D->setVisible( true );
-  actToggle->setVisible( true );
-  actOptions->setVisible( true );
-  actHelp->setVisible( true );
+  // actToggle->setVisible( true );
+  actInfo->setVisible( true );
+  // actOptions->setVisible( true );
+  // actHelp->setVisible( true );
   actQuit->setVisible( true );
 }
 
@@ -393,16 +423,33 @@ QTshotWidget::showData( )
   int row = 0;
   for (DBlock * b = dlist.listHead(); b != NULL; b=b->next() ) {
     table->setRowHeight( row, TABLE_ROW_HEIGHT );
+    QBrush * brush = &( brushes[3] );
+    if ( b->hasFromStation() && b->hasToStation() ) {
+      switch ( b->nrBlocklets() ) {
+        case 1:
+          brush = &( brushes[0] );
+          break;
+        case 2:
+          brush = &( brushes[1] );
+          break;
+        default:
+          brush = &( brushes[2] );
+      }
+    }
 
     item = new QTableWidgetItem( b->fromStation() );
+    // item->setForeground( *brush );
     table->setItem( row, 0, item);
     item = new QTableWidgetItem( b->toStation() );
     table->setItem( row, 1, item);
     item = new QTableWidgetItem( Locale::ToString(b->Tape() * ls, 2) );
+    item->setForeground( *brush );
     table->setItem( row, 2, item);
     item = new QTableWidgetItem( Locale::ToString(b->Compass() * as, 1) );
+    item->setForeground( *brush );
     table->setItem( row, 3, item);
     item = new QTableWidgetItem( Locale::ToString(b->Clino() * as, 1) );
+    item->setForeground( *brush );
     table->setItem( row, 4, item);
     item = new QTableWidgetItem( tr( extends[ b->Extend() ] ) );
     table->setItem( row, 5, item);
@@ -567,6 +614,42 @@ QTshotWidget::doRealNew()
 // ------------------------------------------------------------------
 // PlotDrawer interface
 
+void 
+QTshotWidget::removePlotCanvas( PlotCanvas * c )
+{
+  int mode = c->getMode();
+  QString name;
+  bool ok = false;
+  if ( mode == 0 ) { // plan
+    ok = planCanvases.removePlot( c, name );
+    if ( ok ) {
+      // fprintf(stderr, "removePlotCanvas %s \n", name.TO_CHAR() );
+      QList<QAction *> actions = plan_menu->actions();
+      for ( QList<QAction *>::iterator it = actions.begin(); it != actions.end(); ++it ) {
+        if ( (*it)->text() == name ) {
+          plan_menu->removeAction( *it );
+          break;
+        }
+      }
+    }
+  } else if ( mode == 1 ) { // extended
+    ok = extCanvases.removePlot( c, name );
+    if ( ok ) {
+      QList<QAction *> actions = ext_menu->actions();
+      for ( QList<QAction *>::iterator it = actions.begin(); it != actions.end(); ++it ) {
+        if ( (*it)->text() == name ) {
+          ext_menu->removeAction( *it );
+          break;
+        }
+      }
+    }
+  } else if ( mode == 2 ) {
+    ok = crossCanvases.removePlot( c, name );
+    // FIXME ??
+  }
+  // delete c;
+}
+
 void
 QTshotWidget::closePlots()
 {
@@ -582,6 +665,7 @@ QTshotWidget::closePlots()
   planCanvases.clear();
   plan_menu->clear();
   plan_menu->addAction( lexicon("new") );
+  plan_menu->addAction( lexicon("open") );
 
   // if ( extCanvas ) {
   //   extCanvas->hide();
@@ -592,6 +676,7 @@ QTshotWidget::closePlots()
   extCanvases.clear();
   ext_menu->clear();
   ext_menu->addAction( lexicon("new") );
+  ext_menu->addAction( lexicon("open") );
 
   // if ( crossCanvas ) {
   //   crossCanvas->hide();
@@ -612,7 +697,8 @@ QTshotWidget::closePlots()
 PlotCanvas *
 QTshotWidget::openPlot( int mode, const char * pname, const char * sname )
 {
-  fprintf( stderr, "QTshotWidget::openPlot() mode %d name %s %s\n", mode, pname, sname ); // FIXME
+  if ( dlist.listSize() == 0 ) return NULL;
+  // fprintf( stderr, "QTshotWidget::openPlot() mode %d name %s %s\n", mode, pname, sname ); // FIXME
   PlotCanvas * canvas = NULL;
   if ( mode == MODE_PLAN ) {
     canvas = new PlotCanvas( this, MODE_PLAN, pname, sname /*, true */ );
@@ -639,7 +725,7 @@ QTshotWidget::insertPoint( int x, int y, Therion::PointType type, PlotCanvas * c
 void 
 QTshotWidget::insertLinePoint( int x, int y, Therion::LineType type, PlotCanvas * canvas )
 {
-  canvas->getScene()->insertLinePoint( x, y, type, true );
+  canvas->getScene()->insertLinePoint( x, y, x, y, type, true );
 }
 
 void
@@ -668,7 +754,7 @@ QTshotWidget::doOpen()
   DBG_CHECK("doOpen \n" );
   onOpenFile( QFileDialog::getOpenFileName( this,
       lexicon("open_file"),
-      info.fileName,
+      info.fileSaveName,
       "Tlx files (*.tlx)\nRaw files (*.txt)\nPocketTopo (*.top)\nAll (*.*)"
       ) );
 }
@@ -676,9 +762,9 @@ QTshotWidget::doOpen()
 void
 QTshotWidget::onOpenFile( const QString & file )
 {
-  info.fileName = file;
-  DBG_CHECK("onOpenFile file \"%s\"\n", info.fileName.TO_CHAR() );
-  if ( ! info.fileName.isEmpty() ) {
+  info.fileSaveName = file;
+  DBG_CHECK("onOpenFile file \"%s\"\n", info.fileSaveName.TO_CHAR() );
+  if ( ! info.fileSaveName.isEmpty() ) {
     closePlots();           // close all plots
     setBaseBlock( NULL );   // erase base block pixmap
     collapse = true;        // reset onCollapse action
@@ -688,7 +774,7 @@ QTshotWidget::onOpenFile( const QString & file )
       }
     }
 
-    int ret = dlist.loadFile( this, info.fileName.TO_CHAR(), false, &info ); // do not append but replace data
+    int ret = dlist.loadFile( this, info.fileSaveName.TO_CHAR(), false, &info ); // do not append but replace data
     if ( ret == 0 ) {
       onOffButtons( dlist.listSize() > 0 );
       showData();
@@ -720,16 +806,16 @@ QTshotWidget::doSave()
   if ( dlist.listSize() == 0 ) return;
   onSaveFile( QFileDialog::getSaveFileName( this,
     lexicon("save_file"),
-    info.fileName,
+    info.fileSaveName,
     "Tlx files (*.tlx)\nAll (*.*)" ) );
 }
 
 void
 QTshotWidget::onSaveFile( const QString & file )
 {
-  info.fileName = file;
-  DBG_CHECK("onSaveFile file \"%s\"\n", info.fileName.TO_CHAR() );
-  if ( !info.fileName.isEmpty() ) {                 // got a file name
+  info.fileSaveName = file;
+  DBG_CHECK("onSaveFile file \"%s\"\n", info.fileSaveName.TO_CHAR() );
+  if ( !info.fileSaveName.isEmpty() ) {                 // got a file name
     
     // TODO get optional comment to write to TLX file
     if ( info.description.size() == 0 ) {
@@ -752,15 +838,15 @@ QTshotWidget::getSurveyText( std::ostringstream & oss )
 {
   for ( size_t k=0; k<planCanvases.plotsSize(); ++k ) {
     PlotCanvas * canvas = planCanvases[k];
-    oss << " input " << canvas->getFileName() << "\n";
+    oss << " input " << canvas->getBaseFileName() << "\n";
   }
   for ( size_t k=0; k<extCanvases.plotsSize(); ++k ) {
     PlotCanvas * canvas = extCanvases[k];
-    oss << " input " << canvas->getFileName() << "\n";
+    oss << " input " << canvas->getBaseFileName() << "\n";
   }
   for ( size_t k=0; k<crossCanvases.plotsSize(); ++k ) {
     PlotCanvas * canvas = crossCanvases[k];
-    oss << " input " << canvas->getFileName() << "\n";
+    oss << " input " << canvas->getBaseFileName() << "\n";
   }
 }
 
@@ -1069,6 +1155,18 @@ CenterlineWidget::CenterlineWidget( QTshotWidget * my_parent )
   vbl->addWidget( hb );
 
   CREATE_HB;
+  hbl->addWidget( new QLabel( lexicon("author"), hb ) );
+  author = new QLineEdit( "", hb );
+  hbl->addWidget( author );
+  vbl->addWidget( hb );
+
+  CREATE_HB;
+  hbl->addWidget( new QLabel( lexicon("copyright"), hb ) );
+  copyright = new QLineEdit( "", hb );
+  hbl->addWidget( copyright );
+  vbl->addWidget( hb );
+
+  CREATE_HB;
   hbl->addWidget( new QLabel( lexicon("description"), hb ) );
   descr = new QLineEdit( "", hb );
   hbl->addWidget( descr );
@@ -1090,7 +1188,10 @@ void
 CenterlineWidget::doOK()
 {
   hide();
-  parent->setDateAndDescription( date->text().TO_CHAR(), descr->text().TO_CHAR() );
+  parent->setDateAndDescription( date->text().TO_CHAR(),
+                                 descr->text().TO_CHAR(),
+                                 author->text().TO_CHAR(),
+                                 copyright->text().TO_CHAR() );
 }
 
 // ----------------------------------------------------------------------
@@ -1212,6 +1313,85 @@ ToggleWidget::doCompass(int state)
   compassBtn->setCheckState ( isCompass ? Qt::Checked : Qt::Unchecked );
 #endif
 }
+
+// ----------------------------------------------------------------------
+// Info widget
+
+InfoWidget::InfoWidget( QTshotWidget * my_parent )
+  : QDialog( my_parent )
+  , parent( my_parent )
+{
+  Language & lexicon = Language::Get();
+  setWindowTitle( lexicon("qtopo_info") );
+
+  QVBoxLayout* vbl = new QVBoxLayout(this);
+  vbl->setSpacing( 0 );
+  // vb->setAutoAdd(TRUE);
+
+  DataList * dlist = parent->getList();
+  if ( dlist->centerlineSize() > 0 ) dlist->doNum();
+  const NumStats & stats = dlist->getNum().getStats();
+  QString n_stations, n_shots, n_loops;
+  n_stations.setNum( stats.n_stations );
+  n_shots.setNum( stats.n_shots );
+  n_loops.setNum( stats.n_loops );
+  std::ostringstream ossz;
+  ossz.precision( 1 );
+  ossz.setf( std::ios::fixed, std::ios::floatfield );
+  ossz << stats.delta_z() << " (" << stats.z_max << " " << stats.z_min << ")";
+  std::ostringstream ossn;
+  ossn.precision( 1 );
+  ossn.setf( std::ios::fixed, std::ios::floatfield );
+  ossn << stats.delta_north() << " (" << stats.n_max << " " << stats.n_min << ")";
+  std::ostringstream osse;
+  osse.precision( 1 );
+  osse.setf( std::ios::fixed, std::ios::floatfield );
+  osse << stats.delta_east() << " (" << stats.e_max << " " << stats.e_min << ")";
+  
+  DEFINE_HB;
+
+  vbl->addWidget( new QLabel( lexicon("survey_data"), this ) );
+
+  CREATE_HB;
+  hbl->addWidget( new QLabel( lexicon("stations"), hb) );
+  hbl->addWidget( new QLabel( n_stations, hb) );
+  vbl->addWidget( hb );
+
+  CREATE_HB;
+  hbl->addWidget( new QLabel( lexicon("shots"), hb) );
+  hbl->addWidget( new QLabel( n_shots, hb) );
+  vbl->addWidget( hb );
+ 
+  CREATE_HB;
+  hbl->addWidget( new QLabel( lexicon("loops"), hb) );
+  hbl->addWidget( new QLabel( n_loops, hb) );
+  vbl->addWidget( hb );
+ 
+  CREATE_HB;
+  hbl->addWidget( new QLabel( lexicon("delta_z"), hb) );
+  hbl->addWidget( new QLabel( ossz.str().c_str(), hb) );
+  vbl->addWidget( hb );
+
+  CREATE_HB;
+  hbl->addWidget( new QLabel( lexicon("delta_north"), hb) );
+  hbl->addWidget( new QLabel( ossn.str().c_str(), hb) );
+  vbl->addWidget( hb );
+
+  CREATE_HB;
+  hbl->addWidget( new QLabel( lexicon("delta_east"), hb) );
+  hbl->addWidget( new QLabel( osse.str().c_str(), hb) );
+  vbl->addWidget( hb );
+
+  CREATE_HB;
+  QPushButton * c;
+  c = new QPushButton( tr( lexicon("ok") ), hb );
+  connect( c, SIGNAL(clicked()), this, SLOT(doOK()) );
+  hbl->addWidget( c );
+  vbl->addWidget( hb );
+
+  exec();
+};
+
 
 // ----------------------------------------------------------------------
 // Option widget
@@ -1622,7 +1802,7 @@ CommentWidget::doOK()
 #endif
   } else if ( renumber->isChecked() ) {
     need_to_show_data = true;
-    block->renumber();
+    block->renumber( parent->getSplay() == SPLAY_BEFORE_SHOT );
   } else if ( tomerge->isChecked() ) {
     need_to_show_data = true;
     parent->getList()->mergeBlock( block );
@@ -1707,8 +1887,8 @@ DataWidget::DataWidget( QTshotWidget * my_parent )
   label  = new QLabel( lexicon("splay_shots"), this );
   splay1 = new QCheckBox( lexicon("from_station"), this );
   splay2 = new QCheckBox( lexicon("to_station"), this );
-  splay1->setChecked( parent->getSplay() == SPLAY_AT_FROM );
-  splay2->setChecked( parent->getSplay() == SPLAY_AT_TO );
+  splay1->setChecked( parent->getSplay() == SPLAY_AFTER_SHOT );
+  splay2->setChecked( parent->getSplay() == SPLAY_BEFORE_SHOT );
   connect( splay1, SIGNAL(toggled(bool)), this, SLOT(doSplay1(bool)) );
   connect( splay2, SIGNAL(toggled(bool)), this, SLOT(doSplay2(bool)) );
   vb->addWidget( label,  6, 0 );
@@ -1990,6 +2170,7 @@ SurveyInfoWidget::SurveyInfoWidget( QTshotWidget * my_parent )
   Language & lexicon = Language::Get();
   setWindowTitle( lexicon("survey_info") );
   SurveyInfo * survey_info = parent->getSurveyInfo();
+  
   QVBoxLayout* vbl = new QVBoxLayout(this);
   DEFINE_HB;
 
@@ -2103,7 +2284,7 @@ SurveyInfoWidget::doOK()
   }
 
   if ( edit_prefix ) {
-    survey_info->compassPrefix = edit_prefix->text();
+    survey_info->compassPrefix = edit_prefix->text().trimmed();
   }
   if ( box_single_survey ) {
     survey_info->compassSingleSurvey = box_single_survey->isChecked();
@@ -2137,6 +2318,7 @@ QTshotWidget::doExport( QAction * action )
   SurveyInfo & survey_info = info.surveyInfo;
   if ( action->text() == lexicon("topolinux") ) {
     doSave();
+    return;
   } else if ( action->text() == lexicon("therion") ) {
     export_type = EXPORT_THERION;
     survey_info.exportName = QFileDialog::getSaveFileName( this,
@@ -2287,12 +2469,25 @@ QTshotWidget::doNewPlot( QString pname, QString sname, int mode )
 void
 QTshotWidget::doPlan( QAction * action )
 {
+  PlotCanvas * canvas = NULL;
   if ( action->text() == lexicon("new") ) {
     doPlanScrap();
     return;
   }
-  PlotCanvas * canvas = planCanvases.getPlot( action->text().TO_CHAR() );
-  if ( canvas ) {
+  if ( action->text() == lexicon("open") ) {
+    QString filename = QFileDialog::getOpenFileName( this, lexicon("open_file"), "",
+                                                     "Th2 files (*.th2)\nAll (*.*)" );
+    if ( ! filename.isEmpty() ) {
+      PlotTh2Import import( this );
+      const char * pname = filename.TO_CHAR();
+      canvas = import.loadTh2File( pname );
+      if ( canvas ) {
+        canvas -> redrawPlot();
+        canvas->show();
+      }
+    }
+  } else {
+    canvas = planCanvases.getPlot( action->text().TO_CHAR() );
     canvas->show();
   }
 }
@@ -2301,12 +2496,26 @@ QTshotWidget::doPlan( QAction * action )
 void
 QTshotWidget::doExtended( QAction * action )
 {
+  PlotCanvas * canvas = NULL;
   if ( action->text() == lexicon("new") ) {
     doExtendedScrap();
     return;
   }
-  PlotCanvas * canvas = extCanvases.getPlot( action->text().TO_CHAR() );
-  if ( canvas ) {
+
+  if ( action->text() == lexicon("open") ) {
+    QString filename = QFileDialog::getOpenFileName( this, lexicon("open_file"), "",
+                                                     "Th2 files (*.th2)\nAll (*.*)" );
+    if ( ! filename.isEmpty() ) {
+      PlotTh2Import import( this );
+      const char * pname = filename.TO_CHAR();
+      canvas = import.loadTh2File( pname );
+      if ( canvas ) {
+        canvas -> redrawPlot();
+        canvas->show();
+      }
+    }
+  } else {
+    canvas = extCanvases.getPlot( action->text().TO_CHAR() );
     canvas->show();
   }
 }
@@ -2342,6 +2551,12 @@ void
 QTshotWidget::doToggle()
 {
   ToggleWidget dialog( this );
+}
+
+void
+QTshotWidget::doInfo()
+{
+  InfoWidget dialog( this );
 }
 
 void

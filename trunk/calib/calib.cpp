@@ -4,6 +4,11 @@
  * @date march 2009
  * 
  * @brief execute the Calibration algorithm
+ *
+ * Input file data lines:
+ *    0x.. 0x.. 0x.. 0x.. 0x.. 0x.. rem int int
+ *    &gx0, &gy0, &gz0, &mx0, &my0, &mz0, rem, &grp, &ignore
+ *
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.

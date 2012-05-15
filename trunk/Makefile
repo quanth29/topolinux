@@ -6,7 +6,9 @@ MAKE_DIRS = \
   distox \
   basic \
   calib \
+  memory \
   utils \
+  Therion \
   QTshot \
   QTcalib
 
@@ -20,9 +22,11 @@ QTOPO_DIRS = \
   i18n \
   help
 
-DIST_DIRS = $(MAKE_DIRS) $(QTOPO_DIRS) \
+IMAGE_DIRS = \
   pixmaps \
   icons 
+
+DIST_DIRS = $(MAKE_DIRS) $(QTOPO_DIRS) $(IMAGE_DIRS)
 
 TAR_DIRS = $(DIST_DIRS) \
   $(EXTRA_MAKE_DIRS) 
@@ -43,22 +47,31 @@ DIST_FILES = $(QTOPO_FILES) \
   README \
   TODO
 
-TAR_FILES = $(DIST_FILES) \
-  reduce.pl
+TAR_FILES = $(DIST_FILES) 
 
 # ---------------------------------------
 
 default:
 	- echo "Possible targets: tar qtopo topolinux all clean distclean"
+	- echo "  tar       a complete tar with all sources"
+	- echo "  topolinux a tar with the distributable sources"
+	- echo "  qtopo     the gui programs"
+	- echo "  all       all the programs"
+	- echo "  runtime   a tar of the runtime"
+	- echo "  clean     a cleanup"
+	- echo "  distclean a cleanup for distributing"
 
 all:
+	for i in $(EXTRA_MAKE_DIRS); do cd $$i; make; cd - ; done
 	for i in $(MAKE_DIRS); do cd $$i; make; cd - ; done
 
 clean:	 
 	for i in $(MAKE_DIRS); do cd $$i; make clean; cd - ; done
+	for i in $(EXTRA_MAKE_DIRS); do cd $$i; make clean; cd - ; done
 
 distclean:
 	for i in $(MAKE_DIRS); do cd $$i; make distclean; cd - ; done
+	for i in $(EXTRA_MAKE_DIRS); do cd $$i; make distclean; cd - ; done
 	rm -f bin/*
 
 tar:
@@ -67,9 +80,12 @@ tar:
 
 qtopo: 
 	make all
-	tar -czf ./qtopo.tgz $(QTOPO_DIRS) $(QTOPO_FILES)
+	tar -chzf ./qtopo.tgz $(QTOPO_DIRS) $(QTOPO_FILES)
+
+runtime:
+	tar -chzf ./runtime.tgz $(QTOPO_DIRS) $(IMAGE_DIRS) $(DIST_FILES)
 
 topolinux: 
 	make distclean
-	tar -czf ./topolinux.tgz $(DIST_DIRS) $(DIST_FILES)
+	tar --exclude="\.svn" -chzf ./topolinux.tgz $(DIST_DIRS) $(DIST_FILES)
 

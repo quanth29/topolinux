@@ -23,6 +23,45 @@
 struct NumBranch;
 struct NumMeasure;
 
+struct NumStats
+{
+  int n_shots;
+  int n_stations;
+  int n_loops;
+  double z_max, z_min;
+  double n_max, n_min;
+  double e_max, e_min;
+  double delta_z()     const { return z_max - z_min; }
+  double delta_north() const { return n_max - n_min; }
+  double delta_east()  const { return e_max - e_min; }
+
+  NumStats()
+    : n_shots( 0 )
+    , n_stations( 0 )
+    , n_loops( 0 )
+    , z_max( -10000 )
+    , z_min( 10000 )
+    , n_max( 1000000 )
+    , n_min( -1000000 )
+    , e_max( 1000000 )
+    , e_min( -1000000 )
+  { }
+
+  void Reset()
+  {
+    n_shots = 0;
+    n_stations = 0;
+    n_loops = 0;
+    z_max =   -10000;
+    z_min =    10000;
+    n_max = -1000000;
+    n_min =  1000000;
+    e_max = -1000000;
+    e_min =  1000000;
+  }
+};
+
+
 /** station point in 3D 
  */
 struct NumPoint {
@@ -82,11 +121,14 @@ class Num
     // NumLoop     *lp00;
     NumHomotopy *hm00;
     int measure_number;
+    NumStats   stats;
 
   public:
     Num();
 
     ~Num();
+
+    const NumStats & getStats() const { return stats; }
 
     int makePoints(int i_lp, const char * fix_point = NULL ); /* Crea la lista dei punti:       */
                                        /* ritorna il n. dei punti        */

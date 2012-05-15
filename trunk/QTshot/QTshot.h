@@ -37,6 +37,8 @@
 #include <QTableWidget>
 #include <QTextEdit>
 #include <QMenu>
+#include <QMessageBox>
+#include <QBrush>
 
 #include "shorthands.h"
 
@@ -106,7 +108,8 @@ class QTshotWidget : public QMainWindow
        bool do_lrud;        //!< whether to show the LRUD checkbox
      #endif
      DataList dlist;        //!< survey data
-     QTableWidget * table;        //!< widget data table
+     QTableWidget * table;  //!< widget data table
+     QBrush brushes[4];     //!< red blue black gray
      QAction * actNew;
      QAction * actOpen;
      QAction * actSave;
@@ -116,9 +119,10 @@ class QTshotWidget : public QMainWindow
      QAction * actPlan;
      QAction * actExtended;
      QAction * act3D;
-     QAction * actToggle;
-     QAction * actOptions;
-     QAction * actHelp;
+     // QAction * actToggle;
+     QAction * actInfo;
+     // QAction * actOptions;
+     // QAction * actHelp;
      QAction * actQuit;
      QMenu * plan_menu;
      QMenu * ext_menu;
@@ -281,14 +285,18 @@ class QTshotWidget : public QMainWindow
       */
      // void setPlanCanvas( PlotCanvas * canvas = NULL ) { planCanvas = canvas; }
      // void setExtCanvas( PlotCanvas * canvas = NULL ) { extCanvas = canvas; }
-     void addPlanCanvas( const char * name, PlotCanvas * c ) 
-     { 
-       planCanvases.addPlot( name, c ); 
-     }
+     // void addPlanCanvas( const char * name, PlotCanvas * c ) 
+     // { 
+     //   planCanvases.addPlot( name, c ); 
+     // }
+
      void addExtCanvas( const char * name, PlotCanvas * c ) 
      {
        extCanvases.addPlot( name, c ); 
      }
+
+     void removePlotCanvas( PlotCanvas * c );
+
 
      // void setCrossCanvas( PlotCanvas * canvas = NULL ) { crossCanvas = canvas; }
      void set3DCanvas( PlotCanvas * canvas = NULL ) { _3DCanvas = canvas; }
@@ -341,7 +349,10 @@ class QTshotWidget : public QMainWindow
      * @param description  description
      * @return true if ok, false if date is illegal
      */
-    bool setDateAndDescription( const char * date, const char * description )
+    bool setDateAndDescription( const char * date, 
+                                const char * description,
+                                const char * author = NULL,
+                                const char * copyright = NULL )
     {
       int maxd[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
       int y,m,d;
@@ -352,8 +363,14 @@ class QTshotWidget : public QMainWindow
         info.month = m;
         info.day   = d;
         info.description = description;
+        if ( author ) info.author = author;
+        if ( copyright ) info.copyright = copyright;
       } else {
-        printf("illegal date: year %04d month %02d day %02d\n", y, m, d);
+        std::ostringstream oss;
+        oss << lexicon( "illegal_year" ) << " " << y << " " 
+            << lexicon( "month" ) << " " << m << " "
+            << lexicon( "day" ) << " " << d;
+        QMessageBox::warning(this, lexicon("illegal_date"), oss.str().c_str() );
         return false;
       }
       return true;
@@ -457,7 +474,7 @@ class QTshotWidget : public QMainWindow
       setDevice( d );
       append = a;
       smart = s;
-      splay_at = (s1) ? SPLAY_AT_FROM : SPLAY_AT_TO;
+      splay_at = (s1) ? SPLAY_AFTER_SHOT : SPLAY_BEFORE_SHOT ;
       backward = b;
     }
 
@@ -560,6 +577,10 @@ class QTshotWidget : public QMainWindow
      */
     void doExportOK();
 
+    /** show survey info's
+     */
+    void doInfo();
+
     /** show / modify run-time options
      */
     void doOptions();
@@ -567,7 +588,6 @@ class QTshotWidget : public QMainWindow
     /** show / modify distox modes
      */
     void doToggle();
-
 
     /** collapse splay rows
      */
@@ -772,6 +792,21 @@ class ExitWidget : public QDialog
     void doCancel() { hide(); }
 };
 
+/** dialog for the survey info
+ */
+class InfoWidget : public QDialog
+{
+  Q_OBJECT
+  private:
+    QTshotWidget * parent;
+
+  public:
+    InfoWidget( QTshotWidget * my_parent );
+
+  public slots:
+    void doOK() { hide(); }
+};
+
 
 /** dialog for the data download
  */
@@ -910,6 +945,8 @@ class CenterlineWidget : public QDialog
   private:
     QTshotWidget * parent;
     QLineEdit * date;
+    QLineEdit * author;
+    QLineEdit * copyright;
     QLineEdit * descr;
 
   public:

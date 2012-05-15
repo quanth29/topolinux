@@ -159,7 +159,7 @@ CalibList::loadData( FILE * fp, int angle )
 */
   }
   if ( auto_guess ) {
-    guessGroups( angle );
+    guessGroups( angle, NULL );
   }
 
   return ret;
@@ -213,11 +213,11 @@ Angle( double compass1, double clino1, double compass2, double clino2 )
 }
 
 void 
-CalibList::guessGroups( int guess_angle )
+CalibList::guessGroups( int guess_angle, CBlock * bstart )
 {
   int guess = 0;
   double compass2 = 0.0, clino2 = 0.0;
-  CBlock * b0 = head;
+  CBlock * b0 = (bstart)? bstart->next : head;
   while ( b0 ) {
     double compass1 = b0->compass * M_PI/180.0;
     double clino1   = b0->clino   * M_PI/180.0;

@@ -71,9 +71,8 @@ class DataList
 
   /** get the number of centerline shots
    * @return the number of shots with more than one measure
-   *
-  int centerlineSize() const { return shot; }
    */
+  int centerlineSize() const { return shot; }
 
   /** check if a block is the base block
    * @param block block to check

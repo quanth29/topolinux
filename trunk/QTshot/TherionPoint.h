@@ -12,6 +12,7 @@
 #define THERION_POINT_H
 
 #include <string>
+#include <sstream>
 
 #include <QGraphicsItem>
 
@@ -43,6 +44,7 @@ struct ThPoint
   {
     x += x0;
     y += y0;
+    item->moveBy( x0*4, y0*4 );
   }
 
   /** get the point graphics item
@@ -72,7 +74,7 @@ class ThPoint2D : public ThPoint
                const char * opt = NULL )
       : ThPoint( x0, y0 )
       , point_type( type )
-      , point_orientation( 0 )
+      , point_orientation( 0 ) // default 0, only certain points have orient.
       , point_subtype( NULL )
       , point_align( NULL )
       , point_scale( NULL )
@@ -114,6 +116,18 @@ class ThPoint2D : public ThPoint
     const char * option() const { return point_option.c_str(); }
     void setOption( const char * option ) { point_option = option; }
     bool hasOption() const { return point_option.size() > 0; }
+
+    /** append a key-value pair to the option string
+     */
+    void appendOption( const char * key, const char * value )
+    {
+      std::ostringstream oss;
+      if ( ! point_option.empty() ) {
+        oss << point_option << " ";
+      }
+      oss << key << " " << value;
+      point_option = oss.str();
+    }
 
     /** get the point subtype
      * @return the point subtype string

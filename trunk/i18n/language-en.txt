@@ -10,6 +10,7 @@ V V
 angle_units Angle units 
 append_shots Append shots  
 area Area
+author author
 azimuth Azimuth
 azimuth+ Azimuth +
 azimuth- Azimuth -
@@ -31,12 +32,15 @@ clino Clino
 close Close
 coeff_backup Calibration backed up to file.
 comment Comment
+compass Compass
+copyright copyright
 cover Coverage
 coverage Coverage
 cross_section Cross section
 data_download_failed Calibration data download failed.
 data_transformed Transformed data
 date Date
+day day
 declination Declination
 default_dat Using file /tmp/data.plt
 default_th Using file /tmp/data.th
@@ -81,7 +85,7 @@ file_open_failed Failed file open.
 flag Flg
 flag_box Flag
 from From
-from_station  FROM station
+from_station  after shot
 ft ft
 grad grad
 grid Grid
@@ -91,6 +95,9 @@ help Help
 help_index See file help\en\index.htm
 horizontal Horizontal
 ignore Ignore
+illegal_date illegal date
+illegal_year illegal year
+image image
 image_open_failed Failed to open image file
 incl+ Incl. +
 incl- Incl. -
@@ -102,6 +109,7 @@ iterations Iterations
 left Left
 length_units Length units 
 line Line 
+linepoint_options linepoint options
 m m
 merge_next Merge w. next
 mode Mode
@@ -109,6 +117,7 @@ mode_calib Calibration mode
 mode_compass Compass/Clino 
 mode_grad Grad/Degree 
 mode_silent Silent mode
+month month
 name Name
 new New
 no No
@@ -128,7 +137,11 @@ open_survey Open survey file
 options Options
 orientation Orientation
 plan Plan
+plot_exit plot exit
+plot_name plot name
+pockettopo PocketTopo
 point Point 
+point_options point options
 prefix Stations prefix
 prefix_too_long More that 12 char in station name.
 properties Comment and options
@@ -167,6 +180,7 @@ qtopo_x_area - Area
 qtopo_x_line - Line 
 qtopo_x_point - Point 
 qtopo_x_select - 
+qtopoc_append QTopo - Append
 qtopoc_calib QTopo - Calib
 qtopoc_coeff QTopo - Calibration
 qtopoc_comment QTopo - Description
@@ -184,12 +198,15 @@ right Right
 roll Roll
 save Save as
 save_file Save file
+save_png Save as png
 save_th2 Save th2 file
 saved_dat Saved Compass file
 saved_svx Saved Survex file
 saved_th Saved Therion file
 saved_top Saved PocketTopo file
+scrap scrap
 scrap_name Scrap name 
+scrap_new New scrap
 select Select
 set Set
 shot_comment QTopo - Shot
@@ -207,16 +224,19 @@ status_mode DistoX status
 surface surface shot
 survey_commands Survey commands
 survey_info QTopo - Survey info
+survex Survex
 swap_from_to Swap stations
 tape Tape
 team Team
 thconfig Create thconfig
+therion Therion
 title Title
 tlx_read_failed Failed reading TLX file
 to To
-to_station  TO station
+to_station  before shot
 toggle Toggle
 too_few_data Not enough calibration data. Need at least 16.
+topolinux TopoLinux
 undo Undo
 up Up
 vertical Vertical

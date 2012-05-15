@@ -12,7 +12,8 @@ EXES = \
   tlx_clear_memory \
   tlx_set_memory \
   tlx_reset_memory \
-  tlx_read_queue
+  tlx_read_queue \
+  tlx_read_calib
 
 SERIAL_OBJS = \
   ../distox/Serial.o
@@ -47,6 +48,10 @@ tlx_set_memory: set_memory.cpp $(SERIAL_OBJS)
 	$(STRIP) $@
 
 tlx_read_queue: read_queue.cpp $(SERIAL_OBJS)
+	$(CC) $(CFLAGS) -o $@ $^
+	$(STRIP) $@
+
+tlx_read_calib: read_calib.cpp $(SERIAL_OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 	$(STRIP) $@
 

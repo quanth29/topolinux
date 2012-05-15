@@ -82,7 +82,7 @@ PlotStatus::computeGrid( double s, int dx, int dy, const char * units )
       int gy = dy/d0;
       if ( canvas ) canvas->makeGrid( d0, gx, gy, dx, dy );
     }
-    printf("grid spacing %d %s \n", grid_spacing, units );
+    // printf("grid spacing %d %s \n", grid_spacing, units );
     {
       int k = 3; // index: 10 units (meters or feet)
       int value[] = { 1, 2, 5, 10, 20, 50, 100, 200 };

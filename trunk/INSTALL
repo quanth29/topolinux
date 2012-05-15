@@ -4,19 +4,20 @@ Howto compile TopoLinux
 Get the latest tarball and untar it.
 This creates the directory TopoLinux with the source files, and some
 documentation. In particular you should have the following subdirectories:
-  basic-02        TopoLinux utilities
+  basic           TopoLinux utilities
   bin             where programs are placed
-  calib-02        TopoLinux Calibration utilities
+  calib           TopoLinux Calibration utilities
   distox          DistoX communication calsses
   experimental    experimental code [not used]
   docs            pdf docs
   help            help files (documentation)
   i18n            internationalization data files
   icons           icons
+  memory          DistoX memory utilities
   pixmaps         pixmaps
   PTopo           PocketTopo classes ["empty"]
-  QTcalib-02      QTopoCalib: calibration program
-  QTshot-02       QTopoShot: measurements management program
+  QTcalib         QTopoCalib: calibration program
+  QTshot          QTopoShot: measurements management program
   utils           utility classes
 and some files.
 
@@ -27,19 +28,20 @@ Howto ccompile on Linux
 First of all you must make in distox.
 
 [2]
-To copmpile the TopoLinux utilities make in basic-02 and calib-02
+To copmpile the TopoLinux utilities make in basic, calib
+and memory.
 
 [3] 
-To compile QTopoShot, first make in utils, then cd to QTshot-02 and 
+To compile QTopoShot, first make in utils, then cd to QTshot and 
 qmake and make.
 
 [4]
-To compile QTopoCalib, you need classes in utils and in QTshot-02.
+To compile QTopoCalib, you need classes in utils and in QTshot.
 Having already made QTshot, cd to QTcalib-02 and qmake and make.
 
 [5] 
 The programs qtshot and qtcalib are in the bin directory.
-The utilities are left in basic-02 and calib-02.
+The utilities are left in basic, calib and memory.
 To run qtshot and qtcalib you need the QTopo resource file.
 A sample qtopo.rc is provided in the top directory.
 

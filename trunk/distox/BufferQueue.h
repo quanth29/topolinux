@@ -139,7 +139,7 @@ class BufferQueue
         }
       #endif
       if ( first == NULL ) {
-        fprintf(stderr, "ERROR: BufferQueue() Get first NULL %p last %p\n", (void *)first, (void *)last);
+        // fprintf(stderr, "WARNING: BufferQueue() Get first NULL %p last %p\n", (void *)first, (void *)last);
         return false;
       }
       first->GetItem( t );

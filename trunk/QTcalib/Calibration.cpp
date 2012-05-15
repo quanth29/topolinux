@@ -25,6 +25,11 @@
   }
 #endif
 
+// #define DEBUG
+#ifdef DEBUG
+  #undef DEBUG
+#endif
+
 // const unsigned int 
 // Calibration::MAX_IT = 20000;
 
@@ -324,7 +329,7 @@ double
 Calibration::TurnVectors(
                   const Vector & gxp, const Vector & mxp,
                   const Vector & gr,  const Vector & mr,
-                  Vector & gx, Vector & mx )
+                  Vector & gx, Vector & mx, bool print )
 {
   double s = gr.Z() * gxp.Y() - gr.Y() * gxp.Z() 
            + mr.Z() * mxp.Y() - mr.Y() * mxp.Z();
@@ -335,6 +340,17 @@ Calibration::TurnVectors(
   c /= d;
   gx = gxp.turnX( s, c );
   mx = mxp.turnX( s, c );
+  #ifdef DEBUG
+  if ( print ) {
+    printf("TurnVectors s %8.4f c %8.4f\n", s, c );
+    printf("  gf %8.4f %8.4f %8.4f\n", gxp.X(), gxp.Y(), gxp.Z() );
+    printf("  gt %8.4f %8.4f %8.4f\n", gx.X(), gx.Y(), gx.Z() );
+    printf("  mf %8.4f %8.4f %8.4f\n", mxp.X(), mxp.Y(), mxp.Z() );
+    printf("  mt %8.4f %8.4f %8.4f\n", mx.X(), mx.Y(), mx.Z() );
+  }
+  #else
+    print = print;
+  #endif
   // double alpha = atan2( s, c );
   // return alpha*180.0/M_PI;
   Vector nr = gr % mr; nr.normalize();
@@ -360,6 +376,7 @@ Calibration::Optimize( double & delta, double & error, unsigned int max_it )
   Vector * mx = new Vector[ num ];
 
   optimize_eps = EPS * delta;
+  max_it = 200; // FIXME
   it = OptimizeCore( gr, mr, gx, mx, max_it, &sin_alpha, &cos_alpha );
 
   int jmax;
@@ -408,8 +425,10 @@ Calibration::OptimizeCore( Vector * gr, Vector * mr, Vector * gx, Vector * mx,
   double da = sqrt( sa*sa + ca*ca );
   double sin_alpha = sa/da;
   double cos_alpha = ca/da;
-  // double alpha = atan2( sa, ca );
-  // printf("Alpha %.4f s %.4f c %.4f\n", alpha*180.0/M_PI, sa, ca );
+  #ifdef DEBUG
+    double alpha = atan2( sa, ca );
+    printf("Alpha %.4f s %.4f c %.4f\n", alpha*180.0/M_PI, sa, ca );
+  #endif
 
   Vector avG = sumG * invNum;
   Vector avM = sumM * invNum;
@@ -419,14 +438,14 @@ Calibration::OptimizeCore( Vector * gr, Vector * mr, Vector * gx, Vector * mx,
   Matrix invG = iG.inverse();
   Matrix invM = iM.inverse();
 
-  #if 0
-  printf("AvG %.4f %.4f %.4f \n", avG.X(), avG.Y(), avG.Z() );
-  printf("iG: %.4f %.4f %.4f \n", iG.X().X(), iG.X().Y(), iG.X().Z() );
-  printf("    %.4f %.4f %.4f \n", iG.Y().X(), iG.Y().Y(), iG.Y().Z() );
-  printf("    %.4f %.4f %.4f \n", iG.Z().X(), iG.Z().Y(), iG.Z().Z() );
+  #ifdef DEBUG
+    printf("AvG %.4f %.4f %.4f \n", avG.X(), avG.Y(), avG.Z() );
+    printf("iG: %.4f %.4f %.4f \n", iG.X().X(), iG.X().Y(), iG.X().Z() );
+    printf("    %.4f %.4f %.4f \n", iG.Y().X(), iG.Y().Y(), iG.Y().Z() );
+    printf("    %.4f %.4f %.4f \n", iG.Z().X(), iG.Z().Y(), iG.Z().Z() );
   #endif
 
-  #ifdef DEBUG
+  #if 0 // def DEBUG
   {
     Matrix cG = iG * invG;
     if ( cG.max_diff( Matrix::one ) > EPS ) {
@@ -457,8 +476,13 @@ Calibration::OptimizeCore( Vector * gr, Vector * mr, Vector * gx, Vector * mx,
       if ( vGroup[k] == NOT_USED ) continue;
       gr[k] = bG + aG * vG[k];
       mr[k] = bM + aM * vM[k];
+      #ifdef DEBUG
+        if ( k < 4 ) {
+          printf("GR[%d] %.5f %.5f %.5f\n", k, gr[k].X(), gr[k].Y(), gr[k].Z() );
+          printf("MR[%d] %.5f %.5f %.5f\n", k, mr[k].X(), mr[k].Y(), mr[k].Z() );
+        }
+      #endif
     }
-
     #ifdef USE_GUI
       if ( gui ) {
         // gui->DisplayGM( gr, mr );
@@ -491,14 +515,34 @@ Calibration::OptimizeCore( Vector * gr, Vector * mr, Vector * gx, Vector * mx,
           Vector gt;
           Vector mt;
           double ca = 0.0;
-	  ca = TurnVectors( gr[k], mr[k], gr[first], mr[first], gt, mt );
+	  ca = TurnVectors( gr[k], mr[k], gr[first], mr[first], gt, mt, (k<4) );
           if ( ca > ca_max ) ca_max = ca;
+          #ifdef DEBUG
+             if ( k < 4 ) {
+               printf("GR[%d] %.5f %.5f %.5f\n", k, gr[k].X(), gr[k].Y(), gr[k].Z() );
+               printf("MR[%d] %.5f %.5f %.5f\n", k, mr[k].X(), mr[k].Y(), mr[k].Z() );
+               printf("GT[%d] %.5f %.5f %.5f\n", k, gt.X(), gt.Y(), gt.Z() );
+               printf("MT[%d] %.5f %.5f %.5f\n", k, mt.X(), mt.Y(), mt.Z() );
+             }
+          #endif
           grp += gt;
           mrp += mt;
         }
+        #ifdef DEBUG
+          if ( kg == 1 ) {
+            printf("GRP %.5f %.5f %.5f\n",  grp.X(), grp.Y(), grp.Z() );
+            printf("MRP %.5f %.5f %.5f\n",  mrp.X(), mrp.Y(), mrp.Z() );
+          }
+        #endif
         Vector gxp; // optimal mean vector pair (gx,mx)
         Vector mxp;
         OptVectors( grp, mrp, sin_alpha, cos_alpha, gxp, mxp );
+        #ifdef DEBUG
+          if ( kg == 1 ) {
+            printf("GXP %.5f %.5f %.5f\n",  gxp.X(), gxp.Y(), gxp.Z() );
+            printf("MXP %.5f %.5f %.5f\n",  mxp.X(), mxp.Y(), mxp.Z() );
+          }
+        #endif
         // new alpha calculation
         double s = (mrp % gxp).length(); // original
         double c = mrp * gxp;
@@ -512,7 +556,16 @@ Calibration::OptimizeCore( Vector * gr, Vector * mr, Vector * gx, Vector * mx,
           unsigned int k = vGroups[kg].Index(k1);
           if ( vIgnore[k] == 1 ) continue;
           // get optimal gx, mx from matched (gxp, mxp)
-          TurnVectors( gxp, mxp, gr[k], mr[k], gx[k], mx[k] );
+          TurnVectors( gxp, mxp, gr[k], mr[k], gx[k], mx[k], (k<4) );
+          #ifdef DEBUG
+             if ( k < 4 ) {
+               printf("GR[%d] %.5f %.5f %.5f\n", k, gr[k].X(), gr[k].Y(), gr[k].Z() );
+               printf("MR[%d] %.5f %.5f %.5f\n", k, mr[k].X(), mr[k].Y(), mr[k].Z() );
+               printf("GX[%d] %.5f %.5f %.5f\n", k, gx[k].X(), gx[k].Y(), gx[k].Z() );
+               printf("MX[%d] %.5f %.5f %.5f\n", k, mx[k].X(), mx[k].Y(), mx[k].Z() );
+             }
+          #endif
+    
         }
       } else if ( grp_nr == 1 ) { // individual sample
         assert( first != (unsigned int)(-1) );
@@ -542,8 +595,10 @@ Calibration::OptimizeCore( Vector * gr, Vector * mr, Vector * gx, Vector * mx,
     da = sqrt( sa*sa + ca*ca );
     sin_alpha = sa/da;
     cos_alpha = ca/da;
-    // alpha = atan2( sa, ca );
-    // printf("Alpha %.2f s %.4f c %.4f \n", alpha*180.0/M_PI, sa, ca );
+    #ifdef DEBUG
+      alpha = atan2( sa, ca );
+      printf("Alpha %.2f s %.4f c %.4f \n", alpha*180.0/M_PI, sa, ca );
+    #endif
 
     // get aG, aM from g, m, gx, mx
     Vector avGx;
@@ -560,6 +615,17 @@ Calibration::OptimizeCore( Vector * gr, Vector * mr, Vector * gx, Vector * mx,
       sumMxM += (mx[k] & vM[k]);
       s0 ++;
     }
+    #ifdef DEBUG
+      printf("AvGx %.4f %.4f %.4f \n", avGx.X(), avGx.Y(), avGx.Z() );
+      printf("sGxG %.4f %.4f %.4f \n", sumGxG.X().X(), sumGxG.X().Y(), sumGxG.X().Z() );
+      printf("     %.4f %.4f %.4f \n", sumGxG.Y().X(), sumGxG.Y().Y(), sumGxG.Y().Z() );
+      printf("     %.4f %.4f %.4f \n", sumGxG.Z().X(), sumGxG.Z().Y(), sumGxG.Z().Z() );
+      printf("AvMx %.4f %.4f %.4f \n", avMx.X(), avMx.Y(), avMx.Z() );
+      printf("sMxM %.4f %.4f %.4f \n", sumMxM.X().X(), sumMxM.X().Y(), sumMxM.X().Z() );
+      printf("     %.4f %.4f %.4f \n", sumMxM.Y().X(), sumMxM.Y().Y(), sumMxM.Y().Z() );
+      printf("     %.4f %.4f %.4f \n", sumMxM.Z().X(), sumMxM.Z().Y(), sumMxM.Z().Z() );
+    #endif
+
     assert( s0 == sum0 );
     aG0 = aG;
     aM0 = aM;
@@ -573,8 +639,17 @@ Calibration::OptimizeCore( Vector * gr, Vector * mr, Vector * gx, Vector * mx,
     // new bG, bM
     bG = avGx - ( aG * avG );
     bM = avMx - ( aM * avM );
+    #ifdef DEBUG
+      printf("bG %.4f %.4f %.4f \n", bG.X(), bG.Y(), bG.Z() );
+      printf("aG %.4f %.4f %.4f \n", aG.X().X(), aG.X().Y(), aG.X().Z() );
+      printf("   %.4f %.4f %.4f \n", aG.Y().X(), aG.Y().Y(), aG.Y().Z() );
+      printf("   %.4f %.4f %.4f \n", aG.Z().X(), aG.Z().Y(), aG.Z().Z() );
+      printf("bM %.4f %.4f %.4f \n", bM.X(), bM.Y(), bM.Z() );
+      printf("aM %.4f %.4f %.4f \n", aM.X().X(), aM.X().Y(), aM.X().Z() );
+      printf("   %.4f %.4f %.4f \n", aM.Y().X(), aM.Y().Y(), aM.Y().Z() );
+      printf("   %.4f %.4f %.4f \n", aM.Z().X(), aM.Z().Y(), aM.Z().Z() );
+    #endif
 
-    ++ it;
     mdG = aG.max_diff( aG0 );
     mdM = aM.max_diff( aM0 );
     #if 0
@@ -585,6 +660,11 @@ Calibration::OptimizeCore( Vector * gr, Vector * mr, Vector * gx, Vector * mx,
       // printf("check %.8f \n", CheckInput(false) );
       // scanf("%d", &jmax );
     #endif
+    #ifdef DEBUG
+       printf("Done iteration %d/%d. Max diff %.4f %.4f\n", it, max_it, mdG, mdM );
+
+    #endif
+    ++ it;
   } while ( it < max_it && ( mdG > optimize_eps || mdM > optimize_eps ) );
 
   *sin_alpha0 = sin_alpha;
