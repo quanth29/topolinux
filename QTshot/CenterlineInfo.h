@@ -47,7 +47,9 @@ struct CenterlineInfo
 {
   int year, month, day;    //!< centerline date (yyyy-mm-dd)
   std::string description; //!< centerline description
-  QString fileName;        //!< centerline TLX filename
+  std::string author;      //!< centerline author
+  std::string copyright;   //!< centerline copyright
+  QString fileSaveName;    //!< centerline TLX filename
   QString surveyComment;   //!< comment for the TLX file
   SurveyInfo surveyInfo;   //!< export survey info
 

@@ -55,7 +55,7 @@ class PlotCanvas : public QMainWindow
     QTshotWidget * parent;    //!< parent widget
     Language & lexicon;       //!< i18n lexicon
     IconSet * icon;           //!< pointer to the singleton icon set
-    QString plot_name;        //!< scrap name
+    QString plot_name;        //!< plot name
     Plot * plot;              //!< plot
     QLabel * point_of_view;   //!< 3D point of view
     PlotCanvasScene * scene;  //!< QT scene object
@@ -76,7 +76,6 @@ class PlotCanvas : public QMainWindow
     QAction * actZoomOut;
     QAction * actNew;
     QAction * actUndo;
-    // QAction * actMode;
     QAction * actScrap;
     QAction * actSelect;
     QAction * actSelectMenu[ 2 ]; // select | orientation
@@ -92,16 +91,25 @@ class PlotCanvas : public QMainWindow
     QAction * actPhiPlus;
     QAction * actPhiMinus;
     QAction * actClose;
+    QAction * actQuit;
+    QAction * actView;
 
   #ifdef HAS_BACKIMAGE        // background sketch
     QAction * actImage;
   #endif
 
     QMenu * scrap_menu;
+    QMenu * view_menu;
   private:
     void setCaption();
 
   public:
+    /** center the view
+     * @param x   X coord
+     * @param y   Y coord
+     */
+    void centerOn( double x, double y );
+
     int getPlotWidth() { return plot->getWidth(); }
     int getPlotHeight() { return plot->getHeight(); }
     int getPlotXOffset() { return plot->getXOffset(); }
@@ -116,6 +124,7 @@ class PlotCanvas : public QMainWindow
      */
     const char * getScrapName() const { return status -> getScrap() -> getScrapName(); }
     const char * getFileName() const { return  status -> getFileName(); }
+    const char * getBaseFileName() const { return  status -> getBaseFileName(); }
 
     /** set the scrap name
      * @param name new scrap name
@@ -128,11 +137,17 @@ class PlotCanvas : public QMainWindow
       status -> setImageName( name );
     }
 
+    /** set the name of the file
+     * @param name filename
+     */
     void setFileName( const char * name ) 
     {
       status -> setFileName( name );
     }
 
+    /** set the name of the image
+     * @param name image filename
+     */
     void setImageName( const char * name ) 
     {
       status -> setImageName( name );
@@ -170,9 +185,18 @@ class PlotCanvas : public QMainWindow
 
     ~PlotCanvas();
 
+    /** get the plot status info
+     * @return the plot status
+     */
     PlotStatus * getStatus() { return status; }
+
+    /** get the current units
+     * @return the units
+     */
     const Units & getUnits() const { return units; }
 
+    /** propagate an update to the parent
+     */
     void propagateUpdate()
     {
       parent->updateCanvases();
@@ -185,6 +209,9 @@ class PlotCanvas : public QMainWindow
      */
  
   public:
+    /** turn disableable buttons on/off
+     * @param on_off whether to turn the buttons on or off
+     */
     void turnButtonsOnOff( bool on_off )
     {
       if ( on_off ) {
@@ -208,10 +235,19 @@ class PlotCanvas : public QMainWindow
      */
     void clearTh2PointsAndLines();
 
+    /** set the canvas mode
+     * @param input_mode  new mode
+     * @param name        mode name (window title)
+     */
     void setMode( int input_mode, const char * name = NULL );
 
   private:
+    /** creaete the toolbar
+     */
     void createToolBar();
+
+    /** create the actions
+     */
     void createActions();
 
   public:
@@ -251,10 +287,17 @@ class PlotCanvas : public QMainWindow
      */
     void doSaveTh2( const QString & file );
 
+    /** save as image (PNG)
+     * @param file image filename
+     */
     void doSaveImage( const QString & file );
 
+    /** really save as therion th2 file
+     */
     void doRealSaveTh2( );
 
+    /** really save as image (PNG)
+     */
     void saveAsImage();
 
     /** really clear the scrap
@@ -268,10 +311,21 @@ class PlotCanvas : public QMainWindow
       void doImage( const QString & name );
     #endif
 
+    /** add a new scrap
+     * @param name name of the new scrap
+     */
     void doNewScrap( const char * name ) 
     { 
       status->addScrap( name ); 
       scrap_menu->addAction( name );
+    }
+
+    /** do a real quit
+     */
+    void doQuit()
+    {
+      hide();
+      parent->removePlotCanvas( this );
     }
 
 
@@ -297,6 +351,7 @@ class PlotCanvas : public QMainWindow
     void onAreaMenu( QAction * a );
     void onGrid();
     void onNumbers();
+    void onClose();
     void onQuit();
     void onThetaPlus();
     void onThetaMinus();
@@ -335,6 +390,9 @@ class PlotCanvasView : public QGraphicsView
 */
 };
 
+// -------------------------------------------------------------------
+// SCRAP NAME
+
 /** dialog to get the name of the new scrap
  */
 class ScrapNewWidget : public QDialog
@@ -353,7 +411,7 @@ class ScrapNewWidget : public QDialog
 
 };
 
-/** dialog to switch the scene  mode
+/** dialog to switch the scene mode
  */
 class CanvasCommandWidget : public QDialog
 {
@@ -425,6 +483,7 @@ class ExtendWidget : public QDialog
     void doCancel();
 };
 
+
 /** dialog to confirm the scrap clean
  */
 class CleanScrapWidget : public QDialog
@@ -485,6 +544,22 @@ class StationCommentWidget : public QDialog
     void doOK();
     void doCancel() { hide(); }
 };
+
+class QuitWidget : public QDialog
+{
+  Q_OBJECT
+  private:
+    // QWidget * parent;
+    PlotCanvas * parent;
+
+  public:
+    QuitWidget( PlotCanvas * p );
+
+  public slots:
+    void doOK();
+    void doCancel() { hide(); }
+};
+
 
 
 

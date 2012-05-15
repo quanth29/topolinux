@@ -7,11 +7,11 @@ CC = g++
 CCC = gcc
 STRIP = strip
 
-USE_GUI = 1
+# USE_GUI = 1
 
 CFLAGS = -g -O2 -Wall -I../distox -I.
 
-CFLAGS += -DEXPERIMENTAL
+# CFLAGS += -DEXPERIMENTAL
 # CFLAGS += -DARM
 
 EXES = tlx_calib \

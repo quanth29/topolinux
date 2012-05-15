@@ -58,9 +58,9 @@ DataList::clear()
 bool 
 DataList::saveTlx( CenterlineInfo & c_info )
 {
-  FILE * fp = fopen( c_info.fileName.TO_CHAR(), "w" );
+  FILE * fp = fopen( c_info.fileSaveName.TO_CHAR(), "w" );
   if ( fp == NULL ) {
-    DBG_CHECK("Failed to open file \"%s\"\n", c_info.fileName.TO_CHAR() );
+    DBG_CHECK("Failed to open file \"%s\"\n", c_info.fileSaveName.TO_CHAR() );
     return false;
   }
   fprintf(fp, "tlx2\n"); // TopoLinux file format version 2
@@ -275,7 +275,7 @@ DataList::createBlock( int from, int to,
       bb = shotToBlock( from, to, d0, b0, c0, r0, cnt );
     }
   } else {
-    if ( splay_at == SPLAY_AT_TO ) {
+    if ( splay_at == SPLAY_BEFORE_SHOT ) {
       bb = shotToBlock( to, from, d0, b0, c0, r0, cnt );
     } else {
       bb = shotToBlock( from, to, d0, b0, c0, r0, cnt );
@@ -292,7 +292,7 @@ DataList::initFromTo( int & from, int & to, bool append )
   from = 0;
   to   = 1;
   if ( append ) {
-    DBlock * last = head;
+    last = head;
     if ( last ) {
       while ( last->next_block ) {
 	last = last->next_block;
@@ -311,7 +311,9 @@ DataList::initFromTo( int & from, int & to, bool append )
   if ( to < from ) {
     int tmp = from; from = to; to = tmp;
   } 
-
+  
+  // fprintf(stderr, "initFromTo() append %s head %p last %p From %d To %d\n",
+  //   append? "true" : "false", (void*)head, (void*)last, from, to );
   return last;
 }
 
@@ -910,18 +912,36 @@ DataList::doNum( bool force )
     num.addMeasure( bl->fromStation(), bl->toStation(), bl->Tape(), bl->Compass(), bl->Clino() );
     ++ num_measures;
   }
-  // DBG_CHECK("DataList::doNum() measures %d\n", n_measures );
+  // DBG_CHECK("DataList::doNum() measures %d\n", num_measures );
   if ( num_measures == 0 ) {
-    return 0;
-  }
-  if ( base_block && base_block->hasFromStation() ) {
-    num.makePoints( 1, base_block->fromStation() );
+    if ( list_size == 0 ) {
+      return 0;
+    } else {
+      const char * station = NULL;
+      for ( DBlock * bl = head; bl; bl=bl->next() ) {
+        if ( bl->hasFromStation() ) {
+          station = bl->fromStation();
+          break;
+        } else if ( bl->hasToStation() ) {
+          station = bl->toStation();
+          break;
+        }
+      }
+      if ( station == NULL ) {
+        return 0;
+      }
+      num.makePoints( 1, station );
+    }
   } else {
-    num.makePoints( 1 );
+    if ( base_block && base_block->hasFromStation() ) {
+      num.makePoints( 1, base_block->fromStation() );
+    } else {
+      num.makePoints( 1 );
+    }
+    num.setPoints();
   }
-  num.setPoints();
   // DBG_CHECK("DataList::doNum() made points %d \n", n_pts );
-  // NumPrintPoints();
+  // num.printPoints();
   
   DBG_CHECK("DoNum() done: n. measures %d\n", num_measures );
 

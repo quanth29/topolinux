@@ -23,6 +23,8 @@
 #include "CanvasUndo.h"
 #include "PlotScale.h"
 
+#define SEPARATOR '/'
+
 #ifdef HAS_POCKETTOPO
   #include "PTfile.h"
 #endif
@@ -39,28 +41,23 @@ struct PlotStatus
   private:
     std::vector< TherionScrap * > scraps; //!< therion scraps
     TherionScrap * th_scrap;    //!< current scrap
-    // std::vector< ThPoint2D * > th_points;
-    // std::vector< ThLine2D * >  th_lines;
-    // std::vector< ThArea2D * >  th_areas;
     int    status;         //!< frame status: grid or scalebar
-    // double scale;
     int    offx;
     int    offy;
     int    width;          //!< canvas width
     int    height;         //!< canvas height
-    // int    orientation;    //!< orientation 0..7 [units of 45 degrees]
     double theta, phi;     //!< viewpoint (for 3D)
     CanvasUndo * undo;     //!< list of undo's
-    bool do_numbers;       //!< whether to display station numbers
+    bool show_numbers;       //!< whether to display station numbers
     int  grid_spacing;     //!< grid spacing
-    std::string file_name;  //!< file name
-    std::string image_name;  //!< file name
-    // std::string scrap_name; //!< scrap name
+    std::string file_name;  //!< plot file name
+    std::string image_name; //!< image file name
     PlotCanvasScene * canvas;
 
   public:
     PlotStatus( int st, const char * fname, const char * sname  )
-      : status( st )
+      : th_scrap( NULL )
+      , status( st )
       // , scale( 4.0 )
       , offx( 0 )
       , offy( 0 )
@@ -70,12 +67,12 @@ struct PlotStatus
       , theta( 0.0 )  // from north (0 azymuth) on the horizontal plane
       , phi( 0.0 )
       , undo( NULL )
-      , do_numbers( true )
+      , show_numbers( true )
       , grid_spacing( 1 ) // 1 meter
       , canvas( NULL )
     { 
       setFileName( fname );
-      addScrap( sname );
+      if ( sname ) addScrap( sname );
       // setScrapName( name );
     }
 
@@ -88,6 +85,13 @@ struct PlotStatus
     void setScene( PlotCanvasScene * scene ) { canvas = scene; }
 
     const char * getFileName() const { return file_name.c_str(); }
+    const char * getBaseFileName() const 
+    {
+      const char * ch0 = file_name.c_str();
+      const char * ch = strrchr( ch0, SEPARATOR );
+      if ( ch ) return ch+1;
+      return ch0;
+    }
     const char * getImageName() const { return image_name.c_str(); }
     // const char * getScrapName() const { return scrap_name.c_str(); }
 
@@ -122,12 +126,14 @@ struct PlotStatus
 
     /** add a new scrap
      * @param name scrap name
+     * @return the newly added scrap
      */
-    void addScrap( const char * name )
+    TherionScrap * addScrap( const char * name )
     {
       TherionScrap * scrap = new TherionScrap( this, name );
       scraps.push_back( scrap );
       setActiveScrap( scrap );
+      return scrap;
     }
 
     /** set the active scrap
@@ -188,7 +194,7 @@ struct PlotStatus
       // scale = 4.0;
       offx = 0;
       offy = 0;
-      do_numbers = true;
+      show_numbers = true;
       clear();
     }
 
@@ -333,8 +339,8 @@ struct PlotStatus
     double getScale() const { return PLOT_SCALE; }
     // void setScale( double s ) { scale = s; }
 
-    void flipNumbers() { do_numbers = ! do_numbers; }
-    bool isNumbers() const { return do_numbers; }
+    void flipNumbers() { show_numbers = ! show_numbers; }
+    bool isNumbers() const { return show_numbers; }
 
   #ifdef HAS_POCKETTOPO
     /** export drawing to a pockettopo file

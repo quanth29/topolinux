@@ -71,8 +71,10 @@ saveAsTherion( DataList & data,
     }
 
   }
-  // int day, month, year;
-  // GetDate( &day, &month, &year);
+  int day, month, year;
+  GetDate( &day, &month, &year);
+  char today[12];
+  sprintf(today, "%04d-%02d-%02d", year, month, day );
 
   std::ostringstream oss;
   oss.setf( std::ios::fixed );
@@ -88,6 +90,13 @@ saveAsTherion( DataList & data,
   oss << "\n\n";
 
   oss << "  centerline\n";
+  if ( ! c_info.author.empty() ) {
+    oss << "    author " << today << " " << c_info.author << "\n";
+  }
+  if ( ! c_info.copyright.empty() ) {
+    oss << "    copyright " << today << " " << c_info.copyright << "\n";
+  }
+
   oss << "    date ";
   oss.fill( '0' );
   oss.width( 4 ); oss << c_info.year  << ".";

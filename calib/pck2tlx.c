@@ -20,6 +20,15 @@
 #include <string.h>
 #include <ctype.h>
 
+void
+Usage()
+{
+  printf("Usage: pck2tlx <input-file>\n");
+  printf("Convert PocketTopo calibration file to TopoLinux format.\n");
+  printf("Output is written to stdout. Redirect if needed.\n");
+  printf("Input file is a calibration file exported by PocketTopo as text.\n");
+}
+
 int main( int argc, char ** argv )
 {
   char * line = NULL;
@@ -28,8 +37,8 @@ int main( int argc, char ** argv )
   int index = 0;
   int group = 1;
 
-  if ( argc <= 1 ) {
-    fprintf(stderr, "Usage: %s <input file>\n", argv[0] );
+  if ( argc <= 1 || strcmp(argv[1], "-h") == 0 ) {
+    Usage();
     return 0;
   }
   fp = fopen( argv[1], "r" );

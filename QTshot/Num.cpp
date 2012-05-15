@@ -322,7 +322,6 @@ Num::makeLoop( NumPoint * pt2, NumPoint * pt1, NumMeasure * ms1)
   ARG_CHECK( pt1 == NULL, );
   ARG_CHECK( ms1 == NULL, );
 
-
   NumPoint    *pt3, *pt4;
   NumLoop     *lp0, *lp2, *lp3, *lp4;
   NumMeasure  *ms3; // , *ms4;
@@ -335,6 +334,8 @@ Num::makeLoop( NumPoint * pt2, NumPoint * pt1, NumMeasure * ms1)
   // { int i; scanf("%d", &i ); }
 
   NEW_LP(lp0);
+  stats.n_loops ++;  // STATISTICS
+
   lp3 = lp0;
   pt3 = lp3->pt = pt2;
   lp3->next = lp3->prev = NULL;
@@ -384,6 +385,7 @@ Num::makeLoop( NumPoint * pt2, NumPoint * pt1, NumMeasure * ms1)
       // { int i; scanf("%d", &i ); }
     } else {
       NEW_LP(lp4);
+      stats.n_loops ++;  // STATISTICS
       lp3->next = lp4; lp4->next = NULL; lp4->prev = lp3;
       lp3 = lp4;
       lp3->pt = pt3 = pt4;
@@ -533,12 +535,14 @@ Num::makePoints( int i_lp, const char * fix_point )      /* Crea la lista dei pu
   int added = 1;
   int pt_cnt = 1;
 
-  if ( ms00 == NULL ) {
+  // fprintf(stderr, "makePoints() ms00 %p fix %s\n", ms00, fix_point );
+  if ( ms00 == NULL && fix_point == NULL ) {
     return -1;
   }
 
   NEW_PT(pt00);
   pt00->V = /* pt00->H = */ pt00->N = pt00->E = 0.0;
+
   pt00->next= NULL;
   if ( fix_point == NULL ) {
     pt00->tag = ms00->tag1;
@@ -582,10 +586,13 @@ Num::makePoints( int i_lp, const char * fix_point )      /* Crea la lista dei pu
       }
     }
   } 
+  // fprintf(stderr, "makePoints() points %d \n", pt_cnt );
   // resetMeasures();
   /* FIXME bug in MakeHomotopy() or used routines
    */
   if (i_lp) makeHomotopy();
+
+  stats.n_stations = pt_cnt; // STATISTICS
   return pt_cnt;
 }
 /* ================================================================= */
@@ -608,6 +615,12 @@ Num::setPoint(NumPoint * pt3, NumPoint * pt1, NumMeasure * ms1, int sign)
   pt3->set = 1;
   // printf("  M %.2f %.2f %.2f N  %.2f E %.2f V %.2f\n",
   //  ms1->dist, ms1->nord, ms1->incl, pt3->N, pt3->E, pt3->V );
+  if ( stats.z_min > pt3->V ) stats.z_min = pt3->V; // STATISTICS
+  if ( stats.z_max < pt3->V ) stats.z_max = pt3->V;
+  if ( stats.n_min > pt3->N ) stats.n_min = pt3->N;
+  if ( stats.n_max < pt3->N ) stats.n_max = pt3->N;
+  if ( stats.e_min > pt3->E ) stats.e_min = pt3->E;
+  if ( stats.e_max < pt3->E ) stats.e_max = pt3->E;
 }
 /* ----------------------------------------------------------------- */
 #if 0
@@ -629,6 +642,9 @@ Num::resetPoints()
   NumPoint *pt1;
   for (pt1=pt00->next; pt1!=NULL; pt1=pt1->next) pt1->set=0;
   pt00->set = 1;
+  stats.z_min = stats.z_max = 0; // STATISTICS
+  stats.n_min = stats.n_max = 0;
+  stats.e_min = stats.e_max = 0;
 }
 /* ----------------------------------------------------------------- */
 void 
@@ -643,8 +659,8 @@ Num::setPoints()
   while ( added == 1 ) {
     added = 0;
     for ( ms1=ms00; ms1!=NULL; ms1=ms1->next ) {
-      pt1=ms1->pt1;
-      pt2=ms1->pt2;
+      pt1 = ms1->pt1;
+      pt2 = ms1->pt2;
       if ( pt1 == NULL || pt2 == NULL ) 
         continue;
       if ( (pt1->set) && !(pt2->set) ) {
@@ -678,8 +694,9 @@ Num::printPoint( NumPoint * pt )
 void 
 Num::printPoints()
 {
+  fprintf(stderr, "printPoints() pt00 %p \n", pt00 );
   NumPoint *pt1;
-  for (pt1=pt00->next; pt1!=NULL; pt1=pt1->next) {
+  for (pt1=pt00; pt1!=NULL; pt1=pt1->next) {
     printPoint(pt1);
   }
 }
@@ -689,11 +706,12 @@ Num::getPoint( const char * name ) const
 {
   ARG_CHECK( name == NULL, NULL );
 
-  NumPoint * pt;
-  for ( pt = pt00; pt != NULL; pt=pt->next) {
-    if ( strcmp( pt->tag, name ) == 0 ) return pt;
+  NumPoint * pt = pt00;
+  for ( ; pt != NULL; pt=pt->next) {
+    if ( strcmp( pt->tag, name ) == 0 ) break;
   }
-  return NULL;
+  // fprintf(stderr, "getPoint( %s ) %p \n", name, pt );
+  return pt;
 }
 /* ----------------------------------------------------------------- */
 void 
@@ -708,6 +726,8 @@ Num::addMeasure( const char * from, const char * to,
 
   NumMeasure * ms1;
   measure_number ++;
+  stats.n_shots ++;  // STATISTICS
+
   // printf("Add measure %d: %s %s \n", measure_number, from, to );
   NEW_MS(ms1);
   ms1->tag1 = from;

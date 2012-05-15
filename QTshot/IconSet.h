@@ -17,9 +17,12 @@
 #include <QCursor>
 #include <QPen>
 #include <QBrush>
+#include <QPainterPath>
 
 // #include "portability.h"
 #include "ThPointType.h" // THP_PLACEMARK
+#include "ThLineType.h"  // 
+#include "ThAreaType.h"
 
 class IconSet
 {
@@ -49,28 +52,43 @@ class IconSet
           readIcon, writeIcon, toggleIcon, 
           coverIcon, coverOffIcon,
           commentIcon, commentOffIcon, numberIcon,
-          okIcon, leftIcon, rightIcon, upIcon, downIcon,
+          okIcon, leftIcon, rightIcon, upIcon, downIcon, viewIcon,
           scrapIcon, selectIcon, pointIcon, lineIcon, areaIcon;
 
+#ifdef HAS_THP_ICONS
       QPixmap thpAirDraught, thpBlocks, thpClay, // thpContinuation,
-              thpDebris, thpEntrance,  thpIce, // thpLabel,
+              thpCrystal, thpDebris, thpEntrance, 
+              thpFlowstone, thpHelictite, thpIce, // thpLabel,
               thpPebbles, thpSand, thpSnow,
               thpStalactite, thpStalagmite,
               thpUser, thpWaterFlow,
               thpStation;
+#else
+      QPolygon polygon[ Therion::THP_PLACEMARK ];  //!< point-type shapes
+      QPainterPath path[ Therion::THP_PLACEMARK ]; //!< point-type shapes
+      QBrush brush[ Therion::THP_PLACEMARK ];      //!< point brushes
+      QPen thp_pen[ Therion::THP_PLACEMARK ];      //!< point pen
+#endif
+
       QPixmap whiteIcon, blueIcon, greenIcon, darkBlueIcon;
-      QBrush  T_brush, C_brush;
-      QBrush  brush_wavy;
-      QBrush  brush_star;
-      QBrush  brush_cross;
-      QBrush  brush_dot;
+
+      QBrush  T_brush,
+              C_brush;
+
+      QBrush  brush_wavy_black;  // THA_CLAY
+      QBrush  brush_debris;
+      QBrush  brush_dash_black;  // THA_FLOWSTONE
+      QBrush  brush_cross_black; // THA_ICE
+      QBrush  brush_pebbles;
+      QBrush  brush_dot_yellow;  // THA_SAND
+      QBrush  brush_star_black;  // THA_SNOW
+      QBrush  brush_dot_green;   // THA_USER
+      QBrush  brush_wavy_blue;   // THA_WATER 
 
       QPixmap penUpIcon, penDownIcon;
       QCursor penUpCursor, penDownCursor;
 
 #ifdef OLD_POLYGON
-      QPolygon polygon[ Therion::THP_PLACEMARK ];  //!< point-type shapes
-      QBrush brush[ Therion::THP_PLACEMARK ];      //!< point brushes
       QPolygon arrow[8];     //!< orientation arrows
       QPolygon fat_arrow[8]; //!< orientation fat arrows
 #endif
@@ -83,12 +101,14 @@ class IconSet
       QPen pen_gray;
       QPen dash_black;
       QPen dash_blue;
+      QPen dash_gray;
       QPen dash_violet;
+      QPen dash_yellow;
       QPen dark_red;
       QPen dark_gray;
 
-      QPen pen_pit;
-      QPen pen_chimney;
+      QPen pen_pit;      // magenta with ticks
+      QPen pen_chimney;  // dash magenta with ticks
 
       // QPixmap pit_pixmap;
       // QBrush pit_brush;
@@ -111,15 +131,19 @@ class IconSet
     /* const */ int Size() const { return 21; }
 
 #ifdef OLF_POLYGON
-    const QPolygon & Symbol(int i) const { return polygon[i]; }
     const QPolygon & Arrow(int i) const { return arrow[i%8]; }
     const QPolygon & FatArrow(int i) const { return fat_arrow[i%8]; }
-    const QBrush & Brush(int i) const { return brush[i]; }
 #endif
-    const QBrush & BrushWavy() const { return brush_wavy; }
-    const QBrush & BrushStar() const { return brush_star; }
-    const QBrush & BrushCross() const { return brush_cross; }
-    const QBrush & BrushDot() const { return brush_dot; }
+
+    const QBrush & BrushWavyBlue() const { return brush_wavy_blue; }
+    const QBrush & BrushWavyBlack() const { return brush_wavy_black; }
+    const QBrush & BrushStarBlack() const { return brush_star_black; }
+    const QBrush & BrushCrossBlack() const { return brush_cross_black; }
+    const QBrush & BrushDotGreen() const { return brush_dot_green; }
+    const QBrush & BrushDotYellow() const { return brush_dot_yellow; }
+    const QBrush & BrushDashBlack() const { return brush_dash_black; }
+    const QBrush & BrushDebris() const { return brush_debris; }
+    const QBrush & BrushPebbles() const { return brush_pebbles; }
 
     const QPen & PenRed() const { return pen_red; }
     const QPen & PenBlack() const { return pen_black; }
@@ -127,13 +151,17 @@ class IconSet
     const QPen & PenViolet() const { return pen_violet; }
     const QPen & PenYellow() const { return pen_yellow; }
     const QPen & PenGray() const { return pen_gray; }
-    const QPen & DashBlack() const { return dash_black; }
-    const QPen & DashBlue() const { return dash_blue; }
-    const QPen & DashViolet() const { return dash_violet; }
     const QPen & PenGreen() const { return pen_green; }
-    // const QPen & PenPit() const { return dash_black /* pit_pen */; }
-    const QPen & DarkRed() const { return dark_red; }
-    const QPen & DarkGray() const { return dark_gray; }
+
+    const QPen & PenDashBlack() const { return dash_black; }
+    const QPen & PenDashBlue() const { return dash_blue; }
+    const QPen & PenDashGray() const { return dash_gray; }
+    const QPen & PenDashViolet() const { return dash_violet; }
+    const QPen & PenDashYellow() const { return dash_yellow; }
+
+    const QPen & PenDarkRed() const { return dark_red; }
+    const QPen & PenDarkGray() const { return dark_gray; }
+
     const QPen & PenPit() const { return pen_pit; }
     const QPen & PenChimney() const { return pen_chimney; }
 
@@ -197,6 +225,7 @@ class IconSet
     const QPixmap & Up() const { return upIcon; }
     const QPixmap & Down() const { return downIcon; }
     const QPixmap & Ok() const { return okIcon; }
+    const QPixmap & View() const { return viewIcon; }
 
     const QPixmap & Scrap() const { return scrapIcon; }
     const QPixmap & Select() const { return selectIcon; }
@@ -209,12 +238,16 @@ class IconSet
     const QPixmap & Green() const { return greenIcon; }
     const QPixmap & DarkBlue() const { return darkBlueIcon; }
 
+#ifdef HAS_THP_ICONS
     const QPixmap & ThpAirDraught() const { return thpAirDraught; }
     const QPixmap & ThpBlocks() const { return thpBlocks; }
     const QPixmap & ThpClay() const { return thpClay; }
     // const QPixmap & ThpContinuation() const
+    const QPixmap & ThpCrystal() const { return thpCrystal; }
     const QPixmap & ThpDebris() const { return thpDebris; }
     const QPixmap & ThpEntrance() const { return thpEntrance; }
+    const QPixmap & ThpFlowstone() const { return thpFlowstone; }
+    const QPixmap & ThpHelictite() const { return thpHelictite; }
     const QPixmap & ThpIce() const { return thpIce; }
     // const QPixmap & ThpLabel() const 
     const QPixmap & ThpPebbles() const { return thpPebbles; }
@@ -224,7 +257,17 @@ class IconSet
     const QPixmap & ThpStalagmite() const { return thpStalagmite; }
     const QPixmap & ThpUser() const { return thpUser; }
     const QPixmap & ThpWaterFlow() const { return thpWaterFlow; }
+    const QPixmap & ThpStation() const { return thpStation; }
     // const QPixmap & Thp() const { return thp; }
+    const QPixmap & ThpPixmap( Therion::PointType type ) const;
+#else
+    const QPolygon &     ThpSymbol1(int i) const { return polygon[i]; }
+    const QPainterPath & ThpSymbol2(int i) const { return path[i]; }
+    const QBrush & ThpBrush(int i) const { return brush[i]; }
+    const QPen & ThpPen( int i ) const { return thp_pen[i]; }
+    void ThpStyle1( Therion::PointType t, QPolygon & poly, QBrush & brush ) const;
+    void ThpStyle2( Therion::PointType t, QPainterPath & path, QBrush & brush, QPen & pen ) const;
+#endif
 
     const QCursor & PenUp() const { return penUpCursor; }
     const QCursor & PenDown() const { return penDownCursor; }
@@ -239,6 +282,13 @@ class IconSet
       }
       return the_icon_set;
     }
+  
+    void AreaStyle( Therion::AreaType t, QColor & color, QPen & pen, QBrush & brush );
+  
+  
+    QColor LinePointColor( Therion::LineType type );
+
+    void LineStyle( Therion::LineType t, QPen & pen, QColor & color );
 };
 
 

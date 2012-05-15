@@ -10,6 +10,7 @@ V V
 angle_units Unita` angoli
 append_shots Aggiungi 
 area Area
+author autore
 azimuth Azimuth
 azimuth+ Azimuth +
 azimuth- Azimuth -
@@ -31,12 +32,15 @@ clino Clino
 close Chiudi
 coeff_backup Salvata precedente calibrazione su file
 comment Commento
+compass Compass
+copyright copyright
 cover Distribuzione
 coverage Distribuzione
 cross_section Sezione
 data_download_failed Fallito scaricamento dati da DistoX
 data_transformed Dati trasformati
 date Data
+day giorno
 declination Declinazione
 default_dat Usato file /tmp/data.plt
 default_svx Usato file /tmp/data.svx
@@ -81,7 +85,7 @@ file_open_failed Fallita apertura file.
 flag Flg
 flag_box Note:
 from Da
-from_station  DA
+from_station  dopo il tiro
 ft ft
 grad gradi
 grid Reticolo
@@ -91,6 +95,9 @@ help Aiuto
 help_index Vedi file help\en\index.htm
 horizontal Orizzontale
 ignore Ignora
+illegal_date data illegale
+illegal_year anno illegale
+image immagine
 image_open_failed Fallita apertura file immagine
 incl+ Incl. +
 incl- Incl. -
@@ -102,6 +109,7 @@ iterations Iterazioni
 left Sinistra
 length_units Unita` lunghezze
 line Linea
+linepoint_options opzioni linepoint
 m m
 merge_next Unisci al seguente
 mode Modo
@@ -109,6 +117,7 @@ mode_calib Calibrazione
 mode_compass Azimuth/Clino 
 mode_grad Gradi sess. o cent.
 mode_silent "Silent"
+month mese
 name Nome
 new Nuovo
 no No
@@ -128,7 +137,11 @@ open_survey Apri un file con rilievo
 options Opzioni
 orientation Orientazione
 plan Pianta
+plot_exit esci dal disegno
+plot_name Nome file
+pockettopo PocketTopo
 point Punto
+point_options opzioni point
 prefix Prefisso caposaldi
 prefix_too_long Nome con troppi caratteri (max. 12)
 properties Commento e opzioni
@@ -167,6 +180,7 @@ qtopo_x_area - Area
 qtopo_x_line - Linea 
 qtopo_x_point - Punto 
 qtopo_x_select - 
+qtopoc_append QTopo - Aggiungi
 qtopoc_calib QTopo - Calib
 qtopoc_coeff QTopo - Calibrazione
 qtopoc_comment QTopo - Descrizione
@@ -184,12 +198,15 @@ right Destra
 roll Roll
 save Salva come
 save_file Salva file
+save_png Salva file png
 save_th2 Salva file th2
 saved_dat Salvato file Compass
 saved_svx Salvato file Survex
 saved_th Salvato file Therion
 saved_top Salvato file PocketTopo
+scrap scrap
 scrap_name Nome del disegno
+scrap_new Nuovo scrap
 select Selezione
 set Gruppo
 shot_comment QTopo - Tiro
@@ -207,16 +224,19 @@ status_mode Impostazione DistoX
 surface tiro di superficie
 survey_commands Comandi di rilievo
 survey_info QTopo - Informazioni rilievo
+survex Survex
 swap_from_to Scambia capisaldi
 tape Distanza
 team Squadra
 thconfig Crea thconfig
+therion Therion
 title Titolo
 tlx_read_failed Fallita lettura file TLX
 to A
-to_station  A
+to_station  prima del tiro
 toggle Cambia
 too_few_data Insufficenti dati di calibrazione. Minimo 16
+topolinux TopoLinux
 undo Disfa
 up Su`
 vertical Verticale

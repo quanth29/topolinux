@@ -157,13 +157,16 @@ Plot::computePlot( DataList * list, int mode, bool do_num )
   size_t size = list->listSize();
   DBG_CHECK("Plot::computePlot() mode %d size %d do_num %d\n", mode, size, do_num );
   // list->dump();
-  if ( size < 2 )
+  if ( size < 1 ) {
     return false;
-
+  }
 
   if ( do_num ) {
     // DBG_CHECK("Plot::computePlot() do num \n");
-    if ( list->doNum() == 0 ) return false;
+    if ( list->doNum() == 0 ) {
+      DBG_CHECK("Warning. Plot::computePlot() num_measures == 0 \n");
+      // return false;
+    }
   }
 
   int idx = 0;
@@ -204,6 +207,7 @@ Plot::computePlot( DataList * list, int mode, bool do_num )
         points->z = pt1->V * BASE_SCALE;
         points->h = 0; // pt1->H * BASE_SCALE;
         points->next = NULL;
+        // fprintf(stderr, "Base point (0,0,0) %.2f %2f \n", points->n, points->e);
       }
       // double dz = pt2->V - pt1->V;
       double dn = pt2->N - pt1->N;
@@ -253,6 +257,8 @@ Plot::computePlot( DataList * list, int mode, bool do_num )
         pt20->e = pt2->E * BASE_SCALE;
         drawPoint2Point( pt10, pt20, bl, extend_flag, mode );
         redo_paint = true;
+        // fprintf(stderr, "PlotPoint (%d,%d) %.2f %.2f \n", 
+        //   pt20->x0, pt20->y0, pt20->n, pt20->e );
 
         #ifdef HAS_LRUD
           if ( with_lrud ) {
@@ -278,6 +284,8 @@ Plot::computePlot( DataList * list, int mode, bool do_num )
         pt10->e = pt1->E * BASE_SCALE;
         drawPoint2Point( pt20, pt10, bl, extend_flag, mode );
         redo_paint = true;
+        // fprintf(stderr, "PlotPoint (%d,%d) %.2f %.2f \n", 
+        //   pt10->x0, pt10->y0, pt10->n, pt10->e );
 
         #ifdef HAS_LRUD
           if ( with_lrud ) {
@@ -310,6 +318,36 @@ Plot::computePlot( DataList * list, int mode, bool do_num )
       }
     } // for (bl ...
   }
+
+  /** This block of code for only star-like splay shots surveys
+   */
+  if (points == NULL ) { // FIXME and num.pointsNr() == 1 
+    const NumPoint * pt = NULL;
+    for ( DBlock * bl = list->listHead(); bl; bl=bl->next() ) {
+      if ( bl->hasFromStation() ) {
+        pt = num.getPoint( bl->fromStation() );
+        if ( pt != NULL ) break;
+      }
+      if ( bl->hasToStation() ) {
+        pt = num.getPoint( bl->toStation() );
+        if ( pt != NULL ) break;
+      }
+    }
+    if (pt != NULL) {
+      points = new PlotPoint();
+      nr_centerline_points ++;
+      points->name = pt->tag;
+      points->x0 = 0; // midpoint of the canvas
+      points->y0 = 0;
+      points->z0 = 0;
+      points->n = pt->N * BASE_SCALE;
+      points->e = pt->E * BASE_SCALE;
+      points->z = pt->V * BASE_SCALE;
+      points->h = 0; // pt1->H * BASE_SCALE;
+      points->next = NULL;
+    }
+  }
+
 #if 1
   idx = 0;
   // TODO compute extend array for each PlotPoint
@@ -329,6 +367,7 @@ Plot::computePlot( DataList * list, int mode, bool do_num )
         break;
       }
     }
+    // fprintf(stderr, "PlotPoint %s: %p \n", bl->fromStation(), pt );
     if ( pt != NULL ) {
       double dz = bl->Tape() * sin( clino ) * BASE_SCALE;
       double dh = bl->Tape() * cos( clino ) * BASE_SCALE;
@@ -341,6 +380,7 @@ Plot::computePlot( DataList * list, int mode, bool do_num )
 #endif
 
   DBG_CHECK("bounding box X %d %d Y %d %d\n", x0min, x0max, y0min, y0max );
+  fprintf(stderr, "bounding box X %d %d Y %d %d\n", x0min, x0max, y0min, y0max );
   DBG_CHECK("depth %d - %d\n", z0min, z0max );
 
   if ( mode == MODE_3D ) {

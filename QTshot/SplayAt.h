@@ -11,8 +11,8 @@
 #ifndef SPLAY_AT_H
 #define SPLAY_AT_H
 
-#define SPLAY_AT_FROM 1
-#define SPLAY_AT_TO   2
+#define SPLAY_AFTER_SHOT  1
+#define SPLAY_BEFORE_SHOT 2
 
 #endif
 

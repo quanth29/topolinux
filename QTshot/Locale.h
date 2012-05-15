@@ -10,6 +10,7 @@
  */
 #ifndef LOCALE_H
 #define LOCALE_H
+#include <stdio.h>
 
 #include <QLocale>
 

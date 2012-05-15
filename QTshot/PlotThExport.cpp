@@ -33,6 +33,7 @@
 #include "ThPointType.h"
 #include "ThLineType.h"
 #include "ThAreaType.h"
+#include "IconSet.h"
 
 
 /** therion scrap names prefixes
@@ -78,6 +79,9 @@ PlotThExport::exportTherion( const char * proj, PlotStatus * status, DataList * 
     DBG_CHECK("exportTherion() cannot open file %s\n", th2FileName );
     return;
   }
+  // only files with this header cxan be imported (need offsets)
+  fprintf(fp, "#QTopo %s offset %d %d \n\n", th2FileName, status->getOffsetX(), status->getOffsetY() );
+
   fprintf(fp, "encoding  utf-8\n\n");
 
   std::vector< TherionScrap * >::const_iterator sit = status->scrapBegin();
@@ -99,11 +103,12 @@ PlotThExport::exportTherion( const char * proj, PlotStatus * status, DataList * 
       if ( ! ar->IsFinished() ) continue;
       Therion::AreaType type = ar->Type();
       const char * visible = "";
-      if ( type == Therion::THA_USER ) {
+      if ( ! ar->isBorderVisible() ) {
         visible = "-visibility off";
       }
       fprintf(fp, "\nline border -id %s-area-%02d -close on %s\n", scrap_name, cnt, visible );
       for ( ThArea2D::const_point_iterator pit = ar->Begin(); pit != ar->End(); ++pit ) {
+        // FIXME control points
         ThLinePoint * pt = *pit;
         fprintf(fp, "  %.2f %.2f\n", pt->x*factor, -(pt->y*factor) );
       }
@@ -117,20 +122,96 @@ PlotThExport::exportTherion( const char * proj, PlotStatus * status, DataList * 
     }
     for ( std::vector< ThLine2D * >::const_iterator it = scrap->linesBegin(), end = scrap->linesEnd();
           it != end; ++it ) {
-      // size_t size = (*it)->Size();
+      ThLine2D * line = *it;
+      // fprintf( stderr, "export line: sz %d %d cl %d rev %d clip %d vis %d \n",
+      //    line->pointSize(), line->segmentSize(),
+      //    line->isClosed(), line->isReversed(), line->isClipped(),
+      //    line->isVisible() );
       // NOTE skip 0,1 point lines: otherwise therion-5.3 hangs up
-      if ( (*it)->pointSize() <= 1 ) continue; 
-      if ( (*it)->isClosed() ) {
-        fprintf(fp, "\nline %s -close on\n", Therion::LineName[ (*it)->type() ]);
-      } else {
-        fprintf(fp, "\nline %s\n", Therion::LineName[ (*it)->type() ]);
+      if ( line->pointSize() <= 1 ) continue; 
+      fprintf(fp, "\nline %s", Therion::LineName[ line->type() ]);
+      if ( line->hasSubtype() ) {
+        fprintf(fp, ":%s", line->getSubtype() );
       }
+      if ( line->isClosed() ) {
+        fprintf(fp, " -close on" );
+      } 
+      if ( line->isReversed() ) {
+        fprintf(fp, " -reverse on" );
+      }
+      if ( line->isClipped() ) {
+        fprintf(fp, " -clip on" );
+      }
+      if ( ! line->isVisible() ) {
+        fprintf(fp, " -visibility off" );
+      }
+      switch ( line->type() ) {
+        case Therion::THL_ARROW:
+        case Therion::THL_SLOPE:
+        case Therion::THL_CONTOUR:
+          if ( line->hasSpecialString() ) {
+            fprintf(fp, " -%s %s",
+              Therion::LineSpecialOptionName[ line->type() ],
+              line->getSpecialString() );
+          }
+          break;
+        case Therion::THL_PIT:
+        case Therion::THL_WALL:
+          if ( line->getSpecialValue() > 0 ) {
+            fprintf(fp, " -%s %d",
+              Therion::LineSpecialOptionName[ line->type() ],
+              line->getSpecialValue() );
+          }
+          break;
+        default:
+          break;
+      }
+      fprintf(fp, "\n");
   
-      for ( ThLine2D::const_point_iterator pit = (*it)->pointBegin();
-            pit != (*it)->pointEnd(); // && size > 0;
-            ++pit /* , --size */ ) {
-        ThLinePoint * pt = *pit;
-        fprintf(fp, "  %.2f %.2f\n", pt->x*factor, -(pt->y*factor) );
+      ThLine2D::const_point_iterator pit = line->pointBegin();
+      if ( pit != line->pointEnd() ) { // && size > 0
+        ThLinePoint * pt0 = *pit;
+        fprintf(fp, "  %.2f %.2f\n", pt0->x*factor, -(pt0->y*factor) );
+        for ( ++pit; pit != line->pointEnd(); ++pit ) {
+          ThLinePoint * pt = *pit;
+          // FIXME control-points
+          if ( pt0->has2 && pt->has1 ) {
+            fprintf(fp, "  %.2f %.2f %.2f %.2f %.2f %.2f\n",
+              pt0->x2*factor, -(pt0->y2*factor),
+              pt->x1*factor, -(pt->y1*factor),
+              pt->x*factor, -(pt->y*factor) );
+          } else if ( pt0->has2 ) {
+            double dx = pt->x - pt0->x;
+            double dy = pt->y - pt0->y;
+            double dx2 = pt0->x2 - pt0->x;
+            double dy2 = pt0->y2 - pt0->y;
+            double c = (dx*dx2 + dy*dy2)/(dx*dx + dy*dy);
+            double x1 = pt->x + dx2 - 2 * dx * c;
+            double y1 = pt->y + dy2 - 2 * dy * c;
+            fprintf(fp, "  %.2f %.2f %.2f %.2f %.2f %.2f\n",
+              pt0->x2*factor, -(pt0->y2*factor),
+              x1*factor, -(y1*factor),
+              pt->x*factor, -(pt->y*factor) );
+          } else if ( pt->has1 ) {
+            double dx = pt0->x - pt->x;
+            double dy = pt0->y - pt->y;
+            double dx1 = pt->x1 - pt->x;
+            double dy1 = pt->y1 - pt->y;
+            double c = (dx*dx1 + dy*dy1)/(dx*dx + dy*dy);
+            double x2 = pt0->x + dx1 - 2 * dx * c;
+            double y2 = pt0->y + dy1 - 2 * dy * c;
+            fprintf(fp, "  %.2f %.2f %.2f %.2f %.2f %.2f\n",
+              x2*factor, -(y2*factor),
+              pt->x1*factor, -(pt->y1*factor),
+              pt->x*factor, -(pt->y*factor) );
+          } else {
+            fprintf(fp, "  %.2f %.2f\n", pt->x*factor, -(pt->y*factor) );
+          }
+          if ( pt->hasLPoption() ) {
+            fprintf(fp, "%s\n", pt->LPoption() );
+          }
+          pt0 = pt;
+        }
       }
       fprintf(fp, "endline\n\n");
     }
@@ -187,91 +268,15 @@ PlotThExport::exportTherion( const char * proj, PlotStatus * status, DataList * 
   DBG_CHECK("exportTherion()doSaveTh2 written file %s\n", th2FileName );
 }
 
-#ifdef IMPORT_TH2
-/*
- * On input from th2 file
- */
-bool
-importTh2( const char * filename )
-{
-  TherionScrap * scrap = NULL;
-  TherionPoint * point;
-  TherionLine  * line;
-  TherionLinePoint * lp;
-  // TherionArea  * area;
-  FILE * fp = fopen( filename, "r" );
-  if ( fp == NULL ) return false;
-  size_t n = 256;
-  char * line = (char *)malloc( n );
-  while ( getline( &line, &n, fp ) >= 0 ) {
-    Therion::parser( line, fp );
-    const char * item = parser.get();
-    if ( strcmp( item, "scrap" ) == 0 ) {
-      scrap = new TherionScrap();
-      // TODO insert scrap
-    } else if ( strcmp( item, "point" ) == 0 ) {
-      point = new ThPoint2D( ... );
-      // TODO add point to scrap
-    } else if ( strcmp( item, "line" ) == 0 ) {
-      line = new ThLine2D( ... );
-      // TODO add line to scrap
-    } else if ( strcmp( item, "endline" ) == 0 ) {
-      line = NULL;
-    } else if ( strcmp( item, "endarea" ) == 0 ) {
-      area = NULL;
-    } else if ( strcmp( item, "endscrap" ) == 0 ) {
-      scrap = NULL;
-    } else if ( line != NULL ) {
-      lp = new ThLinePoint( ... );
-      // TODO insert point in line
-    } else if ( area != NULL ) {
-      lp = new ThLinePoint( ... );
-      // TODO insert point in area-line
-    }
-  }
-  free( line );
- * having read
- *  - point type
- *  - x, y
- *  - options
- *
-   int i=0;
-   for ( ; i<Therion::THP_PLACEMARK; ++i) {
-     if ( type == Therion::PointType[i] ) break;
-   }
-   if ( i == Therion::THP_PLACEMARK ) i = Therion::THP_USER;
-   ThPoint2D * pt = new ThPoint2D( x / TH_FACTOR, y / TH_FACTOR, (Therion::PointType)(i) );
-   if ( align ) {
-     pt -> setAlign( ... );
-   }
-   if ( scale ) {
-     pt -> setScale( ... );
-   }
-   ...
-
- * having read: 
- *   - line type
-     ThLine2D * line = new TherionLine( (Therion::LineType)(i) );
-     if ( closed ) {
-       line->setClosed( true );
- * insert line point
-     ThLinePoint * lp1 = new ThLinePoint( x * PLOT_SCALE/TH_FACTOR, ... );
-     line->points.push_back( lp1 );
- * while not "endline"
- *   insert line point
-       ThLinePoint * lp2 = new ThLinePoint( x * PLOT_SCALE/TH_FACTOR, ... );
-       line->points.push_back( lp1 );
-       ThLineSegment * sgm = new ThLineSegment( lp1, lp2 );
-       line->segments.push_bach( sgm );
-       lp1 = lp2;
-#endif
-
+// ------------------------------------------------------------------
+// EXPORT PNG
 
 void 
 PlotThExport::exportImage( PlotStatus * status, DataList * list )
 {
   ARG_CHECK( status == NULL, );
   ARG_CHECK( list == NULL, );
+  IconSet * icon = IconSet::Get();
 
   const char * imgFileName = status->getImageName();
 
@@ -309,15 +314,32 @@ PlotThExport::exportImage( PlotStatus * status, DataList * list )
       if ( ! ar->IsFinished() ) continue;
       Therion::AreaType type = ar->Type();
       switch ( type ) {
-        case Therion::THA_WATER:
-          painter.setBackground( QBrush( Qt::cyan ) );
+        case Therion::THA_CLAY:
+          painter.setBackground( QBrush( Qt::darkYellow ) );
           break;
-        case Therion::THA_SNOW:
+        case Therion::THA_DEBRIS:
+          painter.setBackground( QBrush( Qt::darkGray ) );
+          break;
+        case Therion::THA_FLOWSTONE:
+          painter.setBackground( QBrush( Qt::darkYellow ) );
+          break;
         case Therion::THA_ICE:
           painter.setBackground( QBrush( Qt::lightGray ) );
           break;
+        case Therion::THA_PEBBLES:
+          painter.setBackground( QBrush( Qt::gray ) );
+          break;
+        case Therion::THA_SAND:
+          painter.setBackground( QBrush( Qt::yellow ) );
+          break;
+        case Therion::THA_SNOW:
+          painter.setBackground( QBrush( Qt::gray ) );
+          break;
         case Therion::THA_USER:
           painter.setBackground( QBrush( Qt::yellow ) );
+          break;
+        case Therion::THA_WATER:
+          painter.setBackground( QBrush( Qt::cyan ) );
           break;
         case Therion::THA_PLACEMARK:
           break;
@@ -333,7 +355,7 @@ PlotThExport::exportImage( PlotStatus * status, DataList * list )
         pts[k] = QPointF( x, y );
         // fprintf(stderr, "draw area at %.2f %.2f\n", x, y );
       }
-      painter.drawPolygon( pts, size );
+      painter.drawPolygon( pts, size ); // draw area border
     }
 
     for ( std::vector< ThLine2D * >::const_iterator it = scrap->linesBegin(), end = scrap->linesEnd();
@@ -362,6 +384,12 @@ PlotThExport::exportImage( PlotStatus * status, DataList * list )
         case Therion::THL_ROCK:
           painter.setPen( Qt::gray );
           break;
+        case Therion::THL_SLOPE:
+          painter.setPen( Qt::black );
+          break;
+        case Therion::THL_CONTOUR:
+          painter.setPen( Qt::black );
+          break;
         case Therion::THL_PLACEMARK:
           break;
       }
@@ -386,74 +414,69 @@ PlotThExport::exportImage( PlotStatus * status, DataList * list )
       ThPoint2D * pt = *pit;
       Therion::PointType type = pt->type();
       // FIXME why need PLOT_SCALE (4) ?
-      double x = status->evalToX( PLOT_SCALE * pt->x ) / TH_FACTOR;
-      double y = status->evalToY( PLOT_SCALE * pt->y ) / TH_FACTOR;
+      double x = status->evalToX( PLOT_SCALE * pt->x ) / TH_FACTOR ;
+      double y = status->evalToY( PLOT_SCALE * pt->y ) / TH_FACTOR ;
       // printf(stderr, "draw point at %.2f %.2f\n", x, y );
-      painter.setPen( Qt::black );
       switch ( type ) {
         case Therion::THP_AIR_DRAUGHT:
-          painter.setPen( Qt::cyan );
-          break;
+        case Therion::THP_ENTRANCE:
+        case Therion::THP_WATER_FLOW:
+          // FIXME rotate( pt->orientation() * ORIENTATION_UNITS );
+        case Therion::THP_ANCHOR:
         case Therion::THP_BLOCKS:
-          painter.setPen( Qt::black );
-          break;
+        case Therion::THP_BREAKDOWN_CHOKE:
         case Therion::THP_CLAY:
-          painter.setPen( Qt::yellow );
-          break;
+        case Therion::THP_CLAY_CHOKE:
+        case Therion::THP_CRYSTAL:
+        case Therion::THP_CURTAIN:
         case Therion::THP_DEBRIS:
-          painter.setPen( Qt::darkYellow );
-          break;
-        case Therion::THP_PEBBLES:
-          painter.setPen( Qt::gray );
-          break;
-        case Therion::THP_LABEL:
-          painter.setPen( Qt::gray );
-          break;
-        case Therion::THP_SAND:
-          painter.setPen( Qt::gray );
-          break;
-        case Therion::THP_SNOW:
-          painter.setPen( Qt::lightGray );
-          break;
+        case Therion::THP_DIG:
+        case Therion::THP_FLOWSTONE:
+        case Therion::THP_FLOWSTONE_CHOKE:
+        case Therion::THP_HELICTITE:
         case Therion::THP_ICE:
-          painter.setPen( Qt::lightGray );
-          break;
+        case Therion::THP_NARROW_END:
+        case Therion::THP_PEBBLES:
+        case Therion::THP_PILLAR:
+        case Therion::THP_POPCORN:
+        case Therion::THP_SAND:
+        case Therion::THP_SNOW:
         case Therion::THP_STALACTITE:
         case Therion::THP_STALAGMITE:
-          painter.setPen( Qt::black );
-          break;
         case Therion::THP_USER:
-          painter.setPen( Qt::green );
+        case Therion::THP_STATION:
+          #ifdef HAS_THP_ICONS
+            // 12, 12 is half the pixmaps size
+            painter.drawPixmap( x-12, y-12, icon->ThpPixmap( type ) );
+          #else
+            {
+              // QPolygon poly( icon->ThpSymbol1( type ) );
+              // poly.translate( x, y );
+              // painter.drawPolygon( poly );
+              QPainterPath path( icon->ThpSymbol2( type ) );
+              painter.translate( x, y );
+              if ( type == Therion::THP_AIR_DRAUGHT 
+                || type == Therion::THP_ENTRANCE
+                || type == Therion::THP_WATER_FLOW ) {
+                painter.rotate( pt->orientation() * ORIENTATION_UNITS );
+                painter.drawPath( path );
+                painter.rotate( -pt->orientation() * ORIENTATION_UNITS );
+              } else {
+                painter.drawPath( path );
+              }
+              painter.translate( -x, -y );
+            }
+          #endif
           break;
-        case Therion::THP_WATER_FLOW:
-          painter.setPen( Qt::blue );
-          break;
-        case Therion::THP_ENTRANCE:
-          painter.setPen( Qt::black );
+        case Therion::THP_LABEL:
+          // FIXME rotate( pt->orientation() * ORIENTATION_UNITS );
+          painter.drawText( x, y, pt->text() );
           break;
         case Therion::THP_CONTINUATION:
-          painter.setPen( Qt::black );
-          break;
-        case Therion::THP_STATION:
-          painter.setPen( Qt::black );
+          painter.drawText( x, y, "?" );
           break;
         case Therion::THP_PLACEMARK:
           break;
-      }
-      if ( type == Therion::THP_WATER_FLOW 
-        || type == Therion::THP_AIR_DRAUGHT
-        // || type == Therion::THP_LABEL
-        || type == Therion::THP_ENTRANCE ) {
-        double a = pt->orientation() * ORIENTATION_UNITS; 
-        double x1 = x + sin( a ) * 5;
-        double y1 = y - cos( a ) * 5;
-        painter.drawLine( x,y, x1, y1 );
-        painter.drawEllipse( x, y, 2, 2 );
-      } else if ( type == Therion::THP_STATION ) {
-        painter.drawLine( x-4, y-4, x+4, y+4 );
-        painter.drawLine( x-4, y+4, x+4, y-4 );
-      } else {
-        painter.drawEllipse( x, y, 3, 3 );
       }
     }
   }

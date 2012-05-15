@@ -80,6 +80,7 @@ class QTcalibWidget : public QMainWindow
     bool guessing;         //!< whether to perform the group guess when downloading the data
     bool guess_on_old;     //!< use old DistoX values to guess the calib groups
     int guess_angle;       //!< group guess discrepancy angle
+    bool is_append;        //!< whether to append new data to previous
     std::string calibration_description; //!< calibration_description string
     bool data_transformed; //!< whether to use transformed compess/clino/roll
     double calib_delta;
@@ -129,6 +130,9 @@ class QTcalibWidget : public QMainWindow
     }
 
     int getGuessAngle() const { return guess_angle; }
+
+    bool isAppend() const { return is_append; }
+    void setAppend( bool a ) { is_append = a; }
 
     /** turn buttons on/off
       * @param on_off   whether tu turn buttons on or off
@@ -186,8 +190,9 @@ class QTcalibWidget : public QMainWindow
     /** download the data from the DistoX
      * @param do_guess    whether to guess the groups of data
      * @param use_old     whether to use old DistoX coeff to guess the groups
+     * @param do_append   whether to append the new data to the previous in memory
      */
-    void downloadData( bool do_guess, bool use_old );
+    void downloadData( bool do_guess, bool use_old, bool do_append );
 
   public slots:
     void doHelp();
@@ -268,19 +273,16 @@ class DownloadDialog : public QDialog
 {
   Q_OBJECT
   private:
-    QTcalibWidget * widget;     //!< parent widget
-    QCheckBox * do_guess;  //!< guess checkbox
-    QCheckBox * do_on_old; //!< guess on old values
+    QTcalibWidget * widget;  //!< parent widget
+    QCheckBox * do_guess;    //!< guess checkbox
+    QCheckBox * do_on_old;   //!< guess on old values
+    QCheckBox * do_append;   //!< whether to append to current calib data
 
   public:
     DownloadDialog( QTcalibWidget * widget );
 
   public slots:
-    void doOK()
-    {
-      hide();
-      widget->downloadData( do_guess->isChecked(), do_on_old->isChecked() );
-    }
+    void doOK();
 
     void doCancel() { hide(); }
 };

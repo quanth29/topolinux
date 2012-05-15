@@ -66,13 +66,6 @@ const char * mode_string[] = {
 };
 
 
-/*
-PlotStatus plan_status;
-PlotStatus ext_status;
-PlotStatus cross_status;
-PlotStatus _3D_status;
-*/
-
 // ============================================================
 // PLOT CANVAS VIEW
 
@@ -89,6 +82,11 @@ PlotCanvasView::PlotCanvasView( PlotCanvasScene * c, PlotCanvas * pc )
 // ==========================================================
 // PLOT CANVAS
 
+void 
+PlotCanvas::centerOn( double x, double y ) 
+{ 
+  view->centerOn(x,y);
+}
 
 void
 PlotCanvas::setCaption() 
@@ -126,7 +124,6 @@ PlotCanvas::PlotCanvas( QTshotWidget * my_parent, int the_mode,
   , units( my_parent->getUnits() )
 {
   DBG_CHECK("PlotCanvas::cstr() mode %d name %s %s\n", mode, pname, sname );
-  printf("PlotCanvas::cstr() mode %d name %s %s\n", mode, pname, sname );
 
   setCaption();
 
@@ -146,7 +143,7 @@ PlotCanvas::PlotCanvas( QTshotWidget * my_parent, int the_mode,
   if ( block == NULL ) {
     // parent->GetList()->evalSplayExtended();
     if ( ! plot->computePlot( parent->getList(), mode ) ) {
-      delete this;
+      // delete this;
       return;
     }
   } else {
@@ -189,7 +186,7 @@ PlotCanvas::PlotCanvas( QTshotWidget * my_parent, int the_mode,
 void 
 PlotCanvas::setMode( int input_mode, const char * item_name ) 
 {
-  fprintf(stderr, "PlotCanvas::setMode() %d %s\n", input_mode, item_name );
+  DBG_CHECK( "PlotCanvas::setMode() %d %s\n", input_mode, item_name );
   switch (input_mode) {
     case INPUT_POINT:
       if ( mode == MODE_PLAN ) {
@@ -200,7 +197,6 @@ PlotCanvas::setMode( int input_mode, const char * item_name )
         setWindowTitle( QString(lexicon("qtopo_x_point")) + QString(item_name) );
       }
       setCursor( QCursor(Qt::CrossCursor) );
-      // actMode->setIcon( icon->Mode3() );
       break;
     case INPUT_LINE:
       if ( mode == MODE_PLAN ) {
@@ -212,7 +208,6 @@ PlotCanvas::setMode( int input_mode, const char * item_name )
       }
       // setCursor( getCursorPen() );
       setCursor( icon->PenUp() );
-      // actMode->setIcon( icon->Mode2() );
       break;
     case INPUT_AREA:
       if ( mode == MODE_PLAN ) {
@@ -224,7 +219,6 @@ PlotCanvas::setMode( int input_mode, const char * item_name )
       }
       // setCursor( getCursorPen() );
       setCursor( icon->PenUp() );
-      // actMode->setIcon( icon->Mode4() );
       break;
     default:
       if ( mode == MODE_PLAN ) {
@@ -237,7 +231,6 @@ PlotCanvas::setMode( int input_mode, const char * item_name )
         setWindowTitle(lexicon("qtopo_select"));
       }
       setCursor( QCursor(Qt::ArrowCursor) );
-      // actMode->setIcon( icon->Mode1() );
   }
 }
 
@@ -298,7 +291,7 @@ PlotCanvas::redrawPlot()
   if ( plot->computePlot(parent->getList(), mode, true ) ) {
     scene->setOffset( );
     // FIXME scene->clearPlot();
-    fprintf(stderr, "***** PlotCanvas::redrawPlot() ***** \n");
+    // fprintf(stderr, "***** PlotCanvas::redrawPlot() ***** \n");
     scene->makeSurvey();
     // scene->showPlot( );
   }
@@ -429,15 +422,18 @@ PlotCanvas::onAreaMenu( QAction * a )
 }
 
 void 
+PlotCanvas::onClose()
+{
+  DBG_CHECK("PlotCanvas::onClose()\n");
+  this->hide();
+}
+
+void
 PlotCanvas::onQuit()
 {
-  DBG_CHECK("PlotCanvas::onQuit()\n");
-
-  this->hide();
-  #ifndef EMBEDDED
-    // delete this;
-  #endif
+  QuitWidget dialog( this );
 }
+
 
 #ifdef HAS_BACKIMAGE
 void
@@ -630,7 +626,7 @@ PlotCanvas::onUndo()
       case UNDO_CLOSELINE:
         if ( scrap->linesSize() > 0 ) {
           scene->uncloseLine( scrap->linesBack() );
-          fprintf(stderr, "UNDO_CLOSELINE cur_line %p \n", scene->curLine() );
+          // fprintf(stderr, "UNDO_CLOSELINE cur_line %p \n", scene->curLine() );
         }
         break;
       case UNDO_AREAPOINT:
@@ -649,13 +645,13 @@ PlotCanvas::onUndo()
             scene->setInputMode( INPUT_COMMAND );
             scene->setOnArea( false );
           }
-          fprintf(stderr, "UNDO_AREAPOINT cur_area %p \n", scene->curArea() );
+          // fprintf(stderr, "UNDO_AREAPOINT cur_area %p \n", scene->curArea() );
         }
         break;
       case UNDO_FINISHAREA:
         if ( scrap->areasSize() > 0 ) {
           scene->unfinishArea( scrap->areasBack() );
-          fprintf(stderr, "UNDO_FINISHAREA cur_area %p \n", scene->curArea() );
+          // fprintf(stderr, "UNDO_FINISHAREA cur_area %p \n", scene->curArea() );
         }
         break;
     }
@@ -668,10 +664,8 @@ PlotCanvas::onUndo()
 ThPoint2D * 
 PlotCanvas::insertPointStation( double x, double y, const char * option )
 {
-  DBG_CHECK("insertPointStation X %.2f Y %.2f option %s\n", x, y, option );
-
-  fprintf(stderr, "insertPointStation: <%s> %.2f %.2f offset %d %d\n",
-    option, x, y, status->getOffsetX(), status->getOffsetY() );
+  DBG_CHECK("insertPointStation X %.2f Y %.2f option \"%s\" offset %d %d\n",
+     x, y, option,  status->getOffsetX(), status->getOffsetY() );
 
   x += status->getOffsetX();
   y += status->getOffsetY();
@@ -720,7 +714,7 @@ PlotCanvas::onZoomOut()
 void 
 PlotCanvas::update()
 {
-  fprintf(stderr, "PlotCanvas::update() \n");
+  // fprintf(stderr, "PlotCanvas::update() \n");
   scene->showPlot( );
 }
 
@@ -801,10 +795,11 @@ PlotCanvas::createToolBar()
   #ifdef HAS_BACKIMAGE
     if ( actImage ) toolbar->addAction( actImage );
   #endif
-  if ( actGrid ) toolbar->addAction( actGrid );
-  toolbar->addAction( actCollapse );
-  toolbar->addAction( actNumbers );
-  // if ( actMode ) toolbar->addAction( actMode );
+  // if ( actGrid ) toolbar->addAction( actGrid );
+  // toolbar->addAction( actCollapse );
+  // toolbar->addAction( actNumbers );
+  toolbar->addAction( actView );
+
   if ( actScrap ) toolbar->addAction( actScrap );
   if ( actSelect ) toolbar->addAction( actSelect );
   if ( actPoint ) toolbar->addAction( actPoint );
@@ -819,6 +814,7 @@ PlotCanvas::createToolBar()
   if ( actPhiPlus ) toolbar->addAction( actPhiPlus );
   if ( actPhiMinus ) toolbar->addAction( actPhiMinus );
   toolbar->addAction( actClose );
+  // toolbar->addAction( actQuit );
   // if ( mode == MODE_3D ) 
   point_of_view = new QLabel( "" );
   toolbar->addWidget( point_of_view );
@@ -840,9 +836,9 @@ PlotCanvas::createActions()
     connect( actImage, SIGNAL(triggered()), this, SLOT(onImage()) );
     actImage->setVisible( true );
 #endif
-    actGrid = new QAction( icon->Grid(), lexicon("grid"), this );
-    connect( actGrid, SIGNAL(triggered()), this, SLOT(onGrid()) );
-    actGrid->setVisible( true );
+    // actGrid = new QAction( icon->Grid(), lexicon("grid"), this );
+    // connect( actGrid, SIGNAL(triggered()), this, SLOT(onGrid()) );
+    // actGrid->setVisible( true );
   } else {
     actSave = NULL;
     #ifdef HAS_BACKIMAGE
@@ -851,14 +847,29 @@ PlotCanvas::createActions()
     actGrid = NULL;
   }
 
-  actEval     = new QAction( icon->Eval(), lexicon("eval"), this );
-  actCollapse = new QAction( icon->Collapse(), lexicon("splay"), this );
-  actNumbers  = new QAction( icon->Number(), lexicon("number"), this );
+  actEval = new QAction( icon->Eval(), lexicon("eval"), this );
+  connect( actEval, SIGNAL(triggered()), this, SLOT(onEval()) );
+
+  actView = new QAction( icon->View(), lexicon("view"), this );
+  view_menu = new QMenu( this );
+  actCollapse = view_menu->addAction( lexicon("splay") );
+  connect( actCollapse, SIGNAL(triggered()), this, SLOT(onSplay()) );
+  actCollapse -> setCheckable( true );
+  actCollapse -> setChecked( false );
+  if ( mode != MODE_3D ) {
+    actGrid = view_menu->addAction( lexicon("grid") );
+    connect( actGrid, SIGNAL(triggered()), this, SLOT(onGrid()) );
+    actGrid -> setCheckable( true );
+    actGrid -> setChecked( true );
+  }
+  actNumbers = view_menu->addAction( lexicon("number") );
+  connect( actNumbers, SIGNAL(triggered()), this, SLOT(onNumbers()) );
+  actNumbers -> setCheckable( true );
+  actNumbers -> setChecked( true );
+  actView->setMenu( view_menu );
+
   actZoomIn   = new QAction( icon->ZoomIn(), lexicon("zoom_in"), this );
   actZoomOut  = new QAction( icon->ZoomOut(), lexicon("zoom_out"), this );
-  connect( actEval, SIGNAL(triggered()), this, SLOT(onEval()) );
-  connect( actCollapse, SIGNAL(triggered()), this, SLOT(onSplay()) );
-  connect( actNumbers, SIGNAL(triggered()), this, SLOT(onNumbers()) );
   connect( actZoomIn, SIGNAL(triggered()), this, SLOT(onZoomIn()) );
   connect( actZoomOut, SIGNAL(triggered()), this, SLOT(onZoomOut()) );
   actEval->setVisible( true );
@@ -872,14 +883,6 @@ PlotCanvas::createActions()
     actUndo = new QAction( icon->UndoOff(), lexicon("undo"), this );
 
     turnButtonsOnOff( status->hasUndo() );
-
-    // actMode = new QAction( icon->Mode1(), lexicon("mode"), this );
-    // QMenu * mode_menu = new QMenu( this );
-    // QAction * actModeSelect = mode_menu->addAction( "Select" );
-    // QAction * actModePoint  = mode_menu->addAction( "Point" );
-    // QAction * actModeLine   = mode_menu->addAction( "Line" );
-    // QAction * actModeArea   = mode_menu->addAction( "Area" );
-    // actMode->setMenu( mode_menu );
 
     actScrap = new QAction( icon->Scrap(), lexicon("scrap"), this );
     scrap_menu = new QMenu( this );
@@ -899,8 +902,18 @@ PlotCanvas::createActions()
 
     actPoint  = new QAction( icon->Point(), lexicon("point"), this );
     QMenu * point_menu = new QMenu( this );
-    for (int k=0; k<(int)(Therion::THP_PLACEMARK); ++k ) {
-      actPointMenu[k] = point_menu->addAction( Therion::PointName[ k ] );
+    // FIXME in pure-editor mode need to allow also "station" point insertion
+    for (int k=0; k<(int)(Therion::THPG_STATION); ++k ) {
+      const int * index = Therion::PointGroup[k];
+      if ( index[1] < 0 ) {
+        actPointMenu[index[0]] = point_menu->addAction( Therion::PointName[ index[0] ] );
+      } else {
+        QMenu * submenu = point_menu->addMenu( Therion::PointGroupName[ k ] );
+        for ( int j=0; index[j] >= 0; ++j ) {
+          actPointMenu[index[j]] = submenu->addAction( Therion::PointName[ index[j] ] );
+        }
+      }
+      // actPointMenu[k] = point_menu->addAction( Therion::PointName[ k ] );
     }
     actPoint->setMenu( point_menu );
     // connect( actPoint, SIGNAL(triggered()), point_menu, SLOT( showNormal() ) );
@@ -926,13 +939,6 @@ PlotCanvas::createActions()
     connect( actNew, SIGNAL(triggered()), this, SLOT(onClearTh2()) );
     connect( actUndo, SIGNAL(triggered()), this, SLOT(onUndo()) );
 
-    // connect( actMode, SIGNAL(triggered()), this, SLOT(onMode()) );
-    // connect( actModeSelect, SIGNAL(triggered()), this, SLOT(onSelect()) );
-    // connect( actModePoint, SIGNAL(triggered()), this, SLOT(onPoint()) );
-    // connect( actModeLine, SIGNAL(triggered()), this, SLOT(onLine()) );
-    // connect( actModeArea, SIGNAL(triggered()), this, SLOT(onArea()) );
-
-    // connect( actScrap, SIGNAL(triggered()), this, SLOT(onScrapNew()) );
     connect( scrap_menu, SIGNAL(triggered(QAction*)), this, SLOT(onScrap(QAction*)) ); 
 
     connect( actSelect, SIGNAL(triggered()), this, SLOT(onSelect()) );
@@ -948,14 +954,12 @@ PlotCanvas::createActions()
 
     actNew->setVisible( true );
     actUndo->setVisible( true );
-    // actMode->setVisible( true );
     actPoint->setVisible( true );
     actLine->setVisible( true );
     actArea->setVisible( true );
   } else {
     actNew  = NULL;
     actUndo = NULL;
-    // actMode = NULL;
     actPoint = NULL;
     actLine = NULL;
     actArea = NULL;
@@ -972,8 +976,15 @@ PlotCanvas::createActions()
     actPhiPlus->setVisible( true );
     actPhiMinus->setVisible( true );
   }
-  actClose = new QAction( icon->Close(), lexicon("exit"), this );
-  connect( actClose, SIGNAL(triggered()), this, SLOT(onQuit()) );
+  actClose = new QAction( icon->Close(), lexicon("close"), this );
+  QMenu * close_menu = new QMenu( this );
+  QAction * actClose2 = close_menu->addAction( lexicon("close") );
+  actQuit = close_menu->addAction( lexicon("exit") );
+  actClose->setMenu( close_menu );
+
+  connect( actClose, SIGNAL(triggered()), this, SLOT(onClose()) );
+  connect( actClose2, SIGNAL(triggered()), this, SLOT(onClose()) );
+  connect( actQuit, SIGNAL(triggered()), this, SLOT(onQuit()) );
   actClose->setVisible( true );
 }
 
@@ -1344,3 +1355,34 @@ MyFileDialogSketch::MyFileDialogSketch( PlotCanvas * parent,
   exec();
 }
 #endif
+
+QuitWidget::QuitWidget( PlotCanvas * p )
+  : QDialog( p )
+  , parent( p )
+{
+  Language & lexicon = Language::Get();
+  setWindowTitle( lexicon("plot_exit") );
+  QVBoxLayout* vbl = new QVBoxLayout(this);
+  DEFINE_HB;
+  vbl->addWidget( new QLabel( lexicon("exit_question"), this ) );
+
+  CREATE_HB;
+  QPushButton * c;
+  c = new QPushButton( tr( lexicon("yes") ), hb );
+  connect( c, SIGNAL(clicked()), this, SLOT(doOK()) );
+  hbl->addWidget( c );
+  c = new QPushButton( tr( lexicon("no") ), hb);
+  connect( c, SIGNAL(clicked()), this, SLOT(doCancel()) );
+  hbl->addWidget( c );
+  vbl->addWidget( hb );
+
+  exec();
+}
+
+ void 
+QuitWidget::doOK() 
+{ 
+  // fprintf(stderr, "QuitWidget::doOK()\n");
+  hide();
+  parent->doQuit();
+}

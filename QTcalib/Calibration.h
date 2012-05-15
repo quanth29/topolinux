@@ -305,7 +305,7 @@
        */
       double TurnVectors( const Vector & gxp, const Vector & mxp,
                     const Vector & gr,  const Vector & mr,
-                    Vector & gx, Vector & mx );
+                    Vector & gx, Vector & mx, bool print = false );
 
       /** compute the euclidean distance between the stored (G,M) pair array
        *  and a given array of pairs

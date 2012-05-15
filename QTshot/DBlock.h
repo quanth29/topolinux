@@ -341,7 +341,7 @@ class DBlock
   /** renumber from the following block
    * @note applies only if both from and to are non-empty
    */
-  void renumber()
+  void renumber( bool splay_before_shot )
   {
     size_t size = from_station.size();
     size_t size_to = to_station.size();
@@ -357,7 +357,7 @@ class DBlock
     strcpy( to0,   to_station.c_str() );
     for ( DBlock * b = next_block; b; b=b->next_block ) {
       if ( b->to_station.size() == 0 ) {
-        b->from_station = from0;
+        b->from_station = splay_before_shot ? to0 : from0;
       } else {
         int f=0, t=0;
         char * cf = from0;

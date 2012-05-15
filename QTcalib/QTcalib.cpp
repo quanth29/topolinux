@@ -95,6 +95,7 @@ QTcalibWidget::QTcalibWidget( Config & cfg, QWidget * parent, WFLAGS fl )
   , data_table( NULL )
   , guessing( true )
   , guess_on_old( false )
+  , is_append( true )
   // , guess_angle( 20 )
   // , data_transformed( false )
   // , calib_delta( 0.5 )
@@ -232,27 +233,27 @@ QTcalibWidget::doOptions()
 void
 QTcalibWidget::distoxReset()
 {
-  printf("QTshotWidget::distoxReset()\n");
-  actData->setIcon( icon->Data3() );
+  // fprintf(stderr, "QTshotWidget::distoxReset()\n");
+  // actData->setIcon( icon->Data3() );
 }
 
 void
-QTcalibWidget::distoxDownload( size_t nr )
+QTcalibWidget::distoxDownload( size_t /* nr */ )
 {
-  printf("QTshotWidget::distoxDownload() %d\n", nr );
-  if ( ( nr % 2 ) == 1 ) {
-    actData->setIcon( icon->Data4() );
-  } else {
-    actData->setIcon( icon->Data3() );
-  }
+  // fprintf(stderr, "QTshotWidget::distoxDownload() %d\n", nr );
+  // if ( ( nr % 2 ) == 1 ) {
+  //   actData->setIcon( icon->Data4() );
+  // } else {
+  //   actData->setIcon( icon->Data3() );
+  // }
 }
 
 void
 QTcalibWidget::distoxDone()
 {
-  printf("QTshotWidget::distoxDone()\n");
-  actData->setIcon( icon->Data() );
-  onOffButtons( clist.size > 0 );
+  // fprintf(stderr, "QTshotWidget::distoxDone()\n");
+  // actData->setIcon( icon->Data() );
+  // onOffButtons( clist.size > 0 );
 }
 
 // --------------------------------------------------------------
@@ -340,7 +341,7 @@ QTcalibWidget::value_changed( QTableWidgetItem * item )
 void
 QTcalibWidget::showData( )
 {
-  if ( do_debug ) 
+  // if ( do_debug ) 
     fprintf(stderr, "showData() rows %d \n", clist.size);
 
   if ( data_table != NULL ) {
@@ -475,6 +476,12 @@ DownloadDialog::DownloadDialog( QTcalibWidget * parent )
   vbl->addWidget( hb );
 
   CREATE_HB;
+  do_append = new QCheckBox( lexicon("qtopoc_append"), hb );
+  do_append->setChecked( parent->isAppend() );
+  hbl->addWidget( do_append );
+  vbl->addWidget( hb );
+
+  CREATE_HB;
   QPushButton * c = new QPushButton( tr( lexicon("ok") ), hb );
   connect( c, SIGNAL(clicked()), this, SLOT(doOK()) );
   hbl->addWidget( c );
@@ -484,6 +491,15 @@ DownloadDialog::DownloadDialog( QTcalibWidget * parent )
   vbl->addWidget( hb );
 
   exec();
+}
+
+void
+DownloadDialog::doOK()
+{
+  hide();
+  widget->downloadData( do_guess->isChecked(), 
+                        do_on_old->isChecked(), 
+                        do_append->isChecked() );
 }
 
 // -------------------------------------------------------
@@ -712,7 +728,7 @@ class DownloadThread : public QThread
       : disto( d )
       , status( 0 )
     {
-      fprintf(stderr, "DownloadThread started ...\n"); 
+      // fprintf(stderr, "DownloadThread started ...\n"); 
     }
 
     int getStatus() const { return status; }
@@ -725,16 +741,20 @@ DownloadThread::run()
 {
   // -1: ask the number of data to the distox
   status = ( disto->download( 0) ) ? 1 : -1;
-  fprintf(stderr, "DownloadThread finished width status %d\n", status);
+  // fprintf(stderr, "DownloadThread finished width status %d\n", status);
 }
 
 
 void 
-QTcalibWidget::downloadData( bool do_guess, bool use_old )
+QTcalibWidget::downloadData( bool do_guess, bool use_old, bool append )
 {
+  // fprintf(stderr, "downloadData() guess %d use-old %d append %d \n",
+  //   do_guess, use_old, append );
+
   guessing = do_guess;
   guess_on_old = use_old;
   bool do_use_old = guessing && guess_on_old;
+  is_append = append;
 
   const char * disto_log = config( "DISTO_LOG" );
   bool log = ( disto_log[0] == 'y' );
@@ -745,6 +765,7 @@ QTcalibWidget::downloadData( bool do_guess, bool use_old )
   disto.setListener( this );
 
   DownloadThread t( &disto );
+  distoxReset();
   t.start();
   while ( t.getStatus() == 0 ) {
     QTimer timer(this);
@@ -774,6 +795,7 @@ QTcalibWidget::downloadData( bool do_guess, bool use_old )
     // sleep(1);
     unsigned int nr = disto.calibrationSize();
     unsigned int nd = disto.measurementSize();
+    // fprintf(stderr, "data %d calibs %d\n", nd, nr );
     if ( nd > 0 ) {
       unsigned int id, ib, ic, ir;
       double xd, xb, xc, xr;
@@ -800,8 +822,11 @@ QTcalibWidget::downloadData( bool do_guess, bool use_old )
       QMessageBox::warning(this, lexicon("qtopoc_calib"), lexicon("zero_data") );
     } else {
       unsigned int cnt = 0;
-      CBlock * b0 = NULL;
+      CBlock * bstart = is_append ? clist.lastBlock() : NULL;
+      // fprintf(stderr, "b0 %p (append %d)\n", (void*)b0, append );
+
       int16_t gx, gy, gz, mx, my, mz;
+      CBlock * b0 = bstart;
       while ( disto.nextCalibration( gx, gy, gz, mx, my, mz ) ) {
         if ( do_use_old ) {
           b0 = clist.addData( b0, gx, gy, gz, mx, my, mz, data_transform );
@@ -811,7 +836,7 @@ QTcalibWidget::downloadData( bool do_guess, bool use_old )
         ++ cnt;
       }
       if ( guessing ) {
-        clist.guessGroups( guess_angle );
+        clist.guessGroups( guess_angle, bstart );
       }
       assert( cnt == nr/2 ); // FIXME or cnt == nr
       std::ostringstream oss;

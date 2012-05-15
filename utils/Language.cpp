@@ -92,12 +92,15 @@ Language::Language()
   Insert( "angle_units", "Angle units ");
   Insert( "append_shots", "Append shots  ");
   Insert( "area", "Area");
+  Insert( "areapoint_options", "Area options" );
+  Insert( "author", "author" );
   Insert( "azimuth", "Azimuth");
   Insert( "azimuth+", "Azimuth +");
   Insert( "azimuth-", "Azimuth -");
   Insert( "backward", " backward");
   Insert( "bad_file_format", "Unrecognized file type.\nOnly raw or TLX survey files are supported.");
   Insert( "base_station", "Start plot from here");
+  Insert( "border_visible", "visible border");
   Insert( "calib_angle", "M dip angle");
   Insert( "calib_delta", "Calibration delta");
   Insert( "calib_max_iter", "Calibration iterations" );
@@ -114,6 +117,7 @@ Language::Language()
   Insert( "coeff_backup", "Calibration backed up to file." );
   Insert( "comment", "Comment");
   Insert( "compass", "Compass" );
+  Insert( "copyright", "copyright" );
   Insert( "cover", "Coverage" );
   Insert( "coverage", "Data angular distribution");
   Insert( "cross_section", "Cross section");
@@ -121,6 +125,7 @@ Language::Language()
   Insert( "data_download_failed", "Calibration data download failed.\nCheck the connection to the DistoX.");
   Insert( "data_transformed", "Transformed data" );
   Insert( "date", "Date" );
+  Insert( "day", "day" );
   Insert( "declination", "Declination" );
   Insert( "default_dat", "Using file /tmp/data.dat" );
   Insert( "default_th", "Using file /tmp/data.th" );
@@ -129,6 +134,9 @@ Language::Language()
   Insert( "deg", "deg");
   Insert( "delete_shot", "Delete shot");
   Insert( "delta", "Delta " );
+  Insert( "delta_z", "Z displacement" );
+  Insert( "delta_north", "North displacement" );
+  Insert( "delta_east", "East displacement" );
   Insert( "description", "Description" );
   Insert( "device", "Device ");
   Insert( "distox_backup", "  Backup old coeffiecients " );
@@ -166,7 +174,7 @@ Language::Language()
   Insert( "flag", "Flg");
   Insert( "flag_box", "Flag");
   Insert( "from", "From");
-  Insert( "from_station", " FROM station");
+  Insert( "from_station", " after shot");
   Insert( "ft", "ft");
   Insert( "grad", "grad");
   Insert( "grid", "Grid");
@@ -177,10 +185,13 @@ Language::Language()
   Insert( "horizontal", "Horizontal");
   Insert( "I", "I" );
   Insert( "ignore", "Ignore");
+  Insert( "illegal_date", "Illegal date" );
+  Insert( "illegal_year", "Illegal date: year" );
   Insert( "image", "Image" );
   Insert( "image_open_failed", "Failed to open image file.\nCheck file type and properties.");
   Insert( "incl+", "Incl. +");
   Insert( "incl-", "Incl. -");
+  Insert( "info", "Info");
   Insert( "insert", "Insert");
   Insert( "insert_before", "Insert before ");
   Insert( "insert_shot", "Insert shot");
@@ -190,6 +201,8 @@ Language::Language()
   Insert( "left", "Left");
   Insert( "length_units", "Length units ");
   Insert( "line", "Line ");
+  Insert( "linepoint_options", "Line Point options");
+  Insert( "loops", "Loops" );
   Insert( "LRUD", "LRUD");
   Insert( "m", "m");
   Insert( "merge_next", "Merge w. next");
@@ -198,6 +211,7 @@ Language::Language()
   Insert( "mode_compass", "Compass/Clino on");
   Insert( "mode_grad", "Angles in grads");
   Insert( "mode_silent", "Silent mode");
+  Insert( "month", "month" );
   Insert( "N", "-" );
   Insert( "name", "Name");
   Insert( "new", "New");
@@ -218,6 +232,7 @@ Language::Language()
   Insert( "options", "Options");
   Insert( "orientation", "Orientation" );
   Insert( "plan", "Plan");
+  Insert( "plot_exit", "Plot quit");
   Insert( "plot_name", "Plot name");
   Insert( "point", "Point ");
   Insert( "point_options", "Point options");
@@ -242,6 +257,7 @@ Language::Language()
   Insert( "qtopo_exit", "QTopo - Exit" );
   Insert( "qtopo_extend", "QTopo - Extend");
   Insert( "qtopo_help", "QTopo - Help" );
+  Insert( "qtopo_info", "QTopo - Info" );
   Insert( "qtopo_insert_LRUD", "QTopo - LRUD");
   Insert( "qtopo_insert_shot", "QTopo - Shot insert");
   Insert( "qtopo_label", "QTopo - Label text");
@@ -263,12 +279,13 @@ Language::Language()
   Insert( "qtopo_x_point", "QTopo X-section - Point ");
   Insert( "qtopo_x_select", "QTopo X-section - Select");
 
-  Insert( "qtopoc_calib", "QTopo - Calib");
-  Insert( "qtopoc_coeff", "QTopo - Calibration");
+  Insert( "qtopoc_append", "Append to current data" );
+  Insert( "qtopoc_calib", "QTopo - Calib" );
+  Insert( "qtopoc_coeff", "QTopo - Calibration" );
   Insert( "qtopoc_comment", "QTopo - Description" );
-  Insert( "qtopoc_data", "Download calibration data from DistoX.");
-  Insert( "qtopoc_guess", "  Guess the data groups");
-  Insert( "qtopoc_guess2", "  Use DistoX calibration to guess");
+  Insert( "qtopoc_data", "Download calibration data from DistoX." );
+  Insert( "qtopoc_guess", "  Guess the data groups" );
+  Insert( "qtopoc_guess2", "  Use DistoX calibration to guess" );
 
   Insert( "R", "R" );
   Insert( "raw_read_failed", "Failed to read raw survey file.\nWrong file format.");
@@ -296,19 +313,22 @@ Language::Language()
   Insert( "set", "Set" );
   Insert( "shot_comment", "QTopo - Shot");
   Insert( "shot_download_failed", "Shot download failed.\nCheck the connection to the DistoX.");
+  Insert( "shots", "Shots" );
   Insert( "shots_saving", "shots. Saving to file" );
   Insert( "shots_saving_failed", "shots. Failed saving to file" );
   Insert( "single_survey", "Single survey" );
   Insert( "sketch", "Sketch");
   Insert( "skip", "Skip" );
-  Insert( "splay", "Toggle splay");
+  Insert( "splay", "Splay shots");
   Insert( "splay_shots", "Splay shots at  ");
   Insert( "split", "Split");
   Insert( "station", "Station");
+  Insert( "stations", "Stations");
   Insert( "status_mode", "DistoX status" );
   Insert( "surface", "surface shot" );
   Insert( "survex", "Survex" );
   Insert( "survey_commands", "Survey commands");
+  Insert( "survey_data", "Survey data");
   Insert( "survey_info", "QTopo - Survey info");
   Insert( "swap_from_to", "swap stations" );
   Insert( "tape", "Tape");
@@ -318,7 +338,7 @@ Language::Language()
   Insert( "title", "Title");
   Insert( "tlx_read_failed", "Failed to read TLX survey file.\nWrong file format.");
   Insert( "to", "To");
-  Insert( "to_station", " TO station");
+  Insert( "to_station", " before shot");
   Insert( "toggle", "Toggle" );
   Insert( "too_few_data", "Not enough calibration data.\nNeed at least 16." );
   Insert( "topolinux", "TopoLinux");
@@ -326,6 +346,7 @@ Language::Language()
   Insert( "up", "Up");
   Insert( "V", "V" );
   Insert( "vertical", "Vertical");
+  Insert( "view", "view");
   Insert( "warning", "Warning");
   Insert( "warn_null_block", "No shot for the cross section");
   Insert( "warn_scrap", 

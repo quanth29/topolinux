@@ -6,7 +6,7 @@ ROOT /home/projects/Disto/DATA
 # 
 # window geometry
 # GEOMETRY 240x320
-GEOMETRY 480x640
+GEOMETRY 540x560
 Y_OFFSET 30
 V_THRESHOLD 80.0
 LRUD no
@@ -37,11 +37,16 @@ EXPORT therion
 # language for the help docs: help pages are at "help/LANG/index.htm"
 LANG en
 #
-CALIB_GUESS 20
+CALIB_GUESS 30
 BACKUP_FILE backup
+TRANSFORMED_DATA 0
+CALIB_DELTA 0.1
+CALIB_MAX_ITER 500
 #
 TMP_DIR ./
-DEFAULT_DATA /home/projects/Disto/DATA/data.tlx
+DEFAULT_TLX  /home/projects/Disto/DATA/data.tlx
+DEFAULT_DATA /home/projects/Disto/DATA/data.txt
+DEFAULT_COEFF /home/projects/Disto/DATA/coeff.txt
 #
 # ---------------- PocketTopo file ----------------------
 #

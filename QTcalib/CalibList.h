@@ -101,6 +101,21 @@ struct CalibList
       int16_t gx, int16_t gy, int16_t gz, int16_t mx, int16_t my, int16_t mz,
       const CTransform & t );
 
+    /** get the last block on the list
+     */
+    CBlock * lastBlock() 
+    {
+      // fprintf(stderr, "Head block %p \n", (void*)head );
+      CBlock * b = head;
+      if ( head ) {
+        while ( b->next ) {
+          // fprintf(stderr, "  block %p next %p \n", (void*)b, (void*)(b->next) );
+          b=b->next;
+        }
+      }
+      return b;
+    }
+
     void readCoeff( QWidget * widget, const char * filename );
 
     int toggleIgnore( int r );
@@ -120,8 +135,9 @@ struct CalibList
 
     /** guess the groups
      * @param guess_angle group guess discrepancy angle
+     * @param bstart block after which to start (NULL is the beginning)
      */
-    void guessGroups( int guess_angle = 20 );
+    void guessGroups( int guess_angle, CBlock * bstart = NULL );
 
     /** set the calibration coefficients
      * @param byte   new array of calibration coeff (48 bytes)

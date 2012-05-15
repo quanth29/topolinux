@@ -14,8 +14,11 @@
 #include <math.h> // fabs
 #include <vector>
 
+
 #include "ThLineType.h"
 #include "TherionPoint.h"
+
+class PlotLineItem; // forward
 
 /** A line point.
  * A line point vcan have two control points, Point-1 before it and Point-2
@@ -37,74 +40,60 @@ struct ThLinePoint : public ThPoint
   double x2, y2;   //!< second control point
   bool has1, has2; //!< whether this point has control points
   std::string line_point_option; //!< line-point subtype
+  int lsize;       //!< l-size (only slope and gradient)
+  const char * adjust;
 
   ThLinePoint( double x, double y, QGraphicsItem * it )
     : ThPoint( x, y, it )
+    , x1( x )
+    , y1( y )
+    , x2( x )
+    , y2( y )
     , has1( false )
     , has2( false )
+    , lsize( 0 )
+    , adjust( NULL )
   { }
 
-  void shift( double x0, double y0 )
-  {
-    x  += x0;
-    y  += y0;
-    x1 += x0;
-    y1 += y0;
-    x2 += x0;
-    y2 += y0;
-  }
+  void shift( double x0, double y0 );
 
-  void setControl1( double x10, double y10 )
-  {
-    if ( fabs(x10-x) > 2.0 || fabs(y10-y) > 2.0 ) {
-      x1 = x10;
-      y1 = y10;
-      has1 = true;
-    }
-  }
+  void setControl1( double x10, double y10 );
 
-  void setControl2( double x20, double y20 )
-  {
-    if ( fabs(x20-x) > 2.0 || fabs(y20-y) > 2.0 ) {
-      x2 = x20;
-      y2 = y20;
-      has2 = true;
-    }
-  }
+  void setControl2( double x20, double y20 );
 
-  void setControls( double x20, double y20 )
-  {
-    if ( fabs(x20-x) > 2.0 || fabs(y20-y) > 2.0 ) {
-      x1 = 2*x - x20;
-      y1 = 2*y - y20;
-      x2 = x20;
-      y2 = y20;
-      has1 = has2 = true;
-      printf("LP %.2f %.2f %.2f %.2f %.2f %.2f\n", x, y, x1, y1, x2, y2 );
-    }
-  }
+  void setControls( double x20, double y20 );
 
   void clearControl1() { has1 = false; }
 
   void clearControl2() { has2 = false; }
 
-  const char * LPoption() const { return line_point_option.c_str(); }
 
+  bool hasLPoption() const { return ! line_point_option.empty(); }
+  const char * LPoption() const { return line_point_option.c_str(); }
   void setLPOption( const char * st ) { line_point_option = st; }
+
+
+  int getLSize() const { return lsize; }
+  void setLSize( int s ) { lsize = s; }
+
+  const char * getAdjust() const { return adjust; }
+  void setAdjust( const char * a ) { adjust = a; }
 
 };
 
 struct ThLineSegment
 {
-  ThLinePoint * pt1;  //!< start point
-  ThLinePoint * pt2;  //!< end point
-  QGraphicsLineItem * item; 
+  ThLinePoint * pt1;     //!< start point
+  ThLinePoint * pt2;     //!< end point
+  PlotLineItem * item;  //!< line curve
 
-  ThLineSegment( ThLinePoint * p1, ThLinePoint * p2, QGraphicsLineItem * it = NULL )
+  ThLineSegment( ThLinePoint * p1, ThLinePoint * p2, PlotLineItem * it = NULL )
     : pt1( p1 )
     , pt2( p2 )
     , item( it )
   { }
+
+  void shift( double x0, double y0 );
 
 };
 
@@ -119,8 +108,15 @@ struct ThLine2D
     typedef std::vector< ThLinePoint * >::const_iterator const_point_iterator;
  
   private:
-    Therion::LineType line_type;            //!< line type
-    bool closed;                //!< whether the line is closed
+    Therion::LineType line_type;   //!< line type
+    const char * subtype;          //!< line subtype
+    const char * outline;          //!< line scrap outline
+    bool closed;                   //!< whether the line is closed
+    bool reversed;                 //!< whether the line direction is reversed
+    bool clipped;
+    bool visible;
+    const char * special_string;
+    int special_value;
     std::vector< ThLinePoint * > pts;    //!< line control points
     std::vector< ThLineSegment * > sgms; //!< line segments
   
@@ -130,7 +126,14 @@ struct ThLine2D
      */
     ThLine2D( Therion::LineType type = Therion::THL_USER )
       : line_type( type )
+      , subtype( NULL )
+      , outline( NULL )
       , closed( false )
+      , reversed( false )
+      , clipped( false )
+      , visible( true )
+      , special_string( NULL )
+      , special_value( 0 )
     { }
   
     ~ThLine2D()
@@ -144,6 +147,13 @@ struct ThLine2D
     }
 
     Therion::LineType type() const { return line_type; }
+
+    void shift( double dx, double dy );
+  
+  
+    bool hasSubtype() const { return subtype != NULL; }
+    const char * getSubtype() const { return subtype; }
+    void setSubtype( const char * st ) { subtype = st; }
   
     /** accessor: get the number of control points
      * @return the size of the vector of points
@@ -156,47 +166,42 @@ struct ThLine2D
 
     /** unclose the line
      */
-    bool unclose()
-    {
-      if ( closed ) { // drop last segment
-        dropLastSegment(); // FIX-2
-        closed = false;
-      }
-      return closed;
-    }
+    bool unclose();
   
-    bool close( QGraphicsLineItem * sgm_item )
-    {
-      if ( ! closed ) {
-        size_t s = pts.size();
-        if ( s > 0 ) {
-          insertSegment(s-1, 0, sgm_item);
-          closed = true;
-        }
-      }
-      return closed;
-    }
+    bool closeLine( PlotLineItem * sgm_item );
   
     /** check if the line is closed
      * @return true if the lin eis closed
      */
     bool isClosed() const { return closed; }
+    void setClosed( bool c ) { closed = c; }
+
+    bool isReversed() const { return reversed; }
+    void setReversed( bool r ) { reversed = r; }
+
+    bool isClipped() const { return clipped; }
+    void setClipped( bool c ) { clipped = c; }
+
+    bool isVisible() const { return visible; }
+    void setVisible( bool v ) { visible = v; }
+
+    bool hasSpecialString() const { return special_string != NULL; }
+    const char * getSpecialString() const { return special_string; }
+    void setSpecialString( const char * s ) { special_string = s; }
+
+    bool hasSpecialValue() const { return special_value != 0; }
+    int getSpecialValue() const { return special_value; }
+    void setSpecialValue( int v ) { special_value = v; }
+
+    void setOutline( const char * ot ) { outline = ot; }
+    const char * getOutline() const { return outline; }
 
     /** append a point
      * @param x   point X coord.
      * @param y   point Y coord.
      * @return pointer to the last inserted point
      */
-    ThLinePoint * addLinePoint( double x, double y, QGraphicsItem * pt_item, QGraphicsLineItem * sgm_item )
-    { 
-      ThLinePoint * p2 = new ThLinePoint( x, y, pt_item );
-      pts.push_back( p2 );
-      if ( sgm_item ) {
-        size_t s = pts.size();
-        insertSegment(s-2, s-1, sgm_item);
-      }
-      return p2;
-    }
+    void addLinePoint( ThLinePoint * p2, QGraphicsItem * pt_item, PlotLineItem * sgm_item );
 
     /** erase the last point and segment
      */
@@ -207,30 +212,11 @@ struct ThLine2D
     }
 
   private:
-    void dropLastPoint()
-    {
-      if ( pts.size() == 0 ) return;
-      ThLinePoint * pt = pts.back();
-      delete pt;
-      pts.pop_back();
-    }
+    void dropLastPoint();
     
-    void dropLastSegment()
-    {
-      if ( sgms.size() == 0 ) return;
-      ThLineSegment * sgm = sgms.back();
-      delete sgm;
-      sgms.pop_back(); // erase  from vector
-    }
+    void dropLastSegment();
 
-    void insertSegment( size_t s1, size_t s2, QGraphicsLineItem * sgm_item )
-    {
-      ThLinePoint * p2 = pts[s1];
-      ThLinePoint * p1 = pts[s2];
-      ThLineSegment * sgm = new ThLineSegment( p1, p2, sgm_item );
-      sgms.push_back( sgm );
-    }
-
+    void insertSegment( size_t s1, size_t s2, PlotLineItem * sgm_item );
   
   public:
     segment_iterator segmentBegin() { return sgms.begin(); }
@@ -243,6 +229,11 @@ struct ThLine2D
     const_point_iterator pointEnd() const { return pts.end(); }
 
     ThLinePoint * operator[]( int k ) { return pts[k]; }
+
+  public:
+    static void computeCP( ThLinePoint * from, ThLinePoint * to,
+                        double & x1, double & y1, double & x1c, double & y1c,
+                        double & x2, double & y2, double & x2c, double & y2c );
 
 };
 

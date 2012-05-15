@@ -62,3 +62,5 @@ tlx_dump2data: dump2data.c
 clean:
 	rm -f *.o $(EXES)
 
+distclean:
+	rm -f *.o $(EXES)
