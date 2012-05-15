@@ -121,12 +121,14 @@ for it to be on the market.
 There are several ways you can help TopoDroid:
   * sending an email with your comments. Telling me what you think of it, even if you do use it. This will surely help me to improve the program.
   * installing to try it out, and letting me know what you dislike (bad features) and what you would like (missing features).
-  * you may [http://marcocorvi.altervista.org/marco/donate0.htm donate] money. This is the easiest way to tell me that you are interested in it and want it to continue. 
+  * you may [http://marcocorvi.altervista.org/marco/donate0.htm donate] money. This is the easiest way to tell me that you are interested in it and want it to continue. All the funding will go in buying new hardware to test TopoDroid.
   * writing some documentaton. This requires more time on your side but it also means that you are more involved in it.
   * translating documentation in other languages.
   * internationalizing TopoDroid, ie, translating the strings in other languages.
-  * setting up a user mail-list (in case, please let me know of it: i might partecipate if i understand a bit the list language)
+  * setting up a user mail-list (in case, please let me know of it: i might participate if i understand a bit the list language)
   * developing the software. Definitely this is a major involvement, and requires a lot of time.
+
+Please contact me if you want to help with documentation that may go on this website, or with a translation, or with program development.
 
 
 === How can I be assured that TopoDroid will continue ? ===
