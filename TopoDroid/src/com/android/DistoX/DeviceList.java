@@ -19,10 +19,10 @@ import android.os.Bundle;
 
 import android.content.Intent;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -38,12 +38,13 @@ import android.content.Context;
 public class DeviceList extends Activity
                                 implements OnItemClickListener
 { 
-  // private static final String TAG = "DistoX Device";
+  private static final String TAG = "DistoX Device";
+  
   private TopoDroidApp app;
   private BroadcastReceiver mBTReceiver = null;
 
-  public static final int DEVICE_PAIR = 0;
-  public static final int DEVICE_SCAN = 1;
+  public static final int DEVICE_PAIR = 0x1;
+  public static final int DEVICE_SCAN = 0x2;
   
   private ArrayAdapter<String> mArrayAdapter;
   private ListView mList;
@@ -65,7 +66,7 @@ public class DeviceList extends Activity
 
     // setTitleColor( 0x006d6df6 );
 
-    int command = (int)getIntent().getExtras().getLong( TopoDroidApp.TOPODROID_DEVICE_ACTION );
+    int command = getIntent().getExtras().getInt( TopoDroidApp.TOPODROID_DEVICE_ACTION );
     // Log.v( TAG, "command " + command );
     switch ( command )
     {
@@ -75,9 +76,12 @@ public class DeviceList extends Activity
       case DEVICE_SCAN:
         scanBTDEvices();
         break;
+      default:  // 0x0 or unknown
+         Log.w(TAG, "Unknown intent command! ("+command+")");
     }
   }
 
+  @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id)
   {
     CharSequence item = ((TextView) view).getText();
