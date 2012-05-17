@@ -11,9 +11,7 @@ Include the device model, the android version, and
 any comment that might be useful to others. 
 
 
-=== Haiwei Vodaphone 858 Smart ===
-
-OS Android 2.2
-
-Fully working
-
+|| *Device* || *Android* || ||
+|| Haiwei Vodaphone 858 Smart || 2.2 || Fully working ||
+|| Samsung Galaxy S || 2.1 || ... ||
+|| Samsung GT-p1000 || ... || Mostly working ||
