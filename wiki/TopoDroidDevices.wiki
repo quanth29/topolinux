@@ -16,5 +16,5 @@ any comment that might be useful to others.
 || HTC EVO 3D || 2.3 || <font color="green">Mostly working || calibration untested ||
 || Samsung Galaxy S Captivate SGH-i897 || 2.1-update1 || <font color="red">Bluetooth fails || unable to pair with DistoX from Android "Settings" ||
 || Samsung Galaxy S Captivate SGH-i897 || 2.2 || <font color="red">Bluetooth fails || unable to pair with DistoX from Android "Settings" ||
-|| Samsung Galaxy S Captivate SGH-i897 || 2.3 || <font color="green">Mostly working || calibration untested ||
+|| Samsung Galaxy S Captivate SGH-i897 || 2.3.5 || <font color="green">Mostly working || calibration untested ||
 || Samsung GT-p1000 || ... || <font color="green">Mostly working || ||
