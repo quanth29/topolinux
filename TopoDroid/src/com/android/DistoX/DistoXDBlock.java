@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120517 length and angle units
  */
 package com.android.DistoX;
 
@@ -125,10 +128,13 @@ public class DistoXDBlock
 
   public String toString()
   {
+    float ul = TopoDroidApp.mUnitLength;
+    float ua = TopoDroidApp.mUnitAngle;
+
     StringWriter sw = new StringWriter();
     PrintWriter pw  = new PrintWriter(sw);
     pw.format("%d <%s-%s> %.2f %.1f %.1f [%c]",
-      mId, mFrom, mTo, mLength, mBearing, mClino, mExtendTag[ (int)(mExtend) + 1 ] );
+      mId, mFrom, mTo, mLength*ul, mBearing*ua, mClino*ua, mExtendTag[ (int)(mExtend) + 1 ] );
     if ( mFlag == 1 ) pw.format( " *" );
     return sw.getBuffer().toString();
   }

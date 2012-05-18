@@ -7,6 +7,10 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120516 survey team and survey info unpdate
+ * 20120518 db path from TopoDroid app
  */
 package com.android.DistoX;
 
@@ -28,11 +32,12 @@ public class DistoXDataHelper extends DataSetObservable
 {
    private static final String TAG = "DistoX_DH";
 
-   private static final String DATABASE_NAME = "/mnt/sdcard/TopoDroid/distox3.db";
+   private static final String DATABASE_NAME = TopoDroidApp.APP_BASE_PATH + "distox4.db";
    private static final int DATABASE_VERSION = 1;
 
    private static final String CONFIG_TABLE = "configs";
    private static final String SURVEY_TABLE = "surveys";
+   private static final String FIXED_TABLE  = "fixeds";
    private static final String CALIB_TABLE  = "calibs";
    private static final String SHOT_TABLE   = "shots";
    private static final String GM_TABLE     = "gms";
@@ -52,6 +57,8 @@ public class DistoXDataHelper extends DataSetObservable
    // private SQLiteStatement updateShotFlagStmt;
    // private SQLiteStatement updateShotCommentStmt;
    private SQLiteStatement updateSurveyStmt;
+   private SQLiteStatement updateSurveyTeamStmt;
+   private SQLiteStatement updateSurveyNameStmt;
    private SQLiteStatement updateCalibStmt;
    private SQLiteStatement deleteShotStmt;
    private SQLiteStatement undeleteShotStmt;
@@ -86,6 +93,8 @@ public class DistoXDataHelper extends DataSetObservable
         // updateShotFlagStmt    = myDB.compileStatement( "UPDATE shots SET flag=? WHERE surveyId=? AND id=?" );
         // updateShotCommentStmt = myDB.compileStatement( "UPDATE shots SET comment=? WHERE surveyId=? AND id=?" );
         updateSurveyStmt = myDB.compileStatement( "UPDATE surveys SET day=?, comment=? WHERE id=?" );
+        updateSurveyTeamStmt = myDB.compileStatement( "UPDATE surveys SET team=? WHERE id=?" );
+        updateSurveyNameStmt = myDB.compileStatement( "UPDATE surveys SET name=? WHERE id=?" );
         updateCalibStmt = myDB.compileStatement( "UPDATE calibs SET day=?, comment=? WHERE id=?" );
 
         deleteShotStmt   = myDB.compileStatement( "UPDATE shots set status=1 WHERE surveyId=? AND id=?" );
@@ -281,6 +290,34 @@ public class DistoXDataHelper extends DataSetObservable
    
    // ----------------------------------------------------------------------
    // SELECT STATEMENTS
+
+   public List< DistoXFix > selectAllFixed( long sid )
+   {
+     // Log.v( TAG, "selectAllFixeds() survey " + sid );
+     List<  DistoXFix  > list = new ArrayList<  DistoXFix  >();
+     Cursor cursor = myDB.query( FIXED_TABLE,
+			         new String[] { "station", "longitude", "latitude", "altitude", "comment" }, // columns
+                                 "surveyId=?",  // selection = WHERE clause (without "WHERE")
+                                new String[] { Long.toString(sid) },     // selectionArgs
+                                null,  // groupBy
+                                null,  // having
+                                null ); // order by
+     if (cursor.moveToFirst()) {
+       do {
+         DistoXFix fix = new DistoXFix( cursor.getString(0),
+                                        cursor.getDouble(1),
+                                        cursor.getDouble(2),
+                                        cursor.getDouble(3),
+                                        cursor.getString(4) );
+         list.add( fix );
+       } while (cursor.moveToNext());
+     }
+     // Log.v( TAG, "list size " + list.size() );
+     if (cursor != null && !cursor.isClosed()) {
+       cursor.close();
+     }
+     return list;
+   }
 
    public List< DistoXPlot > selectAllPlots( long sid, long status )
    {
@@ -596,6 +633,31 @@ public class DistoXDataHelper extends DataSetObservable
      return block;
    }
 
+   public DistoXSurveyInfo selectSurveyInfo( long sid )
+   {
+     DistoXSurveyInfo info = null;
+     // Log.v(TAG, "selectSurveyInfo sid " + sid );
+     Cursor cursor = myDB.query( SURVEY_TABLE,
+                                new String[] { "name", "day", "team", "comment" }, // columns
+                                "id=?",  // selection = WHERE clause (without "WHERE")
+                                new String[] { Long.toString(sid) },  // selectionArgs
+                                null,  // groupBy
+                                null,  // having
+                                null ); // order by
+     if (cursor.moveToFirst()) {
+       info = new DistoXSurveyInfo();
+       info.id      = sid;
+       info.name    = cursor.getString( 0 );
+       info.date    = cursor.getString( 1 );
+       info.team    = cursor.getString( 2 );
+       info.comment = cursor.getString( 3 );
+     }
+     if (cursor != null && !cursor.isClosed()) {
+       cursor.close();
+     }
+     return info;
+   }
+   
    // ----------------------------------------------------------------------
    // SELECT: LIST SURVEY / CABIL NAMES
 
@@ -723,6 +785,23 @@ public class DistoXDataHelper extends DataSetObservable
      return id;
    }
 
+   public long getFixedId( long sid, String station )
+   {
+     long ret = -1;
+     if ( station == null ) {
+       return -1;
+     }
+     Cursor cursor = myDB.query( PLOT_TABLE, new String[] { "id" },
+                          "surveyId=? and station=?", 
+                          new String[] { Long.toString(sid), station },
+                          null, null, null );
+     if (cursor.moveToFirst() ) {
+       ret = cursor.getLong(0);
+     }
+     if (cursor != null && !cursor.isClosed()) { cursor.close(); }
+     return ret;
+   }
+
    public long getPlotId( long sid, String name )
    {
      long ret = -1;
@@ -734,7 +813,7 @@ public class DistoXDataHelper extends DataSetObservable
                           new String[] { Long.toString(sid), name },
                           null, null, null );
      if (cursor.moveToFirst() ) {
-       ret   = cursor.getLong(0);
+       ret = cursor.getLong(0);
      }
      if (cursor != null && !cursor.isClosed()) { cursor.close(); }
      return ret;
@@ -756,6 +835,32 @@ public class DistoXDataHelper extends DataSetObservable
      }
      if (cursor != null && !cursor.isClosed()) { cursor.close(); }
      return ret;
+   }
+
+   public long insertFixed( String station, long sid, double lng, double lat, double alt, String comment )
+   {
+     long ret = getFixedId( sid, station ); 
+     if ( ret >= 0 ) return -1; // fixed already present in the db
+     long id = 1;
+     Cursor cursor = myDB.query( FIXED_TABLE, new String[] { "max(id)" },
+                          "surveyId=?", 
+                          new String[] { Long.toString(sid) },
+                          null, null, null );
+     if (cursor.moveToFirst() ) {
+       id = 1 + cursor.getLong(0);
+     }
+     if (cursor != null && !cursor.isClosed()) { cursor.close(); }
+     // INSERT INTO table VALUES( sid, id, name, "", "" )
+     ContentValues cv = new ContentValues();
+     cv.put( "surveyId",  sid );
+     cv.put( "id",        id );
+     cv.put( "station",   station );
+     cv.put( "longitude", lng );
+     cv.put( "latitude",  lat );
+     cv.put( "altitude",  alt );
+     cv.put( "comment",   (comment == null)? "" : comment );
+     myDB.insert( FIXED_TABLE, null, cv );
+     return id;
    }
 
    public long insertPlot( String name, long sid, long type, String start, String view )
@@ -793,18 +898,33 @@ public class DistoXDataHelper extends DataSetObservable
      return false;
    }
 
+
    public boolean updateSurveyDayAndComment( long id, String date, String comment )
    {
-     // Log.v( TAG, "data update surveys: id " + id + " day " + date + " comm. " + comment );
+     // Log.v( TAG, "update survey: id " + id + " day " + date + " comment \"" + comment + "\"" );
      if ( date == null ) return false;
      updateSurveyStmt.bindString( 1, date );
-     if ( comment != null ) {
-       updateSurveyStmt.bindString( 2, comment );
-     } else {
-       updateSurveyStmt.bindString( 2, "" );
-     }
+     updateSurveyStmt.bindString( 2, (comment != null)? comment : "" );
      updateSurveyStmt.bindLong( 3, id );
      updateSurveyStmt.execute();
+     return true;
+   }
+
+   public boolean updateSurveyTeam( long id, String team )
+   {
+     // Log.v( TAG, "update survey: id " + id + " team \"" + team + "\"" );
+     updateSurveyTeamStmt.bindString( 1, (team != null)? team : "" );
+     updateSurveyTeamStmt.bindLong( 2, id );
+     updateSurveyTeamStmt.execute();
+     return true;
+   }
+
+   public boolean updateSurveyName( long id, String name )
+   {
+     // Log.v( TAG, "update survey: id " + id + " name \"" + name + "\"" );
+     updateSurveyNameStmt.bindString( 1, (name != null)? name : "" );
+     updateSurveyNameStmt.bindLong( 2, id );
+     updateSurveyNameStmt.execute();
      return true;
    }
 
@@ -813,11 +933,7 @@ public class DistoXDataHelper extends DataSetObservable
      // Log.v( TAG, "data update calibs: id " + id + " day " + date + " comm. " + comment );
      if ( date == null ) return false;
      updateCalibStmt.bindString( 1, date );
-     if ( comment != null ) {
-       updateCalibStmt.bindString( 2, comment );
-     } else {
-       updateCalibStmt.bindString( 2, "" );
-     }
+     updateCalibStmt.bindString( 2, (comment != null)? comment : "" );
      updateCalibStmt.bindLong( 3, id );
      updateCalibStmt.execute();
      return true;
@@ -856,23 +972,17 @@ public class DistoXDataHelper extends DataSetObservable
    public String getSurveyFromId( long sid ) { return getNameFromId( SURVEY_TABLE, sid ); }
 
 
-   public String getSurveyDate( long sid )
-   {
-     String ret = null;
-     Cursor cursor = myDB.query( SURVEY_TABLE, new String[] { "day" },
-                          "id=?", new String[] { Long.toString(sid) },
-                          null, null, null );
-     if (cursor.moveToFirst() ) {
-       ret = cursor.getString(0);
-     }
-     if (cursor != null && !cursor.isClosed()) { cursor.close(); }
-     return ret;
-   }
 
-   public String getSurveyComment( long sid )
+   public String getSurveyDate( long sid ) { return getSurveyFieldAsString( sid, "day" ); }
+
+   public String getSurveyComment( long sid ) { return getSurveyFieldAsString( sid, "comment" ); }
+
+   public String getSurveyTeam( long sid ) { return getSurveyFieldAsString( sid, "team" ); }
+
+   private String getSurveyFieldAsString( long sid, String attr )
    {
      String ret = null;
-     Cursor cursor = myDB.query( SURVEY_TABLE, new String[] { "comment" },
+     Cursor cursor = myDB.query( SURVEY_TABLE, new String[] { attr },
                           "id=?", new String[] { Long.toString(sid) },
                           null, null, null );
      if (cursor.moveToFirst() ) {
@@ -912,7 +1022,9 @@ public class DistoXDataHelper extends DataSetObservable
            + " ( id INTEGER, " //  PRIMARY KEY AUTOINCREMENT, "
            +   " name TEXT, "
            +   " day TEXT, "
-           +   " comment TEXT )"
+           +   " team TEXT, "
+           +   " comment TEXT "
+           +   ")"
          );
          db.execSQL(
              create_table + SHOT_TABLE 
@@ -932,6 +1044,20 @@ public class DistoXDataHelper extends DataSetObservable
            // +   " ON DELETE CASCADE "
            +   ")"
          );
+         db.execSQL(
+             create_table + FIXED_TABLE
+           + " ( surveyId INTEGER, "
+           +   " id INTEGER, " //  PRIMARY KEY AUTOINCREMENT, "
+           +   " station TEXT, "
+           +   " longitude DOUBLE, "
+           +   " latitude DOUBLE, "
+           +   " altitude DOUBLE, "
+           +   " comment TEXT "
+           // +   " surveyId REFERENCES " + SURVEY_TABLE + "(id)"
+           // +   " ON DELETE CASCADE "
+           +   ")"
+         );
+          
          db.execSQL(
              create_table + CALIB_TABLE
            + " ( id INTEGER, " // PRIMARY KEY AUTOINCREMENT, "

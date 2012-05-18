@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120517 point names in the point dialog
  */
 package com.android.DistoX;
 
@@ -63,10 +66,10 @@ public class DrawingPointPickerDialog extends Dialog
         DrawingPointPickerView(Context c, OnPointSelectedListener l, int point ) 
         {
             super(c);
-            mIndex = point;
+            mIndex  = point;
             mListen = l;
             mPoints = DrawingBrushPaths.getPaths();
-            mAngle = 2*Math.PI / ( mPoints.length );
+            mAngle  = 2*Math.PI / ( mPoints.length );
            
             // Shader s = new SweepGradient(0, 0, mColors, null);
 
@@ -80,6 +83,7 @@ public class DrawingPointPickerDialog extends Dialog
             mCenterPaint.setColor( 0xffff0000 );
             mCenterPaint.setStyle(Paint.Style.STROKE);
             mCenterPaint.setStrokeWidth(2);
+            mCenterPaint.setTextSize( 16.0f );
         }
 
         private boolean mTrackingCenter;
@@ -92,6 +96,7 @@ public class DrawingPointPickerDialog extends Dialog
         {
           if ( mIndex >= 0 && mIndex < DrawingBrushPaths.POINT_MAX ) {
             mCanvas.drawPath( mPoints[ mIndex ],  mCenterPaint);
+            mCanvas.drawText( DrawingBrushPaths.pointName[ mIndex ], 10, 20, mCenterPaint ); // FIXME point name pos.
           }
         }
 

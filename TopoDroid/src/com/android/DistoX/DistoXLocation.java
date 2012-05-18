@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120517 comments
  */
 package com.android.DistoX;
 
@@ -54,7 +57,9 @@ public class DistoXLocation extends Dialog
   private Button   mBtnCancel;
   private Button   mBtnStatus;
 
-  private double latitude, longitude, altitude;
+  private double latitude;  // decimal degrees
+  private double longitude; // decimal degrees
+  private double altitude;  // meters
   private DistoX mDistoX;
   private GpsStatus mStatus;
 
@@ -122,6 +127,7 @@ public class DistoXLocation extends Dialog
     mLocated = true;
   }
 
+  // location is stored in decimal degrees but displayed as deg:min:sec
   private void displayLocation( Location loc )
   {
     double sp  = loc.getLatitude();

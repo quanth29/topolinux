@@ -7,6 +7,11 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120516 length and angle units
+ * 20120517 survey-info and fix station export
+ * 20120518 app base directory
  */
 package com.android.DistoX;
 
@@ -19,7 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ArrayList;
 
-import android.util.Log;
+import android.os.Environment;
 import android.app.Application;
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
@@ -27,6 +32,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.SharedPreferences.Editor;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import android.bluetooth.BluetoothAdapter;
 
@@ -69,9 +75,8 @@ public class TopoDroidApp extends Application
   int mGroupBy;         // how to group calib data
 
   // consts
-  public static final float M_PI = 3.1415926536f;
-  public static final float M_2PI = 6.283185307f;
-  // public static final float M_PI = 3.14159265358979323846;
+  public static final float M_PI  = 3.1415926536f; // Math.PI;
+  public static final float M_2PI = 6.283185307f;  // 2*Math.PI;
   public static final float RAD2GRAD_FACTOR = (180.0f/M_PI);
   public static final float GRAD2RAD_FACTOR = (M_PI/180.0f);
   public static final long ZERO = 32768;
@@ -79,26 +84,35 @@ public class TopoDroidApp extends Application
   public static final float FV = 24000.0f;
   public static final float FM = 16384.0f;
 
-  public static final String APP_BASE_PATH = "/mnt/sdcard/TopoDroid/";
-  public static final String APP_TLX_PATH  = APP_BASE_PATH + "tlx/";
-  public static final String APP_DAT_PATH  = APP_BASE_PATH + "dat/";
-  public static final String APP_SVX_PATH  = APP_BASE_PATH + "svx/";
-  public static final String APP_TH_PATH   = APP_BASE_PATH + "th/";
-  public static final String APP_TH2_PATH  = APP_BASE_PATH + "th2/";
-  public static final String APP_TRO_PATH  = APP_BASE_PATH + "tro/";
-  public static final String APP_MAPS_PATH = APP_BASE_PATH + "maps/";
-  public static final String APP_NOTE_PATH = APP_BASE_PATH + "note/";
+  private static final float M2FT = 3.28083f; // meters to feet 
+  private static final float FT2M = 1/M2FT;
+  private static final float DEG2GRAD = 400.0f/360.0f;
+  private static final float GRAD2DEG = 360.0f/400.0f;
+  // private static final byte char0C = 0x0c;
 
+  public static String APP_BASE_PATH = Environment.getExternalStorageDirectory() + "/TopoDroid/";
+  public static String APP_TLX_PATH  = APP_BASE_PATH + "tlx/";
+  public static String APP_DAT_PATH  = APP_BASE_PATH + "dat/";
+  public static String APP_SVX_PATH  = APP_BASE_PATH + "svx/";
+  public static String APP_TH_PATH   = APP_BASE_PATH + "th/";
+  public static String APP_TH2_PATH  = APP_BASE_PATH + "th2/";
+  public static String APP_TRO_PATH  = APP_BASE_PATH + "tro/";
+  public static String APP_MAPS_PATH = APP_BASE_PATH + "png/";
+  public static String APP_NOTE_PATH = APP_BASE_PATH + "note/";
+
+  // scrap types
   public static final long PLOT_V_SECTION = 0;
   public static final long PLOT_PLAN      = 1;
   public static final long PLOT_EXTENDED  = 2;
   public static final long PLOT_H_SECTION = 3;
 
+  // drawing line styles
   public static final int LINE_STYLE_BEZIER = 0;
   public static final int LINE_STYLE_NONE   = 1;
   public static final int LINE_STYLE_TWO    = 2;
   public static final int LINE_STYLE_THREE  = 3;
 
+  // calibration data grouping policies
   public static final int GROUP_BY_DISTANCE = 0;
   public static final int GROUP_BY_FOUR     = 1;
   public static final int GROUP_BY_ONLY_16  = 2;
@@ -110,7 +124,10 @@ public class TopoDroidApp extends Application
   public static final float LEN_THR    = 20.0f; // corner detection length
   public static final float TO_THERION = 5.0f;
 
-  public static float mUnit;
+  public static float mUnit; // drawing unit
+  // conversion factor from internal units (m) to user units
+  public static float mUnitLength;
+  public static float mUnitAngle;
 
   public static final String[] key = { // prefs keys
     "DISTOX_CLOSE_DISTANCE",  // 0
@@ -128,7 +145,9 @@ public class TopoDroidApp extends Application
     "DISTOX_CHECK_BT",
     "DISTOX_DRAWING_UNIT",
     "DISTOX_GROUP_BY",
-    "DISTOX_LIST_REFRESH"     // 15
+    "DISTOX_LIST_REFRESH",    // 15
+    "DISTOX_UNIT_LENGTH",
+    "DISTOX_UNIT_ANGLE"
   };
 
   public static final int DISTOX_EXPORT_TH  = 0;
@@ -156,8 +175,10 @@ public class TopoDroidApp extends Application
   public static final  String GROUP_BY       = "0";     // GROUP_BY_DISTANCE
   public static final  String DEVICE_NAME    = "";
   // public static final  boolean SAVE_ON_DESTROY = true;
-  public static final  boolean CHECK_BT        = true;
-  public static final  boolean LIST_REFRESH    = false;
+  public static final  boolean CHECK_BT      = true;
+  public static final  boolean LIST_REFRESH  = false;
+  public static final  String UNIT_LENGTH    = "meters";
+  public static final  String UNIT_ANGLE     = "degrees";
 
   // intent names
   public static final String TOPODROID_CALIB       = "topodroid.calib";
@@ -188,13 +209,39 @@ public class TopoDroidApp extends Application
 
   public String[] DistoXConnectionError;
 
+  // ---------------------------------------------------------------
+  // fixed stations
+  //
+
   private ArrayList< DistoXFix > mFixed;
 
   public void addFixed( String station, double latitude, double longitude, double altitude )
   {
     mFixed.add( new DistoXFix( station, latitude, longitude, altitude ) );
+    mData.insertFixed( station, mSID, longitude, latitude, altitude, "" ); // FIXME comment
   }
 
+  // populate fixed from the DB
+  // this is not ok must re-populate whenever the survey changes
+  public void restoreFixed()
+  {
+    mFixed.clear(); // just to make sure ...
+    List< DistoXFix > fixed = mData.selectAllFixed( mSID );
+    for ( DistoXFix fix : fixed ) {
+      mFixed.add( fix );
+    }
+  }
+
+  // ----------------------------------------------------------------
+  // survey info
+  //
+
+  public DistoXSurveyInfo getSurveyInfo()
+  {
+    if ( mSID <= 0 ) return null;
+    if ( mData == null ) return null;
+    return mData.selectSurveyInfo( mSID );
+  }
   // ----------------------------------------------------------------
 
   @Override
@@ -240,6 +287,8 @@ public class TopoDroidApp extends Application
     
     mCheckBT       = prefs.getBoolean( key[12], CHECK_BT );
     mListRefresh   = prefs.getBoolean( key[15], LIST_REFRESH );
+    mUnitLength    = prefs.getString( key[16], UNIT_LENGTH ).equals("feet") ?  M2FT : 1.0f;
+    mUnitAngle     = prefs.getString( key[17], UNIT_ANGLE ).equals("grads") ?  DEG2GRAD : 1.0f;
 
     DrawingBrushPaths.doMakePaths( );
 
@@ -311,7 +360,12 @@ public class TopoDroidApp extends Application
   {
     if ( mData != null ) {
       mSID = mData.setSurvey( survey );
-      mySurvey = (mSID > 0)? survey : null;
+      mFixed.clear();
+      mySurvey = null;
+      if ( mSID > 0 ) {
+        mySurvey = survey;
+        restoreFixed();
+      }
       return mSID;
     }
     return 0;
@@ -331,7 +385,12 @@ public class TopoDroidApp extends Application
   {
     if ( mData != null ) {
       mySurvey = mData.getSurveyFromId( id );
-      mSID = ( mySurvey == null )? 0 : id;
+      mSID = 0;
+      mFixed.clear();
+      if ( mySurvey != null ) {
+        mSID = id;
+        restoreFixed();
+      }
     }
   }
 
@@ -389,6 +448,10 @@ public class TopoDroidApp extends Application
       mGroupBy = Integer.parseInt( prefs.getString( key[14], GROUP_BY ) );
     } else if ( k.equals( key[15] ) ) {
       mListRefresh = sp.getBoolean( k, LIST_REFRESH );
+    } else if ( k.equals( key[16] ) ) {
+      mUnitLength = prefs.getString( key[16], UNIT_LENGTH ).equals("feet") ? M2FT : 1.0f;
+    } else if ( k.equals( key[17] ) ) {
+      mUnitAngle = prefs.getString( key[17], UNIT_ANGLE ).equals("grads") ? DEG2GRAD : 1.0f;
     }
   }
 
@@ -420,18 +483,26 @@ public class TopoDroidApp extends Application
     String filename = TopoDroidApp.APP_TH_PATH + mySurvey + ".th";
     List<DistoXDBlock> list = mData.selectAllShots( mSID, 0 );
     try {
+      DistoXSurveyInfo info = mData.selectSurveyInfo( mSID );
       FileWriter fw = new FileWriter( filename );
       PrintWriter pw = new PrintWriter( fw );
       pw.format("survey %s -title \"%s\"\n", mySurvey, mySurvey );
-      pw.format("# %s \n\n", mData.getSurveyComment( mSID ) );
+      if ( info.comment.length() > 0 ) {
+        pw.format("    # %s \n", info.comment );
+      }
+      pw.format("\n");
+      pw.format("  centerline\n");
       if ( mFixed.size() > 0 ) {
-        pw.format("  cs latlon\n");
+        pw.format("    cs lat-long\n");
         for ( DistoXFix fix : mFixed ) {
-          pw.format("  fix %s %.2f %.2f %.2f m\n", fix.name, fix.lat, fix.lng, fix.alt );
+          pw.format("    fix %s %.6f %.6f %.2f m\n", fix.name, fix.lat, fix.lng, fix.alt );
         }
       }
-      pw.format("  centerline\n");
-      pw.format("    date %s \n", mData.getSurveyDate( mSID ) );
+      pw.format("    date %s \n", info.date );
+      if ( info.team.length() > 0 ) {
+        pw.format("    # team %s \n", info.team );
+      }
+
       pw.format("    data normal from to length compass clino\n");
       long extend = 0;
       float l=0.0f, b=0.0f, c=0.0f, b0=0.0f;
@@ -839,9 +910,6 @@ public class TopoDroidApp extends Application
    * Splay shots are not exported, they may be used to find transversal dimensions, if LRUD are not provided  
    * Multisurvey file is possible.
    */
-
-  private static final float M2FT = 3.28083f; // meters to feet 
-  // private static final byte char0C = 0x0c;
 
   private class LRUD 
   {

@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120517 point names in the point dialog
  */
 package com.android.DistoX;
 
@@ -61,13 +64,10 @@ public class DrawingActivity extends Activity
     // 0: no bezier, plain path
     // 1: bezier interpolator
 
-    public static final float CENTER_X = 100f;
+    public static final float CENTER_X = 100f; // FIXME
     public static final float CENTER_Y = 120f;
 
-    private static final float SCALE_FIX = 20.0f;
-
-    // public static final int REQUEST_SURVEY = 2;
-
+    private static final float SCALE_FIX = 20.0f; // FIXME
 
     private BezierInterpolator mBezierInterpolator;
     private DrawingSurface mDrawingSurface;

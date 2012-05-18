@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120516 length and angle units
  */
 package com.android.DistoX;
 
@@ -40,6 +43,8 @@ public class DistoXPreferences extends PreferenceActivity
   // private CheckBoxPreference mSaveOnDestroy;
   private CheckBoxPreference mCheckBT;
   private CheckBoxPreference mListRefresh;
+  private MyListPreference mUnitLength;
+  private MyListPreference mUnitAngle;
 
 
   @Override
@@ -61,6 +66,8 @@ public class DistoXPreferences extends PreferenceActivity
     // mSaveOnDestroy = (CheckBoxPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[6] );
     mCheckBT       = (CheckBoxPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[12] );
     mListRefresh   = (CheckBoxPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[15] );
+    mUnitLength    = (MyListPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[16] );
+    mUnitAngle     = (MyListPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[17] );
   }
 
 }
