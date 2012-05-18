@@ -30,7 +30,10 @@
     <string name="connect_failed">Failed connect</string>
     <string name="coverage_title">Calibration data distibution</string>
     <string name="data"> data</string>
+   
     <string name="device_busy">device busy</string>
+    <string name="device_comm_thread">Continuos data download</string>
+    <string name="device_action_thread">On-demand download and read/write</string>
     <string name="disto_bad_type">DistoX bad data type</string>
     <string name="extend_left">Left</string>
     <string name="extend_right">Right</string>
@@ -44,16 +47,17 @@
     <string name="makes_cycle">Shot makes a loop</string>
     <string name="missing_station">Missing station</string>
     <string name="no_calib">No calibration</string>
-    <string name="no_calibration">No calibration selected</string>
+    <string name="no_calibration">No calibration selected\nUse menu to select one</string>
     <string name="no_db">No database</string>
     <string name="no_device_address">Device address not selected</string>
     <string name="no_device_found">No device found</string>
-    <string name="no_gms">No data</string>
-    <string name="no_paired_device">No paired device</string>
-    <string name="no_plots">No scraps</string>
+    <string name="no_gms">Calibration has no data.\nUse Download menu to get some</string>
+    <string name="no_list_item">No item to list.\nUse menu to create some</string>
+    <string name="no_paired_device">No paired device.\nScan and pair a DistoX</string>
+    <string name="no_plots">Surveu has no scraps\nUse menu to make some</string>
     <string name="no_service">No BT service</string>
-    <string name="no_shots">No shots</string>
-    <string name="no_survey">No survey selected</string>
+    <string name="no_shots">Survey has no shots.\nUse Download menu to get some</string>
+    <string name="no_survey">No survey selected.\nUse menus to select one</string>
     <string name="not_connect">Failed to connect</string>
     <string name="not_connected">Not connected</string>
     <string name="not_enabled">BT not enabled</string>
@@ -76,6 +80,7 @@
     <string name="shot_clino">clino</string>
     <string name="shot_compass">compass</string>
     <string name="shot_from">from</string>
+    <string name="shot_info">Enter shot data</string>
     <string name="shot_length">length</string>
     <string name="shot_note">note</string>
     <string name="shot_to">to</string>
@@ -85,6 +90,7 @@
     <string name="survey_description">description</string>
     <string name="survey_info">Enter survey info</string>
     <string name="survey_name">name</string>
+    <string name="survey_team">team</string>
     <string name="toggle_failed">Failed to toggle DistoX</string>
     <string name="toggle_ok">Toggled DistoX calibration mode</string>
     <string name="undelete_text">Tap item to undelete</string>
@@ -94,6 +100,7 @@
     <string name="write_ok">Written calibration to DistoX</string>
     <string name="zoom_in_out">Zoom in/out</string>
 
+    <string name="menu_about">About</string>
     <string name="menu_blank">Hide blank shots</string>
     <string name="menu_calib">Calibration</string>
     <string name="menu_calib_list">List calibrations</string>
@@ -130,18 +137,19 @@
     <string name="menu_splay">Hide splay shots</string>
     <string name="menu_stats">Stats</string>
     <string name="menu_survey">Survey</string>
+    <string name="menu_survey_edit">Edit survey info</string>
     <string name="menu_survey_list">List surveys</string>
     <string name="menu_survey_new">New survey</string>
     <string name="menu_toggle">DistoX mode</string>
     <string name="menu_undelete">Undelete</string>
     <string name="menu_write">Write to DistoX</string>
 
-    <string name="welcome_title">Welcome to TopoDroid-0.7</string>
+    <string name="welcome_title">Welcome to TopoDroid-0.8</string>
     <string name="welcome_text">
 \nTopoDroid is an Open Source app for Android devices to make cave surveys with the DistoX.
-\n\nNo warranty: by using it you agree that I\'m not responsible for any loss of data you might incur.
-\n\nPlease visit http://code.google.com/topolinux
-\nSend comments, bug reports, feature requests, at marco.corvi@gmail.com
+\n\nNo warranty: by using it you agree that the authors are not responsible for any loss of data you might incur or damage whatsoever.
+\n\nVisit http://code.google.com/p/topolinux for documentation.
+\nSend comments, bug reports, feature requests, to marco.corvi@gmail.com
     </string>
     
 
@@ -238,5 +246,12 @@
   <string name="pref_device_message">DistoX address name</string>
   <string name="pref_checkBT_title">Check BT</string>
   <string name="pref_checkBT_summary">Check Bluetooth on start</string>
+
+  <string name="pref_unit_length_title">Lengths units</string>
+  <string name="pref_unit_length_summary">Distances unit length</string>
+  <string name="pref_unit_length_message">Distances unit length</string>
+  <string name="pref_unit_angle_title">Angle units</string>
+  <string name="pref_unit_angle_summary">Angles unit value</string>
+  <string name="pref_unit_angle_message">Angles unit value</string>
 
 </resources>

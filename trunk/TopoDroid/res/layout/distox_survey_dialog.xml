@@ -12,9 +12,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
         android:text="@string/survey_info"
+        android:textSize="18sp"
         />
    					  
-    <EditText android:id="@+id/edit_survey_name" 
+    <EditText android:id="@+id/new_survey_name" 
         android:layout_marginTop="2dip"
         android:layout_width="wrap_content"
       	android:ems="25"
@@ -22,7 +23,7 @@
         android:singleLine="true"
         android:scrollHorizontally="true" />
    		
-    <EditText android:id="@+id/edit_survey_date" 
+    <EditText android:id="@+id/new_survey_date" 
         android:maxLines="1" 
         android:layout_marginTop="2dip"
         android:layout_width="wrap_content"
@@ -32,7 +33,15 @@
         android:singleLine="true"
         android:scrollHorizontally="true" />
    		
-    <EditText android:id="@+id/edit_survey_comment" 
+    <EditText android:id="@+id/new_survey_team" 
+        android:layout_marginTop="2dip"
+        android:layout_width="wrap_content"
+      	android:ems="25"
+        android:layout_height="wrap_content" 
+        android:singleLine="true"
+        android:scrollHorizontally="true" />
+   		
+    <EditText android:id="@+id/new_survey_comment" 
         android:layout_marginTop="2dip"
         android:layout_width="wrap_content"
       	android:ems="25"
