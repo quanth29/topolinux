@@ -14,5 +14,7 @@ any comment that might be useful to others.
 || *Device* || *Android* || *Status* || *Comment* ||
 || Haiwei Vodaphone 858 Smart || 2.2 || <font color="green">Fully working || ||
 || HTC EVO 3D || 2.3 || <font color="green">Mostly working || calibration untested ||
-|| Samsung Galaxy S Captivate SGH-I897 || 2.1 || <font color="red">Bluetooth fails || unable to pair with DistoX from Android "Settings" ||
+|| Samsung Galaxy S Captivate SGH-i897 || 2.1-update1 || <font color="red">Bluetooth fails || unable to pair with DistoX from Android "Settings" ||
+|| Samsung Galaxy S Captivate SGH-i897 || 2.2 || <font color="red">Bluetooth fails || unable to pair with DistoX from Android "Settings" ||
+|| Samsung Galaxy S Captivate SGH-i897 || 2.3 || <font color="green">Mostly working || calibration untested ||
 || Samsung GT-p1000 || ... || <font color="green">Mostly working || ||
