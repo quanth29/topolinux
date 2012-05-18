@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120517 angle units
  */
 package com.android.DistoX;
 
@@ -138,11 +141,13 @@ public class CalibCBlock
 
   public String toString()
   {
+    float ua = TopoDroidApp.mUnitAngle;
+
     StringWriter sw = new StringWriter();
     PrintWriter pw  = new PrintWriter(sw);
     computeBearingAndClino();
     pw.format("%d <%d> %5.1f %5.1f %5.1f %6.4f",
-      mId, mGroup, mBearing, mClino, mRoll, mError );
+      mId, mGroup, mBearing*ua, mClino*ua, mRoll*ua, mError );
     return sw.getBuffer().toString();
   }
 }

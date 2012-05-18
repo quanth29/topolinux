@@ -7,6 +7,11 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120518 menu about
+ * 20120518 menu survey-edit / survey info edit
+ * 20120518 messages + undelete signature
  */
 package com.android.DistoX;
 
@@ -126,6 +131,7 @@ public class DistoX extends Activity
   private MenuItem mMIexport;
   // privtae MenuItem mMIstats;
   private MenuItem mMIsurveynew;
+  private MenuItem mMIsurveyedit;
   private MenuItem mMIshotnew;
   private MenuItem mMIsurveys;
   private MenuItem mMIundelete;
@@ -147,6 +153,7 @@ public class DistoX extends Activity
   private MenuItem mMIdownload = null;
 
   private MenuItem  mMIoptions;
+  private MenuItem  mMIabout;
 
   // -------------------------------------------------------------------
   // forward survey name to DataHelper
@@ -313,8 +320,12 @@ public class DistoX extends Activity
     // Log.v(TAG, "updateList" );
     mList.setAdapter( mArrayAdapter );
     mArrayAdapter.clear();
-    for ( String item : list ) {
-      mArrayAdapter.add( item );
+    if ( list.size() == 0 ) {
+      Toast.makeText( this, R.string.no_list_item, Toast.LENGTH_LONG ).show();
+    } else {
+      for ( String item : list ) {
+        mArrayAdapter.add( item );
+      }
     }
   }
 
@@ -322,7 +333,7 @@ public class DistoX extends Activity
   {
     // Log.v(TAG, "updatePlotList size " + list.size() );
     if ( list.size() == 0 ) {
-      Toast.makeText( this, R.string.no_plots, Toast.LENGTH_SHORT ).show();
+      Toast.makeText( this, R.string.no_plots, Toast.LENGTH_LONG ).show();
       setStatus( STATUS_SHOT );
       updateDisplay( true );
       return;
@@ -344,12 +355,12 @@ public class DistoX extends Activity
   private void updateShotList( List<DistoXDBlock> list )
   {
     // Log.v(TAG, "updateShotList size " + list.size() );
-    if ( list.size() == 0 ) {
-      Toast.makeText( this, R.string.no_shots, Toast.LENGTH_SHORT ).show();
-      return;
-    }
     mDataAdapter.clear();
     mList.setAdapter( mDataAdapter );
+    if ( list.size() == 0 ) {
+      Toast.makeText( this, R.string.no_shots, Toast.LENGTH_LONG ).show();
+      return;
+    }
     DistoXDBlock prev = null;
     boolean prev_is_leg = false;
     for ( DistoXDBlock item : list ) {
@@ -397,7 +408,7 @@ public class DistoX extends Activity
   // ---------------------------------------------------------------
   // list items click
 
-
+  @Override 
   public void onItemClick(AdapterView<?> parent, View view, int position, long id)
   {
     CharSequence item = ((TextView) view).getText();
@@ -465,13 +476,24 @@ public class DistoX extends Activity
     resetStatus(); 
   }
 
-  public void makeNewSurvey( String name, String date, String comment )
+  public void makeNewSurvey( String name, String date, String comment, String team )
   {
     long id = app.setSurveyFromName( name );
     // Log.v( TAG, "INSERT survey id " + id + " date " + date + " name " + name + " comment " + comment );
     app.mData.updateSurveyDayAndComment( id, date, comment );
+    if ( team != null ) {
+      app.mData.updateSurveyTeam( id, team );
+    }
     setAllStatus( STATUS_SHOT );
     updateDisplay( true );
+  }
+
+  public void editSurvey( long id, String name, String date, String comment, String team )
+  {
+    // Log.v( TAG, "UPDATE survey id " + id + " date " + date + " name " + name + " comment " + comment );
+    app.mData.updateSurveyName( id, name );
+    app.mData.updateSurveyDayAndComment( id, date, comment );
+    app.mData.updateSurveyTeam( id, team );
   }
 
   public void addLocation( String station, double latitude, double longitude, double altitude )
@@ -558,12 +580,14 @@ public class DistoX extends Activity
     mMInotes    = menu.add( R.string.menu_notes );
 
     mSMmore    = menu.addSubMenu( R.string.menu_more );
+      mMIsurveyedit = mSMmore.add( R.string.menu_survey_edit );
       mMIplotnew = mSMmore.add( R.string.menu_plot_new );
       mMIexport  = mSMmore.add( R.string.menu_save_th );
       mMIsurveys   = mSMmore.add( R.string.menu_survey_list );
       mMIsurveynew = mSMmore.add( R.string.menu_survey_new );
       mMIoptions = mSMmore.add( R.string.menu_options );
       mMIcalib   = mSMmore.add( R.string.menu_calib );
+      mMIabout   = mSMmore.add( R.string.menu_about );
 
     // Log.v( TAG, "menu size " + menu.size() );
     // menu has size 7
@@ -612,12 +636,14 @@ public class DistoX extends Activity
     } else if ( item == mMIoptions ) { // OPTIONS DIALOG
       Intent optionsIntent = new Intent( this, DistoXPreferences.class );
       startActivity( optionsIntent );
+    } else if ( item == mMIabout ) { // ABOUT DIALOG
+      showAbout();
     } else if ( item == mMIundelete ) { // UNDELETE SURVEY ITEM
       if ( app.mData != null && app.getSurveyId() >= 0 ) {
         // Intent undeleteIntent = new Intent( Intent.ACTION_EDIT ).setClass( this, DistoXUndelete.class );
         // undeleteIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY_UNDL, app.getSurveyId() );
         // startActivityForResult( undeleteIntent, REQUEST_UNDELETE );
-        (new DistoXUndelete(this, this, app.getSurveyId() ) ).show();
+        (new DistoXUndelete(this, this, app.mData, app.getSurveyId() ) ).show();
       } else {
         Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
       }
@@ -632,6 +658,12 @@ public class DistoX extends Activity
     } else if ( item == mMIsurveynew ) { // NEW SURVEY
       setStatus( STATUS_SURVEY );
       (new DistoXSurveyDialog( this, this )).show();
+      // updateDisplay( true ); // FIXME this should not be necessary
+    } else if ( item == mMIsurveyedit ) { // EDIT SURVEY
+      // setStatus( STATUS_SHOT );
+      // TODO survey name, date, comment, team
+      DistoXSurveyInfo info = app.getSurveyInfo();
+      (new DistoXSurveyEditDialog( this, this, info )).show();
     } else if ( item == mMIsplay ) {     // toggle splay shots
       mSplay = ! mMIsplay.isChecked();
       mMIsplay.setChecked( mSplay );
@@ -724,6 +756,13 @@ public class DistoX extends Activity
     // restoreInstanceFromFile();
     restoreInstanceFromData();
     if ( app.getSurveyId() < 0 ) {
+      showAbout();
+    }
+    // setTitleColor( 0x006d6df6 );
+  }
+
+  private void showAbout()
+  {
       final Dialog dial = new Dialog(this);
       dial.setContentView(R.layout.welcome);
       dial.setTitle(R.string.welcome_title);
@@ -734,8 +773,6 @@ public class DistoX extends Activity
           dial.dismiss();
         } } );
       dial.show();
-    }
-    // setTitleColor( 0x006d6df6 );
   }
 
   // private void restoreInstanceState(Bundle map )

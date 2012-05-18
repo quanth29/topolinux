@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120517 angle units
  */
 package com.android.DistoX;
 
@@ -261,7 +264,7 @@ public class CalibActivity extends Activity
   private void updateGMList( List<CalibCBlock> list )
   {
     if ( list.size() == 0 ) {
-      Toast.makeText( this, R.string.no_gms, Toast.LENGTH_SHORT ).show();
+      Toast.makeText( this, R.string.no_gms, Toast.LENGTH_LONG ).show();
       return;
     }
     mDataAdapter.clear();
@@ -286,6 +289,7 @@ public class CalibActivity extends Activity
   // list items click
 
 
+  @Override
   public void onItemClick(AdapterView<?> parent, View view, int pos, long id)
   {
     CharSequence item = ((TextView) view).getText();
@@ -392,23 +396,6 @@ public class CalibActivity extends Activity
       updateDisplay( true );
     } else if ( item == mMIdownload ) {
       new DistoXRefresh( app, this ).execute();
-      // updateDisplay( true );
-    // } else if ( item == mMInotes ) { // ANNOTATIONS DIALOG
-    //   if ( app.getSurvey() != null ) {
-    //     Intent notesIntent = new Intent( this, DistoXAnnotations.class );
-    //     notesIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY, app.getSurvey() );
-    //     startActivity( notesIntent );
-    //   } else {
-    //     Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
-    //   }
-    // } else if ( item == mMIundelete ) { // UNDELETE SURVEY ITEM
-    //   if ( app.mData != null && app.getSurveyId() >= 0 ) {
-    //     Intent undeleteIntent = new Intent( Intent.ACTION_EDIT ).setClass( this, DistoXUndelete.class );
-    //     undeleteIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY_UNDL, app.getSurveyId() );
-    //     startActivityForResult( undeleteIntent, REQUEST_UNDELETE );
-    //   } else {
-    //     Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
-    //   }
     } else if ( item == mMIsurvey ) { // SURVEYS LIST
       finish();
     } else if ( item == mMIcalibnew ) {  // NEW CALIB
@@ -455,7 +442,7 @@ public class CalibActivity extends Activity
       } 
     } else if ( item == mMIwrite ) {
       if ( app.mCalibration == null ) {
-        Toast.makeText(getApplicationContext(), R.string.no_calibration, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), R.string.no_calibration, Toast.LENGTH_LONG).show();
       } else {
         byte[] coeff = app.mCalibration.GetCoeff();
         if ( coeff == null ) {

@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120517 team attribute
  */
 package com.android.DistoX;
 
@@ -36,6 +39,7 @@ public class DistoXSurveyDialog extends Dialog
 
   private EditText mEditText;
   private EditText mEditDate;
+  private EditText mEditTeam;
   private EditText mEditComment;
   private Button   mBtnOK;
   private Button   mBtnBack;
@@ -52,13 +56,15 @@ public class DistoXSurveyDialog extends Dialog
   {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.distox_survey_dialog);
-    mEditText    = (EditText) findViewById(R.id.edit_survey_name);
-    mEditDate    = (EditText) findViewById(R.id.edit_survey_date);
-    mEditComment = (EditText) findViewById(R.id.edit_survey_comment);
+    mEditText    = (EditText) findViewById(R.id.new_survey_name);
+    mEditDate    = (EditText) findViewById(R.id.new_survey_date);
+    mEditTeam    = (EditText) findViewById(R.id.new_survey_team);
+    mEditComment = (EditText) findViewById(R.id.new_survey_comment);
     mEditText.setHint( R.string.survey_name );
     SimpleDateFormat sdf = new SimpleDateFormat( "yyyy.MM.dd", Locale.US );
     mEditDate.setText( sdf.format( new Date() ) );
     mEditComment.setHint( R.string.survey_description );
+    mEditTeam.setHint( R.string.survey_team );
 
     mBtnOK = (Button) findViewById(R.id.button_ok_survey_name );
     mBtnOK.setOnClickListener( this );
@@ -72,17 +78,11 @@ public class DistoXSurveyDialog extends Dialog
     if ( b == mBtnOK ) {
       mDistoX.makeNewSurvey( mEditText.getText().toString(),
                              mEditDate.getText().toString(),
-                             mEditComment.getText().toString() );
-      // Intent result = new Intent();
-      // // result.setAction( mEditText.getText().toString() ) );
-      // result.putExtra( TopoDroidApp.TOPODROID_SURVEY_NAME, mEditText.getText().toString() );
-      // result.putExtra( TopoDroidApp.TOPODROID_SURVEY_DATE, mEditDate.getText().toString() );
-      // result.putExtra( TopoDroidApp.TOPODROID_SURVEY_CMT,  mEditComment.getText().toString() );
-      // setResult( Activity.RESULT_OK, result );
+                             mEditComment.getText().toString(),
+                             mEditText.getText().toString() );
     } else {
-      // setResult( RESULT_CANCELED );
+      /* nothing */
     }
-    // finish();
     dismiss();
   }
 

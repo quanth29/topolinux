@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120517 cstr signature
  */
 package com.android.DistoX;
 
@@ -41,10 +44,11 @@ public class DistoXUndelete extends Dialog
   ArrayAdapter< String >  mArrayAdapter;
   ListView mList;
 
-  public DistoXUndelete( Context context, DistoX distox, long sid )
+  public DistoXUndelete( Context context, DistoX distox, DistoXDataHelper data, long sid )
   {
     super( context );
     mDistoX = distox;
+    mData = data;
     mSID = sid;
   }
 
@@ -55,6 +59,7 @@ public class DistoXUndelete extends Dialog
     dismiss();
   }
 
+  @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id)
   {
     CharSequence item = ((TextView) view).getText();
@@ -89,7 +94,7 @@ public class DistoXUndelete extends Dialog
 
     // TODO fill the list
     // mSID  = getIntent().getExtras().getLong( TopoDroidApp.TOPODROID_SURVEY_UNDL );
-    mData = new DistoXDataHelper( mDistoX );
+    // mData = new DistoXDataHelper( mDistoX );
     List< DistoXDBlock > shots = mData.selectAllShots( mSID, 1 );
     List< DistoXPlot > plots   = mData.selectAllPlots( mSID, 1 );
     if ( shots.size() == 0 && plots.size() == 0 ) {

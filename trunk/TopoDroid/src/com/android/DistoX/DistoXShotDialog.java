@@ -86,7 +86,7 @@ public class DistoXShotDialog extends Dialog
           String digits = name.replaceAll( "\\D*", "" );
           int h = Integer.valueOf( digits ) + 1;
           String ret = name.replaceAll( "\\d+", Integer.toString(h) );
-          Log.v( TAG, "digits " + digits + " h " + h + " ret " + ret );
+          // Log.v( TAG, "digits " + digits + " h " + h + " ret " + ret );
           return ret;
         }
       }
