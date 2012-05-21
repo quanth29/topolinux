@@ -1,1 +1,0 @@
-../QTshot/IconSet.h
