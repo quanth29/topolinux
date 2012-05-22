@@ -7,59 +7,40 @@
     android:paddingRight="6dip"
     android:paddingBottom="3dip">
    					  
-
     <TextView android:id="@+id/text_calib"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
-        android:text="@string/calib_name"
+        android:text="@string/calib_info"
         android:textSize="18sp"
         />
    					  
-    <EditText android:id="@+id/edit_calib_name" 
+    <EditText android:id="@+id/calib_name" 
         android:maxLines="1" 
         android:layout_marginTop="2dip"
         android:layout_width="wrap_content"
-      	android:ems="25"
         android:layout_height="wrap_content" 
         android:singleLine="true"
+        android:width="240dip"
+        android:hint="@string/name"
         android:scrollHorizontally="true" />
    		
-    <EditText android:id="@+id/edit_calib_date" 
+    <EditText android:id="@+id/calib_date" 
         android:maxLines="1" 
         android:layout_marginTop="2dip"
         android:layout_width="wrap_content"
-      	android:ems="25"
         android:layout_height="wrap_content" 
         android:singleLine="true"
         android:scrollHorizontally="true" />
 
-    <EditText android:id="@+id/edit_calib_comment" 
+    <EditText android:id="@+id/calib_comment" 
         android:maxLines="1" 
         android:layout_marginTop="2dip"
-        android:layout_width="180dip"
-      	android:ems="25"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
+        android:width="240dip"
         android:singleLine="true"
+        android:hint="@string/description"
         android:scrollHorizontally="true" />
    		
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
-      android:layout_width="wrap_content" 
-      android:layout_height="wrap_content"
-      android:orientation="horizontal" 
-      >
-      <Button android:id="@+id/button_ok_calib_name"
-        android:layout_width="wrap_content" 
-        android:layout_height="wrap_content" 
-        android:layout_gravity="right"
-        android:text="@string/button_select"
-        />
-   		
-      <Button android:id="@+id/button_back_calib_name"
-        android:layout_width="wrap_content" 
-        android:layout_height="wrap_content" 
-        android:layout_gravity="right"
-        android:text="@string/button_back"
-        />
-    </LinearLayout>
 
 </LinearLayout>

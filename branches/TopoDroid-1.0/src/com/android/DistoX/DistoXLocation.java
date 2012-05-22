@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120517 comments
+ * 20120521 parented with SurveyActivity
  */
 package com.android.DistoX;
 
@@ -60,13 +61,13 @@ public class DistoXLocation extends Dialog
   private double latitude;  // decimal degrees
   private double longitude; // decimal degrees
   private double altitude;  // meters
-  private DistoX mDistoX;
+  private SurveyActivity mParent;
   private GpsStatus mStatus;
 
-  public DistoXLocation( Context context, DistoX distox, LocationManager lm )
+  public DistoXLocation( Context context, SurveyActivity parent, LocationManager lm )
   {
     super(context);
-    mDistoX = distox;
+    mParent = parent;
     locManager = lm;
     mStatus = locManager.getGpsStatus( null );
   }
@@ -106,7 +107,7 @@ public class DistoXLocation extends Dialog
     if ( b == mBtnOK && mLocated ) {
       // TODO use mETstation.getText()
       // TODO call back DistoX 
-      mDistoX.addLocation( mETstation.getText().toString(), latitude, longitude, altitude);
+      mParent.addLocation( mETstation.getText().toString(), latitude, longitude, altitude);
       // Intent intent = new Intent();
       // intent.putExtra( TopoDroidApp.TOPODROID_LAT,  latitude );
       // intent.putExtra( TopoDroidApp.TOPODROID_LONG, longitude );

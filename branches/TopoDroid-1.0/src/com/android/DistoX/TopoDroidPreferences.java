@@ -1,4 +1,4 @@
-/* @file DistoXPreferences.java
+/* @file TopoDroidPreferences.java
  *
  * @author marco corvi
  * @date nov 2011
@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120516 length and angle units
+ * 20120521 converted from DistoXPreferences.java
  */
 package com.android.DistoX;
 
@@ -26,7 +27,7 @@ import android.view.MenuItem;
 
 /**
  */
-public class DistoXPreferences extends PreferenceActivity 
+public class TopoDroidPreferences extends PreferenceActivity 
 {
   // private static final String TAG = "DistoX";
 

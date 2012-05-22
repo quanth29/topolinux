@@ -47,13 +47,10 @@ public class TopoDroidApp extends Application
   DistoXDataHelper mData = null;
   Calibration mCalibration = null;
 
-  private long mSID   = -1;   // id of the current survey
-  // private long mSIDid = -1; // id of the shot
-  private long mCID   = -1;   // id of the current calib
-  // private long mCIDid = -1;
-  // private long mPID   = -1;   // id of the plot
-  private String mySurvey;   // current survey name
-  private String myCalib;    // current calib name
+  long mSID   = -1;   // id of the current survey
+  long mCID   = -1;   // id of the current calib
+  String mySurvey;   // current survey name
+  String myCalib;    // current calib name
 
   // preferences
   float mCloseDistance;
@@ -233,15 +230,23 @@ public class TopoDroidApp extends Application
   }
 
   // ----------------------------------------------------------------
-  // survey info
+  // survey/calib info
   //
 
-  public DistoXSurveyInfo getSurveyInfo()
+  public SurveyInfo getSurveyInfo()
   {
     if ( mSID <= 0 ) return null;
     if ( mData == null ) return null;
     return mData.selectSurveyInfo( mSID );
   }
+
+  public CalibInfo getCalibInfo()
+  {
+    if ( mCID <= 0 ) return null;
+    if ( mData == null ) return null;
+    return mData.selectCalibInfo( mCID );
+  }
+
   // ----------------------------------------------------------------
 
   @Override
@@ -351,14 +356,17 @@ public class TopoDroidApp extends Application
     return mComm != null && mComm.mBTConnected;
   }
 
+  // FIXME to disappear ...
   public long getSurveyId() { return mSID; }
   public long getCalibId()  { return mCID; }
   public String getSurvey() { return mySurvey; }
   public String getCalib()  { return myCalib; }
 
   public long setSurveyFromName( String survey ) 
-  {
-    if ( mData != null ) {
+  { 
+    mSID = -1;
+    mySurvey = null;
+    if ( survey != null && mData != null ) {
       mSID = mData.setSurvey( survey );
       mFixed.clear();
       mySurvey = null;
@@ -371,9 +379,27 @@ public class TopoDroidApp extends Application
     return 0;
   }
 
-  public long setCalibFromName( String calib ) 
+  public boolean hasSurveyName( String name ) 
   {
     if ( mData != null ) {
+      return mData.hasSurveyName( name );
+    }
+    return true;
+  }
+
+  public boolean hasCalibName( String name ) 
+  {
+    if ( mData != null ) {
+      return mData.hasCalibName( name );
+    }
+    return true;
+  }
+
+  public long setCalibFromName( String calib ) 
+  {
+    mCID = -1;
+    myCalib = null;
+    if ( calib != null && mData != null ) {
       mCID = mData.setCalib( calib );
       myCalib = (mCID > 0)? calib : null;
       return mCID;
@@ -483,7 +509,7 @@ public class TopoDroidApp extends Application
     String filename = TopoDroidApp.APP_TH_PATH + mySurvey + ".th";
     List<DistoXDBlock> list = mData.selectAllShots( mSID, 0 );
     try {
-      DistoXSurveyInfo info = mData.selectSurveyInfo( mSID );
+      SurveyInfo info = mData.selectSurveyInfo( mSID );
       FileWriter fw = new FileWriter( filename );
       PrintWriter pw = new PrintWriter( fw );
       pw.format("survey %s -title \"%s\"\n", mySurvey, mySurvey );
@@ -939,16 +965,19 @@ public class TopoDroidApp extends Application
     pw.format( "\r\n" );
   }
 
-  private void printShotToTro( PrintWriter pw, DistoXDBlock item, float l, float b, float c, int n,
-                               LRUD lrud, boolean start )
+  private void printStartShotToTro( PrintWriter pw, DistoXDBlock item, List< DistoXDBlock > list )
+  {
+    LRUD lrud = computeLRUD( item, list, true );
+    pw.format(Locale.ENGLISH, "%s %s 0.00 0.00 0.00 ", item.mFrom, item.mFrom );
+    pw.format(Locale.ENGLISH, "%.2f %.2f %.2f %.2f N I\r\n", lrud.l, lrud.r, lrud.u, lrud.d );
+  }
+
+  private void printShotToTro( PrintWriter pw, DistoXDBlock item, float l, float b, float c, int n, LRUD lrud )
   {
     b = in360( b/n );
-    if ( start ) {
-      pw.format(Locale.ENGLISH, "%s %s 0.00 0.00 0.00 ", item.mFrom, item.mFrom );
-    }
-    pw.format(Locale.ENGLISH, "%.2f %.2f %.2f %.2f N I\r\n", lrud.l, lrud.r, lrud.u, lrud.d );
     pw.format("%s %s ", item.mFrom, item.mTo );
     pw.format(Locale.ENGLISH, "%.2f %.1f %.1f ", (l/n), b, c/n );
+    pw.format(Locale.ENGLISH, "%.2f %.2f %.2f %.2f N I\r\n", lrud.l, lrud.r, lrud.u, lrud.d );
     // if ( duplicate ) {
     //   // pw.format(" #|L#");
     // }
@@ -958,7 +987,7 @@ public class TopoDroidApp extends Application
   }
 
 
-  private LRUD computeLRUD( DistoXDBlock b, List<DistoXDBlock> list )
+  private LRUD computeLRUD( DistoXDBlock b, List<DistoXDBlock> list, boolean at_from )
   {
     LRUD lrud = new LRUD();
     float grad2rad = TopoDroidApp.GRAD2RAD_FACTOR;
@@ -970,7 +999,7 @@ public class TopoDroidApp extends Application
     float sb0 = e0;
     float sc02 = sc0 * sc0;
     float cc02 = 1.0f - sc02;
-    String station = b.mFrom;
+    String station = ( at_from ) ? b.mFrom : b.mTo;
     
     for ( DistoXDBlock item : list ) {
       String from = item.mFrom;
@@ -1054,7 +1083,7 @@ public class TopoDroidApp extends Application
             }
           } else { // only TO station
             if ( n > 0 ) {
-              LRUD lrud = computeLRUD( ref_item, list );
+              LRUD lrud = computeLRUD( ref_item, list, true );
               pw.format("%s-%s %s-%s ", mySurvey, ref_item.mFrom, mySurvey, ref_item.mTo );
               printShotToDat( pw, l, b, c, n, lrud, duplicate, ref_item.mComment );
               duplicate = false;
@@ -1065,7 +1094,7 @@ public class TopoDroidApp extends Application
         } else { // with FROM station
           if ( to == null || to.length() == 0 ) { // splay shot
             if ( n > 0 ) { // write pervious leg shot
-              LRUD lrud = computeLRUD( ref_item, list );
+              LRUD lrud = computeLRUD( ref_item, list, true );
               pw.format("%s-%s %s-%s ", mySurvey, ref_item.mFrom, mySurvey, ref_item.mTo );
               printShotToDat( pw, l, b, c, n, lrud, duplicate, ref_item.mComment );
               duplicate = false;
@@ -1074,7 +1103,7 @@ public class TopoDroidApp extends Application
             }
           } else {
             if ( n > 0 ) {
-              LRUD lrud = computeLRUD( ref_item, list );
+              LRUD lrud = computeLRUD( ref_item, list, true );
               pw.format("%s-%s %s-%s ", mySurvey, ref_item.mFrom, mySurvey, ref_item.mTo );
               printShotToDat( pw, l, b, c, n, lrud, duplicate, ref_item.mComment );
             }
@@ -1089,7 +1118,7 @@ public class TopoDroidApp extends Application
         }
       }
       if ( n > 0 ) {
-        LRUD lrud = computeLRUD( ref_item, list );
+        LRUD lrud = computeLRUD( ref_item, list, true );
         pw.format("%s-%s %s-%s ", mySurvey, ref_item.mFrom, mySurvey, ref_item.mTo );
         printShotToDat( pw, l, b, c, n, lrud, duplicate, ref_item.mComment );
       }
@@ -1131,7 +1160,7 @@ public class TopoDroidApp extends Application
       // pw.format("Club ...\r\n");
       pw.format("Couleur 0,0,0\r\n\r\n");
       
-      pw.format("Param Deca Deg Clino Deg 0.0000 Dir,Dir,Dir Inc 0,0,0\r\n\r\n");
+      pw.format("Param Deca Deg Clino Deg 0.0000 Dir,Dir,Dir Arr Inc 0,0,0\r\n\r\n");
 
       float l=0.0f, b=0.0f, c=0.0f, b0=0.0f; // shot average values
       int n = 0;
@@ -1156,9 +1185,12 @@ public class TopoDroidApp extends Application
             }
           } else { // only TO station
             if ( n > 0 ) {
-              LRUD lrud = computeLRUD( ref_item, list );
-              printShotToTro( pw, ref_item, l, b, c, n, lrud, start );
-              start = false;
+              if ( start ) {
+                printStartShotToTro( pw, ref_item, list );
+                start = false;
+              }
+              LRUD lrud = computeLRUD( ref_item, list, false );
+              printShotToTro( pw, ref_item, l, b, c, n, lrud );
               duplicate = false;
               n = 0;
               ref_item = null; 
@@ -1167,18 +1199,24 @@ public class TopoDroidApp extends Application
         } else { // with FROM station
           if ( to == null || to.length() == 0 ) { // splay shot
             if ( n > 0 ) { // write pervious leg shot
-              LRUD lrud = computeLRUD( ref_item, list );
-              printShotToTro( pw, ref_item, l, b, c, n, lrud, start );
-              start = false;
+              if ( start ) {
+                printStartShotToTro( pw, ref_item, list );
+                start = false;
+              }
+              LRUD lrud = computeLRUD( ref_item, list, false );
+              printShotToTro( pw, ref_item, l, b, c, n, lrud );
               duplicate = false;
               n = 0;
               ref_item = null; 
             }
           } else {
             if ( n > 0 ) {
-              LRUD lrud = computeLRUD( ref_item, list );
-              printShotToTro( pw, ref_item, l, b, c, n, lrud, start );
-              start = false;
+              if ( start ) {
+                printStartShotToTro( pw, ref_item, list );
+                start = false;
+              }
+              LRUD lrud = computeLRUD( ref_item, list, false );
+              printShotToTro( pw, ref_item, l, b, c, n, lrud );
             }
             ref_item = item;
             duplicate = ( item.mFlag == DistoXDBlock.BLOCK_DUPLICATE );
@@ -1191,10 +1229,13 @@ public class TopoDroidApp extends Application
         }
       }
       if ( n > 0 ) {
-        LRUD lrud = computeLRUD( ref_item, list );
-        printShotToTro( pw, ref_item, l, b, c, n, lrud, start );
+        if ( start ) {
+          printStartShotToTro( pw, ref_item, list );
+          start = false;
+        }
+        LRUD lrud = computeLRUD( ref_item, list, false );
+        printShotToTro( pw, ref_item, l, b, c, n, lrud );
       }
-      pw.format(" * * * * N I\r\n");
 
       fw.flush();
       fw.close();

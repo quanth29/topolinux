@@ -38,24 +38,22 @@ public class DistoXUndelete extends Dialog
 {
   public long mSID;
   DistoXDataHelper mData;
-  DistoX mDistoX;
+  ShotActivity mParent;
 
   private Button btnCancel;
   ArrayAdapter< String >  mArrayAdapter;
   ListView mList;
 
-  public DistoXUndelete( Context context, DistoX distox, DistoXDataHelper data, long sid )
+  public DistoXUndelete( Context context, ShotActivity parent, DistoXDataHelper data, long sid )
   {
     super( context );
-    mDistoX = distox;
-    mData = data;
-    mSID = sid;
+    mParent = parent;
+    mData   = data;
+    mSID    = sid;
   }
 
   public void onClick(View v) 
   {
-    // setResult( Activity.RESULT_CANCELED );
-    // finish();
     dismiss();
   }
 
@@ -64,20 +62,14 @@ public class DistoXUndelete extends Dialog
   {
     CharSequence item = ((TextView) view).getText();
     String[] value = item.toString().split( " " );
-    // Log.v( "DistoX onItemClick() " + mDistoX.StatusName() + " value: " + value + " pos " + position );
     
     if ( value.length >= 2 ) {
-      // Intent result = new Intent();
-      // setResult( Activity.RESULT_OK, result );
       if ( value[0].equals( "shot" ) ) {
         mData.undeleteShot( Long.parseLong( value[1] ), mSID );
       } else {
         mData.undeletePlot( Long.parseLong( value[1] ), mSID );
       }
-    // } else {
-      // setResult( Activity.RESULT_CANCELED );
     }
-    // finish();
     dismiss();
   }
 
@@ -86,19 +78,17 @@ public class DistoXUndelete extends Dialog
     super.onCreate( savedInstanceState );
 
     setContentView(R.layout.undelete);
-    mArrayAdapter = new ArrayAdapter<String>( mDistoX, R.layout.message );
+    mArrayAdapter = new ArrayAdapter<String>( mParent, R.layout.message );
     mList = (ListView) findViewById(R.id.list_undelete);
     mList.setAdapter( mArrayAdapter );
     mList.setOnItemClickListener( this );
     mList.setDividerHeight( 2 );
 
     // TODO fill the list
-    // mSID  = getIntent().getExtras().getLong( TopoDroidApp.TOPODROID_SURVEY_UNDL );
-    // mData = new DistoXDataHelper( mDistoX );
     List< DistoXDBlock > shots = mData.selectAllShots( mSID, 1 );
     List< DistoXPlot > plots   = mData.selectAllPlots( mSID, 1 );
     if ( shots.size() == 0 && plots.size() == 0 ) {
-      Toast.makeText( mDistoX, "No item to undelete", Toast.LENGTH_LONG ).show();
+      Toast.makeText( mParent, "No item to undelete", Toast.LENGTH_LONG ).show();
       dismiss();
       // finish();
     }

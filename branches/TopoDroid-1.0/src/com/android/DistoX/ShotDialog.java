@@ -1,4 +1,4 @@
-/* @file DistoXShotDialog.java
+/* @file ShotDialog.java
  *
  * @author marco corvi
  * @date nov 2011
@@ -32,11 +32,11 @@ import android.view.View.OnKeyListener;
 import android.view.KeyEvent;
 
 
-public class DistoXShotDialog extends Dialog
+public class ShotDialog extends Dialog
                               implements View.OnClickListener
 {
-  private static final String TAG = "DistoXShotDialog";
-  private DistoX mDistoX;
+  private static final String TAG = "DistoX ShotDialog";
+  private ShotActivity mParent;
   private DistoXDBlock mBlk;
 
   private Pattern mPattern; // name pattern
@@ -61,51 +61,18 @@ public class DistoXShotDialog extends Dialog
   long shot_flag;
   String shot_comment;
 
-  private static char[] lc = {
-    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-    'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' 
-  };
-  private static char[] uc = {
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-    'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' 
-  };
-
-  private String increment( String name )
-  {
-    // if name is numeric
-    if ( name != null && name.length() > 0 ) {
-      int len = name.length();
-      if ( len > 0 ) {
-        char ch = name.charAt( len - 1 );
-        int k = Character.getNumericValue( ch );
-        if ( k >= 10 && k < 35 ) {
-          k -= 9; // - 10 + 1
-          return name.substring( 0, name.length() - 1 ) + 
-           ( Character.isLowerCase( ch )? lc[k] : uc[k] );
-        } else if ( k >= 0 && k < 10 ) {
-          String digits = name.replaceAll( "\\D*", "" );
-          int h = Integer.valueOf( digits ) + 1;
-          String ret = name.replaceAll( "\\d+", Integer.toString(h) );
-          // Log.v( TAG, "digits " + digits + " h " + h + " ret " + ret );
-          return ret;
-        }
-      }
-    }
-    return "";
-  }
-
-  public DistoXShotDialog( Context context, DistoX distox, DistoXDBlock blk, String data, DistoXDBlock prev )
-                           // String from, String to, String data, long extend, long flag, String comment )
+  public ShotDialog( Context context, ShotActivity distox,
+                     DistoXDBlock blk, String data, DistoXDBlock prev )
   {
     super(context);
-    mDistoX      = distox;
+    mParent      = distox;
     mBlk         = blk;
 
     shot_from    = blk.mFrom;
     shot_to      = blk.mTo;
     if ( blk.type() == DistoXDBlock.BLOCK_BLANK && prev != null ) {
       shot_from = prev.mTo;
-      shot_to   = increment( prev.mTo );
+      shot_to   = DistoXStationName.increment( prev.mTo );
     }
     
     shot_data    = data;
@@ -180,9 +147,9 @@ public class DistoXShotDialog extends Dialog
       String comment = mETcomment.getText().toString();
       if ( comment != null ) mBlk.mComment = comment;
 
-      mDistoX.updateShot( shot_from, shot_to, shot_extend, shot_flag, comment );
+      mParent.updateShot( shot_from, shot_to, shot_extend, shot_flag, comment );
     } else if ( b == mButtonDrop ) {
-      mDistoX.dropShot();
+      mParent.dropShot();
     }
     dismiss();
   }

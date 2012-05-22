@@ -33,7 +33,7 @@ public class CalibGMDialog extends Dialog
                            implements View.OnClickListener
 {
   // private static final String TAG = "DistoX GMDialog";
-  private CalibActivity mCalib;
+  private GMActivity mParent;
   private String mGroup;
   private String mData;
 
@@ -48,10 +48,10 @@ public class CalibGMDialog extends Dialog
    * @param group     data group
    * @param data      calibration data (as string)
    */
-  CalibGMDialog( Context context, CalibActivity calib, String group, String data )
+  CalibGMDialog( Context context, GMActivity parent, String group, String data )
   {
     super( context );
-    mCalib = calib;
+    mParent = parent;
     mGroup = group;
     mData  = data;
   }
@@ -92,7 +92,7 @@ public class CalibGMDialog extends Dialog
   {
     Button b = (Button) v;
     if ( b == mButtonOK ) {
-      mCalib.updateGM( mEditText.getText().toString() );
+      mParent.updateGM( mEditText.getText().toString() );
     }
     dismiss();
   }
