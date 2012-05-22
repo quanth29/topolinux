@@ -825,14 +825,6 @@ public class DrawingActivity extends Activity
       // mMIoptions.setIcon( R.drawable.prefs );
 
       if ( mNum == null ) mMIstats.setEnabled( false );
-
-      // mMIsaveTH2.setIcon( android.R.drawable.ic_menu_save );
-      // mMIredo.setIcon( android.R.drawable.ic_menu_revert );
-      // mMIdisplay.setIcon( android.R.drawable.ic_menu_slideshow );
-      // mMIstats.setIcon( android.R.drawable.ic_menu_info_details );
-      // mMInotes.setIcon( android.R.drawable.ic_menu_edit );
-      // mSMmore.setIcon( android.R.drawable.ic_menu_more );
-
       return true;
     }
 
@@ -888,7 +880,7 @@ public class DrawingActivity extends Activity
           mData.deletePlot( mPid, mSid );
         finish();
       } else if ( item == mMIoptions ) { // OPTIONS DIALOG
-        Intent optionsIntent = new Intent( this, DistoXPreferences.class );
+        Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
         startActivity( optionsIntent );
       } else if (item == mMIsaveTH2 ) {
         if ( saveTh2() ) {

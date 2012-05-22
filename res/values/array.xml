@@ -55,8 +55,8 @@
   </string-array>
 
   <string-array name="unitAngle">
-     <item name="degrees">degrees</item>
-     <item name="grads">grads</item>
+     <item name="degrees">decimal degrees</item>
+     <item name="grads">decimal grads</item>
   </string-array>
 
   <string-array name="unitAngleValue">

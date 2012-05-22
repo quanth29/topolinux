@@ -1,4 +1,4 @@
-/** @file DistoXSurveyInfo.java
+/** @file SurveyInfo.java
  *
  * @author marco corvi
  * @date may 2012
@@ -12,7 +12,7 @@
  */
 package com.android.DistoX;
 
-class DistoXSurveyInfo
+class SurveyInfo
 {
   public long id;
   public String name;

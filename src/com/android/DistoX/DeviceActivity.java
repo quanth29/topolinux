@@ -260,7 +260,7 @@ public class DeviceActivity extends Activity
       app.resetComm();
       setState();
     } else if ( item == mMIoption ) {
-      Intent optionsIntent = new Intent( this, DistoXPreferences.class );
+      Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
       startActivity( optionsIntent );
     }
     return true;

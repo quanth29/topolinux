@@ -11,6 +11,7 @@
  * CHANGES
  * 20120516 survey team and survey info unpdate
  * 20120518 db path from TopoDroid app
+ * 20120521 methods for CalibInfo
  */
 package com.android.DistoX;
 
@@ -58,12 +59,18 @@ public class DistoXDataHelper extends DataSetObservable
    // private SQLiteStatement updateShotCommentStmt;
    private SQLiteStatement updateSurveyStmt;
    private SQLiteStatement updateSurveyTeamStmt;
-   private SQLiteStatement updateSurveyNameStmt;
+   // private SQLiteStatement updateSurveyNameStmt;
    private SQLiteStatement updateCalibStmt;
    private SQLiteStatement deleteShotStmt;
    private SQLiteStatement undeleteShotStmt;
    private SQLiteStatement deletePlotStmt;
    private SQLiteStatement undeletePlotStmt;
+
+   private SQLiteStatement doDeleteGMStmt;
+   private SQLiteStatement doDeleteCalibStmt;
+   private SQLiteStatement doDeletePlotStmt;
+   private SQLiteStatement doDeleteShotStmt;
+   private SQLiteStatement doDeleteSurveyStmt;
 
 
    // ----------------------------------------------------------------------
@@ -94,13 +101,20 @@ public class DistoXDataHelper extends DataSetObservable
         // updateShotCommentStmt = myDB.compileStatement( "UPDATE shots SET comment=? WHERE surveyId=? AND id=?" );
         updateSurveyStmt = myDB.compileStatement( "UPDATE surveys SET day=?, comment=? WHERE id=?" );
         updateSurveyTeamStmt = myDB.compileStatement( "UPDATE surveys SET team=? WHERE id=?" );
-        updateSurveyNameStmt = myDB.compileStatement( "UPDATE surveys SET name=? WHERE id=?" );
+        // updateSurveyNameStmt = myDB.compileStatement( "UPDATE surveys SET name=? WHERE id=?" );
         updateCalibStmt = myDB.compileStatement( "UPDATE calibs SET day=?, comment=? WHERE id=?" );
 
         deleteShotStmt   = myDB.compileStatement( "UPDATE shots set status=1 WHERE surveyId=? AND id=?" );
         undeleteShotStmt = myDB.compileStatement( "UPDATE shots set status=0 WHERE surveyId=? AND id=?" );
         deletePlotStmt   = myDB.compileStatement( "UPDATE plots set status=1 WHERE surveyId=? AND id=?" );
         undeletePlotStmt = myDB.compileStatement( "UPDATE plots set status=0 WHERE surveyId=? AND id=?" );
+
+        doDeleteGMStmt   = myDB.compileStatement( "DELETE FROM gms where calibId=?" );
+        doDeleteCalibStmt = myDB.compileStatement( "DELETE FROM calibs where id=?" );
+
+        doDeletePlotStmt  = myDB.compileStatement( "DELETE FROM plots where surveyId=?" );
+        doDeleteShotStmt  = myDB.compileStatement( "DELETE FROM plots where surveyId=?" );
+        doDeleteSurveyStmt = myDB.compileStatement( "DELETE FROM surveys where id=?" );
 
       } catch ( SQLiteException e ) {
         myDB = null;
@@ -245,6 +259,27 @@ public class DistoXDataHelper extends DataSetObservable
      myDB.insert( SHOT_TABLE, null, cv );
      return myNextId;
    }
+
+   public void doDeleteCalib( long cid ) 
+   {
+     if ( myDB == null ) return;
+     doDeleteGMStmt.bindLong( 1, cid );
+     doDeleteGMStmt.execute();
+     doDeleteCalibStmt.bindLong( 1, cid );
+     doDeleteCalibStmt.execute();
+   }
+
+   public void doDeleteSurvey( long sid ) 
+   {
+     if ( myDB == null ) return;
+     doDeletePlotStmt.bindLong( 1, sid );
+     doDeletePlotStmt.execute();
+     doDeleteShotStmt.bindLong( 1, sid );
+     doDeleteShotStmt.execute();
+     doDeleteSurveyStmt.bindLong( 1, sid );
+     doDeleteSurveyStmt.execute();
+   }
+   
    
    // ----------------------------------------------------------------------
    // CALIBRATION DATA
@@ -633,9 +668,9 @@ public class DistoXDataHelper extends DataSetObservable
      return block;
    }
 
-   public DistoXSurveyInfo selectSurveyInfo( long sid )
+   public SurveyInfo selectSurveyInfo( long sid )
    {
-     DistoXSurveyInfo info = null;
+     SurveyInfo info = null;
      // Log.v(TAG, "selectSurveyInfo sid " + sid );
      Cursor cursor = myDB.query( SURVEY_TABLE,
                                 new String[] { "name", "day", "team", "comment" }, // columns
@@ -645,7 +680,7 @@ public class DistoXDataHelper extends DataSetObservable
                                 null,  // having
                                 null ); // order by
      if (cursor.moveToFirst()) {
-       info = new DistoXSurveyInfo();
+       info = new SurveyInfo();
        info.id      = sid;
        info.name    = cursor.getString( 0 );
        info.date    = cursor.getString( 1 );
@@ -657,7 +692,31 @@ public class DistoXDataHelper extends DataSetObservable
      }
      return info;
    }
-   
+ 
+   public CalibInfo selectCalibInfo( long cid )
+   {
+     CalibInfo info = null;
+     // Log.v(TAG, "selectCalibInfo cid " + cid );
+     Cursor cursor = myDB.query( CALIB_TABLE,
+                                new String[] { "name", "day", "comment" }, // columns
+                                "id=?",  // selection = WHERE clause (without "WHERE")
+                                new String[] { Long.toString(cid) },  // selectionArgs
+                                null,  // groupBy
+                                null,  // having
+                                null ); // order by
+     if (cursor.moveToFirst()) {
+       info = new CalibInfo();
+       info.id      = cid;
+       info.name    = cursor.getString( 0 );
+       info.date    = cursor.getString( 1 );
+       info.comment = cursor.getString( 2 );
+     }
+     if (cursor != null && !cursor.isClosed()) {
+       cursor.close();
+     }
+     return info;
+   }
+    
    // ----------------------------------------------------------------------
    // SELECT: LIST SURVEY / CABIL NAMES
 
@@ -919,14 +978,31 @@ public class DistoXDataHelper extends DataSetObservable
      return true;
    }
 
-   public boolean updateSurveyName( long id, String name )
+   public boolean hasSurveyName( String name )  { return hasName( name, SURVEY_TABLE ); }
+   public boolean hasCalibName( String name )  { return hasName( name, CALIB_TABLE ); }
+
+   private boolean hasName( String name, String table )
    {
-     // Log.v( TAG, "update survey: id " + id + " name \"" + name + "\"" );
-     updateSurveyNameStmt.bindString( 1, (name != null)? name : "" );
-     updateSurveyNameStmt.bindLong( 2, id );
-     updateSurveyNameStmt.execute();
-     return true;
+     boolean ret = false;
+     Cursor cursor = myDB.query( table, new String[] { "id" },
+                          "name=?", 
+                          new String[] { name },
+                          null, null, null );
+     if (cursor.moveToFirst() ) {
+       ret = true;
+     }
+     if (cursor != null && !cursor.isClosed()) { cursor.close(); }
+     return ret;
    }
+
+   // public boolean updateSurveyName( long id, String name )
+   // {
+   //   // Log.v( TAG, "update survey: id " + id + " name \"" + name + "\"" );
+   //   updateSurveyNameStmt.bindString( 1, (name != null)? name : "" );
+   //   updateSurveyNameStmt.bindLong( 2, id );
+   //   updateSurveyNameStmt.execute();
+   //   return true;
+   // }
 
    public boolean updateCalibDayAndComment( long id, String date, String comment )
    {

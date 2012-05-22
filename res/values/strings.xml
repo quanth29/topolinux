@@ -2,27 +2,17 @@
 <resources>
     <string name="app_name">TopoDroid</string>
     <string name="app_name_calib">TopoDroid - Calib. name</string>
-    <string name="app_name_coeff">TopoDroid - Calib. coeffs</string>
     <string name="app_name_device">TopoDroid - DistoX device</string>
     <string name="app_name_drawing">TopoDroid - Drawing</string>
-    <string name="app_name_gm">TopoDroid - Calib. data group</string>
     <string name="app_name_notes">TopoDroid - Annotations</string>
     <string name="app_name_options">TopoDroid - Options</string>
-    <string name="app_name_plot">TopoDroid - Plot name</string>
-    <string name="app_name_shot">TopoDroid - Shot name</string>
-    <string name="app_name_shot_new">TopoDroid - New shot</string>
-    <string name="app_name_survey">TopoDroid - Survey name</string>
-    <string name="app_name_undelete">TopoDroid - Undelete</string>
 
     <string name="back_to_survey">Back to survey</string>
-    <!-- string name="back_to_calib">Back to calibration</string -->
-    <string name="calib_comment">Calib. description</string>
-    <string name="calib_group_tolerance">Calib. group tolerance</string>
-    <string name="calib_max_iter">Calib. max. iteration</string>
-    <string name="calib_min_error">Calib. min. error</string>
-    <string name="calib_name">Calibration name</string>
-    <string name="calib_not_written">Failed to write calibration</string>
-    <string name="calib_written">Written calibration to device</string>
+    <string name="calib_exists">Calibration already exists</string>
+    <string name="calib_delete">Calibration deleted</string>
+    <string name="calib_info">Enter calibration info</string>
+    <!-- string name="calib_not_written">Failed to write calibration</string -->
+    <!-- string name="calib_written">Written calibration to device</string -->
     <string name="compute_failed">Failed to compute calibration</string>
     <string name="connected">Connected</string>
     <string name="connected_already">Already connected</string>
@@ -31,20 +21,18 @@
     <string name="coverage_title">Calibration data distibution</string>
     <string name="data"> data</string>
    
-    <string name="device_busy">device busy</string>
-    <string name="device_comm_thread">Continuos data download</string>
+    <!-- string name="device_busy">device busy</string -->
+    <string name="device_comm_thread">Continuous data download</string>
     <string name="device_action_thread">On-demand download and read/write</string>
-    <string name="disto_bad_type">DistoX bad data type</string>
+    <!-- string name="disto_bad_type">DistoX bad data type</string -->
     <string name="extend_left">Left</string>
     <string name="extend_right">Right</string>
     <string name="extend_vert">Vert</string>
     <string name="few_data">Too few data</string>
     <string name="head_tail">Head/Tail: </string>
     <string name="head_tail_failed">Failed to read Head/Tail</string>
-    <string name="interpolation_error">accuracy</string>
     <string name="label_text">Enter the label text</string>
-    <string name="line_segment_tolerance">Line: min. segment</string>
-    <string name="makes_cycle">Shot makes a loop</string>
+    <!-- string name="makes_cycle">Shot makes a loop</string -->
     <string name="missing_station">Missing station</string>
     <string name="no_calib">No calibration</string>
     <string name="no_calibration">No calibration selected\nUse menu to select one</string>
@@ -52,13 +40,13 @@
     <string name="no_device_address">Device address not selected</string>
     <string name="no_device_found">No device found</string>
     <string name="no_gms">Calibration has no data.\nUse Download menu to get some</string>
-    <string name="no_list_item">No item to list.\nUse menu to create some</string>
+    <!-- string name="no_list_item">No item to list.\nUse menu to create some</string -->
     <string name="no_paired_device">No paired device.\nScan and pair a DistoX</string>
     <string name="no_plots">Surveu has no scraps\nUse menu to make some</string>
-    <string name="no_service">No BT service</string>
+    <!-- string name="no_service">No BT service</string -->
     <string name="no_shots">Survey has no shots.\nUse Download menu to get some</string>
     <string name="no_survey">No survey selected.\nUse menus to select one</string>
-    <string name="not_connect">Failed to connect</string>
+    <!-- string name="not_connect">Failed to connect</string -->
     <string name="not_connected">Not connected</string>
     <string name="not_enabled">BT not enabled</string>
     <string name="not_available">BT not available</string>
@@ -73,7 +61,7 @@
     <string name="read_fail_with_code">Read failure: error code </string>
     <string name="read_failed">Failed to read from DistoX</string>
     <string name="reading_file_failed">Failed to read file</string>
-    <string name="save_on_destroy">Store status</string>
+    <!-- string name="save_on_destroy">Store status</string -->
     <string name="saved_file_">Saved file </string>
     <string name="saving_">Saving </string>
     <string name="saving_file_failed">Failed to save file</string>
@@ -84,13 +72,14 @@
     <string name="shot_length">length</string>
     <string name="shot_note">note</string>
     <string name="shot_to">to</string>
-    <string name="shot_tolerance">Shot: tolerance</string>
-    <string name="survey_export_type">Survey export: </string>
+    <!-- string name="shot_tolerance">Shot: tolerance</string -->
+    <!-- string name="survey_export_type">Survey export: </string -->
+    <string name="survey_exists">Survey name conflict</string>
     <string name="survey_date">yyyy.mm.dd</string>
-    <string name="survey_description">description</string>
     <string name="survey_info">Enter survey info</string>
-    <string name="survey_name">name</string>
-    <string name="survey_team">team</string>
+    <string name="description">description</string>
+    <string name="name">name</string>
+    <string name="team">team</string>
     <string name="toggle_failed">Failed to toggle DistoX</string>
     <string name="toggle_ok">Toggled DistoX calibration mode</string>
     <string name="undelete_text">Tap item to undelete</string>
@@ -102,9 +91,9 @@
 
     <string name="menu_about">About</string>
     <string name="menu_blank">Hide blank shots</string>
-    <string name="menu_calib">Calibration</string>
-    <string name="menu_calib_list">List calibrations</string>
-    <string name="menu_calib_new">New calibration</string>
+    <!-- string name="menu_calib">Calibration</string -->
+    <!-- string name="menu_calib_list">List calibrations</string -->
+    <!-- string name="menu_calib_new">New calibration</string -->
     <string name="menu_leg">Hide leg extra shots</string>
     <string name="menu_compute">Compute</string>
     <string name="menu_coverage">Coverage</string>
@@ -113,23 +102,29 @@
     <string name="menu_device">DistoX</string>
     <string name="menu_display">Display mode</string>
     <string name="menu_download">Download</string>
-    <string name="menu_ext">Extended</string>
+    <string name="menu_export">Export</string>
+    <!-- string name="menu_ext">Extended</string -->
     <string name="menu_group">Guess groups</string>
+    <string name="menu_help">Help</string>
+    <string name="menu_import">Import</string>
     <string name="menu_location">Location</string>
     <string name="menu_more">More</string>
+    <string name="menu_new">New</string>
     <string name="menu_notes">Notes</string>
     <string name="menu_number">Number blank shots</string>
+    <string name="menu_open">Open</string>
     <string name="menu_options">Options</string>
     <string name="menu_paired">Paired</string>    <!-- list paired distox -->
-    <string name="menu_plan">Plan</string>
+    <string name="menu_photo">Photo</string>
+    <!-- string name="menu_plan">Plan</string -->
     <string name="menu_plot">Scraps</string>
-    <string name="menu_plot_list">List scraps</string>
+    <!-- string name="menu_plot_list">List scraps</string -->
     <string name="menu_plot_new">New scrap</string>
     <string name="menu_read">Read from DistoX</string>
     <string name="menu_redo">Redo</string>
     <string name="menu_refresh">Refresh</string> <!-- refresh list -->
     <string name="menu_reset">Reset</string>     <!-- reset connection -->
-    <string name="menu_save_th">Export</string>
+    <string name="menu_save">Save</string>
     <string name="menu_save_th2">Save th2</string>
     <string name="menu_save_png">Export png</string>
     <string name="menu_scan">Scan</string>       <!-- scan for distox -->
@@ -137,21 +132,13 @@
     <string name="menu_splay">Hide splay shots</string>
     <string name="menu_stats">Stats</string>
     <string name="menu_survey">Survey</string>
-    <string name="menu_survey_edit">Edit survey info</string>
-    <string name="menu_survey_list">List surveys</string>
-    <string name="menu_survey_new">New survey</string>
+    <!-- string name="menu_survey_edit">Edit survey info</string -->
+    <!-- string name="menu_survey_list">List surveys</string -->
+    <!-- string name="menu_survey_new">New survey</string -->
     <string name="menu_toggle">DistoX mode</string>
     <string name="menu_undelete">Undelete</string>
     <string name="menu_write">Write to DistoX</string>
 
-    <string name="welcome_title">Welcome to TopoDroid-0.8</string>
-    <string name="welcome_text">
-\nTopoDroid is an Open Source app for Android devices to make cave surveys with the DistoX.
-\n\nNo warranty: by using it you agree that the authors are not responsible for any loss of data you might incur or damage whatsoever.
-\n\nVisit http://code.google.com/p/topolinux for documentation.
-\nSend comments, bug reports, feature requests, to marco.corvi@gmail.com
-    </string>
-    
 
     <string name="distox_err_ok">OK</string>
     <string name="distox_err_headtail">Head-Tail read failure</string>
@@ -161,7 +148,7 @@
 
     <string name="button_back"      >Back      </string>
     <string name="button_cancel"    >Cancel    </string>
-    <string name="button_close"     >Close     </string>
+    <!-- string name="button_close"     >Close     </string -->
     <string name="button_connect"   >Connect   </string>
     <string name="button_disconnect">Disconnect</string>
     <string name="button_drop"      >Delete    </string>
@@ -198,7 +185,7 @@
     <!-- string name="title_gm">TAP DATA TO EDIT GROUP</string -->
     <string name="title_location">LOCATION</string>
     <!-- string name="title_menu">TAP MENU TO START</string -->
-    <string name="title_plot">Scraps</string>
+    <!-- string name="title_plot">Scraps</string -->
     <!-- string name="title_shot">TAP SHOT TO EDIT STATION(S)</string -->
     <string name="title_survey">Surveys</string>
 
@@ -253,5 +240,49 @@
   <string name="pref_unit_angle_title">Angle units</string>
   <string name="pref_unit_angle_summary">Angles unit value</string>
   <string name="pref_unit_angle_message">Angles unit value</string>
+
+
+    <string name="welcome_title">Welcome to TopoDroid-0.8</string>
+    <string name="welcome_text">
+\nTopoDroid is an Open Source app for Android devices to make cave surveys with the DistoX.
+\n\nNo warranty: by using it you agree that the authors are not responsible for any loss of data you might incur or damage whatsoever.
+\n\nVisit http://code.google.com/p/topolinux for documentation.
+\nSend comments, bug reports, feature requests, to marco.corvi@gmail.com
+    </string>
+
+    <string name="help_title">TopoDroid-0.9 - Help</string>
+  <string name="help_topodroid">
+The TopoDroid screen shows the list of either the surveys or the calibrations.
+To toggle between the two lists tap on the buttons on top.\n
+Tapping on an item in the list opens the survey or calibartion respectively.\n
+With the menus you can create a new survey/calibration or import one.\n
+  </string>
+  <string name="help_survey">
+The Survey screen shows the survey metadata. You can edit them, however the name will not be modified one it is set.\n
+Through the menus you can save the info, open the survey, delete it and all its
+associted data, write to the survey annotation, and export the survey.\n
+  </string>
+  <string name="help_shot">
+The Shots screen shows the survey shots. There are three types of shots: leg shots have two stations, splay shots have only one station, and blank shots have no station assigned. Furthermore groups of two or more shots with similar values are considered as a leg.\n
+The shots are colored by their type: white leg, blue splay, red blank. It is possible to hide splay, and/or blank shots. Moreover for each group of shots of a leg it is possible to diaply only the first.\n
+Stations can be assigned to splay shots automatically.\n
+There are menus to download the data from the DistoX, open a scrap, add to the survey annotation, and much more.\n
+  </string>
+  <string name="help_draw">
+The Drawing screen is used to make sketches. Stations, shots (legs and splay), and a grid can be displayed
+to help drawing. To draw the sketch put symbols, trace lines, and regions (areas). 
+  </string>
+  <string name="help_calib">
+The Calibration screen shows the calibration information: name (title), date and description. 
+  </string>
+  <string name="help_gm">
+The Calibration data screen shows, for each data, the group number, the azimuth, inclination and roll
+angles, and the computation error.\n
+Data that differ only by the roll angle forms a group.
+Group number assignment is necesasary before computing the calibration. This can be done manually, editing
+each data, or assited by the program.\n
+The computation reports the overall error and the error on each data.
+A data can be excluded from the computation by setting its group number to 0 (zero).
+  </string>
 
 </resources>

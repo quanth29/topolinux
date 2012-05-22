@@ -1,4 +1,4 @@
-/* @file DistoXShotNewDialog.java
+/* @file ShotNewDialog.java
  *
  * @author marco corvi
  * @date nov 2011
@@ -19,6 +19,7 @@ import android.widget.RadioButton;
 // import android.util.Log;
 
 import android.content.Context;
+import android.text.InputType;
 
 import android.widget.TextView;
 import android.widget.EditText;
@@ -29,11 +30,11 @@ import android.view.View.OnKeyListener;
 import android.view.KeyEvent;
 
 
-public class DistoXShotNewDialog extends Dialog
-                                 implements View.OnClickListener
+public class ShotNewDialog extends Dialog
+                           implements View.OnClickListener
 {
-  private static final String TAG = "DistoXShotNewDialog";
-  private DistoX mDistoX;
+  private static final String TAG = "DistoX ShotNewDialog";
+  private ShotActivity mParent;
   private boolean  notDone;
 
   private EditText mETfrom;
@@ -51,10 +52,10 @@ public class DistoXShotNewDialog extends Dialog
   private Button   mButtonOK;
   private Button   mButtonCancel;
 
-  public DistoXShotNewDialog( Context context, DistoX distox )
+  public ShotNewDialog( Context context, ShotActivity parent )
   {
     super( context );
-    mDistoX = distox;
+    mParent = parent;
     notDone = true;
   }
 
@@ -74,6 +75,9 @@ public class DistoXShotNewDialog extends Dialog
     mETright    = (EditText) findViewById(R.id.shot_right );
     mETup       = (EditText) findViewById(R.id.shot_up );
     mETdown     = (EditText) findViewById(R.id.shot_down );
+
+    mETfrom.setRawInputType( InputType.TYPE_CLASS_NUMBER );
+    mETto.setRawInputType( InputType.TYPE_CLASS_NUMBER );
 
     mButtonOK     = (Button) findViewById(R.id.button_ok_shot_name );
     mButtonCancel = (Button) findViewById(R.id.button_cancel_shot_name );
@@ -102,7 +106,7 @@ public class DistoXShotNewDialog extends Dialog
           long shot_extend = 1;
           if ( mRadioLeft.isChecked() ) { shot_extend = -1; }
           else if ( mRadioVert.isChecked() ) { shot_extend = 0; }
-          mDistoX.makeNewShot( shot_from, shot_to,
+          mParent.makeNewShot( shot_from, shot_to,
                                Float.parseFloat(distance),
                                Float.parseFloat(bearing),
                                Float.parseFloat(clino),
