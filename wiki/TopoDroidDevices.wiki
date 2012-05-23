@@ -11,8 +11,8 @@ Include the device model, the android version, and
 any comment that might be useful to others. 
 
 
-|| Asus EEPAD Transformer TF101 10"|| 4.0.3 || <font color="green">Mostly working || calibration untested ||
 || *Device* || *Android* || *Status* || *Comment* ||
+|| Asus EEPAD Transformer TF101 10"|| 4.0.3 || <font color="green">Mostly working || calibration untested ||
 || Haiwei Vodaphone 858 Smart || 2.2 || <font color="green">Fully working || ||
 || HTC EVO 3D || 2.3 || <font color="green">Mostly working || calibration untested ||
 || HTC Wilfire S || 2.3.5 || <font color="red">Bluetooth fails || ||
