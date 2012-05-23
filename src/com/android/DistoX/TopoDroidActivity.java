@@ -123,7 +123,7 @@ public class TopoDroidActivity extends Activity
           if ( data != null ) {
             List<String> list = data.selectAllSurveys();
             // list.add( "new_survey" );
-            setTitle( R.string.title_survey );
+            // setTitle( R.string.title_survey );
             mBtnSurveys.getBackground().setColorFilter( Color.parseColor( "#ccccff" ),
                                                         PorterDuff.Mode.LIGHTEN );
             mBtnCalibs.getBackground().setColorFilter( Color.parseColor( "#cccccc" ),
@@ -138,7 +138,7 @@ public class TopoDroidActivity extends Activity
           if ( data != null ) {
             List<String> list = data.selectAllCalibs();
             // list.add( "new_calib" );
-            setTitle( R.string.title_calib );
+            // setTitle( R.string.title_calib );
             mBtnSurveys.getBackground().setColorFilter( Color.parseColor( "#cccccc" ),
                                                         PorterDuff.Mode.DARKEN );
             mBtnCalibs.getBackground().setColorFilter( Color.parseColor( "#ccccff" ),

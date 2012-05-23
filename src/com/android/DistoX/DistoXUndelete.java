@@ -86,7 +86,7 @@ public class DistoXUndelete extends Dialog
 
     // TODO fill the list
     List< DistoXDBlock > shots = mData.selectAllShots( mSID, 1 );
-    List< DistoXPlot > plots   = mData.selectAllPlots( mSID, 1 );
+    List< PlotInfo > plots   = mData.selectAllPlots( mSID, 1 );
     if ( shots.size() == 0 && plots.size() == 0 ) {
       Toast.makeText( mParent, "No item to undelete", Toast.LENGTH_LONG ).show();
       dismiss();
@@ -99,7 +99,7 @@ public class DistoXUndelete extends Dialog
       String result = sw.getBuffer().toString();
       mArrayAdapter.add( result );
     }
-    for ( DistoXPlot p : plots ) {
+    for ( PlotInfo p : plots ) {
       StringWriter sw = new StringWriter();
       PrintWriter pw  = new PrintWriter(sw);
       pw.format("plot %d <%s> %s", p.id, p.name, p.getTypeString() );
