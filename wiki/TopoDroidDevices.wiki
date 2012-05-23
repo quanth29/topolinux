@@ -18,6 +18,7 @@ any comment that might be useful to others.
 || Samsung Galaxy S Captivate SGH-i897 || 2.2 || <font color="red">Bluetooth fails || unable to pair with DistoX from Android "Settings" ||
 || Samsung Galaxy S Captivate SGH-i897 || 2.3.5 || <font color="green">Mostly working || calibration untested ||
 || Samsung Galaxy Mini S5570 || 2.2 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
+|| Samsung Galaxy Mini S5570 || 2.3.6 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy Ace S5830 || 2.2 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy Ace GTS5830 || 2.3.4 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy I9001 S || 2.3.6 || <font color="green">Working || ||
