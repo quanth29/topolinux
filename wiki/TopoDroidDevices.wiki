@@ -21,7 +21,8 @@ any comment that might be useful to others.
 || Samsung Galaxy Ace S5830 || 2.2 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy Ace GTS5830 || 2.3.4 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy I9001 S || 2.3.6 || <font color="green">Working || ||
-|| Samsung Galaxy Tab P1000 || 2.3.6 7"|| <font color="green">Working || ||
+|| Samsung Galaxy Tab P1000 7"|| 2.3.6 || <font color="green">Working || ||
 || Samsung Galaxy S II (16 GB) || 4.0 || <font color="green">Mostly working || ||
 || HTC Wilfire S || 2.3.5 || <font color="red">Bluetooth fails || ||
 || Asus EEPAD Transformer TF101 10"|| 4.0.3 || <font color="green">Mostly working || ||
+|| HTC Sense || 2.3.3 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
