@@ -210,11 +210,11 @@ public class TopoDroidApp extends Application
   // fixed stations
   //
 
-  private ArrayList< DistoXFix > mFixed;
+  private ArrayList< FixedInfo > mFixed;
 
   public void addFixed( String station, double latitude, double longitude, double altitude )
   {
-    mFixed.add( new DistoXFix( station, latitude, longitude, altitude ) );
+    mFixed.add( new FixedInfo( station, latitude, longitude, altitude ) );
     mData.insertFixed( station, mSID, longitude, latitude, altitude, "" ); // FIXME comment
   }
 
@@ -223,8 +223,8 @@ public class TopoDroidApp extends Application
   public void restoreFixed()
   {
     mFixed.clear(); // just to make sure ...
-    List< DistoXFix > fixed = mData.selectAllFixed( mSID );
-    for ( DistoXFix fix : fixed ) {
+    List< FixedInfo > fixed = mData.selectAllFixed( mSID );
+    for ( FixedInfo fix : fixed ) {
       mFixed.add( fix );
     }
   }
@@ -299,7 +299,7 @@ public class TopoDroidApp extends Application
 
     mData = new DistoXDataHelper( this );
     mCalibration = new Calibration( 0, this );
-    mFixed = new ArrayList< DistoXFix >();
+    mFixed = new ArrayList< FixedInfo >();
 
     mBTAdapter = BluetoothAdapter.getDefaultAdapter();
     if ( mBTAdapter == null ) {
@@ -520,7 +520,7 @@ public class TopoDroidApp extends Application
       pw.format("  centerline\n");
       if ( mFixed.size() > 0 ) {
         pw.format("    cs lat-long\n");
-        for ( DistoXFix fix : mFixed ) {
+        for ( FixedInfo fix : mFixed ) {
           pw.format("    fix %s %.6f %.6f %.2f m\n", fix.name, fix.lat, fix.lng, fix.alt );
         }
       }
@@ -1149,7 +1149,7 @@ public class TopoDroidApp extends Application
   
       pw.format("Version 5.02\r\n\r\n");
       if ( mFixed.size() > 0 ) {
-        for ( DistoXFix fix : mFixed ) {
+        for ( FixedInfo fix : mFixed ) {
           // pw.format("Trou %s,%.2f,%.2f,%.2f\r\n", mySurvey, fix.lat, fix.lng, fix.alt );
           // pw.format("Entree %s\r\n", fix.name );
           break;

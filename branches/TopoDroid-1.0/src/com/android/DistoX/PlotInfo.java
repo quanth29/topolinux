@@ -1,4 +1,4 @@
-/* @file DistoXPlot.java
+/* @file PlotInfo.java
  *
  * @author marco corvi
  * @date nov 2011
@@ -7,10 +7,13 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120522 renamed PlotInfo
  */
 package com.android.DistoX;
 
-class DistoXPlot
+class PlotInfo
 {
   public static final String[] plotType = {
     "V-SECTION",  // vertical cross section

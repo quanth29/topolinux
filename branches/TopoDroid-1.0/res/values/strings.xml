@@ -242,7 +242,7 @@
   <string name="pref_unit_angle_message">Angles unit value</string>
 
 
-    <string name="welcome_title">Welcome to TopoDroid-0.8</string>
+    <string name="welcome_title">Welcome to TopoDroid 1.0</string>
     <string name="welcome_text">
 \nTopoDroid is an Open Source app for Android devices to make cave surveys with the DistoX.
 \n\nNo warranty: by using it you agree that the authors are not responsible for any loss of data you might incur or damage whatsoever.
@@ -250,7 +250,7 @@
 \nSend comments, bug reports, feature requests, to marco.corvi@gmail.com
     </string>
 
-    <string name="help_title">TopoDroid-0.9 - Help</string>
+    <string name="help_title">TopoDroid 1.0 - Help</string>
   <string name="help_topodroid">
 The TopoDroid screen shows the list of either the surveys or the calibrations.
 To toggle between the two lists tap on the buttons on top.\n

@@ -71,7 +71,7 @@ public class PlotDialog extends Dialog
   private void updateList()
   {
     if ( app.mData != null && app.mSID >= 0 ) {
-      List< DistoXPlot > list = app.mData.selectAllPlots( app.mSID, 0 ); 
+      List< PlotInfo > list = app.mData.selectAllPlots( app.mSID, 0 ); 
       setTitle( app.getSurvey() + " scraps" );
       if ( list.size() == 0 ) {
         Toast.makeText( mContext, R.string.no_plots, Toast.LENGTH_LONG ).show();
@@ -80,7 +80,7 @@ public class PlotDialog extends Dialog
       // mList.setAdapter( mArrayAdapter );
       mArrayAdapter.clear();
       // mArrayAdapter.add( getResources().getString(R.string.back_to_survey) );
-      for ( DistoXPlot item : list ) {
+      for ( PlotInfo item : list ) {
         StringWriter sw = new StringWriter();
         PrintWriter pw  = new PrintWriter(sw);
         pw.format("%d <%s> %s", item.id, item.name, item.getTypeString() );

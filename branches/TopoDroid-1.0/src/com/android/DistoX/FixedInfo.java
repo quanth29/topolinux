@@ -1,4 +1,4 @@
-/** @file DistoXFix.java
+/** @file FixedInfo.java
  *
  * @author marco corvi
  * @date apr 2012
@@ -10,10 +10,11 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120516 cstr
+ * 20120522 rename FixedInfo
  */
 package com.android.DistoX;
 
-class DistoXFix
+class FixedInfo
 {
   String name;     // station name
   double lat;      // latitude [decimal deg]
@@ -21,7 +22,7 @@ class DistoXFix
   double alt;      // altitude [m]
   String comment;
 
-  public DistoXFix( String n, double latitude, double longitude, double altitude, String cmt )
+  public FixedInfo( String n, double latitude, double longitude, double altitude, String cmt )
   {
     name = n;
     lat = latitude;
@@ -30,7 +31,7 @@ class DistoXFix
     comment = cmt;
   }
 
-  public DistoXFix( String n, double latitude, double longitude, double altitude )
+  public FixedInfo( String n, double latitude, double longitude, double altitude )
   {
     name = n;
     lat = latitude;
