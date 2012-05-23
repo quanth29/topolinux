@@ -11,9 +11,12 @@ Include the device model, the android version, and
 any comment that might be useful to others. 
 
 
+|| Asus EEPAD Transformer TF101 10"|| 4.0.3 || <font color="green">Mostly working || calibration untested ||
 || *Device* || *Android* || *Status* || *Comment* ||
 || Haiwei Vodaphone 858 Smart || 2.2 || <font color="green">Fully working || ||
 || HTC EVO 3D || 2.3 || <font color="green">Mostly working || calibration untested ||
+|| HTC Wilfire S || 2.3.5 || <font color="red">Bluetooth fails || ||
+|| HTC Sense || 2.3.3 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy S Captivate SGH-i897 || 2.1-update1 || <font color="red">Bluetooth fails || unable to pair with DistoX from Android "Settings" ||
 || Samsung Galaxy S Captivate SGH-i897 || 2.2 || <font color="red">Bluetooth fails || unable to pair with DistoX from Android "Settings" ||
 || Samsung Galaxy S Captivate SGH-i897 || 2.3.5 || <font color="green">Mostly working || calibration untested ||
@@ -21,9 +24,6 @@ any comment that might be useful to others.
 || Samsung Galaxy Mini S5570 || 2.3.6 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy Ace S5830 || 2.2 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy Ace GTS5830 || 2.3.4 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
-|| Samsung Galaxy I9001 S || 2.3.6 || <font color="green">Working || ||
+|| Samsung Galaxy S Plus I9001 || 2.3.6 || <font color="green">Working || ||
 || Samsung Galaxy Tab P1000 7"|| 2.3.6 || <font color="green">Working || ||
 || Samsung Galaxy S II (16 GB) || 4.0 || <font color="green">Mostly working || ||
-|| HTC Wilfire S || 2.3.5 || <font color="red">Bluetooth fails || ||
-|| Asus EEPAD Transformer TF101 10"|| 4.0.3 || <font color="green">Mostly working || calibration untested ||
-|| HTC Sense || 2.3.3 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
