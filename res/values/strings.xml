@@ -25,6 +25,9 @@
     <string name="device_comm_thread">Continuous data download</string>
     <string name="device_action_thread">On-demand download and read/write</string>
     <!-- string name="disto_bad_type">DistoX bad data type</string -->
+    <string name="connection">Connection</string>
+    <string name="download_batch">Batch</string>
+    <string name="download_continuous">Continuous</string>
     <string name="extend_left">Left</string>
     <string name="extend_right">Right</string>
     <string name="extend_vert">Vert</string>

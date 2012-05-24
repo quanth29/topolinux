@@ -108,6 +108,10 @@ public class TopoDroidActivity extends Activity
   private MenuItem mMIabout;
 
   // -------------------------------------------------------------
+  private boolean say_no_survey = true;
+  private boolean say_no_calib  = true;
+  private boolean say_not_enabled = true;
+  boolean do_check_bt = true;
 
   // -------------------------------------------------------------------
     
@@ -129,7 +133,8 @@ public class TopoDroidActivity extends Activity
             mBtnCalibs.getBackground().setColorFilter( Color.parseColor( "#cccccc" ),
                                                        PorterDuff.Mode.DARKEN );
             updateList( list );
-            if ( list.size() == 0 ) {
+            if ( say_no_survey && list.size() == 0 ) {
+              say_no_survey = false;
               Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
             } 
           }
@@ -144,7 +149,8 @@ public class TopoDroidActivity extends Activity
             mBtnCalibs.getBackground().setColorFilter( Color.parseColor( "#ccccff" ),
                                                        PorterDuff.Mode.LIGHTEN );
             updateList( list );
-            if ( list.size() == 0 ) {
+            if ( say_no_calib && list.size() == 0 ) {
+              say_no_calib = false;
               Toast.makeText( this, R.string.no_calib, Toast.LENGTH_LONG ).show();
             } 
           }
@@ -402,13 +408,16 @@ public class TopoDroidActivity extends Activity
     // restoreInstanceFromFile();
     // Log.v( TAG, "onStart check BT " + app.mCheckBT + " enabled " + app.mBTAdapter.isEnabled() );
 
-    if ( app.mCheckBT && ! app.mBTAdapter.isEnabled() ) {    
-      Intent enableIntent = new Intent( BluetoothAdapter.ACTION_REQUEST_ENABLE );
-      startActivityForResult( enableIntent, REQUEST_ENABLE_BT );
-    } else {
-      // nothing to do: scanBTDEvices(); is called by menu CONNECT
+    if ( do_check_bt ) {
+      do_check_bt = false;
+      if ( app.mCheckBT && ! app.mBTAdapter.isEnabled() ) {    
+        Intent enableIntent = new Intent( BluetoothAdapter.ACTION_REQUEST_ENABLE );
+        startActivityForResult( enableIntent, REQUEST_ENABLE_BT );
+      } else {
+        // nothing to do: scanBTDEvices(); is called by menu CONNECT
+      }
+      setBTMenus( app.mBTAdapter.isEnabled() );
     }
-    setBTMenus( app.mBTAdapter.isEnabled() );
   }
 
   @Override
@@ -468,7 +477,8 @@ public class TopoDroidActivity extends Activity
       case REQUEST_ENABLE_BT:
         if ( result == Activity.RESULT_OK ) {
           // nothing to do: scanBTDEvices() is called by menu CONNECT
-        } else {
+        } else if ( say_not_enabled ) {
+          say_not_enabled = false;
           Toast.makeText(this, R.string.not_enabled, Toast.LENGTH_LONG).show();
           // finish();
         }

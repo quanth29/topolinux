@@ -68,8 +68,8 @@ public class DistoXPlotDialog extends Dialog
     mEditStart = (EditText) findViewById(R.id.edit_plot_start);
     mEditView  = (EditText) findViewById(R.id.edit_plot_view);
 
-    mBtnPlan   = (RadioButton) findViewById( R.id.btn_plot_plan );
-    mBtnExtended    = (RadioButton) findViewById( R.id.btn_plot_ext );
+    mBtnPlan     = (RadioButton) findViewById( R.id.btn_plot_plan );
+    mBtnExtended = (RadioButton) findViewById( R.id.btn_plot_ext );
     mBtnVSection = (RadioButton) findViewById( R.id.btn_plot_vcross );
     mBtnHSection = (RadioButton) findViewById( R.id.btn_plot_hcross );
 

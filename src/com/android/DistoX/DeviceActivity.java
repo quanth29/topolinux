@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120523 radio buttons: batch - continuous
  */
 package com.android.DistoX;
 
@@ -22,14 +25,18 @@ import android.content.Intent;
 
 import android.widget.TextView;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 
+import android.widget.Toast;
 
 public class DeviceActivity extends Activity
                             implements View.OnClickListener
+                            , RadioGroup.OnCheckedChangeListener
 {
   private static final String TAG = "DistoX Device";
 
@@ -47,6 +54,10 @@ public class DeviceActivity extends Activity
   private Button   mBtnWrite;
   private Button   mBtnBack;
 
+  private RadioGroup    mRGconnection;
+  private RadioButton   mBtnBatch;
+  private RadioButton   mBtnContinuous;
+
   private String   mAddress;
 
   private MenuItem mMIpaired;
@@ -57,8 +68,9 @@ public class DeviceActivity extends Activity
 // -------------------------------------------------------------------
   private void setState()
   {
+    boolean cntd = app.isConnected();
     if ( mAddress.length() > 0 ) {
-      if ( app.isConnected() ) {
+      if ( cntd ) {
         String msg = getResources().getString( R.string.title_connected );
         mTvAddress.setText( mAddress + msg );
       } else {
@@ -69,14 +81,25 @@ public class DeviceActivity extends Activity
       mTvAddress.setText( R.string.no_device_address );
     }
 
-    boolean cntd = app.isConnected();
-    mBtnConnect    .setEnabled( ! cntd );
-    // mBtnReconnect  .setEnabled( true );
-    mBtnDisconnect .setEnabled( cntd );
-    mBtnToggle     .setEnabled( ! cntd );
-    mBtnHeadTail   .setEnabled( ! cntd );
-    mBtnRead       .setEnabled( ! cntd );
-    mBtnWrite      .setEnabled( ! cntd );
+    if ( mBtnBatch.isChecked() ) {
+      Log.v(TAG, "batch checked");
+      mBtnToggle     .setEnabled( ! cntd );
+      mBtnHeadTail   .setEnabled( ! cntd );
+      mBtnRead       .setEnabled( ! cntd );
+      mBtnWrite      .setEnabled( ! cntd );
+      mBtnConnect    .setEnabled( false );
+      mBtnReconnect  .setEnabled( false );
+      mBtnDisconnect .setEnabled( false );
+    } else {
+      Log.v(TAG, "cont. checked");
+      mBtnToggle     .setEnabled( false );
+      mBtnHeadTail   .setEnabled( false );
+      mBtnRead       .setEnabled( false );
+      mBtnWrite      .setEnabled( false );
+      mBtnConnect    .setEnabled( ! cntd );
+      mBtnReconnect  .setEnabled( true );
+      mBtnDisconnect .setEnabled( cntd );
+    }
     // mBtnBack       .setEnabled( );
   }  
 
@@ -102,6 +125,11 @@ public class DeviceActivity extends Activity
     mBtnWrite      = (Button) findViewById(R.id.button_write_device );
     mBtnBack       = (Button) findViewById(R.id.button_back_device );
 
+    mRGconnection  = (RadioGroup) findViewById(R.id.download_connection );
+    mBtnBatch      = (RadioButton) findViewById(R.id.download_batch );
+    mBtnContinuous = (RadioButton) findViewById(R.id.download_continuous );
+    mBtnBatch.setChecked( true );
+
     mBtnConnect.setOnClickListener( this );
     mBtnReconnect.setOnClickListener( this );
     mBtnDisconnect.setOnClickListener( this );
@@ -111,13 +139,29 @@ public class DeviceActivity extends Activity
     mBtnWrite.setOnClickListener( this );
     mBtnBack.setOnClickListener( this );
 
+    mRGconnection.setOnCheckedChangeListener( this );
+
     setState();
   }
 
+  @Override
+  public void onCheckedChanged( RadioGroup rg, int id )
+  {
+    if ( id == R.id.download_batch ) {
+      if ( mBtnBatch.isChecked() && app.isConnected() ) {
+        DistoXComm comm = app.mComm;
+        if ( comm == null ) comm.disconnectRemoteDevice();
+      }
+      app.mConnectionMode = TopoDroidApp.CONN_MODE_BATCH;
+    } else if ( id == R.id.download_continuous ) {
+      app.mConnectionMode = TopoDroidApp.CONN_MODE_CONTINUOUS;
+    }
+    setState();
+  }
+
+  @Override
   public void onClick(View v) 
   {
-    // When the user clicks, just finish this activity.
-    // onPause will be called, and we save our data there.
     Button b = (Button) v;
     DistoXComm comm = app.mComm;
     if ( comm == null ) {
