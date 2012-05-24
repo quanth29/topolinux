@@ -71,7 +71,7 @@ public class ShotActivity extends Activity
 
   private boolean mSplay = true; //!< whether to show splay shots
   private boolean mLeg   = true; //!< whether to hide leg extra shots
-  private boolean mBlank = true; //!< whether to hide blank shots
+  private boolean mBlank = false; //!< whether to hide blank shots
   // private Bundle mSavedState = null;
 
   private ListView mList;

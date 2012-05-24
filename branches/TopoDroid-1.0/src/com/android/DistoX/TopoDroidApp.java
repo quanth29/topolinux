@@ -12,6 +12,7 @@
  * 20120516 length and angle units
  * 20120517 survey-info and fix station export
  * 20120518 app base directory
+ * 20120523 connection mode (batch, continuous)
  */
 package com.android.DistoX;
 
@@ -46,6 +47,10 @@ public class TopoDroidApp extends Application
   DistoXComm mComm = null;
   DistoXDataHelper mData = null;
   Calibration mCalibration = null;
+
+  final static int CONN_MODE_BATCH = 0;
+  final static int CONN_MODE_CONTINUOUS = 1;
+  int mConnectionMode = CONN_MODE_BATCH; 
 
   long mSID   = -1;   // id of the current survey
   long mCID   = -1;   // id of the current calib
@@ -178,31 +183,18 @@ public class TopoDroidApp extends Application
   public static final  String UNIT_ANGLE     = "degrees";
 
   // intent names
-  public static final String TOPODROID_CALIB       = "topodroid.calib";
-
-  public static final String TOPODROID_GM_NAME     = "topodroid.gm_name";
-  public static final String TOPODROID_GM_DATA     = "topodroid.gm_data";
-
-  public static final String TOPODROID_SHOT_FROM   = "topodroid.shot_from";
-  public static final String TOPODROID_SHOT_TO     = "topodroid.shot_to";
-  public static final String TOPODROID_SHOT_EXT    = "topodroid.shot_ext";
-
   public static final String TOPODROID_PLOT_ID     = "topodroid.plot_id";
   public static final String TOPODROID_PLOT_TYPE   = "topodroid.plot_type";
   public static final String TOPODROID_PLOT_STRT   = "topodroid.plot_strt";
   public static final String TOPODROID_PLOT_VIEW   = "topodroid.plot_view";
   public static final String TOPODROID_PLOT_FILE   = "topodroid.plot_file";
 
-  public static final String TOPODROID_LINE_SGM    = "topodroid.line_sgm";
-  public static final String TOPODROID_LINE_ACC    = "topodroid.line_acc";
-  public static final String TOPODROID_LINE_CRNR   = "topodroid.line_crnr";
-
   public static final String TOPODROID_SURVEY      = "topodroid.survey";
   public static final String TOPODROID_SURVEY_ID   = "topodroid.survey_id";
   
   public static final String TOPODROID_DEVICE_ACTION = "topodroid.device_action";
-  public static final String TOPODROID_DEVICE_ADDR   = "topodroid.device_addr";
-  public static final String TOPODROID_DEVICE_CNCT   = "topodroid.device_cnct";
+  // public static final String TOPODROID_DEVICE_ADDR   = "topodroid.device_addr";
+  // public static final String TOPODROID_DEVICE_CNCT   = "topodroid.device_cnct";
 
   public String[] DistoXConnectionError;
 
