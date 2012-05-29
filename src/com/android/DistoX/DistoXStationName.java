@@ -10,7 +10,6 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120520 created
- * 20120929 fixed name increment for strings like A11-1
  */
 package com.android.DistoX;
 
@@ -46,7 +45,7 @@ public class DistoXStationName
           int n = 0;
           int s = 1;
           // Log.v(TAG, "name >" + name + "< n " + n );
-          while ( len > 1 ) {
+          while ( len > 0 ) {
             -- len;
             k = Character.getNumericValue( name.charAt(len) );
             if ( k < 0 || k >= 10 ) { ++len; break; }
