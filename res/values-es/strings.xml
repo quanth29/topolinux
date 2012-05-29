@@ -156,7 +156,7 @@
     <string name="button_head_tail" >Leer inicio y final </string>
     <string name="button_ok"        >OK      </string>
     <string name="button_read"      >Recuperar calibraci\u00f3n </string>
-    <string name="button_reconnect" >Reconectar </string>
+    <!-- string name="button_reconnect" >Reconectar </string -->
     <string name="button_save"      >Guardar    </string>
     <string name="button_select"    >Aceptar  </string>
     <string name="button_write"     >Enviar calibraci\u00f3n</string>

@@ -34,8 +34,8 @@ public class DistoXDataHelper extends DataSetObservable
 {
    private static final String TAG = "DistoX_DH";
 
-   private static final String DATABASE_NAME = TopoDroidApp.APP_BASE_PATH + "distox5.db";
-   private static final int DATABASE_VERSION = 1;
+   private static String DATABASE_NAME = TopoDroidApp.APP_BASE_PATH + "distox5.db";
+   private static final int DATABASE_VERSION = 5;
 
    private static final String CONFIG_TABLE = "configs";
    private static final String SURVEY_TABLE = "surveys";
@@ -105,7 +105,7 @@ public class DistoXDataHelper extends DataSetObservable
         updateSurveyStmt = myDB.compileStatement( "UPDATE surveys SET day=?, comment=? WHERE id=?" );
         updateSurveyTeamStmt = myDB.compileStatement( "UPDATE surveys SET team=? WHERE id=?" );
         // updateSurveyNameStmt = myDB.compileStatement( "UPDATE surveys SET name=? WHERE id=?" );
-        updateCalibStmt = myDB.compileStatement( "UPDATE calibs SET day=?, comment=? WHERE id=?" );
+        updateCalibStmt = myDB.compileStatement( "UPDATE calibs SET day=?, device=?, comment=? WHERE id=?" );
 
         deleteShotStmt   = myDB.compileStatement( "UPDATE shots set status=1 WHERE surveyId=? AND id=?" );
         undeleteShotStmt = myDB.compileStatement( "UPDATE shots set status=0 WHERE surveyId=? AND id=?" );
@@ -754,7 +754,7 @@ public class DistoXDataHelper extends DataSetObservable
      CalibInfo info = null;
      // Log.v(TAG, "selectCalibInfo cid " + cid );
      Cursor cursor = myDB.query( CALIB_TABLE,
-                                new String[] { "name", "day", "comment" }, // columns
+                                new String[] { "name", "day", "device", "comment" }, // columns
                                 "id=?",  // selection = WHERE clause (without "WHERE")
                                 new String[] { Long.toString(cid) },  // selectionArgs
                                 null,  // groupBy
@@ -765,7 +765,8 @@ public class DistoXDataHelper extends DataSetObservable
        info.id      = cid;
        info.name    = cursor.getString( 0 );
        info.date    = cursor.getString( 1 );
-       info.comment = cursor.getString( 2 );
+       info.device  = cursor.getString( 2 );
+       info.comment = cursor.getString( 3 );
      }
      if (cursor != null && !cursor.isClosed()) {
        cursor.close();
@@ -1067,13 +1068,14 @@ public class DistoXDataHelper extends DataSetObservable
    //   return true;
    // }
 
-   public boolean updateCalibDayAndComment( long id, String date, String comment )
+   public boolean updateCalibInfo( long id, String date, String device, String comment )
    {
      // Log.v( TAG, "data update calibs: id " + id + " day " + date + " comm. " + comment );
      if ( date == null ) return false;
      updateCalibStmt.bindString( 1, date );
-     updateCalibStmt.bindString( 2, (comment != null)? comment : "" );
-     updateCalibStmt.bindLong( 3, id );
+     updateCalibStmt.bindString( 2, (device != null)? device : "" );
+     updateCalibStmt.bindString( 3, (comment != null)? comment : "" );
+     updateCalibStmt.bindLong( 4, id );
      updateCalibStmt.execute();
      return true;
    }
@@ -1202,6 +1204,7 @@ public class DistoXDataHelper extends DataSetObservable
            + " ( id INTEGER, " // PRIMARY KEY AUTOINCREMENT, "
            +   " name TEXT, "
            +   " day TEXT, "
+           +   " device TEXT, "
            +   " comment TEXT )"
          );
          db.execSQL(

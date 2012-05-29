@@ -9,6 +9,14 @@
     android:defaultValue="true"
   / -->
 
+  <com.android.DistoX.MyEditPreference
+       android:key="DISTOX_BASE_PATH"
+       android:title="@string/pref_base_path_title"
+       android:summary="@string/pref_base_path_summary"
+       android:dialogTitle="$string/pref_base_path_title"
+       android:dialogMessage="@string/pref_base_path_message"
+       />
+
 
   <PreferenceCategory 
      android:title="@string/pref_cat_survey"
@@ -169,6 +177,15 @@
        android:summary="@string/pref_checkBT_summary"
        android:title="@string/pref_checkBT_title"
        android:defaultValue="true"
+     />
+
+     <com.android.DistoX.MyListPreference
+       android:key="DISTOX_CONN_MODE"
+       android:summary="@string/pref_conn_mode_summary"
+       android:title="@string/pref_conn_mode_title"
+       android:defaultValue="batch"
+       android:entries="@array/connMode"
+       android:entryValues="@array/connModeValue"
      />
 
   </PreferenceCategory>

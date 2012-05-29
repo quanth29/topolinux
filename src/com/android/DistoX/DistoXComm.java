@@ -23,6 +23,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
 import android.app.Activity;
+// import android.app.AlertDialog;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -41,6 +43,8 @@ import android.content.IntentFilter;
 import android.content.BroadcastReceiver;
 
 import android.database.DataSetObserver;
+
+// import android.widget.Toast;
 
 public class DistoXComm
 {
@@ -92,6 +96,10 @@ public class DistoXComm
             int res = mProto.readPacket();
             if ( res == DistoXProtocol.DISTOX_PACKET_NONE ) {
               doWork = false;
+            } else if ( res == DistoXProtocol.DISTOX_ERR_OFF ) {
+              // tell the user !
+              // Toast.makeText(app.getApplicationContext(), R.string.device_off, Toast.LENGTH_LONG).show()
+              doWork = false;
             } else if ( res == DistoXProtocol.DISTOX_PACKET_DATA ) {
               ++nData;
               double d = mProto.Distance();
@@ -138,10 +146,12 @@ public class DistoXComm
             }
       }
       // Log.v( TAG_RF, "run() exiting");
+      mRfcommThread = null;
+      app.notifyConnState( );
     }
   };
 
-  private RfcommThread mRfcommThread;
+  RfcommThread mRfcommThread;
 
 
   DistoXComm( TopoDroidApp the_app )
@@ -151,7 +161,7 @@ public class DistoXComm
     mAddress   = null;
     mRfcommThread = null;
     mBTConnected  = false;
-    mBTSocket = null;
+    mBTSocket     = null;
     // Log.v( TAG, "DistoXComm cstr");
   }
 
@@ -171,14 +181,18 @@ public class DistoXComm
 
   /** close the socket (and the RFcomm thread) but don't delete it
    */
-  private void closeSocket( )
+  private void closeSocket( boolean wait_thread )
   {
-    // Log.v( TAG, "closeSocket() " );
+    // Log.v( TAG, "closeSocket() wait thread " + wait_thread );
     if ( mBTSocket != null ) {
       try {
         mBTSocket.close();
-        if ( mRfcommThread != null ) {
-          mRfcommThread.join();
+        if ( wait_thread ) {
+          if ( mRfcommThread != null ) {
+            {
+              mRfcommThread.join();
+            }
+          }
           mRfcommThread = null;
         }
       } catch ( InterruptedException e ) {
@@ -195,11 +209,11 @@ public class DistoXComm
   /** close the socket and delete it
    * the connection is unusable
    */
-  private void destroySocket( )
+  private void destroySocket( boolean wait_thread )
   {
     // Log.v( TAG, "destroySocket() " );
-    closeSocket();
-    // mBTConnected = false;
+    closeSocket( wait_thread );
+    mBTConnected = false;
     mBTSocket = null;
     mProtocol = null;
   }
@@ -265,9 +279,11 @@ public class DistoXComm
         if ( mBTSocket != null ) { mBTSocket = null; }
       }
       if ( mBTSocket != null ) {
+        // Log.v( TAG, "created socket");
         mProtocol = new DistoXProtocol( mBTSocket );
         mAddress = address;
       } else {
+        // Log.v( TAG, "create socket failed");
         mProtocol = null;
         mAddress = null;
       }
@@ -290,6 +306,8 @@ public class DistoXComm
           return false;
         }
       }
+    } else {
+      Log.w(TAG, "connectSocket: null socket" );
     }
     // Log.v(TAG, "connectSocket " + mBTConnected );
     return mBTConnected;
@@ -298,11 +316,13 @@ public class DistoXComm
   private boolean startRfcommThread( int to_read )
   {
     // Log.v(TAG, "startRFcommThread to_read " + to_read );
-    if ( mBTSocket != null && mRfcommThread == null ) {
-      mRfcommThread = new RfcommThread( mProtocol, to_read );
-      mRfcommThread.start();
-      // downloadLoop();
-      // Log.v(TAG, "startRFcommThread true");
+    if ( mBTSocket != null ) {
+      if ( mRfcommThread == null ) {
+        mRfcommThread = new RfcommThread( mProtocol, to_read );
+        mRfcommThread.start();
+        // downloadLoop();
+        // Log.v(TAG, "startRFcommThread true");
+      }
       return true;
     } else {
       mRfcommThread = null;
@@ -315,14 +335,16 @@ public class DistoXComm
 
   public boolean connectRemoteDevice( String address )
   {
-    // Log.v( TAG, "connectRemoteDevice sddress " + address );
+    // Log.v( TAG, "connectRemoteDevice address " + address );
     createSocket( address );
     if ( connectSocket() ) {
       if ( mProtocol != null ) {
         return startRfcommThread( -1 );
       }
       // Log.v(TAG, "connectRemoteDevice null protocol");
-      destroySocket();
+      destroySocket( true );
+    } else {
+      Log.w( TAG, "connectRemoteDevice failed on connectSocket()" );
     }
     return false;
   }
@@ -331,7 +353,7 @@ public class DistoXComm
   {
     // Log.v( TAG, "disconnectRemoteDevice ");
     if ( mBTSocket != null ) {
-      destroySocket();
+      destroySocket( true );
       if ( mRfcommThread != null ) {
         try {
           mRfcommThread.join();
@@ -355,7 +377,7 @@ public class DistoXComm
     if ( connectSocket() ) {
       byte[] result = new byte[4];
       if ( ! mProtocol.read8000( result ) ) {
-        destroySocket();
+        destroySocket( true );
         return false;
       }
       if ( (result[0] & CALIB_BIT) == 0 ) {
@@ -363,7 +385,7 @@ public class DistoXComm
       } else {
         ret = mProtocol.sendCommand( (byte)0x30 );  // TOGGLE CALIB OFF
       }
-      destroySocket();
+      destroySocket( true );
     }
     return ret;
   }
@@ -381,7 +403,7 @@ public class DistoXComm
       createSocket( address );
       if ( connectSocket() ) {
         ret = mProtocol.writeCalibration( mCoeff );
-        destroySocket();
+        destroySocket( true );
       }
     }
     return ret;
@@ -399,7 +421,7 @@ public class DistoXComm
       createSocket( address );
       if ( connectSocket() ) {
         ret = mProtocol.readCalibration( coeff );
-        destroySocket();
+        destroySocket( true );
         // int k;
         // for ( k=0; k<48; k+=8 ) {
         //   StringWriter sw = new StringWriter();
@@ -424,7 +446,7 @@ public class DistoXComm
     createSocket( address );
     if ( connectSocket() ) {
       String result = mProtocol.readHeadTail();
-      destroySocket();
+      destroySocket( true );
       // Log.v( TAG, "readHeadTail() " + result);
       return result; 
     }
@@ -445,7 +467,7 @@ public class DistoXComm
       int to_read = mProtocol.readToRead();
       // Log.v( TAG, "data to read " + to_read );
       if ( to_read <= 0 ) {
-        destroySocket();
+        destroySocket( true );
         return to_read;
       }
 
@@ -457,7 +479,7 @@ public class DistoXComm
         // Log.v( TAG, "nr read " + nr_read + " / " + to_read );
       }
       // Log.v( TAG, "nr read " + nr_read );
-      destroySocket();
+      destroySocket( true );
       if ( mRfcommThread != null ) {
         try {
           mRfcommThread.join();
