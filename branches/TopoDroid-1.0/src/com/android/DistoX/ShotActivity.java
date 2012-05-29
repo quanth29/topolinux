@@ -26,6 +26,10 @@ import java.io.FileWriter;
 import java.util.List;
 import java.util.ArrayList;
 
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+
 import android.app.Application;
 import android.app.Activity;
 import android.view.Menu;
@@ -33,7 +37,6 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 // import android.view.MenuInflater;
 // import android.content.res.ColorStateList;
-import android.os.Bundle;
 
 import android.util.Log;
 
@@ -104,6 +107,23 @@ public class ShotActivity extends Activity
   private MenuItem mMIoptions;
   private MenuItem mMIhelp;
 
+  // -------------------------------------------------------------------
+ 
+  class ConnHandler extends Handler
+  {
+    public ConnHandler()
+    {
+      super();
+    }
+ 
+    @Override
+    public void handleMessage( Message msg )
+    {
+      setTitleColor( app.isConnected() ? 0xffff0000 : 0xffcccccc );
+    }
+  }
+
+  ConnHandler mHandler;
 
   // -------------------------------------------------------------------
 
@@ -272,7 +292,7 @@ public class ShotActivity extends Activity
     // MenuInflater inflater = getMenuInflater();
     // inflater.inflate(R.menu.option_menu_none, menu);
 
-    mMIdownload = menu.add( R.string.menu_download );
+    mMIdevice   = menu.add( R.string.menu_device );
     mSMsurvey = menu.addSubMenu( R.string.menu_survey );
       mMIsplay  = mSMsurvey.add( R.string.menu_splay );
         mMIsplay.setCheckable( true );
@@ -285,13 +305,13 @@ public class ShotActivity extends Activity
         mMIblank.setChecked( mBlank );
       mMInumber  = mSMsurvey.add( R.string.menu_number );
       mMIrefresh = mSMsurvey.add( R.string.menu_refresh );
-    mMInotes    = menu.add( R.string.menu_notes );
 
     mMIplot     = menu.add( R.string.menu_plot );
-    mMIplotnew  = menu.add( R.string.menu_plot_new );
+    mMIdownload = menu.add( R.string.menu_download );
+    mMInotes    = menu.add( R.string.menu_notes );
 
     mSMmore = menu.addSubMenu( R.string.menu_more );
-      mMIdevice   = mSMmore.add( R.string.menu_device );
+      mMIplotnew  = mSMmore.add( R.string.menu_plot_new );
       mMIshotnew  = mSMmore.add( R.string.menu_shot_new );
       mMIundelete = mSMmore.add( R.string.menu_undelete );
       // mMIlocation = mSMmore.add( R.string.menu_location );
@@ -302,16 +322,18 @@ public class ShotActivity extends Activity
     // Log.v( TAG, "menu size " + menu.size() );
     // menu has size 7
 
-    // mMIdevice.setIcon( R.drawable.distox ); 
-    mMIdownload.setIcon( R.drawable.distox );
+    mMIdevice.setIcon( R.drawable.distox ); 
+    mMIdownload.setIcon( R.drawable.download );
     mSMsurvey.setIcon( R.drawable.survey );
     mMInotes.setIcon( R.drawable.compose );
 
     mMIplot.setIcon( R.drawable.scrap );
-    mMIplotnew.setIcon( R.drawable.scrapnew );
+    // mMIplotnew.setIcon( R.drawable.scrapnew );
     mSMmore.setIcon( R.drawable.more );
 
     setBTMenus( app.mBTAdapter.isEnabled() );
+
+    mHandler = new ConnHandler( );
 
     return true;
   }
@@ -401,6 +423,7 @@ public class ShotActivity extends Activity
     }
     return true;
   }
+
   // ---------------------------------------------------------------
 
   
@@ -417,9 +440,23 @@ public class ShotActivity extends Activity
     mList.setOnItemClickListener( this );
     mList.setDividerHeight( 2 );
 
-    // setTitleColor( 0x006d6df6 );
     restoreInstanceFromData();
     updateDisplay( true );
+  }
+
+  @Override
+  public synchronized void onPause() 
+  {
+    super.onPause();
+    app.unregisterConnListener( mHandler );
+  }
+
+  @Override
+  public synchronized void onResume() 
+  {
+    super.onResume();
+    app.registerConnListener( mHandler );
+    // setTitleColor( app.isConnected() ? 0xffff0000 : 0xffcccccc );
   }
 
   @Override

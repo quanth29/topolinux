@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120523 radio buttons: batch - continuous
+ * 20120525 using app.mConnectionMode
  */
 package com.android.DistoX;
 
@@ -47,7 +48,7 @@ public class DeviceActivity extends Activity
   private TextView mTvAddress;
   private Button   mBtnConnect;
   private Button   mBtnDisconnect;
-  private Button   mBtnReconnect;
+  // private Button   mBtnReconnect;
   private Button   mBtnToggle;
   private Button   mBtnHeadTail;
   private Button   mBtnRead;
@@ -81,23 +82,23 @@ public class DeviceActivity extends Activity
       mTvAddress.setText( R.string.no_device_address );
     }
 
-    if ( mBtnBatch.isChecked() ) {
-      Log.v(TAG, "batch checked");
+    if ( app.mConnectionMode == TopoDroidApp.CONN_MODE_BATCH ) {
+      // Log.v(TAG, "batch checked. app is connected: " + app.isConnected() );
       mBtnToggle     .setEnabled( ! cntd );
       mBtnHeadTail   .setEnabled( ! cntd );
       mBtnRead       .setEnabled( ! cntd );
       mBtnWrite      .setEnabled( ! cntd );
       mBtnConnect    .setEnabled( false );
-      mBtnReconnect  .setEnabled( false );
+      // mBtnReconnect  .setEnabled( false );
       mBtnDisconnect .setEnabled( false );
-    } else {
-      Log.v(TAG, "cont. checked");
+    } else { // app.mConnectionMode == TopoDroidApp.CONN_MODE_CONTINUOUS
+      Log.v(TAG, "cont. checked. app is connected: " + app.isConnected() );
       mBtnToggle     .setEnabled( false );
       mBtnHeadTail   .setEnabled( false );
       mBtnRead       .setEnabled( false );
       mBtnWrite      .setEnabled( false );
       mBtnConnect    .setEnabled( ! cntd );
-      mBtnReconnect  .setEnabled( true );
+      // mBtnReconnect  .setEnabled( true );
       mBtnDisconnect .setEnabled( cntd );
     }
     // mBtnBack       .setEnabled( );
@@ -117,7 +118,7 @@ public class DeviceActivity extends Activity
     mTvAddress = (TextView) findViewById( R.id.device_address );
 
     mBtnConnect    = (Button) findViewById(R.id.button_connect_device );
-    mBtnReconnect  = (Button) findViewById(R.id.button_reconnect_device );
+    // mBtnReconnect  = (Button) findViewById(R.id.button_reconnect_device );
     mBtnDisconnect = (Button) findViewById(R.id.button_disconnect_device );
     mBtnToggle     = (Button) findViewById(R.id.button_toggle_device );
     mBtnHeadTail   = (Button) findViewById(R.id.button_head_tail_device );
@@ -128,10 +129,14 @@ public class DeviceActivity extends Activity
     mRGconnection  = (RadioGroup) findViewById(R.id.download_connection );
     mBtnBatch      = (RadioButton) findViewById(R.id.download_batch );
     mBtnContinuous = (RadioButton) findViewById(R.id.download_continuous );
-    mBtnBatch.setChecked( true );
+    if ( app.mConnectionMode == TopoDroidApp.CONN_MODE_BATCH ) {
+      mBtnBatch.setChecked( true );
+    } else {
+      mBtnContinuous.setChecked( true );
+    }
 
     mBtnConnect.setOnClickListener( this );
-    mBtnReconnect.setOnClickListener( this );
+    // mBtnReconnect.setOnClickListener( this );
     mBtnDisconnect.setOnClickListener( this );
     mBtnToggle.setOnClickListener( this );
     mBtnHeadTail.setOnClickListener( this );
@@ -176,6 +181,13 @@ public class DeviceActivity extends Activity
     if ( b == mBtnConnect ) {
       // Log.v( TAG, "Button Connect. Is connected " + app.isConnected() );
       if ( ! app.isConnected() ) {
+    //     if ( comm.connectRemoteDevice( mAddress ) ) {
+    //       Toast.makeText(getApplicationContext(), R.string.connected, Toast.LENGTH_SHORT).show();
+    //     } else {
+    //       app.resetComm();
+    //       Toast.makeText(getApplicationContext(), R.string.connect_failed, Toast.LENGTH_SHORT).show();
+    //     }
+        comm.disconnectRemoteDevice();
         if ( comm.connectRemoteDevice( mAddress ) ) {
           Toast.makeText(getApplicationContext(), R.string.connected, Toast.LENGTH_SHORT).show();
         } else {
@@ -185,15 +197,15 @@ public class DeviceActivity extends Activity
       } else {
         Toast.makeText(getApplicationContext(), R.string.connected_already, Toast.LENGTH_SHORT).show();
       }
-    } else if ( b == mBtnReconnect ) {
-      // Log.v( TAG, "Button Reconnect. Is connected " + app.isConnected() );
-      comm.disconnectRemoteDevice();
-      if ( comm.connectRemoteDevice( mAddress ) ) {
-        Toast.makeText(getApplicationContext(), R.string.connected, Toast.LENGTH_SHORT).show();
-      } else {
-        app.resetComm();
-        Toast.makeText(getApplicationContext(), R.string.connect_failed, Toast.LENGTH_SHORT).show();
-      }
+    // } else if ( b == mBtnReconnect ) {
+    //   // Log.v( TAG, "Button Reconnect. Is connected " + app.isConnected() );
+    //   comm.disconnectRemoteDevice();
+    //   if ( comm.connectRemoteDevice( mAddress ) ) {
+    //     Toast.makeText(getApplicationContext(), R.string.connected, Toast.LENGTH_SHORT).show();
+    //   } else {
+    //     app.resetComm();
+    //     Toast.makeText(getApplicationContext(), R.string.connect_failed, Toast.LENGTH_SHORT).show();
+    //   }
     } else if (  b == mBtnDisconnect ) {
       // Log.v( TAG, "Button Disconnect. Is connected " + app.isConnected() );
       if ( app.isConnected() ) {

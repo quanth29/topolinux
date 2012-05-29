@@ -13,6 +13,9 @@
  * 20120517 survey-info and fix station export
  * 20120518 app base directory
  * 20120523 connection mode (batch, continuous)
+ * 20120524 welcome screen and base-path pref. 
+ * 20120524 moved fixed station management to SurveyActivity
+ * 20120525 conn-mode pref.
  */
 package com.android.DistoX;
 
@@ -26,6 +29,11 @@ import java.util.Locale;
 import java.util.ArrayList;
 
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
+
 import android.app.Application;
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
@@ -43,6 +51,7 @@ public class TopoDroidApp extends Application
   private static final String TAG = "DistoX App";
 
   private SharedPreferences prefs;
+
   BluetoothAdapter mBTAdapter = null;
   DistoXComm mComm = null;
   DistoXDataHelper mData = null;
@@ -58,6 +67,9 @@ public class TopoDroidApp extends Application
   String myCalib;    // current calib name
 
   // preferences
+  boolean mWelcomeScreen;  // whether to show the welcome screen
+  String  mBasePath;       // app base path
+
   float mCloseDistance;
   int   mExportType;
   float mGroupDistance;
@@ -65,6 +77,7 @@ public class TopoDroidApp extends Application
   int   mCalibMaxIt;
   String mDevice        = DEVICE_NAME;
   // private boolean mSaveOnDestroy = SAVE_ON_DESTROY;
+  int   mDefaultConnectionMode;
 
   int   mLineSegment;
   float mVThreshold;    // verticality threshold (LRUD)
@@ -92,15 +105,41 @@ public class TopoDroidApp extends Application
   private static final float GRAD2DEG = 360.0f/400.0f;
   // private static final byte char0C = 0x0c;
 
-  public static String APP_BASE_PATH = Environment.getExternalStorageDirectory() + "/TopoDroid/";
-  public static String APP_TLX_PATH  = APP_BASE_PATH + "tlx/";
-  public static String APP_DAT_PATH  = APP_BASE_PATH + "dat/";
-  public static String APP_SVX_PATH  = APP_BASE_PATH + "svx/";
-  public static String APP_TH_PATH   = APP_BASE_PATH + "th/";
-  public static String APP_TH2_PATH  = APP_BASE_PATH + "th2/";
-  public static String APP_TRO_PATH  = APP_BASE_PATH + "tro/";
-  public static String APP_MAPS_PATH = APP_BASE_PATH + "png/";
-  public static String APP_NOTE_PATH = APP_BASE_PATH + "note/";
+  public static String APP_BASE_PATH; //  = Environment.getExternalStorageDirectory() + "/TopoDroid/";
+  public static String APP_TLX_PATH ; //  = APP_BASE_PATH + "tlx/";
+  public static String APP_DAT_PATH ; //  = APP_BASE_PATH + "dat/";
+  public static String APP_SVX_PATH ; //  = APP_BASE_PATH + "svx/";
+  public static String APP_TH_PATH  ; //  = APP_BASE_PATH + "th/";
+  public static String APP_TH2_PATH ; //  = APP_BASE_PATH + "th2/";
+  public static String APP_TRO_PATH ; //  = APP_BASE_PATH + "tro/";
+  public static String APP_MAPS_PATH; //  = APP_BASE_PATH + "png/";
+  public static String APP_NOTE_PATH; //  = APP_BASE_PATH + "note/";
+
+  private void setPaths( String path )
+  {
+    if ( path != null ) {
+      File dir = new File( path );
+      if (! dir.exists() || ! dir.isDirectory() || ! dir.canWrite() ) {
+        Log.w( TAG, "base path \"" + path + "\" does not exist or is not dir or is not writable");
+        path = null;
+      } else {
+        APP_BASE_PATH = path + "/TopoDroid/";
+      }
+    } 
+    if ( path == null ) {
+      APP_BASE_PATH = Environment.getExternalStorageDirectory() + "/TopoDroid/";
+    }
+    // Log.v(TAG, "Base Path \"" + APP_BASE_PATH + "\"" );
+
+    APP_TLX_PATH  = APP_BASE_PATH + "tlx/";
+    APP_DAT_PATH  = APP_BASE_PATH + "dat/";
+    APP_SVX_PATH  = APP_BASE_PATH + "svx/";
+    APP_TH_PATH   = APP_BASE_PATH + "th/";
+    APP_TH2_PATH  = APP_BASE_PATH + "th2/";
+    APP_TRO_PATH  = APP_BASE_PATH + "tro/";
+    APP_MAPS_PATH = APP_BASE_PATH + "png/";
+    APP_NOTE_PATH = APP_BASE_PATH + "note/";
+  }
 
   // scrap types
   public static final long PLOT_V_SECTION = 0;
@@ -149,7 +188,8 @@ public class TopoDroidApp extends Application
     "DISTOX_GROUP_BY",
     "DISTOX_LIST_REFRESH",    // 15
     "DISTOX_UNIT_LENGTH",
-    "DISTOX_UNIT_ANGLE"
+    "DISTOX_UNIT_ANGLE",
+    "DISTOX_CONN_MODE"
   };
 
   public static final int DISTOX_EXPORT_TH  = 0;
@@ -199,27 +239,58 @@ public class TopoDroidApp extends Application
   public String[] DistoXConnectionError;
 
   // ---------------------------------------------------------------
+  // ConnListener
+  ArrayList< Handler > mConnListener;
+
+  void registerConnListener( Handler hdl )
+  {
+    if ( hdl != null ) {
+      mConnListener.add( hdl );
+      try {
+        new Messenger( hdl ).send( new Message() );
+      } catch ( RemoteException e ) { }
+    }
+  }
+
+  void unregisterConnListener( Handler hdl )
+  {
+    if ( hdl != null ) {
+      mConnListener.remove( hdl );
+    }
+  }
+
+  public void notifyConnState( )
+  {
+    Log.v( TAG, "notify conn state" );
+    for ( Handler hdl : mConnListener ) {
+      try {
+        new Messenger( hdl ).send( new Message() );
+      } catch ( RemoteException e ) { }
+    }
+  }
+  
+  // ---------------------------------------------------------------
   // fixed stations
   //
 
-  private ArrayList< FixedInfo > mFixed;
+  // private ArrayList< FixedInfo > mFixed;
 
-  public void addFixed( String station, double latitude, double longitude, double altitude )
-  {
-    mFixed.add( new FixedInfo( station, latitude, longitude, altitude ) );
-    mData.insertFixed( station, mSID, longitude, latitude, altitude, "" ); // FIXME comment
-  }
+  // public void addFixed( String station, double latitude, double longitude, double altitude )
+  // {
+  //   mFixed.add( new FixedInfo( station, latitude, longitude, altitude ) );
+  //   mData.insertFixed( station, mSID, longitude, latitude, altitude, "" ); // FIXME comment
+  // }
 
-  // populate fixed from the DB
-  // this is not ok must re-populate whenever the survey changes
-  public void restoreFixed()
-  {
-    mFixed.clear(); // just to make sure ...
-    List< FixedInfo > fixed = mData.selectAllFixed( mSID );
-    for ( FixedInfo fix : fixed ) {
-      mFixed.add( fix );
-    }
-  }
+  // // populate fixed from the DB
+  // // this is not ok must re-populate whenever the survey changes
+  // public void restoreFixed()
+  // {
+  //   mFixed.clear(); // just to make sure ...
+  //   List< FixedInfo > fixed = mData.selectAllFixed( mSID );
+  //   for ( FixedInfo fix : fixed ) {
+  //     mFixed.add( fix );
+  //   }
+  // }
 
   // ----------------------------------------------------------------
   // survey/calib info
@@ -256,6 +327,10 @@ public class TopoDroidApp extends Application
     this.prefs = PreferenceManager.getDefaultSharedPreferences( this );
     this.prefs.registerOnSharedPreferenceChangeListener( this );
 
+    mWelcomeScreen = prefs.getBoolean( "DISTOX_WELCOME_SCREEN", true ); // default: WelcomeScreen = true
+    mBasePath = prefs.getString( "DISTOX_BASE_PATH", null );
+    setPaths( mBasePath );
+
     mCloseDistance = Float.parseFloat( prefs.getString( key[0], CLOSE_DISTANCE ) );
     String type = prefs.getString( key[1], EXPORT_TYPE );
     mExportType = DISTOX_EXPORT_TH;
@@ -287,11 +362,14 @@ public class TopoDroidApp extends Application
     mUnitLength    = prefs.getString( key[16], UNIT_LENGTH ).equals("feet") ?  M2FT : 1.0f;
     mUnitAngle     = prefs.getString( key[17], UNIT_ANGLE ).equals("grads") ?  DEG2GRAD : 1.0f;
 
+    mConnectionMode = Integer.parseInt( prefs.getString( key[18], "0" ) );
+
     DrawingBrushPaths.doMakePaths( );
 
     mData = new DistoXDataHelper( this );
     mCalibration = new Calibration( 0, this );
-    mFixed = new ArrayList< FixedInfo >();
+    // mFixed = new ArrayList< FixedInfo >();
+    mConnListener = new ArrayList< Handler >();
 
     mBTAdapter = BluetoothAdapter.getDefaultAdapter();
     if ( mBTAdapter == null ) {
@@ -339,13 +417,17 @@ public class TopoDroidApp extends Application
 
   public void resetComm() 
   { 
+    if ( mComm != null && mComm.mBTConnected ) {
+      mComm.disconnectRemoteDevice( );
+    }
     mComm = null;
     mComm = new DistoXComm( this );
   }
 
   public boolean isConnected()
   {
-    return mComm != null && mComm.mBTConnected;
+    // return mComm != null && mComm.mBTConnected;
+    return mComm != null && mComm.mBTConnected && mComm.mRfcommThread != null;
   }
 
   // FIXME to disappear ...
@@ -360,11 +442,11 @@ public class TopoDroidApp extends Application
     mySurvey = null;
     if ( survey != null && mData != null ) {
       mSID = mData.setSurvey( survey );
-      mFixed.clear();
+      // mFixed.clear();
       mySurvey = null;
       if ( mSID > 0 ) {
         mySurvey = survey;
-        restoreFixed();
+        // restoreFixed();
       }
       return mSID;
     }
@@ -404,10 +486,10 @@ public class TopoDroidApp extends Application
     if ( mData != null ) {
       mySurvey = mData.getSurveyFromId( id );
       mSID = 0;
-      mFixed.clear();
+      // mFixed.clear();
       if ( mySurvey != null ) {
         mSID = id;
-        restoreFixed();
+        // restoreFixed();
       }
     }
   }
@@ -470,7 +552,23 @@ public class TopoDroidApp extends Application
       mUnitLength = prefs.getString( key[16], UNIT_LENGTH ).equals("feet") ? M2FT : 1.0f;
     } else if ( k.equals( key[17] ) ) {
       mUnitAngle = prefs.getString( key[17], UNIT_ANGLE ).equals("grads") ? DEG2GRAD : 1.0f;
+    } else if ( k.equals( "DISTOX_CONN_MODE" ) ) {
+      mConnectionMode = Integer.parseInt( prefs.getString( key[18], "0" ) );
+    } else if ( k.equals( "DISTOX_BASE_PATH" ) ) {
+      mBasePath = prefs.getString( "DISTOX_BASE_PATH", null );
+      setPaths( mBasePath );
+      // FIXME need to restart the app ?
+      mData        = new DistoXDataHelper( this );
+      mCalibration = new Calibration( 0, this );
+      // mFixed = new ArrayList< FixedInfo >();
     }
+  }
+
+  public void setWelcomeScreen( boolean val )
+  {
+    SharedPreferences.Editor editor = prefs.edit();
+    editor.putBoolean( "DISTOX_WELCOME_SCREEN", val );
+    editor.commit(); // Very important to save the preference
   }
 
   public void setDevice( String device ) 
@@ -500,6 +598,7 @@ public class TopoDroidApp extends Application
     }
     String filename = TopoDroidApp.APP_TH_PATH + mySurvey + ".th";
     List<DistoXDBlock> list = mData.selectAllShots( mSID, 0 );
+    List< FixedInfo > fixed = mData.selectAllFixed( mSID );
     try {
       SurveyInfo info = mData.selectSurveyInfo( mSID );
       FileWriter fw = new FileWriter( filename );
@@ -510,9 +609,9 @@ public class TopoDroidApp extends Application
       }
       pw.format("\n");
       pw.format("  centerline\n");
-      if ( mFixed.size() > 0 ) {
+      if ( fixed.size() > 0 ) {
         pw.format("    cs lat-long\n");
-        for ( FixedInfo fix : mFixed ) {
+        for ( FixedInfo fix : fixed ) {
           pw.format("    fix %s %.6f %.6f %.2f m\n", fix.name, fix.lat, fix.lng, fix.alt );
         }
       }
@@ -1135,13 +1234,14 @@ public class TopoDroidApp extends Application
     }
     String filename = TopoDroidApp.APP_TRO_PATH + mySurvey + ".tro";
     List<DistoXDBlock> list = mData.selectAllShots( mSID, 0 );
+    List< FixedInfo > fixed = mData.selectAllFixed( mSID );
     try {
       FileWriter fw = new FileWriter( filename );
       PrintWriter pw = new PrintWriter( fw );
   
       pw.format("Version 5.02\r\n\r\n");
-      if ( mFixed.size() > 0 ) {
-        for ( FixedInfo fix : mFixed ) {
+      if ( fixed.size() > 0 ) {
+        for ( FixedInfo fix : fixed ) {
           // pw.format("Trou %s,%.2f,%.2f,%.2f\r\n", mySurvey, fix.lat, fix.lng, fix.alt );
           // pw.format("Entree %s\r\n", fix.name );
           break;

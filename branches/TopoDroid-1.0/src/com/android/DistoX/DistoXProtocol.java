@@ -57,6 +57,7 @@ public class DistoXProtocol
   public static final int DISTOX_ERR_HEADTAIL_IO  = -2;
   public static final int DISTOX_ERR_HEADTAIL_EOF = -3;
   public static final int DISTOX_ERR_CONNECTED    = -4;
+  public static final int DISTOX_ERR_OFF          = -5; // distox has turned off
 
   private double mDistance;
   private double mBearing;
@@ -225,18 +226,20 @@ public class DistoXProtocol
       mIn.readFully( mBuffer, 0, 8 );
       if ( (mBuffer[0] & 0x03) != 0 ) { 
         mAcknowledge[0] = (byte)(( mBuffer[0] & 0x80 ) | 0x55);
+        // Log.v( TAG, "read byte ... writing ack");
         mOut.write( mAcknowledge, 0, 1 );
       }
       return handlePacket();
     } catch ( EOFException e ) {
-      // Log.e( TAG, "readPacket EOFException" + e.toString() );
+      Log.w( TAG, "readPacket EOFException" + e.toString() );
     } catch (ClosedByInterruptException e ) {
-      // Log.e( TAG, "readPacket ClosedByInterruptException" + e.toString() );
+      Log.w( TAG, "readPacket ClosedByInterruptException" + e.toString() );
     // } catch (InterruptedException e ) {
     //   Log.e( TAG, "readPacket InterruptedException" + e.toString() );
     } catch (IOException e ) {
       // this is OK: the DistoX has been turned off
-      // Log.e( TAG, "readPacket IOException " + e.toString() );
+      // Log.w( TAG, "readPacket IOException " + e.toString() + " OK distox turned off" );
+      return DISTOX_ERR_OFF;
     }
     return DISTOX_PACKET_NONE;
   }

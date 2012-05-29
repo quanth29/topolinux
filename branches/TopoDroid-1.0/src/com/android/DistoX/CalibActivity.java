@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120520 created
+ * 20120524 added device in CalibInfo
  */
 package com.android.DistoX;
 
@@ -54,6 +55,7 @@ public class CalibActivity extends Activity
 
   private EditText mEditName;
   private EditText mEditDate;
+  private EditText mEditDevice;
   private EditText mEditComment;
 
   private TopoDroidApp app;
@@ -68,6 +70,7 @@ public class CalibActivity extends Activity
     setContentView(R.layout.distox_calib_dialog);
     mEditName    = (EditText) findViewById(R.id.calib_name);
     mEditDate    = (EditText) findViewById(R.id.calib_date);
+    mEditDevice  = (EditText) findViewById(R.id.calib_device);
     mEditComment = (EditText) findViewById(R.id.calib_comment);
 
     app     = (TopoDroidApp)getApplication();
@@ -79,6 +82,11 @@ public class CalibActivity extends Activity
       setNameNotEditable();
       // mEditName.setEditable( false );
       mEditDate.setText( info.date );
+      if ( info.device != null && info.device.length() > 0 ) {
+        mEditDevice.setText( info.device );
+      } else {
+        mEditDevice.setText( app.mDevice );
+      }
       if ( info.comment != null && info.comment.length() > 0 ) {
         mEditComment.setText( info.comment );
       } else {
@@ -88,10 +96,10 @@ public class CalibActivity extends Activity
       mEditName.setHint( R.string.name );
       SimpleDateFormat sdf = new SimpleDateFormat( "yyyy.MM.dd", Locale.US );
       mEditDate.setText( sdf.format( new Date() ) );
+      mEditDevice.setText( app.mDevice );
       mEditComment.setHint( R.string.description );
     }
   }
-
 
   // --------- menus ----------
   private MenuItem mMIsave;
@@ -162,17 +170,17 @@ public class CalibActivity extends Activity
   {
     String name = mEditName.getText().toString();
     String date = mEditDate.getText().toString();
+    String device = mEditDevice.getText().toString();
     String comment = mEditComment.getText().toString();
 
     if ( isSaved ) { // calib already saved
-      // Log.v( TAG, "INSERT calib id " + id + " date " + date + " name " + name + " comment " + comment );
-      app.mData.updateCalibDayAndComment( app.mCID, date, comment );
+      app.mData.updateCalibInfo( app.mCID, date, device, comment );
     } else { // new calib
       if ( app.hasCalibName( name ) ) { // name already exists
         Toast.makeText( this, R.string.calib_exists, Toast.LENGTH_LONG ).show();
       } else {
         app.setCalibFromName( name );
-        app.mData.updateCalibDayAndComment( app.mCID, date, comment );
+        app.mData.updateCalibInfo( app.mCID, date, device, comment );
         isSaved = true;
         setNameNotEditable();
       }

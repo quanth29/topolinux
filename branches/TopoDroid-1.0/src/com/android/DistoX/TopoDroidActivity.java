@@ -204,6 +204,7 @@ public class TopoDroidActivity extends Activity
         // TODO start SurveyActivity
         Intent surveyIntent = new Intent( Intent.ACTION_EDIT ).setClass( this, SurveyActivity.class );
         startActivity( surveyIntent );
+        // new SurveyActivity( this, this ).show();
         break;
       case STATUS_CALIB:
         app.setCalibFromName( value );
@@ -213,6 +214,10 @@ public class TopoDroidActivity extends Activity
         break;
     }
   }
+
+  // void handleSurveyActivity( int result )
+  // {
+  // }
 
   // ---------------------------------------------------------------
   // OPTIONS MENU
@@ -311,7 +316,8 @@ public class TopoDroidActivity extends Activity
     // }
     // restoreInstanceFromFile();
     restoreInstanceFromData();
-    if ( app.getSurveyId() < 0 ) {
+    if ( app.mWelcomeScreen ) {
+      app.setWelcomeScreen( false );
       TopoDroidAbout.show( this );
     }
     // setTitleColor( 0x006d6df6 );
@@ -490,5 +496,146 @@ public class TopoDroidActivity extends Activity
     }
     // Log.v( TAG, "onActivityResult() done " );
   }
+
+
+  // =====================================================================
+/*
+  private void doSaveSurvey()
+  {
+    saveSurvey( );
+    // setMenus();
+    setButtons();
+  }
+
+  private void doOpenSurvey()
+  {
+    dismiss();
+    Intent openIntent = new Intent( mContext, ShotActivity.class );
+    mContext.startActivity( openIntent );
+  }
+
+  private void doLocation()
+  {
+    LocationManager lm = (LocationManager) mContext.getSystemService( Context.LOCATION_SERVICE );
+    DistoXLocation loc = new DistoXLocation( mContext, this, lm );
+    loc.show();
+  }
+
+  private void doNotes()
+  {
+    if ( app.getSurvey() != null ) {
+      Intent notesIntent = new Intent( mContext, DistoXAnnotations.class );
+      notesIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY, app.getSurvey() );
+      mContext.startActivity( notesIntent );
+    } else { // SHOULD NEVER HAPPEN
+      Toast.makeText( mContext, R.string.no_survey, Toast.LENGTH_LONG ).show();
+    }
+  }
+
+
+  // ---------------------------------------------------------------
+  // fixed stations
+  //
+
+  public void addFixed( String station, double latitude, double longitude, double altitude )
+  {
+    // mFixed.add( new FixedInfo( station, latitude, longitude, altitude ) );
+    // NOTE info.id == app.mSID
+    app.mData.insertFixed( station, info.id, longitude, latitude, altitude, "" ); // FIXME comment
+  }
+
+  // populate fixed from the DB
+  // this is not ok must re-populate whenever the survey changes
+  // public void restoreFixed()
+  // {
+  //   mFixed.clear(); // just to make sure ...
+  //   List< FixedInfo > fixed = app.mData.selectAllFixed( mSID );
+  //   for ( FixedInfo fix : fixed ) {
+  //     mFixed.add( fix );
+  //   }
+  // }
+
+  // ---------------------------------------------------------------
+
+  private void saveSurvey( )
+  {
+    String name = mEditName.getText().toString();
+    String date = mEditDate.getText().toString();
+    String team = mEditTeam.getText().toString();
+    String comment = mEditComment.getText().toString();
+
+    if ( isSaved ) { // survey already saved
+      // Log.v( TAG, "INSERT survey id " + id + " date " + date + " name " + name + " comment " + comment );
+      app.mData.updateSurveyDayAndComment( app.mSID, date, comment );
+      if ( team != null ) {
+        app.mData.updateSurveyTeam( app.mSID, team );
+      } 
+    } else { // new survey
+      if ( app.hasSurveyName( name ) ) { // name already exists
+        Toast.makeText( mContext, R.string.survey_exists, Toast.LENGTH_LONG ).show();
+      } else {
+        app.setSurveyFromName( name );
+        app.mData.updateSurveyDayAndComment( app.mSID, date, comment );
+        if ( team != null ) {
+          app.mData.updateSurveyTeam( app.mSID, team );
+        } 
+        isSaved = true;
+        setNameNotEditable();
+      }
+    }
+  }
+  
+  private void doExport()
+  {
+    if ( app.getSurveyId() < 0 ) {
+      Toast.makeText( mContext, R.string.no_survey, Toast.LENGTH_LONG ).show();
+    } else {
+      String filename = null;
+      switch ( app.mExportType ) {
+        case TopoDroidApp.DISTOX_EXPORT_TLX:
+          filename = app.exportSurveyAsTlx();
+          break;
+        case TopoDroidApp.DISTOX_EXPORT_TH:
+          filename = app.exportSurveyAsTh();
+          break;
+        case TopoDroidApp.DISTOX_EXPORT_DAT:
+          filename = app.exportSurveyAsDat();
+          break;
+        case TopoDroidApp.DISTOX_EXPORT_SVX:
+          filename = app.exportSurveyAsSvx();
+          break;
+        case TopoDroidApp.DISTOX_EXPORT_TRO:
+          filename = app.exportSurveyAsTro();
+          break;
+      }
+      if ( filename != null ) {
+        Toast.makeText( mContext, mContext.getString(R.string.saving_) + filename, Toast.LENGTH_LONG ).show();
+      } else {
+        Toast.makeText( mContext, R.string.saving_file_failed, Toast.LENGTH_LONG ).show();
+      }
+    }
+  }
+
+  public void deleteSurvey()
+  {
+    if ( app.mSID < 0 ) return;
+    app.mData.doDeleteSurvey( app.mSID );
+    app.setSurveyFromName( null );
+    // finish();
+    dismiss();
+  }
+ 
+  public void addLocation( String station, double latitude, double longitude, double altitude )
+  {
+    // app.addFixed( station, latitude, longitude, altitude );
+    addFixed( station, latitude, longitude, altitude );
+
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter( sw );
+    pw.format("\nfix %s %f %f %f m\n", station, latitude, longitude, altitude );
+    DistoXAnnotations.append( app.getSurvey(), sw.getBuffer().toString() );
+  }
+
+*/
 
 }

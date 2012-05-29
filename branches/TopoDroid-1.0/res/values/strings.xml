@@ -24,6 +24,7 @@
     <!-- string name="device_busy">device busy</string -->
     <string name="device_comm_thread">Continuous data download</string>
     <string name="device_action_thread">On-demand download and read/write</string>
+    <string name="device_off">DistoX off</string>
     <!-- string name="disto_bad_type">DistoX bad data type</string -->
     <string name="connection">Connection</string>
     <string name="download_batch">Batch</string>
@@ -161,7 +162,7 @@
     <string name="button_head_tail" >Read Head/Tail   </string>
     <string name="button_ok"        >O.K.      </string>
     <string name="button_read"      >Read calibration </string>
-    <string name="button_reconnect" >Reconnect </string>
+    <!-- string name="button_reconnect" >Reconnect </string -->
     <string name="button_save"      >Save      </string>
     <string name="button_select"    >Select    </string>
     <string name="button_write"     >Write calibration</string>
@@ -197,6 +198,11 @@
   <string name="pref_cat_calib">Calibration options</string>
   <string name="pref_cat_device">DistoX options</string>
 
+  <string name="pref_conn_mode_title">Connection mode</string>
+  <string name="pref_conn_mode_summary">DistoX connection mode</string>
+  <string name="pref_base_path_title">Parent directory</string>
+  <string name="pref_base_path_summary">TopoDroid parent directory</string>
+  <string name="pref_base_path_message">Enter TopoDroid parent directory</string>
   <string name="pref_export_title">Export</string>
   <string name="pref_export_summary">Select type of export</string>
   <string name="pref_list_refresh_title">List refresh</string>
@@ -255,32 +261,38 @@
 
     <string name="help_title">TopoDroid 1.0 - Help</string>
   <string name="help_topodroid">
-The TopoDroid screen shows the list of either the surveys or the calibrations.
-To toggle between the two lists tap on the buttons on top.\n
-Tapping on an item in the list opens the survey or calibartion respectively.\n
-With the menus you can create a new survey/calibration or import one.\n
+Surveys/calibrations lists.\n
+To toggle between the lists tap on the buttons on top.
+Tap on a list item to open the survey/calibration.
+There are menus to create a new survey/calibration or import one.\n
   </string>
   <string name="help_survey">
-The Survey screen shows the survey metadata. You can edit them, however the name will not be modified one it is set.\n
+Survey info.\n
+You can edit them, however the name will not be modified once it is set.
 Through the menus you can save the info, open the survey, delete it and all its
-associted data, write to the survey annotation, and export the survey.\n
+associated data, write to the survey annotation, and export the survey.\n
   </string>
   <string name="help_shot">
-The Shots screen shows the survey shots. There are three types of shots: leg shots have two stations, splay shots have only one station, and blank shots have no station assigned. Furthermore groups of two or more shots with similar values are considered as a leg.\n
-The shots are colored by their type: white leg, blue splay, red blank. It is possible to hide splay, and/or blank shots. Moreover for each group of shots of a leg it is possible to diaply only the first.\n
+Survey shots.\n
+There are three types of shots: leg shots have two stations, splay shots have only one station, and blank shots have no station assigned. Furthermore groups of two or more shots with similar values are considered as a leg.\n
+The shots are colored by their type: white leg, blue splay, red blank. Splay, and/or blank shots can be hidden. Moreover for each group of shots of a leg it is possible to display only the first.\n
 Stations can be assigned to splay shots automatically.\n
 There are menus to download the data from the DistoX, open a scrap, add to the survey annotation, and much more.\n
   </string>
   <string name="help_draw">
-The Drawing screen is used to make sketches. Stations, shots (legs and splay), and a grid can be displayed
-to help drawing. To draw the sketch put symbols, trace lines, and regions (areas). 
+Sketch drawing.\n
+To draw the sketch put symbols, trace lines, and regions (areas).
+Stations, shots (legs and splay), and a grid can be displayed to help drawing.
   </string>
   <string name="help_calib">
-The Calibration screen shows the calibration information: name (title), date and description. 
+Calibration info.\n
+Name (title), date, device and description.
+There are menus to make a save, open, and delete the calibration.
   </string>
   <string name="help_gm">
-The Calibration data screen shows, for each data, the group number, the azimuth, inclination and roll
-angles, and the computation error.\n
+Calibration data.\n
+For each data, the group number, the azimuth, inclination and roll
+angles, and the computation error are shown.\n
 Data that differ only by the roll angle forms a group.
 Group number assignment is necesasary before computing the calibration. This can be done manually, editing
 each data, or assited by the program.\n

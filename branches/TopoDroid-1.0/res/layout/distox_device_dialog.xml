@@ -103,12 +103,12 @@
         android:layout_gravity="right"
         android:text="@string/button_connect"
         />
-      <Button android:id="@+id/button_reconnect_device"
+      <!-- Button android:id="@+id/button_reconnect_device"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="right"
         android:text="@string/button_reconnect"
-        />
+        / -->
       <Button android:id="@+id/button_disconnect_device"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 

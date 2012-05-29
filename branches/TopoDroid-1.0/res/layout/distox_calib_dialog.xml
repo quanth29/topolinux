@@ -32,6 +32,14 @@
         android:singleLine="true"
         android:scrollHorizontally="true" />
 
+    <EditText android:id="@+id/calib_device" 
+        android:maxLines="1" 
+        android:layout_marginTop="2dip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:singleLine="true"
+        android:scrollHorizontally="true" />
+
     <EditText android:id="@+id/calib_comment" 
         android:maxLines="1" 
         android:layout_marginTop="2dip"

@@ -10,11 +10,16 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120520 created
+ * 20120929 fixed name increment for strings like A11-1
  */
 package com.android.DistoX;
 
+// import android.util.Log;
+
 public class DistoXStationName
 {
+  // private static final String TAG = "DistoX";
+
   private static char[] lc = {
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
     'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' 
@@ -34,14 +39,25 @@ public class DistoXStationName
         int k = Character.getNumericValue( ch );
         if ( k >= 10 && k < 35 ) {
           k -= 9; // - 10 + 1
-          return name.substring( 0, name.length() - 1 ) + 
+          // Log.v(TAG, "not numeric " + k );
+          return name.substring( 0, len - 1 ) + 
            ( Character.isLowerCase( ch )? lc[k] : uc[k] );
         } else if ( k >= 0 && k < 10 ) {
-          String digits = name.replaceAll( "\\D*", "" );
-          int h = Integer.valueOf( digits ) + 1;
-          String ret = name.replaceAll( "\\d+", Integer.toString(h) );
-          // Log.v( TAG, "digits " + digits + " h " + h + " ret " + ret );
-          return ret;
+          int n = 0;
+          int s = 1;
+          // Log.v(TAG, "name >" + name + "< n " + n );
+          while ( len > 1 ) {
+            -- len;
+            k = Character.getNumericValue( name.charAt(len) );
+            if ( k < 0 || k >= 10 ) { ++len; break; }
+            n += s * k;
+            s *= 10;
+            // Log.v(TAG, "k " + k + " n " + n + " len " + len);
+          }
+          if ( len > 0 ) {
+            return name.substring( 0, len ) + Integer.toString( n+1 );
+          } 
+          return Integer.toString( n+1 );
         }
       }
     }

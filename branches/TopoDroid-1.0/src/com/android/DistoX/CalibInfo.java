@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120520 created
+ * 20120524 added device 
  */
 package com.android.DistoX;
 
@@ -18,5 +19,6 @@ class CalibInfo
   public long id;
   public String name;
   public String date;
+  public String device;
   public String comment;
 }
