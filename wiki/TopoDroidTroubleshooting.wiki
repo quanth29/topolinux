@@ -13,3 +13,14 @@ select Bluetooth and scan for devices.
 If this app fails there is no chance that TopoDroid will detect 
 the DistoX. After the Settings app can pair to the DistoX, you should
 be able to see it with TopoDroid in the list of "Paired devices".
+
+If the app Settings cannot detect and pair with the DistoX, there is a
+problem with your android BlueTooth.
+
+
+=== TopoDroid does not show the shots ===
+
+Make sure that the "Hide blank shots" submenu of "Survey" is not checked.
+
+You can always inspect the database, with a SQLite app to check whether the
+data have been downloaded and are there.
