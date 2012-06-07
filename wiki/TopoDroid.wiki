@@ -47,60 +47,61 @@ and will not be erased even if you uninstall the app. This means that you
 should download the data to your PC now and then, and clean the database
 (using SQLite).
 
-== HOWTO == 
+== HOWTO (v. 1.0)== 
 
 When you start TopoDroid the first time you are presented with a greeting screen.
-This will not show again unless there is no survey to display.
-If there is a survey TopoDroid opnes up listing the survey shots.
+This will not show again; to see is select the "About" menu.
+The main TopoDroid window shows the list of surveys or that of calibrations.
+You can toggle between the two list by tapping the buttons on the top.
 
-Tap the "MENU" to bring up the options:
+The main widow menus:
   * DistoX
-  * Surveys
-  * Scraps
-  * Download
-  * Notes
-  * More
+  * New
+  * Import
+  * More (Help, Options, About)
 
-With the first option, *DistoX*, you can scan for DistoX devices, or simply
-list paired devices (a device is paired after you connect to it once).
-When you tap on a device in the list, you have a choice of actions:
-  * Connect: if the device is NOT CONNECTED, tries to connect to it
-  * Reconnect: tries to connect to the device
-  * Disconnect: if the device is CONNECTED, close the connection
-  * Reset the connection
-  * Toggle calib mode: use when the device is NOT CONNECTED
-  * Write calibration to device (only if a calibrationis loaded): use when the device is NOT CONNECTED.
+The "DistoX" menu opens the Device window. With this you can manage DistoX:
+list the paired devices, scan for new ones, reset TopoDroid BlueTooth.
+TopoDroid connects to one device at a time: the current device can be changed by selecting a new one from the list of paired (or scanned) devices.
+The name of the current DistoX device is displayed in the title bar, together with
+the connection state.
+
+The data transfer between the DistoX and TopoDroid can be continuous or on-demand. In the first case TopoDroid is continuously connected to the DistoX and this sends data to TopoDroid as soon as they are acquired. This connection may fail when the DistoX switches off, or gets too far away from the Android. TopoDroid detect such a failure (there is a timeout of 25 seconds), and turns the connection off if it happens. With the on-demand connection TopoDroid connects to the DistoX only when needed to fulfill a user request. Certain actions (toggling the DistoX in calibration mode, reading and writing the calibration coefficients) can be done only with the on-demand connection.
+
 When a DistoX is connected the downloaded data go into the active survey or the active calibration depending on the type of the data.
-The last-used DistoX device is also listed in the menu options so that you can go immediately to manage it.
 
-With the *Surveys* menu option you can manage the shot list display,
-export the survey as Therion th file, define a new scrap for the survey,
-list the surveys, define a new survey.
-When you tap on the survey name in the list of surveys, the survey becomes the active survey and its shots are displayed. When you define a new survey, you must
-specify its name in the survey dialog; it becomes the active survey. Initially it has no shot; the shot list is empty. Connect to the DistoX to download the data
-that go in the shot list. The shots of the selected
-survey are displayed as
+The menu "New" creates a new survey/calibration. The menu "Import" is sued to import an existing survey.
+
+Tapping a survey in the list opens the Survey window. This displays the survey infos
+(name, date, team, description) and a list of buttons:
+  * Save: save any change to the info in the database
+  * Open: opens the Shots window
+  * Export: export the survey (available formats: Therion, Compass, VisualTopo, Survex)
+  * 3D: display the 3D
+  * Notes: edit survey annotations
+  * Location: manage fixed stations
+  * Delete: delete the survey and all associated data and files
+
+
+The Shots window displays the list of survey shots. There are three types of shots:
+leg (white) with bot FROM and TO stations, splay (blue) with only FROM station, and blank (red) with no station. Groups of consecutive close shots are taken to make a centerline leg and usually only the first is displayed. The display of splay and blank shots can be turned off. Each shot is shown as
 {{{
-   id <name> distance compass clino [extend]
+   id <from-to> distance compass clino [extend]
 }}}
 
-The "name" is an alphanumeric string WITH NO SPACES: for a centerline
-shot the two stations are joined by a dash '-', eg, "13-14".
-For a splay shot the name is the station followed by a dash, eg, "13-".
-Initially the shot names are empty (only the dash "-").
-To assign a name to the shot tap on it and edit the stations in the dialog.
+Station names can include digits and letters, as well as symbols.
+To assign the stations to a shot tap on the shot and enter the stations in the shot dialog that appears. TopoDroid guesses the station names from those of the previous shot, so you have to make a change only if these are incorrect. Furthermore there is a menu (Survey|Number) to assign the FROM station to splay shots automatically, using that of the following leg.
 
-The extend is one of '<' (left), '>' (right) or '|' vertical (enclosed in square brackets). The shot extend can be changed in the edit dialog.
+The extend is one of '<' (left), '>' (right) or '|' vertical (enclosed in square brackets). The shot extend can be changed in the shot dialog.
 
 An asterisk "`*`" follows the _extend_ if the shot is marked as "duplicate".
-The duplicate flag can be toggled in the shot edit dialog.
+The duplicate flag can be toggled in the shot dialog.
 
-By tapping on the shot line you bring up the shot edit dialog, throgh which you can
-edit the shot stations and select its extend, toggle the duplicate flag, and
-add a comment to the shot.
+With the shot dialog you can also add a brief note (comment) to the shot.
 
-With "Scraps" you can list the scraps of the current survey.
-On a scrap you can draw lines and points (speleo symbols). These are the analogue of the Therion lines and points. Currently only a few line and point types are supported. 
+The "Scraps" menu lists the scraps of the current survey. Tapping on one of them opend the Drawing window.
+
+On a scrap you can draw lines, areas, and points (speleo symbols). These are the analogue of the Therion lines, areas, and points. Currently only a few line, area, and point types are supported. 
 
 Available point typesi (Nov. 2011):
   * air-draught (orientable)
@@ -129,7 +130,10 @@ Available line types (Nov. 2011):
   * rock-border (gray)
   * border (green)
 
-The buttons on the drawing canvas allow to
+Available area type:
+  * TODO
+
+The buttons on the drawing window allow to
   * toggle between moving the canvas or drawing on it
   * undo the last drawn object
   * zoom in/out
@@ -143,9 +147,14 @@ Additionally there are the menus
   * stats
   * delete
 
-With the "Calibs" option you manage calibrations. As for surveys you can
-select the name of the current calibration. Once a calibration is selected
-its data are displayed in the list as
+With the "Calibs" tab of TopoDroid window you manage calibrations.
+Selecting a calibration of the list, opens the Calibration window with the calibration info (name, date, device, description), and the buttons
+  * Save
+  * Open
+  * Delete
+
+Opening the calibration display the Calibration Data window.
+The calibration data are displayed in the list as
 {{{
    id <group> compass clino roll error
 }}}
@@ -157,9 +166,6 @@ the calibration result is displayed, together with the average error,
 and other infos. After the calibration has been computed it can be written
 to the DistoX device.
 
-Finally tap the "Refresh" option to refresh the lists.
-When TopoDroid is connected to a DistoX it download the data as they come
-and stores them in the DB, but the list is not automatically refreshed.
 
 The "Options" option allows to set some TopoDroid configuration options
 and save them.
