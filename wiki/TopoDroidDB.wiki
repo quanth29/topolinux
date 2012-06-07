@@ -2,21 +2,18 @@
 
 == TopoDroid DB ==
 
-TopoDroid stores the data in a SQLite database, in the file
-_/mnt/sdcard/DB/distox2.db_.
+TopoDroid stores the data in a SQLite database. The default location of this file 
+is in the TopoDroid directory in the "external storage". The user can override this
+by specifying a different place for the directory "TopoDroid".
 
-This page describes TopoDroid db v 0.3. Starting from version 0.2
-TopoDroid stores also the configuration and instance informations
-in this database.
+This page describes TopoDroid db v 1.0 (name "distox5.db").
 
-WARNING.
-The only changes in the DB from version 0.2 to version 0.3
-are the "status" columns in the "plots" and "shots" tables.
 
 The database contains the following tables
   * surveys: list of surveys
   * shots: the surveys shots
   * plots: the surveys plot metadata
+  * fixeds: for fixed stations (GPS localized)
   * calibs: list of calibrations
   * gms: the calibrations data
 
@@ -24,17 +21,18 @@ The *surveys* table contains the following fields
   * id: unique identifier of the survey (integer)
   * name: survey nickname (text, one word)
   * date: survey date (yyyy-mm-dd)
+  * team: team members
   * comment: survey description (text)
 
 The *shots* table contains the following fields
   * surveyId: id of the survey to which the shot belongs (integer)
   * id: unique shot identifier (integer)
-  * from: shot from station
-  * to: shot to station (blank for splay shots)
-  * distance (double) as tranferred from the DistoX
-  * bearing (double) as tranferred from the DistoX
-  * clino (double) as tranferred from the DistoX
-  * roll (double) as tranferred from the DistoX
+  * fStation: shot from station
+  * tStation: shot to station (blank for splay shots)
+  * distance (double) as tranferred from the DistoX (meters)
+  * bearing (double) as tranferred from the DistoX (decimal degrees)
+  * clino (double) as tranferred from the DistoX (decimal degrees)
+  * roll (double) as tranferred from the DistoX (decimal degrees)
   * status (integer), can be 0 (normal) or 1 (deleted)
   * extend (integer). It can be
      * -1 (left)
@@ -57,11 +55,29 @@ The *plots* table has the following fields
       * 3 (x-section)
   * status (integer), can be 0 (normal) or 1 (deleted)
   * start (text) plot reference station. The plot data are relative to this station which is the origin of the plot coordinate system.
+  * view the viewing station for cross sections
+
+The *fixeds* table contains the following fields
+  * surveyId
+  * id
+  * station
+  * longitude (decimal degrees)
+  * latitude (decimal degrees)
+  * altitude (meters)
+  * comment
+  * status
+
+The *photos* table contains
+  * surveyId
+  * id
+  * station
+  * comment
 
 The *calibs* table has the following fields
   * id (integer) unique identifier
   * name (text) calibration name
   * day (text) calibration date (yyyy-mm-dd)
+  * device, the DistoX device
   * comment (text) additional description
 
 The *gms* table has the following fields
