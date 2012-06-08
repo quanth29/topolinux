@@ -15,7 +15,8 @@ any comment that might be useful to others.
 || Asus EEPAD Transformer TF101 10"|| 4.0.3 || <font color="green">Mostly working || calibration untested ||
 || Haiwei Vodaphone 858 Smart || 2.2 || <font color="green">Fully working || ||
 || HTC EVO 3D || 2.3 || <font color="green">Mostly working || calibration untested ||
-|| HTC Wilfire S || 2.3.5 || <font color="red">Bluetooth fails || ||
+|| HTC Wilfire || 2.3 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
+|| HTC Wilfire S || 2.3.5 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || HTC Sense || 2.3.3 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy S Captivate SGH-i897 || 2.1-update1 || <font color="red">Bluetooth fails || unable to pair with DistoX from Android "Settings" ||
 || Samsung Galaxy S Captivate SGH-i897 || 2.2 || <font color="red">Bluetooth fails || unable to pair with DistoX from Android "Settings" ||
