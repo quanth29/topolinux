@@ -15,15 +15,10 @@ of your data.
 
 == IMPORTANT NOTICE ==
 
-_From Nov. 15, 2011, TopoDroid use a new database,_ "distox2.db".
-_Your data in the old database,_ "distox.db", _cannot be used by
-the current version of TopoDroid._
+TopoDroid v. 0.7.X uses the database "distox4.db".
+TopoDroid v. 1.0.X uses the database "distox5.db".
+The two databases have different table schema.
 
-_To use the data from previous databases with the current version
-of TopoDroid
-they must be converted to the current database format.
-This can be done by exporting the data to a file, suitably modifying the file
-(eg, with PERL), and loading it in the new database._
 
 == COMPILE and INSTALL ==
 
@@ -41,11 +36,17 @@ Then compile and install
 TopoDroid requires bluetooth, and cannot run on a droid emulator.
 You need a real device.
 
-TopoDroid creates the directory /mnt/sdcard/TopoDroid, some subdirectories,
-and an empty database on the first run. Your data will be saved here
-and will not be erased even if you uninstall the app. This means that you
-should download the data to your PC now and then, and clean the database
-(using SQLite).
+On the first run TopoDroid creates the directory TopoDroid,
+wher it puts its subdirectories, and makes an empty database.
+Your data will be saved here and will not be erased when you uninstall the app.
+You should download the data to your PC now and then, and clean them from the
+Android.
+Starting with v. 1.0 you can
+delete all the data and files of a survey (or a calibration) from TopoDroid:
+make a backup on a PC before deleting a survey.
+
+The location of the base directory TopoDroid, can be set with the program
+configuration options. By default it is placed in the "external storage". 
 
 == HOWTO (v. 1.0)== 
 
