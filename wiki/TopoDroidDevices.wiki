@@ -19,6 +19,7 @@ any comment that might be useful to others.
 || HTC Wilfire || 2.3 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || HTC Wilfire S || 2.3.5 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || HTC Sense || 2.3.3 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
+|| Motorola Defy || 2.2.2 || 0.7.1 || Calib & Surveying working || Drawing not realy tested ||
 || Samsung Galaxy S Captivate SGH-i897 || 2.1-update1 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX from Android "Settings" ||
 || Samsung Galaxy S Captivate SGH-i897 || 2.2 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX from Android "Settings" ||
 || Samsung Galaxy S Captivate SGH-i897 || 2.3.5 || 0.7.1 || <font color="green">Mostly working || calibration untested ||
