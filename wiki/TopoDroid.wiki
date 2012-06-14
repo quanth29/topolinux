@@ -1,4 +1,5 @@
 #summary DistoX on android
+#labels Featured
 
 == DISCLAIMER ==
 
@@ -16,7 +17,7 @@ of your data.
 == IMPORTANT NOTICE ==
 
 TopoDroid v. 0.7.X uses the database "distox4.db".
-TopoDroid v. 1.0.X uses the database "distox5.db".
+TopoDroid v. 1.0.X uses the database "distox6.db".
 The two databases have different table schema.
 
 
@@ -71,13 +72,14 @@ The data transfer between the DistoX and TopoDroid can be continuous or on-deman
 
 When a DistoX is connected the downloaded data go into the active survey or the active calibration depending on the type of the data.
 
-The menu "New" creates a new survey/calibration. The menu "Import" is sued to import an existing survey.
+The menu "New" creates a new survey/calibration. The menu "Import" is used to import an external Therion survey or a zip archive of a previous survey.
 
 Tapping a survey in the list opens the Survey window. This displays the survey infos
 (name, date, team, description) and a list of buttons:
   * Save: save any change to the info in the database
   * Open: opens the Shots window
   * Export: export the survey (available formats: Therion, Compass, VisualTopo, Survex)
+  * Zip: creates a zip archive of the survey and all associated files
   * 3D: display the 3D
   * Notes: edit survey annotations
   * Location: manage fixed stations
@@ -119,7 +121,7 @@ Available point typesi (Nov. 2011):
   * label (with text)
   * popcorn
   * sand
-  * stal: either stalactite or stalagmite (if rotated by 180 degrees)
+  * stal: either stalactite or stalagmite (it can be rotated by 180 degrees)
   * water
   * water-flow (orientable)
 
@@ -132,7 +134,13 @@ Available line types (Nov. 2011):
   * border (green)
 
 Available area type:
-  * TODO
+  * blocks (dark brown)
+  * clay (dark green)
+  * debris (brown)
+  * ice (grey)
+  * pebbels (green)
+  * sand (green)
+  * water (blue)
 
 The buttons on the drawing window allow to
   * toggle between moving the canvas or drawing on it
@@ -140,6 +148,8 @@ The buttons on the drawing window allow to
   * zoom in/out
   * select the point symbol
   * select the line type
+  * select the area type
+
 Additionally there are the menus
   * redo
   * save the plot (scrap) as therion th2 file
@@ -187,7 +197,7 @@ and save them.
 
 [TopoDroidDB TopoDroid DB]
 
-The PDF docs in the download section.
+... adn the PDF docs in the download section.
 
 == BUGS REPORT ==
 
