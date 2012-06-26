@@ -114,13 +114,16 @@ Available point typesi (Nov. 2011):
   * continuation
   * danger
   * debris
+  * end: either narrow-end or low-end
   * entrance (orientable)
   * flowstone
   * gradient (orientable)
   * ice
   * label (with text)
+  * pebbles
   * popcorn
   * sand
+  * snow
   * stal: either stalactite or stalagmite (it can be rotated by 180 degrees)
   * water
   * water-flow (orientable)
@@ -129,6 +132,7 @@ Available line types (Nov. 2011):
   * wall (red)
   * pit (pink)
   * chimney (dark pink)
+  * overhank (dark blue)
   * arrow (white)
   * rock-border (gray)
   * border (green)
@@ -199,14 +203,15 @@ and save them.
 
 ... adn the PDF docs in the download section.
 
-== BUGS REPORT ==
+== HELP AND BUGS REPORT ==
 
 If you have a crash or the app does not work as expected, please send me
 a logcat-dump. To generate a logcat-dump, connect a desktop with Android SDK
 to yout device and run "adb logcat | grep DistoX".
 
-
 If you discover a bug or a problem please file an issue on this site.
 
-If you have comments and suggestions feel free to drop me an email: 
+There is a discussion group at groups.google.com/d/forum/topodroid
+wheer you can ask questions, and send comments and suggestions.
+If you prefer feel free to drop me an email: 
 marco dot corvi at gmail dot com
