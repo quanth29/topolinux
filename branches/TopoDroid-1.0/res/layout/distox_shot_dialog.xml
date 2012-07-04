@@ -72,11 +72,25 @@
         android:text="@string/extend_right" />
     </RadioGroup>
 
-    <CheckBox xmlns:android="http://schemas.android.com/apk/res/android"
-      android:id="@+id/shot_flag"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
       android:layout_width="wrap_content" 
       android:layout_height="wrap_content"
-      />
+      android:orientation="horizontal" 
+      >
+      <CheckBox xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/shot_dup"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content"
+        android:text="duplicate"
+        />
+
+      <CheckBox xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/shot_surf"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content"
+        android:text="surface"
+        />
+    </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
       android:layout_width="fill_parent" 

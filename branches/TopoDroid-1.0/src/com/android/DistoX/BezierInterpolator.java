@@ -20,12 +20,12 @@
 package com.android.DistoX;
 
 import java.util.ArrayList;
-import android.util.Log;
+// import android.util.Log;
 
 
 public class BezierInterpolator
 {
-  private static final String TAG = "DistoX";
+  // private static final String TAG = "DistoX";
 
   private ArrayList< BezierCurve > curves;  // array of cubic splines
   private float[][] C;                      // Matrix C: 2x2
@@ -136,10 +136,10 @@ public class BezierInterpolator
     float alpha_r = det_C0_X / det_C0_C1;
 
     if ( Float.isNaN( alpha_l ) || Float.isNaN( alpha_r ) ) {
-      Log.v( TAG, "Npts " + nPts + " alpha " + alpha_l + " " + alpha_r );
+      // Log.v( TAG, "Npts " + nPts + " alpha " + alpha_l + " " + alpha_r );
       for (int i = 0; i < nPts; i++) {
         BezierPoint p = d.get(first + i);
-        Log.v(TAG, "Pt " + i + ": " + p.mX + " " + p.mY );
+        // Log.v(TAG, "Pt " + i + ": " + p.mX + " " + p.mY );
       }
     }
   
@@ -211,7 +211,7 @@ public class BezierInterpolator
     BezierPoint bl = d.get( last );
 
     if ( nPts < 2 ) {
-      Log.v( TAG, "fitCubic with " + nPts + " points");
+      // Log.v( TAG, "fitCubic with " + nPts + " points");
       // bezCurve = new BezierCurve( bf, bf, bl, bl );
       // insertBezierCurve( bezCurve );
       return 0.0f; 

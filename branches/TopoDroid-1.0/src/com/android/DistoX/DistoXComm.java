@@ -30,7 +30,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
 
-import android.util.Log;
+// import android.util.Log;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -48,7 +48,7 @@ import android.database.DataSetObserver;
 
 public class DistoXComm
 {
-  private static final String TAG = "DistoX Comm";
+  // private static final String TAG = "DistoX Comm";
 
   private TopoDroidApp app;
 
@@ -67,7 +67,7 @@ public class DistoXComm
   // public int Tail()      { return mTail; }
 
 // --------------------------------------------------
-  DistoXDataHelper getData() { return app.mData; }
+  // DataHelper getData() { return app.mData; }
 
   private class RfcommThread extends Thread
   {
@@ -107,7 +107,7 @@ public class DistoXComm
               double c = mProto.Clino();
               double r = mProto.Roll();
               // Log.v( TAG_RF, "DATA PACKET " + d + " " + b + " " + c );
-              app.mData.insertShot( app.getSurveyId(), d, b, c, r );
+              app.mData.insertShot( app.getSurveyId(), -1L, d, b, c, r );
             } else if ( res == DistoXProtocol.DISTOX_PACKET_G ) {
               // Log.v( TAG_RF, "G PACKET");
               ++nData;
@@ -196,9 +196,9 @@ public class DistoXComm
           mRfcommThread = null;
         }
       } catch ( InterruptedException e ) {
-        Log.e(TAG, "closeSocket interrupt " + e.getMessage() );
+        // Log.e(TAG, "closeSocket interrupt " + e.getMessage() );
       } catch ( IOException e ) {
-        Log.e(TAG, "closeSocket IO " + e.getMessage() );
+        // Log.e(TAG, "closeSocket IO " + e.getMessage() );
       } finally {
         mBTConnected = false;
       }
@@ -263,19 +263,19 @@ public class DistoXComm
         mBTSocket = (BluetoothSocket) m.invoke( mBTDevice, 1 );
 
       } catch ( InvocationTargetException e ) {
-        Log.e(TAG, "createSocket invoke target " + e.getMessage() );
+        // Log.e(TAG, "createSocket invoke target " + e.getMessage() );
         if ( mBTSocket != null ) { mBTSocket = null; }
       } catch ( UnsupportedEncodingException e ) {
-        Log.e(TAG, "createSocket encoding " + e.getMessage() );
+        // Log.e(TAG, "createSocket encoding " + e.getMessage() );
         if ( mBTSocket != null ) { mBTSocket = null; }
       } catch ( NoSuchMethodException e ) {
-        Log.e(TAG, "createSocket no method " + e.getMessage() );
+        // Log.e(TAG, "createSocket no method " + e.getMessage() );
         if ( mBTSocket != null ) { mBTSocket = null; }
       } catch ( IllegalAccessException e ) {
-        Log.e(TAG, "createSocket access " + e.getMessage() );
+        // Log.e(TAG, "createSocket access " + e.getMessage() );
         if ( mBTSocket != null ) { mBTSocket = null; }
       } catch ( IOException e ) {
-        Log.e(TAG, "createSocket IO " + e.getMessage() );
+        // Log.e(TAG, "createSocket IO " + e.getMessage() );
         if ( mBTSocket != null ) { mBTSocket = null; }
       }
       if ( mBTSocket != null ) {
@@ -302,12 +302,12 @@ public class DistoXComm
           mBTSocket.connect();
           mBTConnected = true;
         } catch ( IOException e ) {
-          Log.e(TAG, "connectSocket IO " + e.getMessage() );
+          // Log.e(TAG, "connectSocket IO " + e.getMessage() );
           return false;
         }
       }
     } else {
-      Log.w(TAG, "connectSocket: null socket" );
+      // Log.w(TAG, "connectSocket: null socket" );
     }
     // Log.v(TAG, "connectSocket " + mBTConnected );
     return mBTConnected;
@@ -344,7 +344,7 @@ public class DistoXComm
       // Log.v(TAG, "connectRemoteDevice null protocol");
       destroySocket( true );
     } else {
-      Log.w( TAG, "connectRemoteDevice failed on connectSocket()" );
+      // Log.w( TAG, "connectRemoteDevice failed on connectSocket()" );
     }
     return false;
   }

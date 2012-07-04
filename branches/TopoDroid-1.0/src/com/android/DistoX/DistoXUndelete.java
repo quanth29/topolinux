@@ -37,14 +37,14 @@ public class DistoXUndelete extends Dialog
                             implements OnItemClickListener, View.OnClickListener
 {
   public long mSID;
-  DistoXDataHelper mData;
+  DataHelper mData;
   ShotActivity mParent;
 
   private Button btnCancel;
   ArrayAdapter< String >  mArrayAdapter;
   ListView mList;
 
-  public DistoXUndelete( Context context, ShotActivity parent, DistoXDataHelper data, long sid )
+  public DistoXUndelete( Context context, ShotActivity parent, DataHelper data, long sid )
   {
     super( context );
     mParent = parent;
@@ -85,8 +85,8 @@ public class DistoXUndelete extends Dialog
     mList.setDividerHeight( 2 );
 
     // TODO fill the list
-    List< DistoXDBlock > shots = mData.selectAllShots( mSID, 1 );
-    List< PlotInfo > plots   = mData.selectAllPlots( mSID, 1 );
+    List< DistoXDBlock > shots = mData.selectAllShots( mSID, TopoDroidApp.STATUS_DELETED );
+    List< PlotInfo > plots   = mData.selectAllPlots( mSID, TopoDroidApp.STATUS_DELETED );
     if ( shots.size() == 0 && plots.size() == 0 ) {
       Toast.makeText( mParent, "No item to undelete", Toast.LENGTH_LONG ).show();
       dismiss();

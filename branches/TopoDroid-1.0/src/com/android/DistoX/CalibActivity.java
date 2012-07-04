@@ -11,6 +11,7 @@
  * CHANGES
  * 20120520 created
  * 20120524 added device in CalibInfo
+ * 20120531 activated doDelete with askDelete first
  */
 package com.android.DistoX;
 
@@ -20,9 +21,12 @@ import java.text.SimpleDateFormat;
 
 import android.app.Activity;
 // import android.app.Dialog;
+import android.content.DialogInterface;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.os.Bundle;
 
-import android.util.Log;
+// import android.util.Log;
 
 import android.content.Context;
 // import android.content.Intent;
@@ -41,22 +45,27 @@ import android.content.Context;
 import android.content.Intent;
 
 import android.widget.Toast;
-// import android.view.View;
-// import android.view.View.OnClickListener;
+import android.view.View;
+import android.view.View.OnClickListener;
 // import android.widget.AdapterView;
 // import android.widget.AdapterView.OnItemClickListener;
 
 
 public class CalibActivity extends Activity
-                            // implements OnItemClickListener, ILister
-                            // implements View.OnClickListener
+                           // implements OnItemClickListener, ILister
+                           implements View.OnClickListener
 {
-  private static final String TAG = "DistoX";
+  // private static final String TAG = "DistoX";
 
   private EditText mEditName;
   private EditText mEditDate;
   private EditText mEditDevice;
   private EditText mEditComment;
+
+  private Button mBTsave;
+  private Button mBTNopen;
+  // private Button mBTNexport;
+  private Button mBTNdelete;
 
   private TopoDroidApp app;
   private CalibInfo info;
@@ -72,6 +81,11 @@ public class CalibActivity extends Activity
     mEditDate    = (EditText) findViewById(R.id.calib_date);
     mEditDevice  = (EditText) findViewById(R.id.calib_device);
     mEditComment = (EditText) findViewById(R.id.calib_comment);
+
+    mBTsave      = (Button) findViewById( R.id.calibSave );
+    mBTNopen     = (Button) findViewById( R.id.calibOpen );
+    // mBTNexport   = (Button) findViewById( R.id.calibExport );
+    mBTNdelete   = (Button) findViewById( R.id.calibDelete );
 
     app     = (TopoDroidApp)getApplication();
     // Log.v( TAG, "app mCID " + app.mCID );
@@ -102,71 +116,118 @@ public class CalibActivity extends Activity
   }
 
   // --------- menus ----------
-  private MenuItem mMIsave;
-  private MenuItem mMIopen;
-  private MenuItem mMIexport;
-  private MenuItem mMInotes;
-  private MenuItem mMIdelete;
+  // private MenuItem mMIsave;
+  // private MenuItem mMIopen;
+  // private MenuItem mMIexport;
+  // private MenuItem mMInotes;
+  // private MenuItem mMIdelete;
 
-  private SubMenu  mSMmore;
-  private MenuItem mMIoptions;
-  private MenuItem mMIhelp;
+  // private SubMenu  mSMmore;
+  // private MenuItem mMIoptions;
+  // private MenuItem mMIhelp;
 
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) 
-  {
-    super.onCreateOptionsMenu( menu );
+  // @Override
+  // public boolean onCreateOptionsMenu(Menu menu) 
+  // {
+  //   super.onCreateOptionsMenu( menu );
 
-    mMIsave    = menu.add( R.string.menu_save );
-    mMIopen    = menu.add( R.string.menu_open );
-    mMIdelete  = menu.add( R.string.menu_delete );
-    mMIoptions = menu.add( R.string.menu_options );
-    mMIhelp    = menu.add( R.string.menu_help );
+  //   mMIsave    = menu.add( R.string.menu_save );
+  //   mMIopen    = menu.add( R.string.menu_open );
+  //   mMIdelete  = menu.add( R.string.menu_delete );
+  //   mMIoptions = menu.add( R.string.menu_options );
+  //   mMIhelp    = menu.add( R.string.menu_help );
 
-    mMIsave    .setIcon( R.drawable.save );
-    mMIopen    .setIcon( R.drawable.open );
-    mMIdelete  .setIcon( R.drawable.delete );
-    mMIoptions .setIcon( R.drawable.prefs );
-    mMIhelp    .setIcon( R.drawable.help );
+  //   mMIsave    .setIcon( R.drawable.save );
+  //   mMIopen    .setIcon( R.drawable.open );
+  //   mMIdelete  .setIcon( R.drawable.delete );
+  //   mMIoptions .setIcon( R.drawable.prefs );
+  //   mMIhelp    .setIcon( R.drawable.help );
 
-    setMenus( );
-    return true;
-  }
+  //   setMenus( );
+  //   return true;
+  // }
 
-  private void setMenus( )
-  { 
-    if ( mMIopen != null )   mMIopen.setEnabled( isSaved );
-    if ( mMIdelete != null ) mMIdelete.setEnabled( isSaved );
-  }
+  // private void setMenus( )
+  // { 
+  //   if ( mMIopen != null )   mMIopen.setEnabled( isSaved );
+  //   if ( mMIdelete != null ) mMIdelete.setEnabled( isSaved );
+  // }
 
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) 
-  {
-    // Log.v( TAG, "onOptionsItemSelected() " + StatusName() );
-    // Handle item selection
-    if ( item == mMIsave ) {
-      saveCalib( );
-      setMenus();
-    } else if ( item == mMIopen ) {
-      Intent openIntent = new Intent( this, GMActivity.class );
-      startActivity( openIntent );
-    } else if ( item == mMIdelete ) {
-      // TODO ...
-      // deleteCalib();
-      Toast.makeText( this, R.string.calib_delete, Toast.LENGTH_LONG ).show();
-    } else if ( item == mMIoptions ) {  
-      Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
-      startActivity( optionsIntent );
-    } else if ( item == mMIhelp ) {  
-      TopoDroidHelp.show( this, R.string.help_calib );
-    } else {
-      return super.onOptionsItemSelected(item);
-    }
-    return true;
-  }
+  // @Override
+  // public boolean onOptionsItemSelected(MenuItem item) 
+  // {
+  //   // Log.v( TAG, "onOptionsItemSelected() " + StatusName() );
+  //   // Handle item selection
+  //   if ( item == mMIsave ) {
+  //     doSave( );
+  //     setMenus();
+  //   } else if ( item == mMIopen ) {
+  //     Intent openIntent = new Intent( this, GMActivity.class );
+  //     startActivity( openIntent );
+  //   } else if ( item == mMIdelete ) {
+  //     // TODO ...
+  //     // doDelete();
+  //     Toast.makeText( this, R.string.calib_deleted, Toast.LENGTH_LONG ).show();
+  //   } else if ( item == mMIoptions ) {  
+  //     doOpen();
+  //   } else if ( item == mMIhelp ) {  
+  //     TopoDroidHelp.show( this, R.string.help_calib );
+  //   } else {
+  //     return super.onOptionsItemSelected(item);
+  //   }
+  //   return true;
+  // }
   // ---------------------------------------------------------------
 
-  private void saveCalib( )
+  @Override
+  public void onClick(View view)
+  {
+    // Log.v( TAG, "onClick() ");
+    switch (view.getId()){
+      case R.id.calibSave:
+        doSave();
+        break;
+      case R.id.calibOpen:
+        doOpen();
+        break;
+      // case R.id.calibExport:
+      //   doExport();
+      //   break;
+      case R.id.calibDelete:
+        askDelete();
+        break;
+    }
+  }
+
+  private void askDelete()
+  {
+    AlertDialog.Builder alert = new AlertDialog.Builder( this );
+    // alert.setTitle( R.string.delete );
+    alert.setMessage( getResources().getString( R.string.calib_delete ) + " " + app.getCalib() + " ?" );
+    
+    alert.setPositiveButton( R.string.button_ok, 
+      new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick( DialogInterface dialog, int btn ) {
+          doDelete();
+        }
+    } );
+
+    alert.setNegativeButton( R.string.button_cancel, 
+      new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick( DialogInterface dialog, int btn ) { }
+    } );
+    alert.show();
+  }
+
+  private void doOpen()
+  {
+    Intent openIntent = new Intent( this, GMActivity.class );
+    startActivity( openIntent );
+  }
+
+  private void doSave( )
   {
     String name = mEditName.getText().toString();
     String date = mEditDate.getText().toString();
@@ -196,7 +257,7 @@ public class CalibActivity extends Activity
     }
   }
 
-  public void deleteCalib()
+  public void doDelete()
   {
     if ( app.mCID < 0 ) return;
     app.mData.doDeleteCalib( app.mCID );

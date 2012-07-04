@@ -11,6 +11,7 @@
  * CHANGES
  * 20120517 comments
  * 20120521 parented with SurveyActivity
+ * 20120603 fixed-info list
  */
 package com.android.DistoX;
 
@@ -20,17 +21,24 @@ import java.util.Iterator;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
+import java.util.List;
+
 import android.app.Dialog;
 import android.os.Bundle;
 
-import android.util.Log;
+// import android.util.Log;
 
 import android.content.Context;
 
 import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.Button;
+// import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+
 import android.view.View;
+import android.widget.ListView;
 
 import android.location.Location;
 import android.location.LocationListener;
@@ -42,34 +50,46 @@ import android.location.GpsSatellite;
 
 public class DistoXLocation extends Dialog
                             implements View.OnClickListener
+                                     , AdapterView.OnItemClickListener
                                      , LocationListener
                                      , GpsStatus.Listener
 {
-  private static final String TAG = "DistoX Location";
+  // private static final String TAG = "DistoX";
 
-  private boolean  mLocated;
+  // private boolean  mLocated;
   private LocationManager locManager;
+  private Context mContext;
+  private TopoDroidApp app;
 
   private TextView mTVlat;
   private TextView mTVlong;
   private TextView mTValt;
   private EditText mETstation;
-  private Button   mBtnOK;
-  private Button   mBtnCancel;
+  private Button   mBtnLoc;
+  private Button   mBtnAdd;
   private Button   mBtnStatus;
+  private ListView mList;
+  private DistoXFixedAdapter mFixedAdapter;
+  // private TextView  mSaveTextView;
+  private int mSavePos;
+  private FixedInfo mSaveFixed;
 
   private double latitude;  // decimal degrees
   private double longitude; // decimal degrees
   private double altitude;  // meters
   private SurveyActivity mParent;
   private GpsStatus mStatus;
+  private boolean mLocating; // whether is locating
 
-  public DistoXLocation( Context context, SurveyActivity parent, LocationManager lm )
+  public DistoXLocation( Context context, SurveyActivity parent, TopoDroidApp _app, LocationManager lm )
   {
     super(context);
+    mContext = context;
     mParent = parent;
+    app = _app;
     locManager = lm;
     mStatus = locManager.getGpsStatus( null );
+    mLocating = false;
   }
 
 // -------------------------------------------------------------------
@@ -79,80 +99,123 @@ public class DistoXLocation extends Dialog
     super.onCreate(savedInstanceState);
     // Log.v( TAG, "onCreate" );
     setContentView(R.layout.distox_location);
-    mTVlat  = (TextView) findViewById(R.id.latitude  );
     mTVlong = (TextView) findViewById(R.id.longitude );
+    mTVlat  = (TextView) findViewById(R.id.latitude  );
     mTValt  = (TextView) findViewById(R.id.altitude  );
     mETstation = (EditText) findViewById( R.id.station );
     mBtnStatus = (Button) findViewById( R.id.status );
 
-    mBtnOK     = (Button) findViewById(R.id.button_ok );
-    mBtnCancel = (Button) findViewById(R.id.button_cancel );
+    mList = (ListView) findViewById(R.id.list);
+    mList.setOnItemClickListener( this );
+    refreshList();
 
-    mBtnOK.setOnClickListener( this );
-    mBtnCancel.setOnClickListener( this );
+    mBtnLoc = (Button) findViewById( R.id.button_loc );
+    mBtnAdd = (Button) findViewById(R.id.button_add );
+    mBtnLoc.setOnClickListener( this );
+    mBtnAdd.setOnClickListener( this );
 
+    mBtnAdd.setEnabled( false );
     mBtnStatus.setBackgroundColor( 0x80ff0000 );
+    // mBtnLoc.setText( getResources.getString( R.string.button_start ) );
     
-    mLocated = false;
+    // mLocated = false;
     // locManager = (LocationManager) getSystemService( LOCATION_SERVICE );
-
+    mLocating = false;
     setTitle( R.string.title_location );
-    locManager.addGpsStatusListener( this );
-    locManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 1000, 0, this );
   }
 
+  public void refreshList()
+  {
+    List< FixedInfo > fxds = app.mData.selectAllFixed( app.mSID, TopoDroidApp.STATUS_NORMAL );
+    mFixedAdapter = new DistoXFixedAdapter( mContext, R.layout.message, fxds );
+    mList.setAdapter( mFixedAdapter );
+  }
+
+  @Override 
+  public void onItemClick(AdapterView<?> parent, View view, int pos, long id)
+  {
+    // Log.v( TAG, "item click pos " + pos );
+    // CharSequence item = ((TextView) view).getText();
+    // String value = item.toString();
+    // // setListPos( position  );
+    // mSaveTextView = (TextView) view;
+    mSaveFixed = mFixedAdapter.get(pos);
+    mSavePos   = pos;
+    (new FixedDialog( mContext, mParent, this, mSaveFixed )).show();
+  }
+
+  public void updatePos( )
+  {
+    mFixedAdapter.insert( mSaveFixed, mSavePos );
+    mList.invalidate();
+  }
+
+  @Override
   public void onClick(View v) 
   {
     Button b = (Button) v;
-    if ( b == mBtnOK && mLocated ) {
-      // TODO use mETstation.getText()
-      // TODO call back DistoX 
-      mParent.addLocation( mETstation.getText().toString(), latitude, longitude, altitude);
-      // Intent intent = new Intent();
-      // intent.putExtra( TopoDroidApp.TOPODROID_LAT,  latitude );
-      // intent.putExtra( TopoDroidApp.TOPODROID_LONG, longitude );
-      // intent.putExtra( TopoDroidApp.TOPODROID_ALT,  altitude );
-      // setResult( Activity.RESULT_OK, intent );
-    } else {
-      // setResult( RESULT_CANCELED );
+    if ( b == mBtnAdd ) {
+      if ( mETstation.getText() != null ) {
+        String name = mETstation.getText().toString();
+        if ( name.length() > 0 ) {
+          FixedInfo f = mParent.addLocation( name, longitude, latitude, altitude);
+          // mFixedAdapter.add( f.toString() );
+          mFixedAdapter.add( f );
+        }
+      }
+    } else if ( b == mBtnLoc ) {
+      if ( mLocating ) {
+        mBtnLoc.setText( mContext.getResources().getString( R.string.button_start ) );
+        locManager.removeUpdates( this );
+        locManager.removeGpsStatusListener( this );
+        mLocating = false;
+        setTitle( R.string.title_location );
+      } else {
+        mBtnLoc.setText( mContext.getResources().getString( R.string.button_stop ) );
+        mBtnAdd.setEnabled( false );
+        mBtnStatus.setBackgroundColor( 0x80ff0000 );
+        locManager.addGpsStatusListener( this );
+        locManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 1000, 0, this );
+        mLocating = true;
+        setTitle( R.string.title_location_gps );
+      }
     }
-    // finish();
-    locManager.removeUpdates( this );
-    locManager.removeGpsStatusListener( this );
+  }
+
+  @Override
+  public void onBackPressed()
+  {
+    if ( mLocating ) {
+      locManager.removeUpdates( this );
+      locManager.removeGpsStatusListener( this );
+      mLocating = false;
+    }
     dismiss();
   }
 
+  @Override
   public void onLocationChanged( Location loc )
   {
     displayLocation( loc );
-    mLocated = true;
+    // mLocated = true;
   }
 
   // location is stored in decimal degrees but displayed as deg:min:sec
   private void displayLocation( Location loc )
   {
-    double sp  = loc.getLatitude();
-    double sl = loc.getLongitude();
-    latitude  = sp;
-    longitude = sl;
-    altitude  = loc.getAltitude();
-    int dp = (int)sp;
-    sp = 60*(sp - dp);
-    int mp = (int)sp;
-    sp = 60*(sp - mp);
-    int dl = (int)sl;
-    sl = 60*(sl - dp);
-    int ml = (int)sl;
-    sl = 60*(sl - ml);
-    StringWriter swp = new StringWriter();
-    PrintWriter pwp = new PrintWriter( swp );
-    pwp.format( "%dd %02d\' %.2f\"", dp, mp, sp );
-    StringWriter swl = new StringWriter();
-    PrintWriter pwl = new PrintWriter( swl );
-    pwl.format( "%dd %02d\' %.2f\"", dl, ml, sl );
-    mTVlat.setText( swp.getBuffer().toString() );
-    mTVlong.setText( swl.getBuffer().toString() );
-    mTValt.setText( Double.toString( altitude ) );
+    if ( loc != null ) {
+      double sp = loc.getLatitude();
+      double sl = loc.getLongitude();
+      latitude  = sp;
+      longitude = sl;
+      altitude  = loc.getAltitude();
+
+      mTVlat.setText( mContext.getResources().getString( R.string.latitude ) + " " + FixedInfo.double2ddmmss( sp ) );
+      mTVlong.setText( mContext.getResources().getString( R.string.longitude ) + " " + FixedInfo.double2ddmmss( sl ) );
+      mTValt.setText( mContext.getResources().getString( R.string.altitude ) + " " + Integer.toString( (int)(altitude) ) );
+    // } else {
+    //   Log.w(TAG, "null location");
+    }
   }
 
   public void onProviderDisabled( String provider )
@@ -165,7 +228,7 @@ public class DistoXLocation extends Dialog
 
   public void onStatusChanged( String provider, int status, Bundle extras )
   {
-    Log.v(TAG, "onStatusChanged status " + status );
+    // Log.v(TAG, "onStatusChanged status " + status );
   }
 
   public void onGpsStatusChanged( int event ) 
@@ -192,8 +255,16 @@ public class DistoXLocation extends Dialog
         default: mBtnStatus.setBackgroundColor( 0x8000ff00 );
                 break;
       }
-      Location loc = locManager.getLastKnownLocation( LocationManager.GPS_PROVIDER );
-      displayLocation( loc );
+      mBtnAdd.setEnabled( nr >= 4 );
+
+      try {
+        Location loc = locManager.getLastKnownLocation( LocationManager.GPS_PROVIDER );
+        displayLocation( loc );
+      } catch ( IllegalArgumentException e ) {
+        // Log.e(TAG, "Location Manager IllegalArgumentException " );
+      } catch ( SecurityException e ) {
+        // Log.e(TAG, "Location Manager SecurityException " );
+      }
     }
   }
 }

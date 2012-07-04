@@ -10,6 +10,9 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120520 created from DistoX.java
+ * 20120606 import survey (therion format)
+ * 20120610 import zip (unarchive)
+ * 20120619 added "long-press" for immediate survey opening
  */
 package com.android.DistoX;
 
@@ -34,6 +37,7 @@ import java.util.ArrayList;
 import android.app.Application;
 import android.app.Activity;
 import android.view.Menu;
+import android.view.SubMenu;
 import android.view.MenuItem;
 // import android.view.MenuInflater;
 // import android.content.res.ColorStateList;
@@ -42,7 +46,7 @@ import android.os.Bundle;
 // import android.os.Message;
 // import android.os.Parcelable;
 
-import android.util.Log;
+// import android.util.Log;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
@@ -63,6 +67,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.preference.PreferenceManager;
 
 import android.graphics.Color;
@@ -76,9 +81,10 @@ import android.graphics.PorterDuff;
 
 public class TopoDroidActivity extends Activity
                                implements OnItemClickListener
+                               , OnItemLongClickListener
                                , View.OnClickListener
 {
-  private static final String TAG = "DistoX";
+  // private static final String TAG = "DistoX";
   private TopoDroidApp app;
 
   // private static final int REQUEST_DEVICE    = 1;
@@ -97,12 +103,13 @@ public class TopoDroidActivity extends Activity
   private Button   mBtnSurveys;
   private Button   mBtnCalibs;
 
-  private boolean mNeedUpdate = true;
   private ArrayAdapter<String> mArrayAdapter;
 
   private MenuItem mMIdevice = null;
   private MenuItem mMInew;
   private MenuItem mMIimport;
+  // private MenuItem mMIopen;
+  private SubMenu  mSMmore;
   private MenuItem mMIoptions;
   private MenuItem mMIhelp;
   private MenuItem mMIabout;
@@ -110,8 +117,8 @@ public class TopoDroidActivity extends Activity
   // -------------------------------------------------------------
   private boolean say_no_survey = true;
   private boolean say_no_calib  = true;
-  private boolean say_not_enabled = true;
-  boolean do_check_bt = true;
+  private boolean say_not_enabled = true; // whether to say that BT is not enabled
+  boolean do_check_bt = true;             // one-time bluetooth check sentinel
 
   // -------------------------------------------------------------------
     
@@ -119,7 +126,7 @@ public class TopoDroidActivity extends Activity
   {
     // Log.v( TAG, "updateDisplay() status: " + StatusName() + " forcing: " + force_update );
     // mArrayAdapter.clear();
-    DistoXDataHelper data = app.mData;
+    DataHelper data = app.mData;
     switch ( mStatus ) {
         case STATUS_NONE:
           break;
@@ -128,10 +135,7 @@ public class TopoDroidActivity extends Activity
             List<String> list = data.selectAllSurveys();
             // list.add( "new_survey" );
             // setTitle( R.string.title_survey );
-            mBtnSurveys.getBackground().setColorFilter( Color.parseColor( "#ccccff" ),
-                                                        PorterDuff.Mode.LIGHTEN );
-            mBtnCalibs.getBackground().setColorFilter( Color.parseColor( "#cccccc" ),
-                                                       PorterDuff.Mode.DARKEN );
+            setButtonsBackgroud( mBtnCalibs, mBtnSurveys );
             updateList( list );
             if ( say_no_survey && list.size() == 0 ) {
               say_no_survey = false;
@@ -144,10 +148,7 @@ public class TopoDroidActivity extends Activity
             List<String> list = data.selectAllCalibs();
             // list.add( "new_calib" );
             // setTitle( R.string.title_calib );
-            mBtnSurveys.getBackground().setColorFilter( Color.parseColor( "#cccccc" ),
-                                                        PorterDuff.Mode.DARKEN );
-            mBtnCalibs.getBackground().setColorFilter( Color.parseColor( "#ccccff" ),
-                                                       PorterDuff.Mode.LIGHTEN );
+            setButtonsBackgroud( mBtnSurveys, mBtnCalibs );
             updateList( list );
             if ( say_no_calib && list.size() == 0 ) {
               say_no_calib = false;
@@ -156,6 +157,12 @@ public class TopoDroidActivity extends Activity
           }
           break;
     }
+  }
+
+  private void setButtonsBackgroud( Button grey, Button blue )
+  {
+    grey.getBackground().setColorFilter( Color.parseColor( "#cccccc" ), PorterDuff.Mode.DARKEN );
+    blue.getBackground().setColorFilter( Color.parseColor( "#ccccff" ), PorterDuff.Mode.LIGHTEN );
   }
 
   private void updateList( List<String> list )
@@ -191,26 +198,48 @@ public class TopoDroidActivity extends Activity
         updateDisplay( );
       }
     }
+
+    private void startSurvey( String value, int mustOpen )
+    {
+      app.setSurveyFromName( value );
+      Intent surveyIntent = new Intent( Intent.ACTION_EDIT ).setClass( this, SurveyActivity.class );
+      surveyIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY, mustOpen );
+      startActivity( surveyIntent );
+    }
+
+    private void startCalib( String value, int mustOpen )
+    {
+      app.setCalibFromName( value );
+      Intent calibIntent = new Intent( Intent.ACTION_EDIT ).setClass( this, CalibActivity.class );
+      calibIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY, mustOpen ); // FIXME not handled yet
+      startActivity( calibIntent );
+    }
             
+  @Override 
+  public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
+  {
+    CharSequence item = ((TextView) view).getText();
+    switch ( mStatus ) {
+      case STATUS_SURVEY:
+        startSurvey( item.toString(), 1 );
+        return true;
+      case STATUS_CALIB:
+        startCalib( item.toString(), 1 );
+        return true;
+    }
+    return false;
+  }
 
   @Override 
   public void onItemClick(AdapterView<?> parent, View view, int position, long id)
   {
     CharSequence item = ((TextView) view).getText();
-    String value = item.toString();
     switch ( mStatus ) {
       case STATUS_SURVEY:
-        app.setSurveyFromName( value );
-        // TODO start SurveyActivity
-        Intent surveyIntent = new Intent( Intent.ACTION_EDIT ).setClass( this, SurveyActivity.class );
-        startActivity( surveyIntent );
-        // new SurveyActivity( this, this ).show();
+        startSurvey( item.toString(), 0 );
         break;
       case STATUS_CALIB:
-        app.setCalibFromName( value );
-        // TODO start CalibActivity
-        Intent calibIntent = new Intent( Intent.ACTION_EDIT ).setClass( this, CalibActivity.class );
-        startActivity( calibIntent );
+        startCalib( item.toString(), 0 );
         break;
     }
   }
@@ -226,25 +255,27 @@ public class TopoDroidActivity extends Activity
   public boolean onCreateOptionsMenu(Menu menu) 
   {
     super.onCreateOptionsMenu( menu );
-    mNeedUpdate = true;
 
     mMIdevice  = menu.add( R.string.menu_device );
     mMInew     = menu.add( R.string.menu_new );
+    // mMIopen    = menu.add( R.string.menu_open);
     mMIimport  = menu.add( R.string.menu_import );
-    mMIoptions = menu.add( R.string.menu_options );
-    mMIhelp    = menu.add( R.string.menu_help  );
-    mMIabout   = menu.add( R.string.menu_about );
+    mSMmore    = menu.addSubMenu( R.string.menu_more );
+      mMIoptions = mSMmore.add( R.string.menu_options );
+      mMIhelp    = mSMmore.add( R.string.menu_help  );
+      mMIabout   = mSMmore.add( R.string.menu_about );
 
     // mSMdevice.setIcon( R.drawable.distox ); 
     mMIdevice.setIcon( R.drawable.distox ); 
     mMInew.setIcon( R.drawable.add );
     mMIimport.setIcon( R.drawable.insert );
-    mMIoptions.setIcon( R.drawable.prefs );
-    mMIhelp.setIcon( R.drawable.help );
-    mMIabout.setIcon( R.drawable.info );
+    // mMIopen.setIcon( R.drawable.open );
+    mSMmore.setIcon( R.drawable.more );
+    // mMIoptions.setIcon( R.drawable.prefs );
+    // mMIhelp.setIcon( R.drawable.help );
+    // mMIabout.setIcon( R.drawable.info );
 
     setBTMenus( app.mBTAdapter.isEnabled() );
-
     return true;
   }
 
@@ -262,23 +293,25 @@ public class TopoDroidActivity extends Activity
       TopoDroidHelp.show( this, R.string.help_topodroid );
     } else if ( item == mMInew ) { // NEW SURVEY/CALIB
       if ( mStatus == STATUS_SURVEY ) {
-        app.setSurveyFromName( null );
-        Intent surveyIntent = new Intent( Intent.ACTION_EDIT ).setClass( this, SurveyActivity.class );
-        startActivity( surveyIntent );
+        startSurvey( null, 0 );
       } else {
-        app.setCalibFromName( null );
-        Intent calibIntent = new Intent( Intent.ACTION_EDIT ).setClass( this, CalibActivity.class );
-        startActivity( calibIntent );
+        startCalib( null, 0 );
       }
+    // } else if ( item == mMIopen ) { // OPEN LAST SURVEY/CALIB
+    //   if ( mStatus == STATUS_SURVEY ) {
+    //     startSurvey( ?, 1 );
+    //   } else {
+    //     // TODO
+    //   }
     } else if ( item == mMIimport ) { // IMPORT SURVEY/CALIB
       if ( mStatus == STATUS_SURVEY ) {
-        // TODO import survey
+        (new ImportDialog( this, this, app )).show();
       } else {
         // TODO import calib
+        Toast.makeText( this, "Not implemented yet", Toast.LENGTH_LONG ).show();
       }
     } else if ( item == mMIdevice ) { // DEVICE
       if ( app.mBTAdapter.isEnabled() ) {
-        mNeedUpdate = true;
         Intent deviceIntent = new Intent( Intent.ACTION_EDIT ).setClass( this, DeviceActivity.class );
         startActivity( deviceIntent );
       }
@@ -287,6 +320,41 @@ public class TopoDroidActivity extends Activity
     }
     return true;
   }
+
+  void importFile( String filename )
+  {
+    if ( filename.endsWith(".th") ) {
+      String filepath = TopoDroidApp.getImportFile( filename );
+      String name = filename.replace(".th", "" );
+
+      if ( app.mData.hasSurveyName( name ) ) {
+        Toast.makeText(this, R.string.file_parse_already, Toast.LENGTH_SHORT).show();
+        return;
+      }
+      try {
+        TherionParser parser = new TherionParser( filepath );
+        ArrayList< TherionParser.Shot > shots  = parser.getShots();
+        ArrayList< TherionParser.Shot > splays = parser.getSplays();
+
+        long sid = app.setSurveyFromName( name );
+        String date = parser.mDate;
+        app.mData.updateSurveyDayAndComment( sid, date, "" );
+        for ( TherionParser.Shot s : shots ) {
+          long id = app.mData.insertShot( app.mSID, -1L, s.len, s.ber, s.cln, 0.0 );
+          app.mData.updateShotName( id, app.mSID, s.from, s.to );
+        }
+        updateDisplay( );
+        // Toast.makeText(this, R.string.file_parse_ok, Toast.LENGTH_SHORT).show();
+      } catch ( ParserException e ) {
+        Toast.makeText(this, R.string.file_parse_fail, Toast.LENGTH_SHORT).show();
+      }
+    } else if ( filename.endsWith(".zip") ) {
+      Archiver archiver = new Archiver( app );
+      archiver.unArchive( TopoDroidApp.getZipFile( filename ), filename.replace(".zip", "") );
+      updateDisplay( );
+    }
+  }
+  
   // ---------------------------------------------------------------
   
   @Override
@@ -300,6 +368,8 @@ public class TopoDroidActivity extends Activity
     mList = (ListView) findViewById(R.id.td_list);
     mList.setAdapter( mArrayAdapter );
     mList.setOnItemClickListener( this );
+    mList.setLongClickable( true );
+    mList.setOnItemLongClickListener( this );
     mList.setDividerHeight( 2 );
 
     mBtnSurveys = (Button) findViewById( R.id.btn_surveys );
@@ -345,7 +415,7 @@ public class TopoDroidActivity extends Activity
   private void restoreInstanceFromData()
   { 
     // Log.v( TAG, "restoreInstanceFromData ");
-    DistoXDataHelper data = app.mData;
+    DataHelper data = app.mData;
     String status = data.getValue( "DISTOX_STATUS" );
     // Log.v( TAG, "restore STATUS " + status );
     if ( status != null ) {
@@ -372,7 +442,7 @@ public class TopoDroidActivity extends Activity
   private void saveInstanceToData()
   {
     // Log.v(TAG, "saveInstanceToData");
-    DistoXDataHelper data = app.mData;
+    DataHelper data = app.mData;
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter( sw );
     pw.format("%d ", mStatus );
@@ -477,7 +547,7 @@ public class TopoDroidActivity extends Activity
   public void onActivityResult( int request, int result, Intent intent ) 
   {
     // Log.v( TAG, "onActivityResult() request " + mRequestName[request] + " result: " + result );
-    DistoXDataHelper data = app.mData;
+    DataHelper data = app.mData;
     Bundle extras = (intent != null )? intent.getExtras() : null;
     switch ( request ) {
       case REQUEST_ENABLE_BT:

@@ -12,14 +12,14 @@ package com.android.DistoX;
 
 // import java.Thread;
 
-import android.util.Log;
+// import android.util.Log;
 import android.widget.Toast;
 import android.os.AsyncTask;
 
 
 public class DistoXRefresh extends AsyncTask< String, Integer, Integer >
 {
-  private static final String TAG = "DistoX Refresh";
+  // private static final String TAG = "DistoX Refresh";
 
   private TopoDroidApp app;
   private ILister lister;                       // list display

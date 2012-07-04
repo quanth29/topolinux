@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120623 handle line attributes in loadTherion
  */
 package com.android.DistoX;
 
@@ -19,7 +22,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
-import android.util.Log;
+// import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +39,7 @@ import java.io.EOFException;
 public class DrawingSurface extends SurfaceView
                             implements SurfaceHolder.Callback
 {
-    private static final String TAG = "DistoX DrawingSurface";
+    // private static final String TAG = "DistoX DrawingSurface";
 
     private Boolean _run;
     protected DrawThread thread;
@@ -87,6 +90,33 @@ public class DrawingSurface extends SurfaceView
       commandManager.setTransform( dx, dy, s );
     }
 
+    void refresh()
+    {
+      Canvas canvas = null;
+      try {
+        canvas = mHolder.lockCanvas();
+        if ( mBitmap == null ) {
+          mBitmap = Bitmap.createBitmap (1, 1, Bitmap.Config.ARGB_8888);
+        }
+        final Canvas c = new Canvas (mBitmap);
+        mWidth  = c.getWidth();
+        mHeight = c.getHeight();
+
+        c.drawColor(0, PorterDuff.Mode.CLEAR);
+        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+
+        commandManager.executeAll(c,previewDoneHandler);
+        if ( previewPath != null ) {
+          previewPath.draw(c);
+        }
+      
+        canvas.drawBitmap (mBitmap, 0,  0,null);
+      } finally {
+        if ( canvas != null ) {
+          mHolder.unlockCanvasAndPost( canvas );
+        }
+      }
+    }
 
     private Handler previewDoneHandler = new Handler()
     {
@@ -113,28 +143,29 @@ public class DrawingSurface extends SurfaceView
       @Override
       public void run() 
       {
-        Canvas canvas = null;
         while ( _run ) {
           if ( isDrawing == true ) {
-            try{
-              canvas = mSurfaceHolder.lockCanvas(null);
-              if(mBitmap == null){
-                mBitmap = Bitmap.createBitmap (1, 1, Bitmap.Config.ARGB_8888);
-              }
-              final Canvas c = new Canvas (mBitmap);
-              mWidth  = c.getWidth();
-              mHeight = c.getHeight();
+            refresh();
+            // Canvas canvas = null;
+            // try{
+            //   canvas = mSurfaceHolder.lockCanvas(null);
+            //   if(mBitmap == null){
+            //     mBitmap = Bitmap.createBitmap (1, 1, Bitmap.Config.ARGB_8888);
+            //   }
+            //   final Canvas c = new Canvas (mBitmap);
+            //   mWidth  = c.getWidth();
+            //   mHeight = c.getHeight();
 
-              c.drawColor(0, PorterDuff.Mode.CLEAR);
-              canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+            //   c.drawColor(0, PorterDuff.Mode.CLEAR);
+            //   canvas.drawColor(0, PorterDuff.Mode.CLEAR);
 
-              commandManager.executeAll(c,previewDoneHandler);
-              previewPath.draw(c);
-                
-              canvas.drawBitmap (mBitmap, 0,  0,null);
-            } finally {
-              mSurfaceHolder.unlockCanvasAndPost(canvas);
-            }
+            //   commandManager.executeAll(c,previewDoneHandler);
+            //   previewPath.draw(c);
+            //     
+            //   canvas.drawBitmap (mBitmap, 0,  0,null);
+            // } finally {
+            //   mSurfaceHolder.unlockCanvasAndPost(canvas);
+            // }
           }
         }
       }
@@ -188,6 +219,16 @@ public class DrawingSurface extends SurfaceView
     public Bitmap getBitmap()
     {
       return commandManager.getBitmap();
+    }
+
+    public DrawingPointPath getPointAt( float x, float y )
+    {
+      return commandManager.getPointAt( x, y );
+    }
+
+    public DrawingLinePath getLineAt( float x, float y )
+    {
+      return commandManager.getLineAt( x, y );
     }
 
 
@@ -261,9 +302,17 @@ public class DrawingSurface extends SurfaceView
       BufferedReader br = new BufferedReader( fr );
       String line = null;
       while ( (line = readLine(br)) != null ) {
-        if ( line.length() == 0 || line.charAt(0) == '#' ) {
+        line.trim();
+        int comment = line.indexOf('#');
+        if ( comment == 0 ) {
+          continue;
+        } else if (comment > 0 ) {
+          line = line.substring( 0, comment );
+        }
+        if ( line.length() == 0 /* || line.charAt(0) == '#' */ ) {
           continue;
         }
+
         // Log.v( TAG, "  line: >>" + line + "<<");
         String[] vals = line.split( " " );
         if ( vals[0].equals( "point" ) ) {            // ****** THERION POINT
@@ -291,9 +340,16 @@ public class DrawingSurface extends SurfaceView
           } else if ( type.equals( "stalactite" ) ) {
             ptType = DrawingBrushPaths.POINT_STAL;
             has_orientation = false;
+          } else if ( type.equals( "narrow-end" ) ) {
+            ptType = DrawingBrushPaths.POINT_END;
+            has_orientation = false;
+          } else if ( type.equals( "low-end" ) ) {
+            ptType = DrawingBrushPaths.POINT_END;
+            orientation = 90.0f;
+            has_orientation = true;
           } else {
             for ( ptType = 0; ptType < DrawingBrushPaths.POINT_MAX; ++ptType ) {
-              if ( type.equals( DrawingBrushPaths.pointName[ ptType ] ) ) break;
+              if ( type.equals( DrawingBrushPaths.pointThName[ ptType ] ) ) break;
             }
           }
           if ( ptType == DrawingBrushPaths.POINT_MAX ) continue;
@@ -335,7 +391,7 @@ public class DrawingSurface extends SurfaceView
                   line = readLine( br ); // area statement
                   String[] vals2 = line.split( " " );
                   for ( arType=0; arType < DrawingBrushPaths.AREA_MAX; ++arType ) {
-                    if ( vals2[1].equals( DrawingBrushPaths.areaName[ arType ] ) ) break;
+                    if ( vals2[1].equals( DrawingBrushPaths.areaThName[ arType ] ) ) break;
                   }
                   // Log.v(TAG, "set area type " + arType );
                   path.setAreaType( arType );
@@ -364,22 +420,56 @@ public class DrawingSurface extends SurfaceView
           } else { // ********* regular lines
             // Log.v( TAG, "line type " + vals[1] );
             boolean closed = false;
+            boolean reversed = false;
+            int outline = DrawingLinePath.OUTLINE_UNDEF;
+            String options = null;
+           
             String type = vals[1];
-            if ( vals.length > 2 ) {
-              if ( vals[2].equals( "-close" ) ) {
-                if ( vals.length > 3 && vals[3].equals( "on" ) ) closed = true;
+            for (int index = 2; index < vals.length; ++index ) {
+              if ( vals[index] == null || vals[index].length() == 0 ) {
+                continue;
               }
+              if ( vals[index].equals( "-close" ) ) {
+                ++ index;
+                if ( vals.length > index && vals[index].equals( "on" ) ) {
+                  closed = true;
+                }
+              } else if ( vals[index].equals( "-reversed" ) ) {
+                ++ index;
+                if ( vals.length > index && vals[index].equals( "on" ) ) {
+                  reversed = true;
+                }
+              } else if ( vals[index].equals( "-outline" ) ) {
+                ++ index;
+                if ( vals.length > index ) {
+                  if ( vals[index].equals( "out" ) ) { outline = DrawingLinePath.OUTLINE_OUT; }
+                  else if ( vals[index].equals( "in" ) ) { outline = DrawingLinePath.OUTLINE_IN; }
+                  else if ( vals[index].equals( "none" ) ) { outline = DrawingLinePath.OUTLINE_NONE; }
+                }
+              } else {
+                if ( options == null ) {
+                  options = vals[index];
+                } else {
+                  options += " " + vals[index];
+                }
+              } 
             }
+            
             int lnType = DrawingBrushPaths.LINE_MAX;
             DrawingLinePath path = null;
             for ( lnType=0; lnType < DrawingBrushPaths.LINE_MAX; ++lnType ) {
-              if ( type.equals( DrawingBrushPaths.lineName[ lnType ] ) ) break;
+              if ( type.equals( DrawingBrushPaths.lineThName[ lnType ] ) ) break;
             }
             // TODO insert new line-path
             line = readLine( br );
             if ( ! line.equals( "endline" ) ) { 
               if ( lnType < DrawingBrushPaths.LINE_MAX ) {
                 path = new DrawingLinePath( lnType );
+                if ( closed ) path.mClosed = true;
+                if ( reversed ) path.mReversed = true;
+                if ( outline != DrawingLinePath.OUTLINE_UNDEF ) path.mOutline = outline;
+                if ( options != null ) path.mOptions = options;
+
                 // Log.v( TAG, "  line start point: >>" + line + "<<");
                 String[] pt = line.split( "\\s+" );
                 x =   Float.parseFloat( pt[0] ) / TopoDroidApp.TO_THERION;

@@ -1,44 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
-    android:layout_width="fill_parent" 
+    android:layout_width="wrap_content" 
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingLeft="6dip"
     android:paddingRight="6dip"
     android:paddingBottom="3dip">
 
-    <TextView android:id="@+id/gm_text"
-        android:layout_marginTop="2dip"
-        android:layout_width="fill_parent"
+    <TextView android:id="@+id/fix_data"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
-        android:text=""
+        android:textSize="18sp"
         />
    					  
-    <EditText android:id="@+id/gm_name" 
-        android:maxLines="1" 
+    <EditText android:id="@+id/fix_station" 
+        android:singleLine="true" 
         android:layout_marginTop="2dip"
-        android:layout_width="fill_parent"
-      	android:ems="25"
+        android:layout_width="wrap_content"
+        android:width="100dip"
         android:layout_height="wrap_content" 
-        android:inputType="number"
+        android:hint="@string/station"
         />
-   		
+
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
       android:layout_width="fill_parent" 
       android:layout_height="wrap_content"
       android:orientation="horizontal" 
       >
-      <Button android:id="@+id/gm_ok"
+      <Button android:id="@+id/fix_ok"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
+        android:layout_gravity="left"
         android:text="@string/button_save"
         />
    		
-      <Button android:id="@+id/gm_cancel"
+      <Button android:id="@+id/fix_cancel"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
+        android:layout_gravity="left"
         android:text="@string/button_cancel"
         />
+      <LinearLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="right"
+        >
+      <Button android:id="@+id/fix_drop"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:text="@string/button_drop"
+        />
+      </LinearLayout>
     </LinearLayout>
    		
 </LinearLayout>

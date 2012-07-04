@@ -12,21 +12,33 @@
  * 20120520 created from DistoX.java
  * 20120524 fixed station management
  * 20120524 changing to dialog / menu buttons
+ * 20120531 implementing survey delete
+ * 20120603 fixed-info update/delete methods
+ * 20120607 added 3D button / rearranged buttons layout
+ * 20120610 archive (zip) button
+ * 20120619 handle "mustOpen" (immediate) request
  */
 package com.android.DistoX;
 
 import java.util.Date;
 import java.util.Locale;
+import java.util.List;
 import java.text.SimpleDateFormat;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
 import android.app.Activity;
 // import android.app.Dialog;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.os.Bundle;
 
-import android.util.Log;
+// import android.util.Log;
 
 import android.content.Context;
 // import android.content.Intent;
@@ -58,7 +70,7 @@ public class SurveyActivity extends Activity
                             // extends Dialog
                             implements View.OnClickListener
 {
-  private static final String TAG = "DistoX";
+  // private static final String TAG = "DistoX";
   // private TopoDroidActivity mParent;
   private Context mContext;
 
@@ -70,14 +82,17 @@ public class SurveyActivity extends Activity
   private Button mBTsave;
   private Button mBTNopen;
   private Button mBTNexport;
+  private Button mBTN3d;
   private Button mBTNdelete;
   private Button mBTNnotes;
   private Button mBTNlocation;
+  private Button mBTNarchive;
 
   private TopoDroidApp app;
   private SurveyInfo info;
   // private DistoX mDistoX;
   private boolean isSaved;
+  private boolean mustOpen;
 
   // private ArrayList< FixedInfo > mFixed; // fixed stations
   // private ArrayList< PhotoInfo > mPhoto; // photoes
@@ -98,8 +113,14 @@ public class SurveyActivity extends Activity
 
     app = (TopoDroidApp)getApplication();
     mContext = this;
+    mustOpen = false;
+    Bundle extras = getIntent().getExtras();
+    if ( extras != null && extras.getInt( TopoDroidApp.TOPODROID_SURVEY ) == 1 ) {
+      mustOpen = true;
+    }
 
     setContentView(R.layout.distox_survey_dialog);
+    setTitle( R.string.title_survey );
     mEditName    = (EditText) findViewById(R.id.survey_name);
     mEditDate    = (EditText) findViewById(R.id.survey_date);
     mEditTeam    = (EditText) findViewById(R.id.survey_team);
@@ -138,13 +159,24 @@ public class SurveyActivity extends Activity
     mBTsave      = (Button) findViewById( R.id.surveySave );
     mBTNopen     = (Button) findViewById( R.id.surveyOpen );
     mBTNexport   = (Button) findViewById( R.id.surveyExport );
+    mBTN3d       = (Button) findViewById( R.id.survey3D );
     mBTNdelete   = (Button) findViewById( R.id.surveyDelete );
     mBTNnotes    = (Button) findViewById( R.id.surveyNotes );
     mBTNlocation = (Button) findViewById( R.id.surveyLocation );
+    mBTNarchive  = (Button) findViewById( R.id.surveyArchive );
 
     setButtons();
   }
 
+  @Override
+  public synchronized void onResume() 
+  {
+    super.onResume();
+    if ( mustOpen ) {
+      mustOpen = false;
+      doOpen();
+    }
+  }
 
   // --------- menus ----------
   // private MenuItem mMIsave;
@@ -202,9 +234,11 @@ public class SurveyActivity extends Activity
   { 
     mBTNopen.setEnabled( isSaved );
     mBTNexport.setEnabled( isSaved );
+    mBTN3d.setEnabled( isSaved );
     mBTNdelete.setEnabled( isSaved );
     mBTNnotes.setEnabled( isSaved );
     mBTNlocation.setEnabled( isSaved );
+    mBTNarchive.setEnabled( isSaved );
   }
 
   private void setNameNotEditable()
@@ -220,7 +254,7 @@ public class SurveyActivity extends Activity
   @Override
   public void onClick(View view)
   {
-    Log.v( TAG, "onClick() ");
+    // Log.v( TAG, "onClick() ");
     switch (view.getId()){
       case R.id.surveySave:
         doSave();
@@ -231,6 +265,9 @@ public class SurveyActivity extends Activity
       case R.id.surveyExport:
         doExport();
         break;
+      case R.id.survey3D:
+        do3D();
+        break;
       case R.id.surveyNotes:
         doNotes();
         break;
@@ -238,10 +275,47 @@ public class SurveyActivity extends Activity
         doLocation();
         break;
       case R.id.surveyDelete:
+        askDelete();
+        break;
+      case R.id.surveyArchive:
+        doArchive();
         break;
     }
   }
 
+  private void doArchive()
+  {
+    app.exportSurveyAsTh(); // make sure to have survey exported as therion
+    Archiver archiver = new Archiver( app );
+    if ( archiver.archive( ) ) {
+      String msg = getResources().getString( R.string.zip_saved ) + " " + archiver.zipname;
+      Toast.makeText( this, msg, Toast.LENGTH_LONG ).show();
+    } else {
+      Toast.makeText( this, R.string.zip_failed, Toast.LENGTH_LONG ).show();
+    }
+  }
+
+  private void askDelete()
+  {
+    AlertDialog.Builder alert = new AlertDialog.Builder( this );
+    // alert.setTitle( R.string.delete );
+    alert.setMessage( getResources().getString( R.string.survey_delete ) + " " + app.getSurvey() + " ?" );
+    
+    alert.setPositiveButton( R.string.button_ok, 
+      new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick( DialogInterface dialog, int btn ) {
+          doDelete();
+        }
+    } );
+
+    alert.setNegativeButton( R.string.button_cancel, 
+      new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick( DialogInterface dialog, int btn ) { }
+    } );
+    alert.show();
+  }
 
   // @Override
   // public boolean onOptionsItemSelected(MenuItem item) 
@@ -260,7 +334,7 @@ public class SurveyActivity extends Activity
   //     doLocation();
   //   } else if ( item == mMIdelete ) {  
   //     // TODO ask confirm
-  //     // deleteSurvey();
+  //     // doDelete();
   //   } else if ( item == mMIoptions ) {  
   //     Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
   //     startActivity( optionsIntent );
@@ -274,6 +348,18 @@ public class SurveyActivity extends Activity
 
   // ===============================================================
 
+  private void do3D()
+  {
+    app.exportSurveyAsTh(); // make sure to have survey exported as therion
+    Intent intent = new Intent( "Cave3D.intent.action.Launch" );
+    intent.putExtra( "survey", app.getSurveyThFile() );
+    try {
+      startActivity( intent );
+    } catch ( ActivityNotFoundException e ) {
+      Toast.makeText( this, R.string.no_cave3d, Toast.LENGTH_LONG ).show();
+    }
+  }
+
   private void doSave()
   {
     saveSurvey( );
@@ -283,7 +369,7 @@ public class SurveyActivity extends Activity
 
   private void doOpen()
   {
-    Log.v( TAG, "do OPEN " );
+    // Log.v( TAG, "do OPEN " );
     // dismiss();
     Intent openIntent = new Intent( mContext, ShotActivity.class );
     mContext.startActivity( openIntent );
@@ -292,8 +378,7 @@ public class SurveyActivity extends Activity
   private void doLocation()
   {
     LocationManager lm = (LocationManager) mContext.getSystemService( Context.LOCATION_SERVICE );
-    DistoXLocation loc = new DistoXLocation( mContext, this, lm );
-    loc.show();
+    new DistoXLocation( mContext, this, app, lm ).show();
   }
 
   private void doNotes()
@@ -312,12 +397,12 @@ public class SurveyActivity extends Activity
   // fixed stations
   //
 
-  public void addFixed( String station, double latitude, double longitude, double altitude )
-  {
-    // mFixed.add( new FixedInfo( station, latitude, longitude, altitude ) );
-    // NOTE info.id == app.mSID
-    app.mData.insertFixed( station, info.id, longitude, latitude, altitude, "" ); // FIXME comment
-  }
+  // public void addFixed( String station, double latitude, double longitude, double altitude )
+  // {
+  //   // mFixed.add( new FixedInfo( station, latitude, longitude, altitude ) );
+  //   // NOTE info.id == app.mSID
+  //   app.mData.insertFixed( station, info.id, longitude, latitude, altitude, "" ); // FIXME comment
+  // }
 
   // populate fixed from the DB
   // this is not ok must re-populate whenever the survey changes
@@ -391,24 +476,90 @@ public class SurveyActivity extends Activity
     }
   }
 
-  public void deleteSurvey()
+  private void doDelete()
   {
     if ( app.mSID < 0 ) return;
+    File imagedir = new File( app.getSurveyPhotoDir() );
+    if ( imagedir.exists() ) {
+      File[] fs = imagedir.listFiles();
+      for ( File f : fs ) f.delete();
+      imagedir.delete();
+    }
+
+    File t = new File( TopoDroidApp.getSurveyNoteFile( app.mySurvey ) );
+    if ( t.exists() ) t.delete();
+    
+    t = new File( app.getSurveyTlxFile() );
+    if ( t.exists() ) t.delete();
+    
+    t = new File( app.getSurveyThFile() );
+    if ( t.exists() ) t.delete();
+
+    t = new File( app.getSurveySvxFile() );
+    if ( t.exists() ) t.delete();
+    
+    t = new File( app.getSurveyDatFile() );
+    if ( t.exists() ) t.delete();
+    
+    t = new File( app.getSurveyTroFile() );
+    if ( t.exists() ) t.delete();
+    
+    List< PlotInfo > plots = app.mData.selectAllPlots( app.mSID, TopoDroidApp.STATUS_NORMAL );
+    if ( TopoDroidApp.hasTh2Dir() ) {
+      for ( PlotInfo p : plots ) {
+        t = new File( app.getSurveyPlotFile( p.name ) );
+        if ( t.exists() ) t.delete();
+      }
+    }
+    if ( TopoDroidApp.hasPngDir() ) {
+      for ( PlotInfo p : plots ) {
+        t = new File( app.getSurveyPngFile( p.name ) );
+        if ( t.exists() ) t.delete();
+      }
+    }
+
+    plots = app.mData.selectAllPlots( app.mSID, TopoDroidApp.STATUS_DELETED );
+    if ( TopoDroidApp.hasTh2Dir() ) {
+      for ( PlotInfo p : plots ) {
+        t = new File( app.getSurveyPlotFile( p.name ) );
+        if ( t.exists() ) t.delete();
+      }
+    }
+    if ( TopoDroidApp.hasPngDir() ) {
+      for ( PlotInfo p : plots ) {
+        t = new File( app.getSurveyPngFile( p.name ) );
+        if ( t.exists() ) t.delete();
+      }
+    }
+
     app.mData.doDeleteSurvey( app.mSID );
     app.setSurveyFromName( null );
     finish();
     // dismiss();
   }
  
-  public void addLocation( String station, double latitude, double longitude, double altitude )
+  public FixedInfo addLocation( String station, double latitude, double longitude, double altitude )
   {
     // app.addFixed( station, latitude, longitude, altitude );
-    addFixed( station, latitude, longitude, altitude );
+    // addFixed( station, latitude, longitude, altitude );
+    long id = app.mData.insertFixed( app.mSID, -1L, station, longitude, latitude, altitude, "", 0L ); // FIXME comment
 
-    StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter( sw );
-    pw.format("\nfix %s %f %f %f m\n", station, latitude, longitude, altitude );
-    DistoXAnnotations.append( app.getSurvey(), sw.getBuffer().toString() );
+    // StringWriter sw = new StringWriter();
+    // PrintWriter pw = new PrintWriter( sw );
+    // pw.format("\nfix %s %f %f %f m\n", station, latitude, longitude, altitude );
+    // DistoXAnnotations.append( app.getSurvey(), sw.getBuffer().toString() );
+
+    return new FixedInfo( id, station, latitude, longitude, altitude, "" ); // FIXME comment
+  }
+
+  public void updateFixed( FixedInfo fxd, String station )
+  {
+    app.mData.updateFixedStation( fxd.id, app.mSID, station );
+  }
+
+  public void dropFixed( FixedInfo fxd )
+  {
+    app.mData.updateFixedStatus( fxd.id, app.mSID, TopoDroidApp.STATUS_DELETED );
   }
 
 }

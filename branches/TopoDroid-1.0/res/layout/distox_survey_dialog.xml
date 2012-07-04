@@ -7,13 +7,13 @@
     android:paddingRight="6dip"
     android:paddingBottom="3dip">
    					  
-    <TextView android:id="@+id/text_survey"
+    <!-- TextView android:id="@+id/text_survey"
         android:layout_marginTop="2dip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
         android:text="@string/survey_info"
         android:textSize="18sp"
-        />
+        / -->
    					  
     <EditText android:id="@+id/survey_name" 
         android:layout_marginTop="2dip"
@@ -60,6 +60,7 @@
         <Button
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
+                android:width="70dip"
                 android:onClick="onClick"
                 android:id="@+id/surveySave"
                 android:text="@string/menu_save"
@@ -68,6 +69,7 @@
         <Button
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
+                android:width="70dip"
                 android:onClick="onClick"
                 android:id="@+id/surveyOpen"
                 android:text="@string/menu_open"
@@ -76,6 +78,7 @@
         <Button
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
+                android:width="70dip"
                 android:onClick="onClick"
                 android:id="@+id/surveyExport"
                 android:text="@string/menu_export"
@@ -84,17 +87,10 @@
         <Button
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
+                android:width="70dip"
                 android:onClick="onClick"
-                android:id="@+id/surveyNotes"
-                android:text="@string/menu_notes"
-                android:textSize="12dp"
-        />
-        <Button
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:onClick="onClick"
-                android:id="@+id/surveyLocation"
-                android:text="@string/menu_location"
+                android:id="@+id/surveyArchive"
+                android:text="@string/menu_zip"
                 android:textSize="12dp"
         />
     </LinearLayout>
@@ -107,6 +103,42 @@
         <Button
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
+                android:width="70dip"
+                android:onClick="onClick"
+                android:id="@+id/surveyNotes"
+                android:text="@string/menu_notes"
+                android:textSize="12dp"
+        />
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:width="70dip"
+                android:onClick="onClick"
+                android:id="@+id/surveyLocation"
+                android:text="@string/menu_location"
+                android:textSize="12dp"
+        />
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:width="70dip"
+                android:onClick="onClick"
+                android:id="@+id/survey3D"
+                android:text="@string/menu_3d"
+                android:textSize="12dp"
+        />
+    </LinearLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_marginTop="6dip"
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      >
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:width="70dip"
+                android:layout_gravity="right"
                 android:onClick="onClick"
                 android:id="@+id/surveyDelete"
                 android:text="@string/menu_delete"

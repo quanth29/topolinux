@@ -7,8 +7,18 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120530 loop closures
+ * 20120702 shot surface flag
  */
 package com.android.DistoX;
+
+import java.io.StringWriter;
+import java.io.PrintWriter;
+
+import java.util.List;
+import java.util.ArrayList;
 
 import android.os.Bundle;
 import android.app.Dialog;
@@ -20,29 +30,30 @@ import android.graphics.*;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
-
-import java.io.StringWriter;
-import java.io.PrintWriter;
+import android.widget.ListView;
 
 // import android.util.Log;
 
 public class DistoXStatDialog extends Dialog 
-                               implements View.OnClickListener
+                              // implements View.OnClickListener
 {
     // private static final String TAG = "DistoX stats";
+
+    private Context mContext;
 
     private TextView mTextLength;
     private TextView mTextZminmax;
     private TextView mTextStations;
     private TextView mTextShots;
     private TextView mTextSplays;
+    private ListView mList;
 
-    private Button mBtnOk;
+    // private Button mBtnOk;
     private DistoXNum mNum;
-
     public DistoXStatDialog( Context context, DistoXNum num )
     {
       super(context);
+      mContext = context;
       mNum = num;
     }
 
@@ -58,8 +69,22 @@ public class DistoXStatDialog extends Dialog
         mTextShots    = (TextView) findViewById(R.id.text_stat_shots);
         mTextSplays   = (TextView) findViewById(R.id.text_stat_splays);
 
-        mBtnOk = (Button) findViewById(R.id.button_stat_ok);
-        mBtnOk.setOnClickListener( this );
+        // mList.setOnItemClickListener( this );
+        List< DistoXNum.Closure > cls = mNum.getClosures();
+        if ( cls.size() == 0 ) {
+          ((TextView)findViewById( R.id.text_stat_loops )).setText( R.string.loop_none );
+        } else {
+          mList = (ListView) findViewById(R.id.list);
+          DistoXClosureAdapter adapter = 
+            new DistoXClosureAdapter( mContext, R.layout.row, new ArrayList< DistoXNum.Closure >() );
+          mList.setAdapter( adapter );
+          for ( DistoXNum.Closure cl : cls ) {
+            adapter.add( cl );
+          }
+        }
+
+        // mBtnOk = (Button) findViewById(R.id.button_stat_ok);
+        // mBtnOk.setOnClickListener( this );
 
         StringWriter sw1 = new StringWriter();
         PrintWriter pw1  = new PrintWriter( sw1 );
@@ -92,7 +117,8 @@ public class DistoXStatDialog extends Dialog
 
         StringWriter sw4 = new StringWriter();;
         PrintWriter pw4  = new PrintWriter( sw4 );
-        pw4.format("Shots  %3d,   Duplicate %3d ", mNum.shotsNr(), mNum.duplicateNr() );
+        pw4.format("Shots  %3d,   Duplicate %3d,   Surface %3d",
+          mNum.shotsNr(), mNum.duplicateNr(), mNum.surfaceNr() );
         mTextShots.setText( sw4.toString() );
 
         StringWriter sw5 = new StringWriter();;
@@ -103,11 +129,12 @@ public class DistoXStatDialog extends Dialog
         setTitle("Stats");
     }
 
-    public void onClick(View view)
-    {
-      // Log.v( TAG, "onClick()" );
-      dismiss();
-    }
+    // @Override
+    // public void onClick(View view)
+    // {
+    //   // Log.v( TAG, "onClick()" );
+    //   dismiss();
+    // }
 }
         
 

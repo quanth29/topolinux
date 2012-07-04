@@ -28,10 +28,11 @@ public class DrawingPointPath extends DrawingPath
 {
   private static float toTherion = TopoDroidApp.TO_THERION;
 
-  private float mXpos;
-  private float mYpos;
-  private int mPointType;
-  private double mOrientation;
+  float mXpos;
+  float mYpos;
+  int mPointType;
+  String mOptions;
+  double mOrientation;
 
   public DrawingPointPath( int type, float x, float y )
   {
@@ -40,6 +41,7 @@ public class DrawingPointPath extends DrawingPath
     mPointType = type;
     mXpos = x;
     mYpos = y;
+    mOptions = null;
     mOrientation = 0.0;
     if ( DrawingBrushPaths.canRotate( type ) ) {
       // Log.v("DistoX", "new point type " + type + " setOrientation to " + DrawingBrushPaths.orientation(type) );
@@ -86,17 +88,29 @@ public class DrawingPointPath extends DrawingPath
       } else {
         pw.format(Locale.ENGLISH, "point %.2f %.2f stalactite", mXpos*toTherion, -mYpos*toTherion );
       }
+    } else if ( mPointType == DrawingBrushPaths.POINT_END ) {
+      if ( ( mOrientation > 45 && mOrientation < 135 ) || 
+           ( mOrientation > 225 && mOrientation < 305 ) ) {
+        pw.format(Locale.ENGLISH, "point %.2f %.2f low-end", mXpos*toTherion, -mYpos*toTherion );
+      } else {
+        pw.format(Locale.ENGLISH, "point %.2f %.2f narrow-end", mXpos*toTherion, -mYpos*toTherion );
+      }
+      
     } else if ( mPointType == DrawingBrushPaths.POINT_DANGER ) {
       pw.format(Locale.ENGLISH, "point %.2f %.2f label -text \"!\"", 
          mXpos*toTherion, -mYpos*toTherion );
     } else {
       pw.format(Locale.ENGLISH, "point %.2f %.2f %s", 
          mXpos*toTherion, -mYpos*toTherion, 
-         DrawingBrushPaths.pointName[mPointType] );
+         DrawingBrushPaths.pointThName[mPointType] );
       if ( mOrientation != 0.0 ) {
         // Log.v( "DistoX", "point.toTherion type " + mPointType + " orientation " + mOrientation );
         pw.format(Locale.ENGLISH, " -orientation %.2f", mOrientation);
       }
+    }
+
+    if ( mOptions != null && mOptions.length() > 0 ) {
+      pw.format(" %s", mOptions );
     }
     pw.format("\n");
     return sw.getBuffer().toString();

@@ -35,7 +35,7 @@ import android.os.Bundle;
 // import android.os.Message;
 // import android.os.Parcelable;
 
-import android.util.Log;
+// import android.util.Log;
 
 import android.content.Context;
 import android.content.Intent;
@@ -53,7 +53,7 @@ import android.widget.AdapterView.OnItemClickListener;
 public class GMActivity extends Activity
                            implements OnItemClickListener, ILister
 {
-  private static final String TAG = "DistoX GM";
+  // private static final String TAG = "DistoX GM";
   private TopoDroidApp app;
 
   private String mSaveData;                // saved GM text representation
@@ -79,6 +79,8 @@ public class GMActivity extends Activity
   private MenuItem mMIrefresh;
   private MenuItem mMIoptions;
   private MenuItem mMIhelp;
+
+  private ConnHandler mHandler;
 
   // -------------------------------------------------------------------
   // forward survey name to DataHelper
@@ -180,6 +182,7 @@ public class GMActivity extends Activity
   @Override
   public void refreshDisplay( int nr ) 
   {
+    setTitleColor( TopoDroidApp.COLOR_NORMAL );
     if ( nr >= 0 ) {
       if ( nr > 0 ) updateDisplay( );
       Toast.makeText( this, getString(R.string.read_) + nr + getString(R.string.data), Toast.LENGTH_LONG ).show();
@@ -192,7 +195,7 @@ public class GMActivity extends Activity
   public void updateDisplay( )
   {
     mDataAdapter.clear();
-    DistoXDataHelper data = app.mData;
+    DataHelper data = app.mData;
     if ( data != null && app.mCID >= 0 ) {
       List<CalibCBlock> list = data.selectAllGMs( app.mCID );
       updateGMList( list );
@@ -297,6 +300,7 @@ public class GMActivity extends Activity
     if ( item == mMIrefresh ) {
       updateDisplay( );
     } else if ( item == mMIdownload ) {
+      setTitleColor( TopoDroidApp.COLOR_CONNECTED );
       new DistoXRefresh( app, this ).execute();
     } else if ( item == mMIgroup ) {  // CALIB GROUPS
       if ( app.mCID >= 0 ) {
@@ -358,7 +362,7 @@ public class GMActivity extends Activity
       Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
       startActivity( optionsIntent );
     } else if ( item == mMIhelp ) {
-      // TODO
+      TopoDroidHelp.show( this, R.string.help_gm );
     } else if ( item == mMIcover ) {
       Calibration calib = app.mCalibration;
       if ( calib != null ) {
@@ -389,7 +393,7 @@ public class GMActivity extends Activity
     mList.setOnItemClickListener( this );
     mList.setDividerHeight( 2 );
 
-    // setTitleColor( 0x006d6df6 );
+    mHandler = new ConnHandler( app, this );
   }
 
   private void setBTMenus( boolean enabled )
@@ -420,17 +424,19 @@ public class GMActivity extends Activity
   public synchronized void onResume() 
   {
     super.onResume();
-    if ( app.mComm != null ) { app.mComm.resume(); }
+    // if ( app.mComm != null ) { app.mComm.resume(); }
     updateDisplay( );
+    app.registerConnListener( mHandler );
   }
 
   @Override
   protected synchronized void onPause() 
   { 
     super.onPause();
-    // Log.v( TAG, "onPause " );
-    if ( app.mComm != null ) { app.mComm.suspend(); }
+    app.unregisterConnListener( mHandler );
+    // if ( app.mComm != null ) { app.mComm.suspend(); }
   }
+
 
   // @Override
   // public synchronized void onStop()

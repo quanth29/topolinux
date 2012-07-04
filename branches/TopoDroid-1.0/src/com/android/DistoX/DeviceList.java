@@ -15,11 +15,9 @@ import java.util.Set;
 import android.app.Activity;
 import android.os.Bundle;
 
-// import android.util.Log;
-
 import android.content.Intent;
 
-import android.util.Log;
+// import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
@@ -38,7 +36,7 @@ import android.content.Context;
 public class DeviceList extends Activity
                                 implements OnItemClickListener
 { 
-  private static final String TAG = "DistoX Device";
+  // private static final String TAG = "DistoX Device";
   
   private TopoDroidApp app;
   private BroadcastReceiver mBTReceiver = null;
@@ -77,7 +75,7 @@ public class DeviceList extends Activity
         scanBTDEvices();
         break;
       default:  // 0x0 or unknown
-         Log.w(TAG, "Unknown intent command! ("+command+")");
+         // Log.w(TAG, "Unknown intent command! ("+command+")");
     }
   }
 

@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120702 shot surface flag
  */
 package com.android.DistoX;
 
@@ -17,7 +20,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.widget.RadioButton;
 
-import android.util.Log;
+// import android.util.Log;
 import android.text.InputType;
 
 import android.content.Context;
@@ -35,7 +38,7 @@ import android.view.KeyEvent;
 public class ShotDialog extends Dialog
                               implements View.OnClickListener
 {
-  private static final String TAG = "DistoX ShotDialog";
+  // private static final String TAG = "DistoX ShotDialog";
   private ShotActivity mParent;
   private DistoXDBlock mBlk;
 
@@ -46,7 +49,9 @@ public class ShotDialog extends Dialog
   private EditText mETfrom;
   private EditText mETto;
   private EditText mETcomment;
-  private CheckBox    mCBflag;
+  private CheckBox mRadioDup;
+  private CheckBox mRadioSurf;
+
   private RadioButton mRadioLeft;
   private RadioButton mRadioVert;
   private RadioButton mRadioRight;
@@ -95,7 +100,8 @@ public class ShotDialog extends Dialog
     mETfrom    = (EditText) findViewById(R.id.shot_from );
     mETto      = (EditText) findViewById(R.id.shot_to );
     mETcomment = (EditText) findViewById(R.id.shot_comment );
-    mCBflag    = (CheckBox) findViewById(R.id.shot_flag );
+    mRadioDup  = (CheckBox) findViewById( R.id.shot_dup );
+    mRadioSurf = (CheckBox) findViewById( R.id.shot_surf );
 
     mButtonDrop   = (Button) findViewById(R.id.button_drop_shot_name );
     mButtonOK     = (Button) findViewById(R.id.button_ok_shot_name );
@@ -110,8 +116,11 @@ public class ShotDialog extends Dialog
     if ( shot_to.length() > 0 )   mETto.setText( shot_to );
     if ( shot_comment != null )   mETcomment.setText( shot_comment );
     
-    mCBflag.setChecked( shot_flag != 0 );
-    mCBflag.setText( "Duplicate" );
+    if ( shot_flag == DistoXDBlock.BLOCK_DUPLICATE ) {
+      mRadioDup.setChecked( true );
+    } else if ( shot_flag == DistoXDBlock.BLOCK_SURFACE ) {
+      mRadioSurf.setChecked( true );
+    }
 
     mRadioLeft  = (RadioButton) findViewById(R.id.radio_left );
     mRadioVert  = (RadioButton) findViewById(R.id.radio_vert );
@@ -136,7 +145,13 @@ public class ShotDialog extends Dialog
       shot_to.trim();
       if ( shot_from == null ) { shot_from = ""; }
 
-      shot_flag   = mCBflag.isChecked()? DistoXDBlock.BLOCK_DUPLICATE : DistoXDBlock.BLOCK_SURVEY;
+      shot_flag = DistoXDBlock.BLOCK_SURVEY;
+      if ( mRadioDup.isChecked() ) {
+        shot_flag = DistoXDBlock.BLOCK_DUPLICATE;
+      } else if ( mRadioSurf.isChecked() ) {
+        shot_flag = DistoXDBlock.BLOCK_SURFACE;
+      }
+
       shot_extend = 1;
       if ( mRadioLeft.isChecked() ) { shot_extend = -1; }
       else if ( mRadioVert.isChecked() ) { shot_extend = 0; }

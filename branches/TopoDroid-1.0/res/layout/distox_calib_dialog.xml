@@ -7,12 +7,12 @@
     android:paddingRight="6dip"
     android:paddingBottom="3dip">
    					  
-    <TextView android:id="@+id/text_calib"
+    <!-- TextView android:id="@+id/text_calib"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
         android:text="@string/calib_info"
         android:textSize="18sp"
-        />
+        / -->
    					  
     <EditText android:id="@+id/calib_name" 
         android:maxLines="1" 
@@ -50,5 +50,45 @@
         android:hint="@string/description"
         android:scrollHorizontally="true" />
    		
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      >
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:width="70dip"
+                android:onClick="onClick"
+                android:id="@+id/calibSave"
+                android:text="@string/menu_save"
+                android:textSize="12dp"
+        />
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:width="70dip"
+                android:onClick="onClick"
+                android:id="@+id/calibOpen"
+                android:text="@string/menu_open"
+                android:textSize="12dp"
+        />
+    </LinearLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      >
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:width="70dip"
+                android:onClick="onClick"
+                android:id="@+id/calibDelete"
+                android:text="@string/menu_delete"
+                android:textSize="12dp"
+        />
+    </LinearLayout>
 
 </LinearLayout>
