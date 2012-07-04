@@ -69,7 +69,7 @@ public class DrawingAreaPickerDialog extends Dialog
             layout.addView( row );
           }
           ++ k0; 
-          mBtnArea[k].setText( DrawingBrushPaths.areaName[k] );
+          mBtnArea[k].setText( DrawingBrushPaths.areaLocalName[k] );
           mBtnArea[k].setOnClickListener( this );
           row.addView( mBtnArea[k] );
         }
@@ -79,7 +79,7 @@ public class DrawingAreaPickerDialog extends Dialog
         mBtnOK.setOnClickListener( this );
         mBtnCancel.setOnClickListener( this );
 
-        setTitle("AREA " + DrawingBrushPaths.areaName[ mIndex ] );
+        setTitle("AREA " + DrawingBrushPaths.areaLocalName[ mIndex ] );
     }
 
     public void onClick(View view)
@@ -98,8 +98,8 @@ public class DrawingAreaPickerDialog extends Dialog
           for (int k=0; k<DrawingBrushPaths.AREA_MAX; ++k ) {
             if ( btn == mBtnArea[k] ) {
               mIndex = k;
-              setTitle("AREA " + DrawingBrushPaths.areaName[ mIndex ] );
-              // mText.setText( DrawingBrushPaths.areaName[ mIndex ] );
+              setTitle("AREA " + DrawingBrushPaths.areaLocalName[ mIndex ] );
+              // mText.setText( DrawingBrushPaths.areaLocalName[ mIndex ] );
               break;
             }
           }

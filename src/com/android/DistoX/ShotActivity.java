@@ -10,6 +10,9 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120520 created from DistoX.java
+ * 20120531 implemented photo and 3D
+ * 20120531 shot-numbering bugfix
+ * 20120606 3D: implied therion export before 3D
  */
 package com.android.DistoX;
 
@@ -32,13 +35,14 @@ import android.os.Message;
 
 import android.app.Application;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 // import android.view.MenuInflater;
 // import android.content.res.ColorStateList;
 
-import android.util.Log;
+// import android.util.Log;
 
 // import android.location.LocationManager;
 
@@ -57,17 +61,17 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.preference.PreferenceManager;
 
-/*
-  Method m = device.getClass().getMethod( "createRfcommSocket", new Class[] (int.class) );
-  socket = (BluetoothSocket) m.invoke( device, 2 );
-  socket.connect();
-*/
+import android.provider.MediaStore;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.net.Uri;
 
 public class ShotActivity extends Activity
                           implements OnItemClickListener, ILister, INewPlot
 {
-  private static final String TAG = "DistoX";
+  // private static final String TAG = "DistoX";
   private TopoDroidApp app;
+  private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 
   // private static final int REQUEST_DEVICE    = 1;
   private static final int REQUEST_ENABLE_BT = 2;
@@ -88,6 +92,10 @@ public class ShotActivity extends Activity
   // private int      mSaveTextPos  = 0;
   private DistoXDBlock mSaveBlock = null;
 
+  String mPhotoStation;
+  String mPhotoComment;
+  String mPhotoName;     // name of the photo file (without extension ".jpg")
+
   private MenuItem mMIdevice = null;
   private SubMenu  mSMsurvey;
   private MenuItem mMIsplay;
@@ -99,6 +107,7 @@ public class ShotActivity extends Activity
   private MenuItem mMIundelete;
   // private MenuItem mMIlocation;
   private MenuItem mMIphoto;
+  private MenuItem mMI3d;
   private MenuItem mMIplot;
   private MenuItem mMInotes;
   private SubMenu  mSMmore;
@@ -106,22 +115,6 @@ public class ShotActivity extends Activity
   private MenuItem mMIdownload = null;
   private MenuItem mMIoptions;
   private MenuItem mMIhelp;
-
-  // -------------------------------------------------------------------
- 
-  class ConnHandler extends Handler
-  {
-    public ConnHandler()
-    {
-      super();
-    }
- 
-    @Override
-    public void handleMessage( Message msg )
-    {
-      setTitleColor( app.isConnected() ? 0xffff0000 : 0xffcccccc );
-    }
-  }
 
   ConnHandler mHandler;
 
@@ -134,7 +127,7 @@ public class ShotActivity extends Activity
       Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
       return false;
     } else {
-      List<DistoXDBlock> list = app.mData.selectAllShots( sid, 0 ); // status = 0
+      List<DistoXDBlock> list = app.mData.selectAllShots( sid, TopoDroidApp.STATUS_NORMAL );
       int size = list.size();
       int from = 0;
       int k;
@@ -142,7 +135,10 @@ public class ShotActivity extends Activity
       for ( k=0; k<size; ++k ) {
         DistoXDBlock item = list.get( k );
         int t = item.type();
-        if ( t == DistoXDBlock.BLOCK_SPLAY ) {
+        // Log.v(TAG, k + " type " + t + " <" + item.mFrom + "> <" + item.mTo + ">" );
+        if ( from == k && t == DistoXDBlock.BLOCK_CENTERLINE ) {
+          from = k + 1;
+        } else if ( t == DistoXDBlock.BLOCK_SPLAY ) {
           from = k+1;
         } else if ( t == DistoXDBlock.BLOCK_CENTERLINE ) {
           prev = item;
@@ -170,8 +166,9 @@ public class ShotActivity extends Activity
   @Override
   public void refreshDisplay( int nr ) 
   {
+    setTitleColor( TopoDroidApp.COLOR_NORMAL );
     if ( nr >= 0 ) {
-      if ( nr > 0 ) updateDisplay( true );
+      if ( nr > 0 ) updateDisplay( );
       Toast.makeText( this, getString(R.string.read_) + nr + getString(R.string.data), Toast.LENGTH_LONG ).show();
     } else if ( nr < 0 ) {
       // Toast.makeText( this, getString(R.string.read_fail_with_code) + nr, Toast.LENGTH_LONG ).show();
@@ -179,19 +176,17 @@ public class ShotActivity extends Activity
     }
   }
     
-  public void updateDisplay( boolean force_update )
+  public void updateDisplay( )
   {
     // Log.v( TAG, "updateDisplay() status: " + StatusName() + " forcing: " + force_update );
-    if ( force_update ) {
-      DistoXDataHelper data = app.mData;
-      if ( data != null && app.mSID >= 0 ) {
-        List<DistoXDBlock> list = data.selectAllShots( app.mSID, 0 );
-        // Log.v( TAG, "update shot list size " + list.size() );
-        updateShotList( list );
-        setTitle( app.getSurvey() );
-      } else {
-        Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
-      }
+    DataHelper data = app.mData;
+    if ( data != null && app.mSID >= 0 ) {
+      List<DistoXDBlock> list = data.selectAllShots( app.mSID, TopoDroidApp.STATUS_NORMAL );
+      // Log.v( TAG, "update shot list size " + list.size() );
+      updateShotList( list );
+      setTitle( app.getSurvey() );
+    } else {
+      Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
     }
   }
 
@@ -251,13 +246,13 @@ public class ShotActivity extends Activity
   @Override 
   public void onItemClick(AdapterView<?> parent, View view, int position, long id)
   {
-    CharSequence item = ((TextView) view).getText();
-    String value = item.toString();
-    if ( value.equals( getResources().getString( R.string.back_to_survey ) ) ) {
-      updateDisplay( true );
-      return;
-    }
-    // setListPos( position  );
+    // CharSequence item = ((TextView) view).getText();
+    // String value = item.toString();
+    // if ( value.equals( getResources().getString( R.string.back_to_survey ) ) ) {
+    //   updateDisplay( );
+    //   return;
+    // }
+    // // setListPos( position  );
     startShotDialog( (TextView)view, position );
   }
 
@@ -316,6 +311,7 @@ public class ShotActivity extends Activity
       mMIundelete = mSMmore.add( R.string.menu_undelete );
       // mMIlocation = mSMmore.add( R.string.menu_location );
       mMIphoto    = mSMmore.add( R.string.menu_photo );
+      mMI3d       = mSMmore.add( R.string.menu_3d );
       mMIoptions  = mSMmore.add( R.string.menu_options );
       mMIhelp     = mSMmore.add( R.string.menu_help  );
 
@@ -327,13 +323,13 @@ public class ShotActivity extends Activity
     mSMsurvey.setIcon( R.drawable.survey );
     mMInotes.setIcon( R.drawable.compose );
 
-    mMIplot.setIcon( R.drawable.scrap );
+    mMIplot.setIcon( R.drawable.display );
     // mMIplotnew.setIcon( R.drawable.scrapnew );
     mSMmore.setIcon( R.drawable.more );
 
     setBTMenus( app.mBTAdapter.isEnabled() );
 
-    mHandler = new ConnHandler( );
+    mHandler = new ConnHandler( app, this );
 
     return true;
   }
@@ -344,10 +340,11 @@ public class ShotActivity extends Activity
     // Log.v( TAG, "onOptionsItemSelected() " + StatusName() );
     // Handle item selection
     if ( item == mMIrefresh ) {
-      updateDisplay( true );
+      updateDisplay( );
     } else if ( item == mMIdownload ) {
+      setTitleColor( TopoDroidApp.COLOR_CONNECTED );
       new DistoXRefresh( app, this ).execute();
-      // updateDisplay( true );
+      // updateDisplay( );
     } else if ( item == mMInotes ) { // ANNOTATIONS DIALOG
       if ( app.getSurvey() != null ) {
         Intent notesIntent = new Intent( this, DistoXAnnotations.class );
@@ -364,9 +361,20 @@ public class ShotActivity extends Activity
     } else if ( item == mMIundelete ) { // UNDELETE SURVEY ITEM
       if ( app.mData != null && app.mSID >= 0 ) {
         (new DistoXUndelete(this, this, app.mData, app.mSID ) ).show();
-        updateDisplay( true );
+        updateDisplay( );
       } else {
         Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
+      }
+    } else if ( item == mMIphoto ) { // PHOTO: start dialog to ask the station name
+      (new PhotoDialog(this, this) ).show();
+    } else if ( item == mMI3d ) { // 3D
+      app.exportSurveyAsTh(); // make sure to have survey exported as therion
+      Intent intent = new Intent( "Cave3D.intent.action.Launch" );
+      intent.putExtra( "survey", app.getSurveyThFile() );
+      try {
+        startActivity( intent );
+      } catch ( ActivityNotFoundException e ) {
+        Toast.makeText( this, R.string.no_cave3d, Toast.LENGTH_LONG ).show();
       }
     // } else if ( item == mMIlocation ) {
     //   LocationManager lm = (LocationManager) getSystemService( LOCATION_SERVICE );
@@ -375,19 +383,19 @@ public class ShotActivity extends Activity
     } else if ( item == mMIsplay ) {     // toggle splay shots
       mSplay = ! mMIsplay.isChecked();
       mMIsplay.setChecked( mSplay );
-      updateDisplay( true );
+      updateDisplay( );
     } else if ( item == mMIleg ) { // toggle leg extra shots
       mLeg =  ! mMIleg.isChecked();
       mMIleg.setChecked( mLeg );
-      updateDisplay( true );
+      updateDisplay( );
     } else if ( item == mMIblank ) {     // toggle blank shots
       mBlank = ! mMIblank.isChecked();
       mMIblank.setChecked( mBlank );
-      updateDisplay( true );
+      updateDisplay( );
     } else if ( item == mMInumber ) {    // autonumber splays
       // TODO number splay shots
       if ( numberSplays() ) {
-        updateDisplay( true );
+        updateDisplay( );
       }
     // // ---------------------- DEVICES
     } else if ( item == mMIdevice ) {
@@ -401,7 +409,7 @@ public class ShotActivity extends Activity
         Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
       } else {
         (new ShotNewDialog( this, this )).show();
-        updateDisplay( true );
+        updateDisplay( );
       }
     // ---------------------- PLOTS
     } else if ( item == mMIplotnew ) {
@@ -410,7 +418,7 @@ public class ShotActivity extends Activity
       } else {
         (new DistoXPlotDialog( this, this )).show();
         // FIXME start Drawing activity
-        // updateDisplay( true );
+        // updateDisplay( );
       }
     } else if ( item == mMIplot ) {
       if ( app.mSID < 0 ) {
@@ -422,6 +430,38 @@ public class ShotActivity extends Activity
       return super.onOptionsItemSelected(item);
     }
     return true;
+  }
+
+
+  void takePhoto( String name, String comment )
+  {
+    if ( name != null && name.length() > 0 ) {
+      mPhotoName    = name.replaceAll( " ", "_" );
+      mPhotoStation = name;
+      mPhotoComment = comment;
+      File imagefile = new File( app.getSurveyJpgFile( mPhotoName ) );
+      // Log.v("DistoX", "photo " + imagefile.toString() );
+
+      Uri outfileuri = Uri.fromFile( imagefile );
+      Intent intent = new Intent( android.provider.MediaStore.ACTION_IMAGE_CAPTURE );
+      intent.putExtra( MediaStore.EXTRA_OUTPUT, outfileuri );
+      intent.putExtra( "outputFormat", Bitmap.CompressFormat.JPEG.toString() );
+      startActivityForResult( intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE );
+    } else {
+      Toast.makeText( this, R.string.picture_no_station, Toast.LENGTH_SHORT ).show();
+    }
+  }
+
+  @Override
+  protected void onActivityResult( int reqCode, int resCode, Intent data )
+  {
+    switch ( reqCode ) {
+      case CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE:
+        if ( resCode == Activity.RESULT_OK ) {
+          // Log.v("DistoX", "insert photo in db " + mPhotoName );
+          app.mData.insertPhoto( app.mSID, -1L, mPhotoStation, mPhotoName, mPhotoComment );
+        }
+    }
   }
 
   // ---------------------------------------------------------------
@@ -441,7 +481,7 @@ public class ShotActivity extends Activity
     mList.setDividerHeight( 2 );
 
     restoreInstanceFromData();
-    updateDisplay( true );
+    updateDisplay( );
   }
 
   @Override
@@ -449,14 +489,17 @@ public class ShotActivity extends Activity
   {
     super.onPause();
     app.unregisterConnListener( mHandler );
+    // if ( app.mComm != null ) { app.mComm.suspend(); }
   }
 
   @Override
   public synchronized void onResume() 
   {
     super.onResume();
+    // if ( app.mComm != null ) { app.mComm.resume(); }
+    updateDisplay( );
     app.registerConnListener( mHandler );
-    // setTitleColor( app.isConnected() ? 0xffff0000 : 0xffcccccc );
+    // setTitleColor( app.isConnected() ? TopoDroidApp.COLOR_CONNECTED : TopoDroidApp.COLOR_NORMAL );
   }
 
   @Override
@@ -469,7 +512,6 @@ public class ShotActivity extends Activity
   private void restoreInstanceFromData()
   { 
     String shots = app.mData.getValue( "DISTOX_SHOTS" );
-    // Log.v( TAG, "DISTOX_SHOTS " + shots );
     if ( shots != null ) {
       String[] vals = shots.split( " " );
       mSplay  = vals[0].equals("1");
@@ -497,17 +539,19 @@ public class ShotActivity extends Activity
 
   public void makeNewPlot( String name, long type, String start, String view )
   {
-    long mPID = app.mData.insertPlot( name, app.mSID, type, start, view );
-    // Log.v( TAG, "insertPLot return " + mPID + " " + name + " start " + start + " view " + view );
+    // plot-id -1, status 0
+    long mPID = app.mData.insertPlot( app.mSID, -1L, name, type, 0L, start, view );
+    // Log.v( TAG, "insertPlot return " + mPID + " " + name + " start " + start + " view " + view );
     if ( mPID >= 0 ) {
       startDrawingActivity( start, name, type, view );
     }
-    updateDisplay( true );
+    updateDisplay( );
   }
 
   public void startPlot( String plot_name, String type )
   {
-    DistoXDataHelper data = app.mData;
+    DataHelper data = app.mData;
+    // Log.v(TAG, "startPlot \"" + plot_name + "\" sid " + app.getSurveyId() );
     long mPID = data.getPlotId( app.getSurveyId(), plot_name );
     if ( mPID >= 0 ) {
       long id = app.mSID;
@@ -520,7 +564,7 @@ public class ShotActivity extends Activity
       else if ( type.equals("EXTENDED") ) { plot_type = TopoDroidApp.PLOT_EXTENDED; }
       else if ( type.equals("H-SECTION") ) { plot_type = TopoDroidApp.PLOT_H_SECTION; }
       startDrawingActivity( plot_start, plot_name, plot_type, null );
-      updateDisplay( true );
+      updateDisplay( );
     } else {
       Toast.makeText(getApplicationContext(), R.string.plot_not_found, Toast.LENGTH_LONG).show();
     }
@@ -551,7 +595,7 @@ public class ShotActivity extends Activity
   {
     long id;
     long sid = app.mSID;
-    DistoXDataHelper data = app.mData;
+    DataHelper data = app.mData;
     if ( from != null && to != null && from.length() > 0 && to.length() > 0 ) {
       // if ( data.makesCycle( -1L, sid, from, to ) ) {
       //   Toast.makeText( this, R.string.makes_cycle, Toast.LENGTH_LONG ).show();
@@ -563,49 +607,49 @@ public class ShotActivity extends Activity
         if ( left != null && left.length() > 0 ) {
           float l = Float.parseFloat( left );
           if ( horizontal ) {
-            id = data.insertShot( sid, l, 270.0f, 0.0f, 0.0f );
+            id = data.insertShot( sid, -1L, l, 270.0f, 0.0f, 0.0f );
           } else {
             float b = bearing - 90.0f;
             if ( b < 0.0f ) b += 360.0f;
             // b = in360( b );
-            id = data.insertShot( sid, l, b, 0.0f, 0.0f );
+            id = data.insertShot( sid, -1L, l, b, 0.0f, 0.0f );
           }
           data.updateShotName( id, sid, from, "" );
         }
         if ( right != null && right.length() > 0 ) {
           float r = Float.parseFloat( right );
           if ( horizontal ) {
-            id = data.insertShot( sid, r, 90.0f, 0.0f, 0.0f );
+            id = data.insertShot( sid, -1L, r, 90.0f, 0.0f, 0.0f );
           } else {
             float b = bearing + 90.0f;
             if ( b >= 360.0f ) b -= 360.0f;
-            id = data.insertShot( sid, r, b, 0.0f, 0.0f );
+            id = data.insertShot( sid, -1L, r, b, 0.0f, 0.0f );
           }
           data.updateShotName( id, sid, from, "" );
         }
         if ( up != null && up.length() > 0 ) {
           float u = Float.parseFloat( up );
           if ( horizontal ) {
-            id = data.insertShot( sid, u, 0.0f, 0.0f, 0.0f );
+            id = data.insertShot( sid, -1L, u, 0.0f, 0.0f, 0.0f );
           } else {
-            id = data.insertShot( sid, u, 0.0f, 90.0f, 0.0f );
+            id = data.insertShot( sid, -1L, u, 0.0f, 90.0f, 0.0f );
           }
           data.updateShotName( id, sid, from, "" );
         }
         if ( down != null && down.length() > 0 ) {
           float d = Float.parseFloat( down );
           if ( horizontal ) {
-            id = data.insertShot( sid, d, 180.0f, 0.0f, 0.0f );
+            id = data.insertShot( sid, -1L, d, 180.0f, 0.0f, 0.0f );
           } else {
-            id = data.insertShot( sid, d, 0.0f, -90.0f, 0.0f );
+            id = data.insertShot( sid, -1L, d, 0.0f, -90.0f, 0.0f );
           }
           data.updateShotName( id, sid, from, "" );
         }
-        id = data.insertShot( sid, distance, bearing, clino, 0.0f );
+        id = data.insertShot( sid, -1L, distance, bearing, clino, 0.0f );
         // String name = from + "-" + to;
         data.updateShotName( id, sid, from, to );
         // data.updateShotExtend( id, sid, extend );
-        updateDisplay( true );
+        updateDisplay( );
       }
     } else {
       Toast.makeText( this, R.string.missing_station, Toast.LENGTH_LONG ).show();
@@ -615,7 +659,7 @@ public class ShotActivity extends Activity
   public void dropShot()
   {
     app.mData.deleteShot( mSIDid, app.mSID );
-    updateDisplay( true ); // FIXME
+    updateDisplay( ); // FIXME
   }
 
   public void updateShot( String from, String to, long extend, long flag, String comment )

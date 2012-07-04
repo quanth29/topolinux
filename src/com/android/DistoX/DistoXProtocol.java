@@ -20,7 +20,7 @@ import java.util.UUID;
 // import java.Thread;
 import java.nio.channels.ClosedByInterruptException;
 
-import android.util.Log;
+// import android.util.Log;
 
 // import android.bluetooth.BluetoothDevice;
 // import android.bluetooth.BluetoothServerSocket;
@@ -31,7 +31,7 @@ import android.widget.Toast;
 
 public class DistoXProtocol
 {
-  private static final String TAG = "DistoX Protocol";
+  // private static final String TAG = "DistoX Protocol";
 
   // private DistoX mDistoX;
   // private BluetoothDevice  mDevice;
@@ -231,9 +231,9 @@ public class DistoXProtocol
       }
       return handlePacket();
     } catch ( EOFException e ) {
-      Log.w( TAG, "readPacket EOFException" + e.toString() );
+      // Log.w( TAG, "readPacket EOFException" + e.toString() );
     } catch (ClosedByInterruptException e ) {
-      Log.w( TAG, "readPacket ClosedByInterruptException" + e.toString() );
+      // Log.w( TAG, "readPacket ClosedByInterruptException" + e.toString() );
     // } catch (InterruptedException e ) {
     //   Log.e( TAG, "readPacket InterruptedException" + e.toString() );
     } catch (IOException e ) {

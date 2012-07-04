@@ -109,7 +109,7 @@ public class DrawingAreaPath extends DrawingPath
       pt.toTherion( pw );
     }
     pw.format("endline\n");
-    pw.format("area %s\n", DrawingBrushPaths.areaName[mAreaType] );
+    pw.format("area %s\n", DrawingBrushPaths.areaThName[mAreaType] );
     pw.format("  a%d\n", mAreaCnt );
     pw.format("endarea\n");
     return sw.getBuffer().toString();

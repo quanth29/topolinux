@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120621 item editoing: getPointAt getLineAt
  */
 package com.android.DistoX;
 
@@ -18,7 +21,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PointF;
 import android.os.Handler;
 
-import android.util.Log;
+// import android.util.Log;
 
 import java.util.Iterator;
 import java.util.List;
@@ -36,7 +39,7 @@ import java.io.EOFException;
  */
 public class DrawingCommandManager 
 {
-  private static final String TAG = "DistoX CM";
+  // private static final String TAG = "DistoX CM";
   private static final int BORDER = 20;
 
 
@@ -289,6 +292,42 @@ public class DrawingCommandManager
       mRedoStack.remove( length - 1 );
       mCurrentStack.add( redoCommand );
     }
+  }
+
+  public DrawingPointPath getPointAt( float x, float y )
+  {
+    DrawingPointPath ret = null;
+    float min_dist = 1000.0f;
+    for ( DrawingPath p : mCurrentStack ) {
+      if ( p.mType == DrawingPath.DRAWING_PATH_POINT ) {
+        DrawingPointPath pp = (DrawingPointPath)p;
+        float d = Math.abs( pp.mXpos - x ) + Math.abs( pp.mYpos - y );
+        if ( d < 16f && d < min_dist ) {
+          min_dist = d;
+          ret = pp;
+        }
+      }
+    }
+    return ret;
+  }
+
+  public DrawingLinePath getLineAt( float x, float y )
+  {
+    DrawingLinePath ret = null;
+    float min_dist = 1000.0f;
+    for ( DrawingPath p : mCurrentStack ) {
+      if ( p.mType == DrawingPath.DRAWING_PATH_LINE ) {
+        DrawingLinePath pp = (DrawingLinePath)p;
+        for ( LinePoint pt : pp.points ) {
+          float d = Math.abs( pt.mX - x ) + Math.abs( pt.mY - y );
+          if ( d < 16f && d < min_dist ) {
+            min_dist = d;
+            ret = pp;
+          }
+        }
+      }
+    }
+    return ret;
   }
 
   public void exportTherion( BufferedWriter out, String scrap_name, String proj_name )

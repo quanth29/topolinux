@@ -17,9 +17,11 @@ package com.android.DistoX;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
+import android.util.Log;
 
 public class DistoXDBlock
 {
+  private static final String TAG = "DistoX";
   private static final float grad2rad = TopoDroidApp.GRAD2RAD_FACTOR;
 
   public static final char[] mExtendTag = { '<', '|', '>', '-' };
@@ -131,11 +133,19 @@ public class DistoXDBlock
     float ul = TopoDroidApp.mUnitLength;
     float ua = TopoDroidApp.mUnitAngle;
 
+    // Log.v(TAG, "From " + mFrom + " To " + mTo + " extend " + mExtend );
     StringWriter sw = new StringWriter();
     PrintWriter pw  = new PrintWriter(sw);
     pw.format("%d <%s-%s> %.2f %.1f %.1f [%c]",
-      mId, mFrom, mTo, mLength*ul, mBearing*ua, mClino*ua, mExtendTag[ (int)(mExtend) + 1 ] );
-    if ( mFlag == 1 ) pw.format( " *" );
+      mId, mFrom, mTo,
+      // (mFrom!=null)? mFrom : "nil",
+      // (mTo!=null)? mTo : "nil",
+      mLength*ul, mBearing*ua, mClino*ua, mExtendTag[ (int)(mExtend) + 1 ] );
+    if ( mFlag == BLOCK_DUPLICATE ) {
+      pw.format( "*" );
+    } else if ( mFlag == BLOCK_SURFACE ) {
+      pw.format( "-" );
+    }
     return sw.getBuffer().toString();
   }
 

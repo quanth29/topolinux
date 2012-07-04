@@ -20,11 +20,11 @@ public class LinePoint extends BezierPoint
 
   // public float mX;
   // public float mY;
-  public float mX1; // first control point
-  public float mY1;
-  public float mX2; // second control point
-  public float mY2;
-  public boolean has_cp;
+  float mX1; // first control point
+  float mY1;
+  float mX2; // second control point
+  float mY2;
+  boolean has_cp;
   
   public LinePoint( float x, float y )
   {

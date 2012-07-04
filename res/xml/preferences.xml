@@ -13,7 +13,7 @@
        android:key="DISTOX_BASE_PATH"
        android:title="@string/pref_base_path_title"
        android:summary="@string/pref_base_path_summary"
-       android:dialogTitle="$string/pref_base_path_title"
+       android:dialogTitle="@string/pref_base_path_title"
        android:dialogMessage="@string/pref_base_path_message"
        />
 
@@ -52,7 +52,7 @@
        android:key="DISTOX_CLOSE_DISTANCE"
        android:title="@string/pref_leg_title"
        android:summary="@string/pref_leg_summary"
-       android:dialogTitle="$string/pref_leg_title"
+       android:dialogTitle="@string/pref_leg_title"
        android:dialogMessage="@string/pref_leg_message"
        android:inputType="numberDecimal"
        android:defaultValue="0.1" />
@@ -183,7 +183,7 @@
        android:key="DISTOX_CONN_MODE"
        android:summary="@string/pref_conn_mode_summary"
        android:title="@string/pref_conn_mode_title"
-       android:defaultValue="batch"
+       android:defaultValue="0"
        android:entries="@array/connMode"
        android:entryValues="@array/connModeValue"
      />

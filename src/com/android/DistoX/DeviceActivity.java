@@ -20,7 +20,7 @@ package com.android.DistoX;
 import android.app.Activity;
 import android.os.Bundle;
 
-import android.util.Log;
+// import android.util.Log;
 
 import android.content.Intent;
 
@@ -29,6 +29,7 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.view.View;
 import android.view.Menu;
+import android.view.SubMenu;
 import android.view.MenuItem;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
@@ -39,7 +40,7 @@ public class DeviceActivity extends Activity
                             implements View.OnClickListener
                             , RadioGroup.OnCheckedChangeListener
 {
-  private static final String TAG = "DistoX Device";
+  // private static final String TAG = "DistoX Device";
 
   private static final int REQUEST_DEVICE    = 1;
 
@@ -64,7 +65,9 @@ public class DeviceActivity extends Activity
   private MenuItem mMIpaired;
   private MenuItem mMIscan;
   private MenuItem mMIreset;
+  private SubMenu  mSMmore;
   private MenuItem mMIoption;
+  private MenuItem mMIhelp;
 
 // -------------------------------------------------------------------
   private void setState()
@@ -92,7 +95,7 @@ public class DeviceActivity extends Activity
       // mBtnReconnect  .setEnabled( false );
       mBtnDisconnect .setEnabled( false );
     } else { // app.mConnectionMode == TopoDroidApp.CONN_MODE_CONTINUOUS
-      Log.v(TAG, "cont. checked. app is connected: " + app.isConnected() );
+      // Log.v(TAG, "cont. checked. app is connected: " + app.isConnected() );
       mBtnToggle     .setEnabled( false );
       mBtnHeadTail   .setEnabled( false );
       mBtnRead       .setEnabled( false );
@@ -286,12 +289,15 @@ public class DeviceActivity extends Activity
     mMIpaired = menu.add( R.string.menu_paired );
     mMIscan   = menu.add( R.string.menu_scan );
     mMIreset  = menu.add( R.string.menu_reset );
-    mMIoption = menu.add( R.string.menu_options );
+    mSMmore   = menu.addSubMenu(  R.string.menu_more );
+      mMIoption = mSMmore.add( R.string.menu_options );
+      mMIhelp   = mSMmore.add( R.string.menu_help );
 
     mMIpaired.setIcon( R.drawable.paired );
     mMIscan.setIcon( R.drawable.scan );
     mMIreset.setIcon( R.drawable.bluetooth );
-    mMIoption.setIcon( R.drawable.prefs );
+    mSMmore.setIcon( R.drawable.more );
+    // mMIoption.setIcon( R.drawable.prefs );
     // mMIpaired.setIcon( android.R.drawable.ic_menu_directions );
     // mMIscan.setIcon( android.R.drawable.ic_menu_share );
     // mMIreset.setIcon( android.R.drawable.ic_menu_close_clear_cancel );
@@ -318,6 +324,8 @@ public class DeviceActivity extends Activity
     } else if ( item == mMIoption ) {
       Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
       startActivity( optionsIntent );
+    } else if ( item == mMIhelp ) { // HELP
+      TopoDroidHelp.show( this, R.string.help_device );
     }
     return true;
   }

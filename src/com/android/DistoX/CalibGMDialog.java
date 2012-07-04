@@ -63,8 +63,8 @@ public class CalibGMDialog extends Dialog
     super.onCreate(savedInstanceState);
     // Log.v( TAG, "onCreate" );
     setContentView(R.layout.distox_gm_dialog);
-    mTextView = (TextView) findViewById(R.id.text_gm_data);
-    mEditText = (EditText) findViewById(R.id.edit_gm_name);
+    mTextView = (TextView) findViewById(R.id.gm_text);
+    mEditText = (EditText) findViewById(R.id.gm_name);
     // mEditText.setOnKeyListener(
     //   new OnKeyListener() {
     //     public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -79,8 +79,8 @@ public class CalibGMDialog extends Dialog
     //     }
     //   }
     // );
-    mButtonOK     = (Button) findViewById(R.id.button_ok_gm_name );
-    mButtonCancel = (Button) findViewById(R.id.button_cancel_gm_name );
+    mButtonOK     = (Button) findViewById(R.id.gm_ok );
+    mButtonCancel = (Button) findViewById(R.id.gm_cancel );
 
     mTextView.setText( mData );
     mEditText.setHint( mGroup );

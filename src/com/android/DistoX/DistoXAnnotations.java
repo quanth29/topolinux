@@ -63,10 +63,7 @@ public class DistoXAnnotations extends Activity
 
   private void save( )
   {
-    // Log.v(TAG, "saving to file " + mFilename );
     try {
-      File dir = new File( TopoDroidApp.APP_NOTE_PATH );
-      if (!dir.exists()) dir.mkdirs();
       FileWriter fw = new FileWriter( mFilename, false );
       PrintWriter pw = new PrintWriter( fw );
       pw.format( "%s", mETtext.getText() );
@@ -80,10 +77,8 @@ public class DistoXAnnotations extends Activity
 
   public static void append( String title, String text )
   {
-    String filename = TopoDroidApp.APP_NOTE_PATH + title;
+    String filename = TopoDroidApp.getSurveyNoteFile( title );
     try {
-      File dir = new File( TopoDroidApp.APP_NOTE_PATH );
-      if (!dir.exists()) dir.mkdirs();
       FileWriter fw = new FileWriter( filename, true );
       PrintWriter pw = new PrintWriter( fw );
       pw.format( "%s", text );
@@ -109,7 +104,7 @@ public class DistoXAnnotations extends Activity
 
     Bundle extras = getIntent().getExtras();
     String title  = extras.getString( TopoDroidApp.TOPODROID_SURVEY );
-    mFilename = TopoDroidApp.APP_NOTE_PATH + title;
+    mFilename = TopoDroidApp.getSurveyNoteFile( title );
     mTVtitle.setText( title );
 
     load();

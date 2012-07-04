@@ -71,7 +71,7 @@ public class PlotDialog extends Dialog
   private void updateList()
   {
     if ( app.mData != null && app.mSID >= 0 ) {
-      List< PlotInfo > list = app.mData.selectAllPlots( app.mSID, 0 ); 
+      List< PlotInfo > list = app.mData.selectAllPlots( app.mSID, TopoDroidApp.STATUS_NORMAL ); 
       setTitle( app.getSurvey() + " scraps" );
       if ( list.size() == 0 ) {
         Toast.makeText( mContext, R.string.no_plots, Toast.LENGTH_LONG ).show();
@@ -109,8 +109,11 @@ public class PlotDialog extends Dialog
     CharSequence item = ((TextView) view).getText();
     String value = item.toString();
     String[] st = value.split( " ", 3 );
-    int end = st[1].length() - 1;
-    String plot_name = st[1].substring( 1, end );
+    int from = value.indexOf('<');
+    int to = value.lastIndexOf('>');
+    String plot_name = value.substring( from+1, to );
+    // int end = st[1].length() - 1;
+    // String plot_name = st[1].substring( 1, end );
     mParent.startPlot( plot_name, st[2] );
     dismiss();
   }

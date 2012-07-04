@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120517 point names in the point dialog
+ * 20120621 begin long-click (item options editing)
  */
 package com.android.DistoX;
 
@@ -33,7 +34,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.util.Log;
+// import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
@@ -49,10 +50,11 @@ import java.util.ArrayList;
 /**
  */
 public class DrawingActivity extends Activity 
-                             implements View.OnTouchListener,
-                                        DrawingPointPickerDialog.OnPointSelectedListener
+                             implements View.OnTouchListener
+                                      , View.OnLongClickListener
+                                      , DrawingPointPickerDialog.OnPointSelectedListener
 {
-    private static final String TAG = "DistoX DrawingActivity";
+    // private static final String TAG = "DistoX DrawingActivity";
     private TopoDroidApp app;
 
     private static final String TITLE_DRAW_POINT = "Draw point ";
@@ -99,6 +101,7 @@ public class DrawingActivity extends Activity
     private MenuItem mMIsaveTH2;
     private MenuItem mMIsavePNG;
     private MenuItem mMIoptions;
+    private MenuItem mMIhelp;
     private MenuItem mMInotes;
     private MenuItem mMIredo;
     private MenuItem mMIdisplay;
@@ -119,10 +122,12 @@ public class DrawingActivity extends Activity
     public int mMode   = MODE_MOVE;
     private float mSaveX;
     private float mSaveY;
+    private float mStartX;
+    private float mStartY;
     private PointF mOffset = new PointF( 0f, 0f );
     private static final PointF mCenter = new PointF( CENTER_X, CENTER_Y );
     private static float mZoom = 1.0f;                     // canvas zoom
-    private DistoXDataHelper mData;
+    private DataHelper mData;
     private long mSid; // survey id
     private long mPid; // plot id
 
@@ -260,11 +265,11 @@ public class DrawingActivity extends Activity
         modeBtn.setText("Draw");
         // modeBtn.setBackgroundResource( R.drawable.draw );
         if ( mSymbol == SYMBOL_POINT ) {
-          setTitle(TITLE_DRAW_POINT + DrawingBrushPaths.pointName[mCurrentPoint] );
+          setTitle(TITLE_DRAW_POINT + DrawingBrushPaths.pointLocalName[mCurrentPoint] );
         } else if ( mSymbol == SYMBOL_LINE ) {
-          setTitle(TITLE_DRAW_LINE + DrawingBrushPaths.lineName[mCurrentLine] );
+          setTitle(TITLE_DRAW_LINE + DrawingBrushPaths.lineLocalName[mCurrentLine] );
         } else  {  // if ( mSymbol == SYMBOL_LINE ) 
-          setTitle(TITLE_DRAW_AREA + DrawingBrushPaths.areaName[mCurrentArea] );
+          setTitle(TITLE_DRAW_AREA + DrawingBrushPaths.areaLocalName[mCurrentArea] );
         }
       } else if ( mMode == MODE_MOVE ) {
         modeBtn.setText("Move");
@@ -282,9 +287,8 @@ public class DrawingActivity extends Activity
       // Log.v( TAG, "saving th2 file\n");
       if ( mFullName != null && mDrawingSurface != null ) {
         try {
-          File dir = new File( app.APP_TH2_PATH );
-          if (!dir.exists()) dir.mkdirs();
-          FileWriter writer = new FileWriter(new File(app.APP_TH2_PATH + mFullName + ".th2" ));
+          String filename = app.getTh2FileWithExt( mFullName );
+          FileWriter writer = new FileWriter( filename );
           BufferedWriter out = new BufferedWriter( writer );
           mDrawingSurface.exportTherion( out, mFullName, app.projName[ mType ] );
           out.flush();
@@ -322,6 +326,7 @@ public class DrawingActivity extends Activity
       mDrawingSurface.previewPath.path = new Path();
       mDrawingSurface.previewPath.setPaint( getPreviewPaint() );
       mDrawingSurface.setOnTouchListener(this);
+      mDrawingSurface.setOnLongClickListener(this);
       // mDrawingSurface.setBuiltInZoomControls(true);
 
       // redoBtn = (Button) findViewById(R.id.redoBtn);
@@ -345,9 +350,9 @@ public class DrawingActivity extends Activity
 
       setTitle();
 
-      mData        = new DistoXDataHelper( this ); 
+      mData        = app.mData; // new DataHelper( this ); 
       Bundle extras = getIntent().getExtras();
-      mFullName    = extras.getString( app.TOPODROID_PLOT_FILE );
+      mFullName    = extras.getString( app.TOPODROID_PLOT_FILE ); // without ".th2"
       mSid         = extras.getLong(   app.TOPODROID_SURVEY_ID );
       mPid         = extras.getLong(   app.TOPODROID_PLOT_ID );
       String start = extras.getString( app.TOPODROID_PLOT_STRT );
@@ -358,7 +363,7 @@ public class DrawingActivity extends Activity
       // mLineCorner  = app.mLineCorner;
      
       if ( mType == TopoDroidApp.PLOT_PLAN || mType == TopoDroidApp.PLOT_EXTENDED ) {
-        List<DistoXDBlock> list = mData.selectAllShots( mSid, 0 );
+        List<DistoXDBlock> list = mData.selectAllShots( mSid, TopoDroidApp.STATUS_NORMAL );
         // Log.v( TAG, "onCreate SID " + mSid + " start at " + start + " shots " + list.size() );
         if ( list.size() == 0 ) {
            Toast.makeText( this, R.string.few_data, Toast.LENGTH_LONG ).show();
@@ -401,7 +406,7 @@ public class DrawingActivity extends Activity
             addGrid( mNum.surveyHmin(), mNum.surveyHmax(), mNum.surveyVmin(), mNum.surveyVmax() );
           }
           // now try to load drawings from therion file
-          String filename = app.APP_TH2_PATH + mFullName + ".th2";
+          String filename = app.getTh2FileWithExt( mFullName );
           mDrawingSurface.loadTherion( filename );
         }
       } else { // ( mType == TopoDroidApp.PLOT_V_SECTION || mType == TopoDroidApp.PLOT_H_SECTION ) {
@@ -505,8 +510,39 @@ public class DrawingActivity extends Activity
       return previewPaint;
     }
 
+    public boolean onLongClick( View view )
+    {
+      if ( Math.abs( mSaveX - mStartX ) < 16 && Math.abs( mSaveY - mStartY ) < 16 ) {
+        float x_scene = mStartX/mZoom - mOffset.x;
+        float y_scene = mStartY/mZoom - mOffset.y;
+        // Toast.makeText( this, "LONG CLICK", Toast.LENGTH_SHORT ).show();
+        DrawingPointPath point = mDrawingSurface.getPointAt( x_scene, y_scene );
+        if ( point != null ) {
+          // StringWriter sw = new StringWriter();
+          // PrintWriter pw = new PrintWriter( sw );
+          // pw.format("Point %s at %.2f %.2f",
+          //   DrawingBrushPaths.pointThName[ point.mPointType ],
+          //   point.mXpos,
+          //   point.mYpos );
+          // Toast.makeText( this, sw.getBuffer().toString(), Toast.LENGTH_SHORT ).show();
+          (new DrawingPointDialog( this, point )).show();
+        } else {
+          DrawingLinePath line = mDrawingSurface.getLineAt( x_scene, y_scene );
+          if ( line != null ) {
+            (new DrawingLineDialog( this, line )).show();
+          }
+        }
+      }
+      return true;
+    }
 
-    public boolean onTouch(View view, MotionEvent motionEvent)
+    // void refreshSurface()
+    // {
+    //   // Log.v( TAG, "refresh surface");
+    //   mDrawingSurface.refresh();
+    // }
+
+    public boolean onTouch( View view, MotionEvent motionEvent )
     {
       float x_canvas = motionEvent.getX();
       float y_canvas = motionEvent.getY();
@@ -549,6 +585,9 @@ public class DrawingActivity extends Activity
           // MODE_MOVE
           mSaveX = x_canvas;
           mSaveY = y_canvas;
+          mStartX = x_canvas;
+          mStartY = y_canvas;
+          return false;
         }
       } else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
         float x_shift = x_canvas - mSaveX; // compute shift
@@ -582,12 +621,12 @@ public class DrawingActivity extends Activity
           }
         }
       } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+        float x_shift = x_canvas - mSaveX; // compute shift
+        float y_shift = y_canvas - mSaveY;
         if ( mMode == MODE_DRAW ) {
           if ( mSymbol == SYMBOL_LINE || mSymbol == SYMBOL_AREA ) {
             // Log.v( TAG, "onTouch ACTION_UP line style " + app.mLineStyle );
             // Log.v( TAG, "  path size " + ((mSymbol == SYMBOL_LINE )? mCurrentLinePath.size() : mCurrentAreaPath.size()) );
-            float x_shift = x_canvas - mSaveX; // compute shift
-            float y_shift = y_canvas - mSaveY;
             mCurrentBrush.mouseUp( mDrawingSurface.previewPath.path, x_canvas, y_canvas );
             mDrawingSurface.previewPath.path = new Path();
 
@@ -618,26 +657,26 @@ public class DrawingActivity extends Activity
                     if ( mSymbol == SYMBOL_LINE ) {
                       DrawingLinePath bezier_path = new DrawingLinePath( mCurrentLine );
                       bezier_path.addStartPoint( p0.mX, p0.mY );
-                      if ( mCurrentLine ==  DrawingBrushPaths.LINE_PIT 
-                        || mCurrentLine ==  DrawingBrushPaths.LINE_CHIMNEY
-                        || mCurrentLine ==  DrawingBrushPaths.LINE_SLOPE ) {
-                        BezierPoint p1 = c.getPoint(1);
-                        float dx = p1.mX - p0.mX;
-                        float dy = p1.mY - p0.mY;
-                        float d = dx*dx + dy*dy;
-                        if ( d > 0.0f ) {
-                          d = 5.0f / (float)Math.sqrt( d );
-                          dx *= d;
-                          dy *= d;
-                          if ( mCurrentLine ==  DrawingBrushPaths.LINE_PIT ) {
-                            bezier_path.addTick( p0.mX, p0.mY, dy, -dx );
-                          } else if ( mCurrentLine ==  DrawingBrushPaths.LINE_SLOPE ) {
-                            bezier_path.addTick( p0.mX, p0.mY, 3*dy, -3*dx );
-                          } else {
-                            bezier_path.addTick( p0.mX, p0.mY, -dy, dx );
-                          }
-                        }
-                      }
+                      // if ( mCurrentLine ==  DrawingBrushPaths.LINE_PIT 
+                      //   || mCurrentLine ==  DrawingBrushPaths.LINE_CHIMNEY
+                      //   || mCurrentLine ==  DrawingBrushPaths.LINE_SLOPE ) {
+                      //   BezierPoint p1 = c.getPoint(1);
+                      //   float dx = p1.mX - p0.mX;
+                      //   float dy = p1.mY - p0.mY;
+                      //   float d = dx*dx + dy*dy;
+                      //   if ( d > 0.0f ) {
+                      //     d = 5.0f / (float)Math.sqrt( d );
+                      //     dx *= d;
+                      //     dy *= d;
+                      //     if ( mCurrentLine ==  DrawingBrushPaths.LINE_PIT ) {
+                      //       bezier_path.addTick( p0.mX, p0.mY, dy, -dx );
+                      //     } else if ( mCurrentLine ==  DrawingBrushPaths.LINE_SLOPE ) {
+                      //       bezier_path.addTick( p0.mX, p0.mY, 3*dy, -3*dx );
+                      //     } else {
+                      //       bezier_path.addTick( p0.mX, p0.mY, -dy, dx );
+                      //     }
+                      //   }
+                      // }
                       for (int k=0; k<k0; ++k) {
                         c = curves.get(k);
                         BezierPoint p1 = c.getPoint(1);
@@ -674,7 +713,7 @@ public class DrawingActivity extends Activity
               canRedo = false;
             }
           } else { // SYMBOL_POINT
-            if ( Math.abs( x_canvas - mSaveX ) < 16 && Math.abs( y_canvas - mSaveY ) < 16 ) {
+            if ( Math.abs( x_shift ) < 16 && Math.abs( y_shift ) < 16 ) {
               if ( mCurrentPoint == DrawingBrushPaths.POINT_LABEL ) {
                 DrawingLabelDialog label = new DrawingLabelDialog( mDrawingSurface.getContext(), this, x_scene, y_scene );
                 label.show();
@@ -689,6 +728,9 @@ public class DrawingActivity extends Activity
             }
           }
         } else { // MODE_MOVE 
+          // if ( Math.abs( x_canvas - mStartX ) < 16 && Math.abs( y_canvas - mStartY ) < 16 ) {
+          //   return false; // long click
+          // }
           /* nothing */
         }
       }
@@ -771,11 +813,8 @@ public class DrawingActivity extends Activity
         protected Boolean doInBackground(Intent... arg0)
         {
           try {
-            File dir = new File( app.APP_MAPS_PATH );
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            final FileOutputStream out = new FileOutputStream(new File(app.APP_MAPS_PATH + mFullName + ".png" ));
+            String filename = app.getPngFileWithExt( mFullName );
+            final FileOutputStream out = new FileOutputStream( filename );
             mBitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
             out.flush();
             out.close();
@@ -813,16 +852,18 @@ public class DrawingActivity extends Activity
       mMIdelete  = mSMmore.add( R.string.menu_delete );
       mMIsavePNG = mSMmore.add( R.string.menu_save_png );
       mMIoptions = mSMmore.add( R.string.menu_options );
+      mMIhelp    = mSMmore.add( R.string.menu_help );
 
       mMIsaveTH2.setIcon( R.drawable.save );
       mMIredo.setIcon( R.drawable.redo );
       mMIdisplay.setIcon( R.drawable.display );
-      mMIstats.setIcon( R.drawable.help );
+      mMIstats.setIcon( R.drawable.info );
       mMInotes.setIcon( R.drawable.compose );
       mSMmore.setIcon( R.drawable.more );
       // mMIdelete.setIcon( R.drawable.delete );
       // mMIsavePNG.setIcon( R.drawable.gallery );
       // mMIoptions.setIcon( R.drawable.prefs );
+      // mMIhelp.setIcon( R.drawable.help );
 
       if ( mNum == null ) mMIstats.setEnabled( false );
       return true;
@@ -882,6 +923,8 @@ public class DrawingActivity extends Activity
       } else if ( item == mMIoptions ) { // OPTIONS DIALOG
         Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
         startActivity( optionsIntent );
+      } else if ( item == mMIhelp ) { // HELP
+        TopoDroidHelp.show( this, R.string.help_drawing );
       } else if (item == mMIsaveTH2 ) {
         if ( saveTh2() ) {
           Toast.makeText( this, getString(R.string.saved_file_) + mFullName + ".th2", Toast.LENGTH_LONG ).show();

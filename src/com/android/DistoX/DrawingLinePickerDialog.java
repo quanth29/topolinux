@@ -70,7 +70,7 @@ public class DrawingLinePickerDialog extends Dialog
             layout.addView( row );
           }
           ++ k0; 
-          mBtnLine[k].setText( DrawingBrushPaths.lineName[k] );
+          mBtnLine[k].setText( DrawingBrushPaths.lineLocalName[k] );
           mBtnLine[k].setOnClickListener( this );
           row.addView( mBtnLine[k] );
         }
@@ -80,7 +80,7 @@ public class DrawingLinePickerDialog extends Dialog
         mBtnOK.setOnClickListener( this );
         mBtnCancel.setOnClickListener( this );
 
-        setTitle("LINE " + DrawingBrushPaths.lineName[ mIndex ] );
+        setTitle("LINE " + DrawingBrushPaths.lineLocalName[ mIndex ] );
     }
 
     public void onClick(View view)
@@ -99,8 +99,8 @@ public class DrawingLinePickerDialog extends Dialog
           for (int k=0; k<DrawingBrushPaths.LINE_MAX; ++k ) {
             if ( btn == mBtnLine[k] ) {
               mIndex = k;
-              setTitle("LINE " + DrawingBrushPaths.lineName[ mIndex ] );
-              // mText.setText( DrawingBrushPaths.lineName[ mIndex ] );
+              setTitle("LINE " + DrawingBrushPaths.lineLocalName[ mIndex ] );
+              // mText.setText( DrawingBrushPaths.lineLocalName[ mIndex ] );
               break;
             }
           }

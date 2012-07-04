@@ -15,13 +15,13 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Matrix;
 
-import android.util.Log;
+// import android.util.Log;
 
 /**
  */
 public class DrawingPath implements DrawingICanvasCommand
 {
-  private static final String TAG = "DistoX";
+  // private static final String TAG = "DistoX";
 
   public static final int DRAWING_PATH_FIXED   = 0;
   public static final int DRAWING_PATH_SPLAY   = 1;

@@ -7,36 +7,50 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120530 loop closures
+ * 20120601 more loop closure
+ * 20120702 surface shots
  */
 package com.android.DistoX;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
+
+import java.io.StringWriter;
+import java.io.PrintWriter;
 
 // import android.util.Log;
 
 class DistoXNum
 {
-  // private static final String TAG = "DistoXNum";
+  // private static final String TAG = "DistoX Num";
   private static final float grad2rad = TopoDroidApp.GRAD2RAD_FACTOR;
 
+  /* bounding box */
   private float mSmin; // south
   private float mSmax;
   private float mEmin; // east
   private float mEmax;
-  private float mVmin; // vertical
+  private float mVmin; // vertical - including duplicate shots
   private float mVmax;
-  private float mHmin; // hirizontal
+  private float mHmin; // horizontal
   private float mHmax;
-  private float mZmin; // Z depth
-  private float mZmax;
-  private float mLength;
 
+  /* statistics - not includnf survey shts */
+  private float mZmin; // Z depth 
+  private float mZmax;
+  private float mLength; // survey length 
+
+  /** survey point
+   */
   public class SurveyPoint
   {
     public float s; // south Y downward
     public float e; // east X rightward
-    public float v; // Z 
+    public float v; // Z vertical
     public float h; // horizontal ???
 
     SurveyPoint()
@@ -48,21 +62,18 @@ class DistoXNum
     }
   }
 
+  /** survey station
+   */
   public class Station extends SurveyPoint
   {
-    public String name;
-    // public float s; // south Y downward
-    // public float e; // east X rightward
-    // public float v; // Z 
-    // public float h; // horizontal ???
+    String name;  // station name
+    float dist;   // loop closure distance (shortest-path algo)
+    // Station path; // previous station in the shortest path
 
     Station( String id )
     {
+      super();
       name = id;
-      // s = 0.0f;
-      // e = 0.0f;
-      // v = 0.0f;
-      // h = 0.0f;
     }
 
     Station( String id, Station from, float d, float b, float c, int extend )
@@ -94,12 +105,7 @@ class DistoXNum
   public class Splay extends SurveyPoint
   {
     public Station from;
-    // public float s; // south Y downward
-    // public float e; // east X rightward
-    // public float v; // Z 
-    // public float h; // horizontal ???
     public DistoXDBlock block;
-    
 
     Splay( Station f, float d, float b, float c, int extend, DistoXDBlock blk )
     {
@@ -122,26 +128,68 @@ class DistoXNum
     public float b;
     public float c;
     public int extend;
-    public boolean flag;
+    public boolean duplicate;
+    public boolean surface;
     public DistoXDBlock block;
 
     public TmpShot( DistoXDBlock blk )
     { 
       used = false;
-      flag = false;
+      duplicate = false;
+      surface = false;
       block = blk;
+    }
+  }
+
+  /** loop-closure error
+   */
+  public class Closure
+  {
+    public Station station; // loop-closure station 
+    public float ds;        // south DY downward
+    public float de;        // east DX rightward
+    public float dv;        // DZ vert. displacement error 
+    public float dh;        // horiz. displacement error
+    public float dl;        // total displacement error
+    public float error;     // loop percent error
+
+    // FIXME need the loop length to compute the percent error
+    Closure( Station at, Station from, float d, float b, float c, float len )
+    {
+      station = at;
+      dv = (float)Math.abs( from.v - d * (float)Math.sin(c * grad2rad) - at.v );
+      float h0 = d * (float)Math.abs( Math.cos(c * grad2rad) );
+      ds = (float)Math.abs( from.s - h0 * (float)Math.cos( b * grad2rad ) - at.s );
+      de = (float)Math.abs( from.e + h0 * (float)Math.sin( b * grad2rad ) - at.e );
+      dh = ds*ds + de*de;
+      dl = (float)Math.sqrt( dh + dv*dv );
+      dh = (float)Math.sqrt( dh );
+      error = (dl*100) / len;
+    }
+
+    public String toString()
+    {
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter( sw );
+      pw.format("%s %.2f [%.2f %.2f] %.2f%%", station.name, dl, dh, dv, error );
+      return sw.getBuffer().toString();
     }
   }
 
   private List<Station> mStations;
   private List<Shot>    mShots;
   private List<Splay>   mSplays;
-  private int mDupNr;
+  private List<Closure> mClosures;
+  private int mDupNr; // number of duplicate shots
+  private int mSurfNr; // number of surface shots
 
-  public int stationsNr() { return mStations.size(); }
-  public int shotsNr()    { return mShots.size(); }
+  public int stationsNr()  { return mStations.size(); }
+  public int shotsNr()     { return mShots.size(); }
   public int duplicateNr() { return mDupNr; }
+  public int surfaceNr()   { return mSurfNr; }
   public int splaysNr()    { return mSplays.size(); }
+  public int loopNr()      { return mClosures.size(); }
+
   public float surveyLength() { return mLength; }
   public float surveyTop()    { return -mZmin; } // top must be positive
   public float surveyBottom() { return -mZmax; } // bottom must be negative
@@ -155,6 +203,7 @@ class DistoXNum
   public List<Station> getStations() { return mStations; }
   public List<Shot> getShots() { return mShots; }
   public List<Splay> getSplays() { return mSplays; }
+  public List<Closure> getClosures() { return mClosures; }
 
   // public void dump()
   // {
@@ -167,6 +216,43 @@ class DistoXNum
   //     Log.v( TAG, "   From: " + sh.from.name + " To: " + sh.to.name );
   //   }
   // } 
+
+
+  /** shortest-path algo
+   * @param s1  first station
+   * @param s2  second station
+   */
+  private float shortestPath( Station s1, Station s2 )
+  {
+    Stack<Station> stack = new Stack<Station>();
+    for ( Station s : mStations ) {
+      s.dist = 100000.0f;
+      // s.path = null;
+    }
+    s1.dist = 0.0f;
+    stack.push( s1 );
+    while ( ! stack.empty() ) {
+      Station s = stack.pop();
+      for ( Shot e : mShots ) {
+        if ( e.from == s && e.to != null ) {
+          float d = s.dist + e.block.mLength;
+          if ( d < e.to.dist ) {
+            e.to.dist = d;
+            // e.to.path = from;
+            stack.push( e.to );
+          }
+        } else if ( e.to == s && e.from != null ) {
+          float d = s.dist + e.block.mLength;
+          if ( d < e.from.dist ) {
+            e.from.dist = d;
+            // e.from.path = from;
+            stack.push( e.from );
+          }
+        }
+      }
+    }
+    return s2.dist;
+  }
 
   private Station getStation( String id ) 
   {
@@ -215,6 +301,7 @@ class DistoXNum
     mStations = new ArrayList< Station >();
     mShots    = new ArrayList< Shot >();
     mSplays   = new ArrayList< Splay >();
+    mClosures = new ArrayList< Closure >();
     List<TmpShot> tmpshots  = new ArrayList< TmpShot >();
     List<TmpShot> tmpsplays = new ArrayList< TmpShot >();
     for ( DistoXDBlock block : data ) {
@@ -243,36 +330,11 @@ class DistoXNum
           ts.b = block.mBearing;
           ts.c = block.mClino;
           ts.extend = (int)(block.mExtend);
-          ts.flag   = ( block.mFlag == 1 );
+          ts.duplicate = ( block.mFlag == DistoXDBlock.BLOCK_DUPLICATE );
+          ts.surface   = ( block.mFlag == DistoXDBlock.BLOCK_SURFACE );
           tmpshots.add( ts );
           break;
       }
-      
-      // String name = block.Name();
-      // if ( name.length() == 0 || name.equals("-") ) continue; // skip empty names
-      // int idx = name.indexOf('-');
-      // int f = -1;
-      // int t = -1;
-      // if ( idx > 0 ) {
-      //   f = Integer.valueOf( name.substring(0,idx) ).intValue();
-      //   if ( idx < name.length() - 1 ) {
-      //     t = Integer.valueOf( name.substring(idx+1) ).intValue();
-      //   }
-      // } else if ( idx == 0 ) { 
-      //   t = Integer.valueOf( name.substring(idx+1) ).intValue();
-      // } else {
-      //   f = Integer.valueOf( name ).intValue();
-      // }
-      // if ( f >= 0 && t >= 0 ) {
-      //   TmpShot ts = new TmpShot();
-      //   ts.from = f;
-      //   ts.to = t;
-      //   ts.d = block.mLength;
-      //   ts.b = block.mBearing;
-      //   ts.c = block.mClino;
-      //   ts.extend = block.mExtend;
-      //   tmpshots.add( ts );
-      // }
     }
     // Log.v( TAG, " tmp-shots " + tmpshots.size() + " tmp-splays " + tmpsplays.size() );
 
@@ -288,43 +350,54 @@ class DistoXNum
           if ( st != null ) { // close loop
             Shot sh = new Shot( sf, st, ts.block );
             mShots.add( sh );
-            ts.used = true;
-            if ( ts.flag ) {
+            if ( ts.duplicate ) {
               ++mDupNr;
+            } else if ( ts.surface ) {
+              ++mSurfNr;
             } else {
               mLength += ts.d;
             }
+            // FIXME need the loop length to compute the fractional closure error
+            float length = shortestPath( sf, st) + ts.d;
+            Closure cl = new Closure( st, sf, ts.d, ts.b, ts.c, length );
+            mClosures.add( cl );
+            ts.used = true;
+            repeat = true;
           } else { // add from-->to
             st = new Station( ts.to, sf, ts.d, ts.b, ts.c, ts.extend );
             updateBBox( st );
-            if ( ts.flag ) {
+            if ( ts.duplicate ) {
               ++mDupNr;
+            } else if ( ts.surface ) {
+              ++mSurfNr;
             } else {
               mLength += ts.d;
               if ( st.v < mZmin ) { mZmin = st.v; }
               if ( st.v > mZmax ) { mZmax = st.v; }
             }
             mStations.add( st );
-            repeat = true;
             Shot sh = new Shot( sf, st, ts.block );
             mShots.add( sh );
             ts.used = true;
+            repeat = true;
           }
         } else if ( st != null ) {
           sf = new Station( ts.from, st, -ts.d, ts.b, ts.c, ts.extend );
           updateBBox( sf );
-          if ( ts.flag ) {
+          if ( ts.duplicate ) {
             ++mDupNr;
+          } else if ( ts.surface ) {
+            ++mSurfNr;
           } else {
             mLength += ts.d;
             if ( sf.v < mZmin ) { mZmin = sf.v; }
             if ( sf.v > mZmax ) { mZmax = sf.v; }
           }
           mStations.add( sf );
-          repeat = true;
           Shot sh = new Shot( st, sf, ts.block );
           mShots.add( sh );
           ts.used = true;
+          repeat = true;
         }
       }
     }

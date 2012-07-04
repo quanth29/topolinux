@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120517 point names in the point dialog
+ * 20120618 more room for the center
  */
 package com.android.DistoX;
 
@@ -29,15 +30,13 @@ public class DrawingPointPickerDialog extends Dialog
 {
     // private static final String TAG_CP = "DistoX DrawingPointPicker";
 
-    // private static final int RADIUS =  81;
     private static final int CENTER_RADIUS = 30;
     private static final int MIDDLE_RADIUS = 60;
-    // private static final int CENTER   = 120; // RADIUS * 1.5
-    // private static final int CENTER_X = 120; // RADIUS * 1.5
-    // private static final int CENTER_Y = 120; // RADIUS * 1.5
-    private static final int DIAM   = 240; // RADIUS * 3.0
+    private static final int DIAM = 260; 
+    private static final int DIAN = 320; 
     private static int mCenterX;
     private static int mCenterY;
+    private static final int EXTRA_Y = 40;
 
     public interface OnPointSelectedListener 
     {
@@ -82,8 +81,8 @@ public class DrawingPointPickerDialog extends Dialog
             mCenterPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             mCenterPaint.setColor( 0xffff0000 );
             mCenterPaint.setStyle(Paint.Style.STROKE);
-            mCenterPaint.setStrokeWidth(2);
-            mCenterPaint.setTextSize( 16.0f );
+            mCenterPaint.setStrokeWidth(1);
+            mCenterPaint.setTextSize( 14.0f );
         }
 
         private boolean mTrackingCenter;
@@ -95,8 +94,11 @@ public class DrawingPointPickerDialog extends Dialog
         private void setCenterPath( )
         {
           if ( mIndex >= 0 && mIndex < DrawingBrushPaths.POINT_MAX ) {
-            mCanvas.drawPath( mPoints[ mIndex ],  mCenterPaint);
-            mCanvas.drawText( DrawingBrushPaths.pointName[ mIndex ], 10, 20, mCenterPaint ); // FIXME point name pos.
+            Path path = new Path( mPoints[mIndex] );
+            path.offset( 0, EXTRA_Y );
+            mCanvas.drawPath( path, mCenterPaint);
+            // mCanvas.drawPath( mPoints[ mIndex ], mCenterPaint);
+            mCanvas.drawText( DrawingBrushPaths.pointLocalName[ mIndex ], 10, 20, mCenterPaint ); // FIXME point name pos.
           }
         }
 
@@ -104,17 +106,14 @@ public class DrawingPointPickerDialog extends Dialog
         protected void onDraw(Canvas canvas) 
         {
             mCanvas = canvas;
-            mSize = mCanvas.getWidth() / (mNN+1);
+            mSize = mCanvas.getWidth() / (mNN+1); // width / 7
             mCenterX = mCanvas.getWidth() / 2;
             mCenterY = mCanvas.getHeight() / 2;
             mXoffset = mCenterX - mSize / 2;
             mYoffset = mCenterY - mSize / 2;
             mCanvas.translate( mCanvas.getWidth()/2, mCanvas.getHeight()/2 );
-            // mCanvas.translate(CENTER_X, CENTER_Y);
             int k;
             for ( k=0; k<mPoints.length; ++k ) {
-              // float x = (float)( RADIUS * Math.cos( mAngle * (k+1) ) );
-              // float y = (float)( RADIUS * Math.sin( mAngle * (k+1) ) );
               float x = (float)( mSize * ( k % mNN )) - mXoffset;
               float y = (float)( mSize * ( k / mNN )) - mYoffset;
               Path path = new Path( mPoints[k] );
@@ -140,7 +139,7 @@ public class DrawingPointPickerDialog extends Dialog
 
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            setMeasuredDimension(DIAM, DIAM);
+            setMeasuredDimension(DIAM, DIAN);
         }
 
 
@@ -153,7 +152,7 @@ public class DrawingPointPickerDialog extends Dialog
             // Log.v( TAG_CP, "Event X " + x0 + " Y " + y0 + " index " + idx );
         
             float x = event.getX() - mCenterX; // mCanvas.getWidth();
-            float y = event.getY() - mCenterY; // mCanvas.getHeight();
+            float y = event.getY() - mCenterY - EXTRA_Y; // mCanvas.getHeight();
             float d = (float)( Math.sqrt(x*x + y*y) );
             boolean inCenter = d <= CENTER_RADIUS;
             boolean inMiddle = ( d > CENTER_RADIUS && d <= MIDDLE_RADIUS );
