@@ -3,6 +3,20 @@
 == TopoDroid troubleshooting ==
 
 
+=== TopoDroid crashes ===
+
+It can happen !!!
+
+TopoDroid is developed using English locale and
+names without spaces. It is possible that another locale, or names
+containing spaces break the application. If this is the case, please
+send me a detailed description of what you did and what happened, and
+i will try to fix the problem. Attach any file that might be useful.
+
+You may also try to reproduce the crash working with English locale
+and name composed of only the caharcters of the English alphabeth [a-z and
+A-Z] and digits [0-9].
+
 
 === TopoDroid does not detect DistoX ===
 
