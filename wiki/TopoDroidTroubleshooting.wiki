@@ -14,7 +14,7 @@ send me a detailed description of what you did and what happened, and
 i will try to fix the problem. Attach any file that might be useful.
 
 You may also try to reproduce the crash working with English locale
-and name composed of only the caharcters of the English alphabeth [a-z and
+and name composed of only the characters of the English alphabeth [a-z and
 A-Z] and digits [0-9].
 
 
