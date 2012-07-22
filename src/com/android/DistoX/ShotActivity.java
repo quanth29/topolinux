@@ -13,6 +13,7 @@
  * 20120531 implemented photo and 3D
  * 20120531 shot-numbering bugfix
  * 20120606 3D: implied therion export before 3D
+ * 20120715 per-category preferences
  */
 package com.android.DistoX;
 
@@ -42,7 +43,7 @@ import android.view.SubMenu;
 // import android.view.MenuInflater;
 // import android.content.res.ColorStateList;
 
-// import android.util.Log;
+import android.util.Log;
 
 // import android.location.LocationManager;
 
@@ -57,6 +58,7 @@ import android.app.Dialog;
 import android.widget.Button;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.preference.PreferenceManager;
@@ -67,9 +69,12 @@ import android.graphics.Bitmap.CompressFormat;
 import android.net.Uri;
 
 public class ShotActivity extends Activity
-                          implements OnItemClickListener, ILister, INewPlot
+                          implements OnItemClickListener
+                        , OnItemLongClickListener
+                        , ILister
+                        , INewPlot
 {
-  // private static final String TAG = "DistoX";
+  private static final String TAG = "DistoX";
   private TopoDroidApp app;
   private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 
@@ -85,16 +90,16 @@ public class ShotActivity extends Activity
   // private int mListPos = -1;
   // private int mListTop = 0;
   private DistoXDBlockAdapter   mDataAdapter;
-  private long mSIDid = -1;    // id of the shot
 
-  private String mSaveData = "";
-  private TextView mSaveTextView = null;
-  // private int      mSaveTextPos  = 0;
-  private DistoXDBlock mSaveBlock = null;
+  private long mSIDid = -1;    // id of the "current" shot (for the photo)
+  // private String mSaveData = "";
+  // private TextView mSaveTextView = null;
+  private int      mShotPos  = 0;   // shot entry position
+  // private DistoXDBlock mSaveBlock = null;
 
-  String mPhotoStation;
+  String mPhotoTitle;
   String mPhotoComment;
-  String mPhotoName;     // name of the photo file (without extension ".jpg")
+  long   mPhotoId;
 
   private MenuItem mMIdevice = null;
   private SubMenu  mSMsurvey;
@@ -244,35 +249,34 @@ public class ShotActivity extends Activity
   // list items click
 
   @Override 
-  public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+  public boolean onItemLongClick(AdapterView<?> parent, View view, int pos, long id)
   {
-    // CharSequence item = ((TextView) view).getText();
-    // String value = item.toString();
-    // if ( value.equals( getResources().getString( R.string.back_to_survey ) ) ) {
-    //   updateDisplay( );
-    //   return;
-    // }
-    // // setListPos( position  );
-    startShotDialog( (TextView)view, position );
+    DistoXDBlock blk = mDataAdapter.get(pos);
+    mSIDid = blk.mId;
+    (new PhotoDialog(this, this) ).show();
+    return true;
   }
 
-  public void startShotDialog( TextView tv, int pos )
+  @Override 
+  public void onItemClick(AdapterView<?> parent, View view, int pos, long id)
   {
-     mSaveBlock = mDataAdapter.get(pos);
-     mSIDid = mSaveBlock.mId;
 
-     String msg = tv.getText().toString();
-     String[] st = msg.split( " ", 6 );
-     mSaveTextView = tv;
-     mSaveData = st[2] + " " + st[3] + " " + st[4];
-     
+     DistoXDBlock blk = mDataAdapter.get(pos);
+
+     mShotPos = pos;
+     // TextView tv = (TextView)view;
+     // mSaveTextView = tv;
+     // String msg = tv.getText().toString();
+     // String[] st = msg.split( " ", 6 );
+     // String data = st[2] + " " + st[3] + " " + st[4];
+      
      DistoXDBlock prevBlock = null;
-     if ( mSaveBlock.type() == DistoXDBlock.BLOCK_BLANK ) {
-       prevBlock = app.mData.selectPreviousLegShot( mSIDid, app.mSID );
+     // if ( blk.type() == DistoXDBlock.BLOCK_BLANK ) {
+       // prevBlock = app.mData.selectPreviousLegShot( blk.mId, app.mSID );
+       prevBlock = getPreviousLegShot( blk );
        // Log.v(TAG, "prev leg " + prevBlock.mFrom + " " + prevBlock.mTo );
-     }
-
-     (new ShotDialog( this, this, mSaveBlock, mSaveData, prevBlock )).show();
+     // }
+     (new ShotDialog( this, this, blk, prevBlock )).show();
   }
 
 
@@ -355,6 +359,7 @@ public class ShotActivity extends Activity
       }
     } else if ( item == mMIoptions ) { // OPTIONS DIALOG
       Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
+      optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_SURVEY );
       startActivity( optionsIntent );
     } else if ( item == mMIhelp ) { // HELP DIALOG
       TopoDroidHelp.show( this, R.string.help_shot );
@@ -365,8 +370,10 @@ public class ShotActivity extends Activity
       } else {
         Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
       }
-    } else if ( item == mMIphoto ) { // PHOTO: start dialog to ask the station name
-      (new PhotoDialog(this, this) ).show();
+    } else if ( item == mMIphoto ) { // PHOTO: start dialog to ask the PhotoTitle
+      //   (new PhotoDialog(this, this) ).show();
+      Intent photoIntent = new Intent( this, PhotoActivity.class );
+      startActivity( photoIntent );
     } else if ( item == mMI3d ) { // 3D
       app.exportSurveyAsTh(); // make sure to have survey exported as therion
       Intent intent = new Intent( "Cave3D.intent.action.Launch" );
@@ -432,14 +439,14 @@ public class ShotActivity extends Activity
     return true;
   }
 
-
   void takePhoto( String name, String comment )
   {
     if ( name != null && name.length() > 0 ) {
-      mPhotoName    = name.replaceAll( " ", "_" );
-      mPhotoStation = name;
+      // using mSIDid as shotid
+      mPhotoTitle   = name;
       mPhotoComment = comment;
-      File imagefile = new File( app.getSurveyJpgFile( mPhotoName ) );
+      mPhotoId      = app.mData.nextPhotoId( app.mSID );
+      File imagefile = new File( app.getSurveyJpgFile( mPhotoId ) );
       // Log.v("DistoX", "photo " + imagefile.toString() );
 
       Uri outfileuri = Uri.fromFile( imagefile );
@@ -458,8 +465,8 @@ public class ShotActivity extends Activity
     switch ( reqCode ) {
       case CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE:
         if ( resCode == Activity.RESULT_OK ) {
-          // Log.v("DistoX", "insert photo in db " + mPhotoName );
-          app.mData.insertPhoto( app.mSID, -1L, mPhotoStation, mPhotoName, mPhotoComment );
+          long shotid = 0;
+          app.mData.insertPhoto( app.mSID, mPhotoId, mSIDid, mPhotoTitle, mPhotoComment );
         }
     }
   }
@@ -478,6 +485,8 @@ public class ShotActivity extends Activity
     mList = (ListView) findViewById(R.id.list);
     mList.setAdapter( mDataAdapter );
     mList.setOnItemClickListener( this );
+    mList.setLongClickable( true );
+    mList.setOnItemLongClickListener( this );
     mList.setDividerHeight( 2 );
 
     restoreInstanceFromData();
@@ -656,16 +665,65 @@ public class ShotActivity extends Activity
     }
   }
 
-  public void dropShot()
+  public void dropShot( DistoXDBlock blk )
   {
-    app.mData.deleteShot( mSIDid, app.mSID );
+    app.mData.deleteShot( blk.mId, app.mSID );
     updateDisplay( ); // FIXME
   }
 
-  public void updateShot( String from, String to, long extend, long flag, String comment )
+  // get the next centerline shot
+  public DistoXDBlock getNextLegShot( DistoXDBlock blk ) 
+  {
+    // Log.v(TAG, "Next Leg: pos " + mShotPos );
+    if ( blk == null ) return null;
+    int pos = mShotPos;
+    while ( pos < mDataAdapter.size() && blk != mDataAdapter.get(pos) ) ++ pos;
+    ++ pos; // one position after blk
+    while ( pos < mDataAdapter.size() ) {
+      DistoXDBlock b = mDataAdapter.get(pos);
+      int t = b.type();
+      if ( t == DistoXDBlock.BLOCK_CENTERLINE ) {
+        mShotPos = pos;
+        return b;
+      } else if (    t == DistoXDBlock.BLOCK_BLANK 
+                  && pos+1 < mDataAdapter.size()
+                  && b.relativeDistance( mDataAdapter.get(pos+1) ) < app.mCloseDistance ) {
+        mShotPos = pos;
+        return b;
+      }
+      ++ pos;
+    }
+    return null;
+    // DistoXDBlock nextBlock = app.mData.selectNextLegShot( blk.mId, app.mSID );
+    // return nextBlock;
+  }
+
+  // get the previous centerline shot
+  public DistoXDBlock getPreviousLegShot( DistoXDBlock blk ) 
+  {
+    // Log.v(TAG, "Prev Leg: pos " + mShotPos );
+    if ( blk == null ) return null;
+    int pos = mShotPos;
+    while ( pos >= 0 && blk != mDataAdapter.get(pos) ) -- pos;
+    while ( pos > 0 ) {
+      -- pos;
+      DistoXDBlock b = mDataAdapter.get(pos);
+      if ( b.type() == DistoXDBlock.BLOCK_CENTERLINE ) {
+        mShotPos = pos;
+        return b;
+      }
+    }
+    return null;
+    // DistoXDBlock prevBlock = app.mData.selectNextLegShot( blk.mId, app.mSID );
+    // return prevBlock;
+  }
+
+  // public void setShotPos( int pos ) { mShotPos = pos; }
+
+  public void updateShot( String from, String to, long extend, long flag, String comment, DistoXDBlock blk )
   {
     // Log.v( TAG, "updateShot From >" + from + "< To >" + to + "< comment " + comment );
-    int ret = app.mData.updateShot( mSIDid, app.mSID, from, to, extend, flag, comment );
+    int ret = app.mData.updateShot( blk.mId, app.mSID, from, to, extend, flag, comment );
     if ( ret == -1 ) {
       Toast.makeText( this, R.string.no_db, Toast.LENGTH_LONG ).show();
     // } else if ( ret == -2 ) {
@@ -678,8 +736,9 @@ public class ShotActivity extends Activity
         // mSaveTextView.requestLayout();
         // mSaveTextView.requestFocus();
       } else {
-        mSaveTextView.setText( mSaveBlock.toString() );
-        mSaveTextView.setTextColor( mSaveBlock.color() );
+        // mSaveTextView.setText( blk.toString() );
+        // mSaveTextView.setTextColor( blk.color() );
+        mDataAdapter.notifyDataSetChanged(); // FIXME
       }
     }
   }

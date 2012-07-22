@@ -29,9 +29,9 @@ public class DrawingLabelPath extends DrawingPointPath
   public String mText;
   // private Paint paint;
 
-  public DrawingLabelPath( String text, float x, float y )
+  public DrawingLabelPath( String text, float x, float y, int scale, String options )
   {
-    super( DrawingBrushPaths.POINT_LABEL, x, y );
+    super( DrawingBrushPaths.POINT_LABEL, x, y, scale, options );
     mText = text;
     // setPaint( DrawingBrushPaths.pointPaint[ DrawingBrushPaths.POINT_LABEL ] );
     // mPaint = DrawingBrushPaths.pointPaint[ DrawingBrushPaths.POINT_LABEL ];
@@ -71,6 +71,8 @@ public class DrawingLabelPath extends DrawingPointPath
     StringWriter sw = new StringWriter();
     PrintWriter pw  = new PrintWriter(sw);
     pw.format(Locale.ENGLISH, "point %.2f %.2f label -text \"%s\"", xpos()*toTherion, -ypos()*toTherion, mText );
+    toTherionOptions( pw );
+    pw.format("\n");
     return sw.getBuffer().toString();
   }
 

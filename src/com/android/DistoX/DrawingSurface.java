@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120623 handle line attributes in loadTherion
+ * 20120705 hadle point attributes in loadTherion
  */
 package com.android.DistoX;
 
@@ -315,24 +316,50 @@ public class DrawingSurface extends SurfaceView
 
         // Log.v( TAG, "  line: >>" + line + "<<");
         String[] vals = line.split( " " );
-        if ( vals[0].equals( "point" ) ) {            // ****** THERION POINT
+        if ( vals[0].equals( "point" ) ) {
+          // ****** THERION POINT **********************************
           int ptType = DrawingBrushPaths.POINT_MAX;
           boolean has_orientation = false;
           float orientation = 0.0f;
+          int scale = DrawingPointPath.SCALE_M;
+          String options = null;
+
           x =   Float.parseFloat( vals[1] ) / TopoDroidApp.TO_THERION;
           y = - Float.parseFloat( vals[2] ) / TopoDroidApp.TO_THERION;
           String type = vals[3];
           String label_text = null;
           if ( type.equals( "station" ) ) continue;
-          if ( vals.length > 4 ) {
-            if ( vals[4].equals( "-orientation" ) ) {
+          int k = 4;
+          while ( vals.length > k ) { 
+            if ( vals[k].equals( "-orientation" ) ) {
               has_orientation = true;
-              orientation = Float.parseFloat( vals[5] );
+              orientation = Float.parseFloat( vals[k+1] );
               // Log.v(TAG, "point orientation " + orientation );
-            } else if ( vals[4].equals( "-text" ) ) {
-              label_text = vals[5].replace( "\"", "" );
+              k += 2;
+            } else if ( vals[k].equals( "-scale" ) ) {
+              if ( vals[k+1].equals("xs") ) {
+                scale = DrawingPointPath.SCALE_XS;
+              } else if ( vals[k+1].equals("s") ) {
+                scale = DrawingPointPath.SCALE_S;
+              } else if ( vals[k+1].equals("l") ) {
+                scale = DrawingPointPath.SCALE_L;
+              } else if ( vals[k+1].equals("xl") ) {
+                scale = DrawingPointPath.SCALE_XL;
+              } 
+              k += 2;
+            } else if ( vals[k].equals( "-text" ) ) {
+              label_text = vals[k+1].replace( "\"", "" );
+              k += 2;
+            } else {
+              options = vals[k];
+              ++ k;
+              while ( vals.length > k ) {
+                options += " " + vals[k];
+                ++ k;
+              }
             }
           }
+
           if ( type.equals( "stalagmite" ) ) {
             ptType = DrawingBrushPaths.POINT_STAL;
             orientation = 180.0f;
@@ -353,27 +380,30 @@ public class DrawingSurface extends SurfaceView
             }
           }
           if ( ptType == DrawingBrushPaths.POINT_MAX ) continue;
+
           if ( has_orientation ) {
             // Log.v( TAG, "[2] point " + ptType + " has orientation " + orientation );
             DrawingBrushPaths.rotateGrad( ptType, orientation );
-            DrawingPointPath path = new DrawingPointPath( ptType, x, y );
+            DrawingPointPath path = new DrawingPointPath( ptType, x, y, scale, options );
             addDrawingPath( path );
             DrawingBrushPaths.rotateGrad( ptType, -orientation );
           } else {
             if ( ptType != DrawingBrushPaths.POINT_LABEL ) {
-              DrawingPointPath path = new DrawingPointPath( ptType, x, y );
+              DrawingPointPath path = new DrawingPointPath( ptType, x, y, scale, options );
               addDrawingPath( path );
             } else {
               if ( label_text.equals( "!" ) ) {    // "danger" point
-                DrawingPointPath path = new DrawingPointPath( DrawingBrushPaths.POINT_DANGER, x, y );
+                DrawingPointPath path = new DrawingPointPath( DrawingBrushPaths.POINT_DANGER, x, y, scale, options );
                 addDrawingPath( path );
               } else {                             // regular label
-                DrawingLabelPath path = new DrawingLabelPath( label_text, x, y );
+                DrawingLabelPath path = new DrawingLabelPath( label_text, x, y, scale, options );
                 addDrawingPath( path );
               }
             }
           }
-        } else if ( vals[0].equals( "line" ) ) {   // ********* THERION LINES
+
+        } else if ( vals[0].equals( "line" ) ) {
+          // ********* THERION LINES ************************************************************
           if ( vals.length == 6 && vals[1].equals( "border" ) && vals[2].equals( "-id" ) ) { // THERION AREAS
             // Log.v( TAG, "area id " + vals[3] );
             int arType = DrawingBrushPaths.AREA_MAX;

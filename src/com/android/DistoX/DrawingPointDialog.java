@@ -36,6 +36,11 @@ public class DrawingPointDialog extends Dialog
 
   private TextView mTVtype;
   private EditText mEToptions;
+  private RadioButton mBtnScaleXS;
+  private RadioButton mBtnScaleS;
+  private RadioButton mBtnScaleM;
+  private RadioButton mBtnScaleL;
+  private RadioButton mBtnScaleXL;
  
   private Button   mButtonOk;
   private Button   mButtonCancel;
@@ -62,6 +67,19 @@ public class DrawingPointDialog extends Dialog
       mEToptions.setText( mPoint.mOptions );
     }
 
+    mBtnScaleXS = (RadioButton) findViewById( R.id.point_scale_xs );
+    mBtnScaleS  = (RadioButton) findViewById( R.id.point_scale_s  );
+    mBtnScaleM  = (RadioButton) findViewById( R.id.point_scale_m  );
+    mBtnScaleL  = (RadioButton) findViewById( R.id.point_scale_l  );
+    mBtnScaleXL = (RadioButton) findViewById( R.id.point_scale_xl );
+    switch ( mPoint.getScale() ) {
+      case DrawingPointPath.SCALE_XS: mBtnScaleXS.setChecked( true ); break;
+      case DrawingPointPath.SCALE_S:  mBtnScaleS.setChecked( true ); break;
+      case DrawingPointPath.SCALE_M:  mBtnScaleM.setChecked( true ); break;
+      case DrawingPointPath.SCALE_L:  mBtnScaleL.setChecked( true ); break;
+      case DrawingPointPath.SCALE_XL: mBtnScaleXL.setChecked( true ); break;
+    }
+
     mButtonOk = (Button) findViewById( R.id.button_ok );
     mButtonOk.setOnClickListener( this );
 
@@ -80,6 +98,12 @@ public class DrawingPointDialog extends Dialog
         String options = mEToptions.getText().toString().trim();
         if ( options.length() > 0 ) mPoint.mOptions = options;
       }
+      if ( mBtnScaleXS.isChecked() )      mPoint.setScale( DrawingPointPath.SCALE_XS );
+      else if ( mBtnScaleS.isChecked() )  mPoint.setScale( DrawingPointPath.SCALE_S  );
+      else if ( mBtnScaleM.isChecked() )  mPoint.setScale( DrawingPointPath.SCALE_M  );
+      else if ( mBtnScaleL.isChecked() )  mPoint.setScale( DrawingPointPath.SCALE_L  );
+      else if ( mBtnScaleXL.isChecked() ) mPoint.setScale( DrawingPointPath.SCALE_XL );
+
     } else if ( b == mButtonDelete ) {
       // TODO
     }

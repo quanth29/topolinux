@@ -11,6 +11,7 @@
  * CHANGES
  * 20120611 created
  * 20120619 added therion export to the zip
+ * 20120720 added manifest
  */
 package com.android.DistoX;
 
@@ -18,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
+import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
@@ -25,7 +27,7 @@ import java.io.BufferedOutputStream;
 import java.util.zip.ZipOutputStream;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipEntry;
-// import java.util.zip.ZipFile;
+import java.util.zip.ZipFile;
 
 import java.util.List;
 // import java.util.Locale;
@@ -98,11 +100,18 @@ public class Archiver
         addEntry( zos, new File(pathname) );
       }
 
-      List< PhotoInfo > photos = app.mData.selectAllPhoto( app.mSID );
+      List< PhotoInfo > photos = app.mData.selectAllPhotos( app.mSID, TopoDroidApp.STATUS_NORMAL );
       for ( PhotoInfo pht : photos ) {
-        pathname = app.getSurveyJpgFile( pht.name );
+        pathname = app.getSurveyJpgFile( pht.id );
         addEntry( zos, new File(pathname) );
       }
+
+      photos = app.mData.selectAllPhotos( app.mSID, TopoDroidApp.STATUS_DELETED );
+      for ( PhotoInfo pht : photos ) {
+        pathname = app.getSurveyJpgFile( pht.id );
+        addEntry( zos, new File(pathname) );
+      }
+
 
       File therion = new File( app.getSurveyThFile( ) );
       if ( therion != null && therion.exists() ) {
@@ -116,6 +125,10 @@ public class Archiver
  
       pathname = TopoDroidApp.getSqlFile();
       app.mData.dumpToFile( pathname, app.mSID );
+      addEntry( zos, new File(pathname) );
+
+      pathname = TopoDroidApp.getManifestFile();
+      app.writeManifestFile();
       addEntry( zos, new File(pathname) );
 
       zos.close();
@@ -134,60 +147,83 @@ public class Archiver
     return true;
   }
 
-  public void unArchive( String filename, String surveyname )
+  public int unArchive( String filename, String surveyname )
   {
+    int ok_manifest = -2;
+    String pathname;
     try {
       // byte buffer[] = new byte[36768];
       byte buffer[] = new byte[4096];
 
-      FileInputStream fis = new FileInputStream( filename );
-      ZipInputStream zin = new ZipInputStream( fis );
-      ZipEntry ze = null;
-      while ( ( ze = zin.getNextEntry() ) != null ) {
-        if ( ze.isDirectory() ) {
-          File dir = new File( TopoDroidApp.getDirFile( ze.getName() ) );
-          if ( ! dir.isDirectory() ) {
-            dir.mkdirs();
-          }
-        } else {
-          Log.v(TAG, "Zip entry \"" + ze.getName() + "\"" );
-          String pathname;
-          boolean sql = false;
-          if ( ze.getName().equals( "survey.sql" ) ) {
-            pathname = TopoDroidApp.getSqlFile();
-            sql = true;
-          } else if ( ze.getName().endsWith( ".th2" ) ) {
-            pathname = TopoDroidApp.getTh2File( ze.getName() );
-          } else if ( ze.getName().endsWith( ".jpg" ) ) {
-            // FIXME need survey dir
-            pathname = TopoDroidApp.getJpgDir( surveyname );
-            File file = new File( pathname );
-            file.mkdirs();
-            pathname = TopoDroidApp.getJpgFile( surveyname, ze.getName() );
+      ZipFile zip = new ZipFile( filename );
+      ZipEntry ze = zip.getEntry( "manifest" );
+      if ( ze != null ) {
+        pathname = TopoDroidApp.getManifestFile();
+        FileOutputStream fout = new FileOutputStream( pathname );
+        InputStream is =  zip.getInputStream( ze );
+        int c;
+        while ( ( c = is.read( buffer ) ) != -1 ) {
+          fout.write(buffer, 0, c);
+        }
+        fout.close();
+        ok_manifest = app.checkManifestFile( pathname, surveyname  );
+        File f = new File( pathname );
+        f.delete();
+      }
+      zip.close();
+      if ( ok_manifest == 0 ) {
+        FileInputStream fis = new FileInputStream( filename );
+        ZipInputStream zin = new ZipInputStream( fis );
+        while ( ( ze = zin.getNextEntry() ) != null ) {
+          if ( ze.isDirectory() ) {
+            File dir = new File( TopoDroidApp.getDirFile( ze.getName() ) );
+            if ( ! dir.isDirectory() ) {
+              dir.mkdirs();
+            }
           } else {
-            pathname = TopoDroidApp.getNoteFile( ze.getName() );
-          }
-          Log.v(TAG, "filename \"" + pathname + "\"");
-
-          FileOutputStream fout = new FileOutputStream( pathname );
-          int c;
-          while ( ( c = zin.read( buffer ) ) != -1 ) {
-            fout.write(buffer, 0, c);
-          }
-          zin.closeEntry();
-          fout.close();
-          if ( sql ) {
-            Log.v(TAG, "loadFromFile \"" + pathname + "\"");
-            app.mData.loadFromFile( pathname );
-            File f = new File( pathname );
-            f.delete();
+            // Log.v(TAG, "Zip entry \"" + ze.getName() + "\"" );
+            boolean sql = false;
+            pathname = null;
+            if ( ze.getName().equals( "manifest" ) ) {
+              // skip
+            } else if ( ze.getName().equals( "survey.sql" ) ) {
+              pathname = TopoDroidApp.getSqlFile();
+              sql = true;
+            } else if ( ze.getName().endsWith( ".th2" ) ) {
+              pathname = TopoDroidApp.getTh2File( ze.getName() );
+            } else if ( ze.getName().endsWith( ".jpg" ) ) {
+              // FIXME need survey dir
+              pathname = TopoDroidApp.getJpgDir( surveyname );
+              File file = new File( pathname );
+              file.mkdirs();
+              pathname = TopoDroidApp.getJpgFile( surveyname, ze.getName() );
+            } else {
+              pathname = TopoDroidApp.getNoteFile( ze.getName() );
+            }
+            // Log.v(TAG, "filename \"" + pathname + "\"");
+            if ( pathname != null ) {
+              FileOutputStream fout = new FileOutputStream( pathname );
+              int c;
+              while ( ( c = zin.read( buffer ) ) != -1 ) {
+                fout.write(buffer, 0, c);
+              }
+              fout.close();
+              if ( sql ) {
+                // Log.v(TAG, "loadFromFile \"" + pathname + "\"");
+                app.mData.loadFromFile( pathname );
+                File f = new File( pathname );
+                f.delete();
+              }
+            }
+            zin.closeEntry();
           }
         }
+        zin.close();
       }
-      zin.close();
     } catch ( FileNotFoundException e ) {
     } catch ( IOException e ) {
     }
+    return ok_manifest;
   }
 }
 

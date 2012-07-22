@@ -11,6 +11,7 @@
  * CHANGES
  * 20120523 radio buttons: batch - continuous
  * 20120525 using app.mConnectionMode
+ * 20120715 per-category preferences
  */
 package com.android.DistoX;
 
@@ -323,6 +324,7 @@ public class DeviceActivity extends Activity
       setState();
     } else if ( item == mMIoption ) {
       Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
+      optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_DEVICE );
       startActivity( optionsIntent );
     } else if ( item == mMIhelp ) { // HELP
       TopoDroidHelp.show( this, R.string.help_device );

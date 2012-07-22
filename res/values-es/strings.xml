@@ -7,42 +7,48 @@
     <string name="app_name_notes">TopoDroid - Anotaci\u00f3n</string>
     <string name="app_name_options">TopoDroid - Opciones</string>
 
-    <string name="thp_air_draught">Corriente de aire</string>
-    <string name="thp_anchor">Columna</string>
+    <string name="thp_air_draught">Corriente aire</string>
+    <string name="thp_anchor">Anclaje</string>
     <string name="thp_blocks">Bloques</string>
     <string name="thp_clay">Arcilla</string>
     <string name="thp_continuation">Continuaci\u00f3n</string>
     <string name="thp_danger">Peligro</string>
-    <string name="thp_debris">Escombros</string>
-    <string name="thp_entrance">entrada</string>
-    <string name="thp_flowstone">flujo</string>
+    <string name="thp_debris">Derrubios</string>
+    <string name="thp_end">Final</string>
+    <string name="thp_entrance">Boca</string>
+    <string name="thp_flowstone">Flujo</string>
     <string name="thp_gradient">Inclinaci\u00f3n</string>
-    <string name="thp_helictite">helict\u00edtas</string>
+    <string name="thp_helictite">Exc\u00e9ntrica</string>
     <string name="thp_ice">Hielo</string>
-    <string name="thp_label">Texto</string>
+    <string name="thp_label">Etiqueta</string>
+    <string name="thp_pebbles">Cantos rodados</string>
     <string name="thp_pillar">Pilar</string>
-    <string name="thp_popcorn">Palomitas ma\u00edz</string>
-    <string name="thp_sand">arena</string>
-    <string name="thp_stal">stalac.</string>
-    <string name="thp_water">agua</string>
-    <string name="thp_water_flow">Curso Activo</string>
+    <string name="thp_popcorn">Coliflor</string>
+    <string name="thp_sand">Arena</string>
+    <string name="thp_snow">Nieve</string>
+    <string name="thp_stal">Estalac.</string>
+    <string name="thp_water">Agua</string>
+    <string name="thp_water_flow">Curso agua</string>
 
     <string name="thl_arrow">Flecha</string>
-    <string name="thl_border">Borde</string>
+    <string name="thl_border">L\u00edmite</string>
     <string name="thl_chimney">Chimenea</string>
-    <string name="thl_contour">Contono</string>
+    <string name="thl_contour">Contorno</string>
+    <string name="thl_overhang">Extraplomo</string>
     <string name="thl_pit">Pozo</string>
-    <string name="thl_rock_border">Borde roca</string>
-    <string name="thl_slope">Desnivel</string>
+    <string name="thl_rock_border">Contorno bloque</string>
+    <string name="thl_slope">Pendiente</string>
     <string name="thl_wall">Pared</string>
 
-    <string name="tha_blocks">bloques</string>
+    <string name="tha_blocks">Bloques</string>
     <string name="tha_clay">Arcilla</string>
-    <string name="tha_debris">Escombros</string>
+    <string name="tha_debris">Derrubios</string>
     <string name="tha_ice">Hielo</string>
-    <string name="tha_pebbles">Canto rodado</string>
-    <string name="tha_sand">arena</string>
+    <string name="tha_pebbles">Cantos rodados</string>
+    <string name="tha_sand">Arena</string>
+    <string name="tha_snow">Nieve</string>
     <string name="tha_water">Agua</string>
+
     <string name="back_to_survey">Volver a la topograf\u00eda</string>
     <string name="calib_exists">Calibraci\u00f3n existente</string>
     <string name="calib_delete">Borrar calibraci\u00f3n</string>
@@ -66,6 +72,8 @@
     <string name="connection">Conexi\u00f3n</string>
     <string name="download_batch">Grupo</string>
     <string name="download_continuous">Continuo</string>
+    <string name="duplicate">duplicate</string>
+    <string name="surface">surface</string>
     <string name="extend_left">Izq.</string>
     <string name="extend_right">Der.</string>
     <string name="extend_vert">Vert.</string>
@@ -84,6 +92,13 @@
     <string name="loop_closure_errors">Error cierre de bucles</string>
     <string name="loop_none">Nig\u00fan Bucle</string>
 
+    <string name="scale">scale</string>
+    <string name="reversed">reversed</string>
+    <string name="outline">outline</string>
+    <string name="out">out</string>
+    <string name="in">in</string>
+    <string name="none">none</string>
+
     <!-- string name="makes_cycle">Bucle de disparos</string -->
     <string name="missing_station">Falta la estaci\u00f3n</string>
     <string name="no_calib">No hay calibraci\u00f3n</string>
@@ -95,14 +110,17 @@
     <string name="no_gms">No hay datos Calibraci\u00f3n.\Dirijase al menu de descarga para obtener datos</string>
     <!-- string name="no_list_item">No existen datos en la lista.\nUse menu para crearlos</string -->
     <string name="no_paired_device">Dispositivo no emparejado.\nEscanee un dispositivo para emparejar</string>
+    <string name="no_photos">Survey has no photo</string>
     <string name="no_plots">No hay dibujo.\nUse menu para crearlos</string>
     <!-- string name="no_service">No hay servicio BT</string -->
     <string name="no_shots">La topograf\u00eda no tiene visuales.\nUse descarga en el menu para obtener las mediciones</string>
     <string name="no_survey">Topograf\u00eda no seleccionada.\nUse menu para seleccionar una</string>
+    <string name="no_undelete">No item to undelete</string>
     <!-- string name="not_connect">Fallo conexi\u00f3n</string -->
+    <string name="not_available">BT no disponible</string>
     <string name="not_connected">No hay conexi\u00f3n</string>
     <string name="not_enabled">BT no habilitado</string>
-    <string name="not_available">BT no disponible</string>
+    <string name="not_implemented">Not implemented yet</string>
     <string name="null_bitmap">Mapa bits nulo</string>
     <string name="photo_name">Estaci\u00f3n/Nombre</string>
     <string name="picture_no_station">Necesita estaci\u00f3n/Nombre de la foto</string>
@@ -120,6 +138,7 @@
     <string name="saved_file_">Archivo guardado</string>
     <string name="saving_">Guardado</string>
     <string name="saving_file_failed">Error al guardar el archivo</string>
+    <string name="scrap_name">scrap name</string>
     <string name="shot_clino">Clino</string>
     <string name="shot_compass">Br\u00fajula</string>
     <string name="shot_from">Desde</string>
@@ -128,12 +147,15 @@
     <string name="shot_note">Nota</string>
     <string name="shot_to">Hasta</string>
     <string name="station">Estaci\u00f3n</string>
+    <string name="station_base">base station</string>
+    <string name="station_viewed">viewed station</string>
     <!-- string name="shot_tolerance">Toma: Rango</string -->
     <!-- string name="survey_export_type">Exportar topograf\u00eda: </string -->
     <string name="survey_exists">Existe topograf\u00eda</string>
     <string name="survey_date">A\u00f1o,mes,d\u00eda</string>
     <string name="survey_delete">Eliminar topograf\u00eda</string>
     <!-- string name="survey_info">Introducir informaci\u00f3n de la topograf\u00eda</string -->
+    <string name ="survey_not_attached">WARNING: unattached shots</string>
     <string name="description">Descripci\u00f3n</string>
     <string name="name">Nombre</string>
     <string name="team">Equipo</string>
@@ -146,7 +168,20 @@
     <string name="write_ok">Envio de calibraci\u00f3n a DistoX</string>
     <string name="zip_saved">Guardado</string>
     <string name="zip_failed">No se pudo guardar la topograf\u00eda</string>
+    <string name="unzip_fail">Failed to un-archive survey</string>
     <string name="zoom_in_out">Zoom adelante/atr\u00e1s</string>
+
+    <string name="stat_survey">Survey statistics</string>
+    <string name="stat_component">Components %1$d</string>
+    <string name="stat_depth">Depth %1$.1f +%2$.1f"</string>
+    <string name="stat_duplicate">Duplicate shots %1$d %2$.1f</string>
+    <string name="stat_leg">Legs %1$d %2$.1f</string>
+    <string name="stat_length">Length %1$.1f</string>
+    <string name="stat_loop">Loops %1$d</string>
+    <string name="stat_shot">Shots  %1$d,   Duplicate %2$d,   Surface %3$d</string>
+    <string name="stat_splay">Splays %1$d</string>
+    <string name="stat_station">Stations %1$d</string>
+    <string name="stat_surface">Surface shots %1$d %2$.1f</string>
 
     <string name="menu_3d">3D</string>
     <string name="menu_about">A cerca de</string>   
@@ -199,7 +234,17 @@
     <string name="menu_undelete">Rehacer</string>
     <string name="menu_write">Enviar a DistoX</string>
     <string name="menu_zip">Zip</string>
-    
+
+   
+    <string name="surveys">SURVEYS</string>
+    <string name="calibs">CALIBS</string>
+
+    <string name="plan">PLAN</string>
+    <string name="extended">EXTENDED</string>
+    <string name="v_section">V-SECTION</string>
+    <string name="h_section">H-SECTION</string>
+
+
     <string name="distox_err_ok">OK</string>
     <string name="distox_err_headtail">Fallo de lectura DistoX</string>
     <string name="distox_err_headtail_io">Fallo de lectura DistoX IO</string>
@@ -217,7 +262,9 @@
     <string name="button_eval_cal"  >Eval w. calib.</string>
     <string name="button_toggle"    >Cambio modo CAL </string>
     <string name="button_head_tail" >Leer inicio y final </string>
+    <string name="button_next"      >Next      </string>
     <string name="button_ok"        >OK      </string>
+    <string name="button_prev"      >Previous  </string>
     <string name="button_read"      >Recuperar calibraci\u00f3n </string>
     <!-- string name="button_reconnect" >Reconectar </string -->
     <string name="button_save"      >Guardar    </string>
@@ -246,12 +293,20 @@
     <string name="title_not_connected">- No conectado</string>
     <string name="title_device">Dispositivo DistoX</string>
     <string name="title_discover">Buscando dispositivo DistoX ...espere</string>
+    <string name="title_draw_area">AREA %1$s</string>
+    <string name="title_draw_line">LINE %1$s</string>
+    <string name="title_draw_point">POINT %1$s</string>
     <!-- string name="title_gm">Tocar para editar grupo</string -->
     <string name="title_location">Localizaci\u00f3n</string>
     <!-- string name="title_menu">Tocar para iniciar men\u00fa</string -->
+    <string name="title_mode">DISPLAY MODE</string>
+    <string name="title_move">MOVING</string>
     <!-- string name="title_plot">Dibujo</string -->
+    <string name="title_scraps">%1$s scraps</string>
+    <string name="title_stats">Statistics</string>
     <!-- string name="title_shot">Tocar para editar estaci\u00f3n (es)</string -->
     <string name="title_survey">Topograf\u00eda</string>
+    <string name="title_zoom">ZOOM</string>
 
     <string name="pref_cat_survey">Opciones de topograf\u00eda</string>
     <string name="pref_cat_drawing">Opciones de dibujo</string>
@@ -273,6 +328,9 @@
     <string name="pref_vthr_title">L\u00edmite de toma</string>
     <string name="pref_vthr_summary">L\u00edmite visual vertical para LRUD</string>
     <string name="pref_vthr_message">L\u00edmite visual vertical para LRUD</string>
+  <string name="pref_drawing_unit_title">Symbol scale</string>
+  <string name="pref_drawing_unit_summary">Scale of the symbols on the screen</string>
+  <string name="pref_drawing_unit_message">Scale of the symbols on the screen</string>
     <string name="pref_segment_title">L\u00ednea de Rango</string>
     <string name="pref_segment_summary">Distancia m\u00ednima entre dos punto en L\u00ednea recta</string>
     <string name="pref_segment_message">Distancia m\u00ednima entre dos punto en L\u00ednea recta</string>
@@ -302,6 +360,8 @@
     <string name="pref_device_message">Nombre, direcci\u00f3n DistoX</string>
     <string name="pref_checkBT_title">Iniciar BT</string>
     <string name="pref_checkBT_summary">Iniciar Bluetooth con el programa</string>
+  <string name="pref_checkAttached_title">Centerline check</string>
+  <string name="pref_checkAttached_summary">Check if stations are attached</string>
 
     <string name="pref_unit_length_title">Unidad longitudinal</string>
     <string name="pref_unit_length_summary">Unidad longitudinal de distancia</string>

@@ -72,6 +72,8 @@
     <string name="connection">Connection</string>
     <string name="download_batch">Batch</string>
     <string name="download_continuous">Continuous</string>
+    <string name="duplicate">duplicate</string>
+    <string name="surface">surface</string>
     <string name="extend_left">Left</string>
     <string name="extend_right">Right</string>
     <string name="extend_vert">Vert</string>
@@ -90,6 +92,13 @@
     <string name="loop_closure_errors">Loop closure errors</string>
     <string name="loop_none">no loop</string>
 
+    <string name="scale">scale</string>
+    <string name="reversed">reversed</string>
+    <string name="outline">outline</string>
+    <string name="out">out</string>
+    <string name="in">in</string>
+    <string name="none">none</string>
+
     <!-- string name="makes_cycle">Shot makes a loop</string -->
     <string name="missing_station">Missing station</string>
     <string name="no_calib">No calibration</string>
@@ -101,14 +110,17 @@
     <string name="no_gms">Calibration has no data.\nUse Download menu to get some</string>
     <!-- string name="no_list_item">No item to list.\nUse menu to create some</string -->
     <string name="no_paired_device">No paired device.\nScan and pair a DistoX</string>
-    <string name="no_plots">Surveu has no scraps\nUse menu to make some</string>
+    <string name="no_photos">Survey has no photo</string>
+    <string name="no_plots">Survey has no scraps\nUse menu to make some</string>
     <!-- string name="no_service">No BT service</string -->
     <string name="no_shots">Survey has no shots.\nUse Download menu to get some</string>
     <string name="no_survey">No survey selected.\nUse menus to select one</string>
+    <string name="no_undelete">No item to undelete</string>
     <!-- string name="not_connect">Failed to connect</string -->
+    <string name="not_available">BT not available</string>
     <string name="not_connected">Not connected</string>
     <string name="not_enabled">BT not enabled</string>
-    <string name="not_available">BT not available</string>
+    <string name="not_implemented">Not implemented yet</string>
     <string name="null_bitmap">null bitmap</string>
     <string name="photo_name">station/name</string>
     <string name="picture_no_station">Need a station/name for the photo</string>
@@ -126,6 +138,7 @@
     <string name="saved_file_">Saved file </string>
     <string name="saving_">Saving </string>
     <string name="saving_file_failed">Failed to save file</string>
+    <string name="scrap_name">scrap name</string>
     <string name="shot_clino">clino</string>
     <string name="shot_compass">compass</string>
     <string name="shot_from">from</string>
@@ -134,12 +147,15 @@
     <string name="shot_note">note</string>
     <string name="shot_to">to</string>
     <string name="station">station</string>
+    <string name="station_base">base station</string>
+    <string name="station_viewed">viewed station</string>
     <!-- string name="shot_tolerance">Shot: tolerance</string -->
     <!-- string name="survey_export_type">Survey export: </string -->
     <string name="survey_exists">Survey name conflict</string>
     <string name="survey_date">yyyy.mm.dd</string>
     <string name="survey_delete">Delete survey   </string>
     <!-- string name="survey_info">Enter survey info</string -->
+    <string name ="survey_not_attached">WARNING: unattached shots</string>
     <string name="description">description</string>
     <string name="name">name</string>
     <string name="team">team</string>
@@ -152,7 +168,20 @@
     <string name="write_ok">Written calibration to DistoX</string>
     <string name="zip_saved">Saved </string>
     <string name="zip_failed">Failed to archive survey</string>
+    <string name="unzip_fail">Failed to un-archive survey</string>
     <string name="zoom_in_out">Zoom in/out</string>
+
+    <string name="stat_survey">Survey statistics</string>
+    <string name="stat_component">Components %1$d</string>
+    <string name="stat_depth">Depth %1$.1f +%2$.1f"</string>
+    <string name="stat_duplicate">Duplicate shots %1$d %2$.1f</string>
+    <string name="stat_leg">Legs %1$d %2$.1f</string>
+    <string name="stat_length">Length %1$.1f</string>
+    <string name="stat_loop">Loops %1$d</string>
+    <string name="stat_shot">Shots  %1$d,   Duplicate %2$d,   Surface %3$d</string>
+    <string name="stat_splay">Splays %1$d</string>
+    <string name="stat_station">Stations %1$d</string>
+    <string name="stat_surface">Surface shots %1$d %2$.1f</string>
 
     <string name="menu_3d">3D</string>
     <string name="menu_about">About</string>
@@ -206,6 +235,15 @@
     <string name="menu_write">Write to DistoX</string>
     <string name="menu_zip">Zip</string>
 
+   
+    <string name="surveys">SURVEYS</string>
+    <string name="calibs">CALIBS</string>
+
+    <string name="plan">PLAN</string>
+    <string name="extended">EXTENDED</string>
+    <string name="v_section">V-SECTION</string>
+    <string name="h_section">H-SECTION</string>
+
 
     <string name="distox_err_ok">OK</string>
     <string name="distox_err_headtail">Head-Tail read failure</string>
@@ -224,7 +262,9 @@
     <string name="button_eval_cal"  >Eval w. calib.</string>
     <string name="button_toggle"    >Toggle CAL mode  </string>
     <string name="button_head_tail" >Read Head/Tail   </string>
+    <string name="button_next"      >Next      </string>
     <string name="button_ok"        >O.K.      </string>
+    <string name="button_prev"      >Previous  </string>
     <string name="button_read"      >Read calibration </string>
     <!-- string name="button_reconnect" >Reconnect </string -->
     <string name="button_save"      >Save      </string>
@@ -253,10 +293,18 @@
     <string name="title_not_connected"> - NOT CONNECTED</string>
     <string name="title_device">DistoX devices</string>
     <string name="title_discover">Scanning for DistoX devices ... wait</string>
+    <string name="title_draw_area">AREA %1$s</string>
+    <string name="title_draw_line">LINE %1$s</string>
+    <string name="title_draw_point">POINT %1$s</string>
     <string name="title_location">LOCATION</string>
     <string name="title_location_gps">LOCATION *</string>
+    <string name="title_mode">DISPLAY MODE</string>
+    <string name="title_move">MOVING</string>
     <string name="title_photo">Photo</string>
-    <string name="title_survey">TopoDroid - Survey Info</string>
+    <string name="title_scraps">%1$s scraps</string>
+    <string name="title_stats">Statistics</string>
+    <string name="title_survey">Survey Info</string>
+    <string name="title_zoom">ZOOM</string>
 
   <string name="pref_cat_survey">Survey options</string>
   <string name="pref_cat_drawing">Drawing options</string>
@@ -278,6 +326,9 @@
   <string name="pref_vthr_title">Shot vthreshold</string>
   <string name="pref_vthr_summary">Leg vertical threshold for LRUD</string>
   <string name="pref_vthr_message">Leg vertical threshold for LRUD</string>
+  <string name="pref_drawing_unit_title">Symbol scale</string>
+  <string name="pref_drawing_unit_summary">Scale of the symbols on the screen</string>
+  <string name="pref_drawing_unit_message">Scale of the symbols on the screen</string>
   <string name="pref_segment_title">Line tolerance</string>
   <string name="pref_segment_summary">Minimum distance between two points on a line</string>
   <string name="pref_segment_message">Minimum distance between two points on a line</string>
@@ -307,6 +358,8 @@
   <string name="pref_device_message">DistoX address name</string>
   <string name="pref_checkBT_title">Check BT</string>
   <string name="pref_checkBT_summary">Check Bluetooth on start</string>
+  <string name="pref_checkAttached_title">Centerline check</string>
+  <string name="pref_checkAttached_summary">Check if stations are attached</string>
 
   <string name="pref_unit_length_title">Lengths units</string>
   <string name="pref_unit_length_summary">Distances unit length</string>

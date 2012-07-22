@@ -25,6 +25,7 @@ import android.app.Dialog;
 // import android.app.Activity;
 import android.content.Context;
 // import android.content.Intent;
+import android.content.res.Resources;
 
 import android.graphics.*;
 import android.view.View;
@@ -86,47 +87,25 @@ public class DistoXStatDialog extends Dialog
         // mBtnOk = (Button) findViewById(R.id.button_stat_ok);
         // mBtnOk.setOnClickListener( this );
 
-        StringWriter sw1 = new StringWriter();
-        PrintWriter pw1  = new PrintWriter( sw1 );
-        pw1.format("Length %.2f ",  mNum.surveyLength() );
-        mTextLength.setText( sw1.toString() );
+        Resources res = mContext.getResources();
 
-        StringWriter sw2 = new StringWriter();;
-        PrintWriter pw2  = new PrintWriter( sw2 );
-        double zmin = mNum.surveyBottom();
-        double zmax = mNum.surveyTop();
-        if ( zmin < 0.0 ) {
-          if ( zmax > 0.0 ) {
-            pw2.format("Depth %.1f, +%.1f ", zmin, zmax );
-          } else {
-            pw2.format("Depth %.1f ", zmin );
-          }
-        } else {
-          if ( zmax > 0.0 ) {
-            pw2.format("Depth +%.1f ", zmax );
-          } else {
-            pw2.format("Depth 0.0 " );
-          }
-        }
-        mTextZminmax.setText( sw2.toString() );
+        mTextLength.setText( String.format( res.getString(R.string.stat_length),
+                                            mNum.surveyLength() ) );
+        mTextZminmax.setText( String.format( res.getString(R.string.stat_depth),
+                                             mNum.surveyTop(),
+                                             mNum.surveyBottom() ) );
+        mTextStations.setText(String.format( res.getString(R.string.stat_station),
+                                             mNum.stationsNr() ) );
 
-        StringWriter sw3 = new StringWriter();;
-        PrintWriter pw3  = new PrintWriter( sw3 );
-        pw3.format("Stations %3d ", mNum.stationsNr() );
-        mTextStations.setText( sw3.toString() );
+        mTextShots.setText( String.format( res.getString(R.string.stat_shot),
+                                           mNum.shotsNr(),
+                                           mNum.duplicateNr(),
+                                           mNum.surfaceNr() ) );
+          
+        mTextSplays.setText( String.format( res.getString(R.string.stat_splay),
+                                            mNum.splaysNr() ) );
 
-        StringWriter sw4 = new StringWriter();;
-        PrintWriter pw4  = new PrintWriter( sw4 );
-        pw4.format("Shots  %3d,   Duplicate %3d,   Surface %3d",
-          mNum.shotsNr(), mNum.duplicateNr(), mNum.surfaceNr() );
-        mTextShots.setText( sw4.toString() );
-
-        StringWriter sw5 = new StringWriter();;
-        PrintWriter pw5  = new PrintWriter( sw5 );
-        pw5.format("Splays %3d ", mNum.splaysNr() );
-        mTextSplays.setText( sw5.toString() );
-
-        setTitle("Stats");
+        setTitle( R.string.title_stats );
     }
 
     // @Override

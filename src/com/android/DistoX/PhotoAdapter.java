@@ -1,4 +1,4 @@
-/** @file DistoXDBlockAdapter.java
+/** @file PhotoAdapter.java
  *
  * @author marco corvi
  * @date apr 2012
@@ -20,19 +20,19 @@ import android.view.LayoutInflater;
 
 import java.util.ArrayList;
 
-class DistoXDBlockAdapter extends ArrayAdapter< DistoXDBlock >
+class PhotoAdapter extends ArrayAdapter< PhotoInfo >
 {
-  private ArrayList< DistoXDBlock > items;
+  private ArrayList< PhotoInfo > items;
   private Context context;
 
-  public DistoXDBlockAdapter( Context ctx, int id, ArrayList< DistoXDBlock > items )
+  public PhotoAdapter( Context ctx, int id, ArrayList< PhotoInfo > items )
   {
     super( ctx, id, items );
     this.context = ctx;
     this.items = items;
   }
 
-  public DistoXDBlock get( int pos ) { return items.get(pos); }
+  public PhotoInfo get( int pos ) { return items.get(pos); }
  
   @Override
   public View getView( int pos, View convertView, ViewGroup parent )
@@ -43,18 +43,13 @@ class DistoXDBlockAdapter extends ArrayAdapter< DistoXDBlock >
       v = li.inflate( R.layout.row, null );
     }
 
-    DistoXDBlock b = items.get( pos );
+    PhotoInfo b = items.get( pos );
     if ( b != null ) {
       TextView tw = (TextView) v.findViewById( R.id.row_text );
       tw.setText( b.toString() );
-      tw.setTextColor( b.color() );
+      // tw.setTextColor( b.color() );
     }
     return v;
-  }
-
-  public int size() 
-  {
-    return items.size();
   }
 
 }

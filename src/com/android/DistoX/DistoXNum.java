@@ -12,6 +12,7 @@
  * 20120530 loop closures
  * 20120601 more loop closure
  * 20120702 surface shots
+ * 20120719 added check whether survey is attached
  */
 package com.android.DistoX;
 
@@ -39,7 +40,7 @@ class DistoXNum
   private float mHmin; // horizontal
   private float mHmax;
 
-  /* statistics - not includnf survey shts */
+  /* statistics - not including survey shots */
   private float mZmin; // Z depth 
   private float mZmax;
   private float mLength; // survey length 
@@ -194,9 +195,11 @@ class DistoXNum
   public float surveyTop()    { return -mZmin; } // top must be positive
   public float surveyBottom() { return -mZmax; } // bottom must be negative
 
+  public boolean surveyAttached; //!< whether the survey is attached
+
   DistoXNum( List<DistoXDBlock> data, String start )
   {
-    compute( data, start );
+    surveyAttached = compute( data, start );
     // Log.v( TAG, " length " + mLength + " depth " + mZmin + " " + mZmax );
   }
 
@@ -283,7 +286,9 @@ class DistoXNum
   public float surveyVmin() { return mVmin; }
   public float surveyVmax() { return mVmax; }
 
-  private void compute( List<DistoXDBlock> data, String start )
+  /** return true if all shots are attached
+   */
+  private boolean compute( List<DistoXDBlock> data, String start )
   {
     mSmin = 0.0f; // clear BBox
     mSmax = 0.0f;
@@ -337,6 +342,7 @@ class DistoXNum
       }
     }
     // Log.v( TAG, " tmp-shots " + tmpshots.size() + " tmp-splays " + tmpsplays.size() );
+
 
     mStations.add( new Station( start ) );
     boolean repeat = true;
@@ -412,5 +418,7 @@ class DistoXNum
         mSplays.add( sh );
       }
     }
+
+    return (mShots.size() == tmpshots.size() );
   }
 }

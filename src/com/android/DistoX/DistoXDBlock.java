@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120517 length and angle units
+ * 20120711 added dataString
  */
 package com.android.DistoX;
 
@@ -146,6 +147,19 @@ public class DistoXDBlock
     } else if ( mFlag == BLOCK_SURFACE ) {
       pw.format( "-" );
     }
+    if ( mComment != null && mComment.length() > 0 ) {
+      pw.format("N");
+    }
+    return sw.getBuffer().toString();
+  }
+
+  public String dataString()
+  {
+    float ul = TopoDroidApp.mUnitLength;
+    float ua = TopoDroidApp.mUnitAngle;
+    StringWriter sw = new StringWriter();
+    PrintWriter pw  = new PrintWriter(sw);
+    pw.format("%.2f %.1f %.1f", mLength*ul, mBearing*ua, mClino*ua );
     return sw.getBuffer().toString();
   }
 

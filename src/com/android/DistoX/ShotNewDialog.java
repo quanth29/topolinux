@@ -96,25 +96,34 @@ public class ShotNewDialog extends Dialog
     Button b = (Button) v;
     if ( notDone && b == mButtonOK ) {
       notDone = false;
-      String shot_from = mETfrom.getText().toString().trim();
-      String shot_to   = mETto.getText().toString().trim();
-      if ( shot_from != null && shot_to != null && shot_from.length() > 0 && shot_to.length() > 0 ) { 
-        String distance = mETdistance.getText().toString().trim();
-        String bearing  = mETbearing.getText().toString().trim();
-        String clino    = mETclino.getText().toString().trim();
-        if ( distance.length() > 0  && bearing.length() > 0 && clino.length() > 0 ) {
-          long shot_extend = 1;
-          if ( mRadioLeft.isChecked() ) { shot_extend = -1; }
-          else if ( mRadioVert.isChecked() ) { shot_extend = 0; }
-          mParent.makeNewShot( shot_from, shot_to,
-                               Float.parseFloat(distance),
-                               Float.parseFloat(bearing),
-                               Float.parseFloat(clino),
-                               shot_extend,
-                               mETleft.getText().toString(),
-                               mETright.getText().toString(),
-                               mETup.getText().toString(),
-                               mETdown.getText().toString() );
+      String shot_from = mETfrom.getText().toString();
+      String shot_to   = mETto.getText().toString();
+      if ( shot_from != null && shot_to != null ) {
+        shot_from = TopoDroidApp.noSpaces( shot_from );
+        shot_to   = TopoDroidApp.noSpaces( shot_to );
+        if ( shot_from.length() > 0 && shot_to.length() > 0 ) { 
+          String distance = mETdistance.getText().toString();
+          String bearing  = mETbearing.getText().toString();
+          String clino    = mETclino.getText().toString();
+          if ( distance != null && bearing != null && clino != null ) {
+            distance = distance.trim();
+            bearing  = bearing.trim();
+            clino    = clino.trim();
+            if ( distance.length() > 0  && bearing.length() > 0 && clino.length() > 0 ) {
+              long shot_extend = 1;
+              if ( mRadioLeft.isChecked() ) { shot_extend = -1; }
+              else if ( mRadioVert.isChecked() ) { shot_extend = 0; }
+              mParent.makeNewShot( shot_from, shot_to,
+                                   Float.parseFloat(distance),
+                                   Float.parseFloat(bearing),
+                                   Float.parseFloat(clino),
+                                   shot_extend,
+                                   mETleft.getText().toString(),
+                                   mETright.getText().toString(),
+                                   mETup.getText().toString(),
+                                   mETdown.getText().toString() );
+            }
+          }
         }
       }
     }

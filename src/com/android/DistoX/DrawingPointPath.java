@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120706 Therion "scale" option
  */
 
 package com.android.DistoX;
@@ -28,31 +31,66 @@ public class DrawingPointPath extends DrawingPath
 {
   private static float toTherion = TopoDroidApp.TO_THERION;
 
+  static final int SCALE_NONE = -3; // used to force scaling
+  static final int SCALE_XS = -2;
+  static final int SCALE_S  = -1;
+  static final int SCALE_M  = 0;
+  static final int SCALE_L  = 1;
+  static final int SCALE_XL = 2;
+
   float mXpos;
   float mYpos;
   int mPointType;
+  protected int mScale;       //! symbol scale
   String mOptions;
   double mOrientation;
 
-  public DrawingPointPath( int type, float x, float y )
+
+  public DrawingPointPath( int type, float x, float y, int scale, String options )
   {
     super( DrawingPath.DRAWING_PATH_POINT );
     // Log.v( "DistoX", "Point " + type + " X " + x + " Y " + y );
     mPointType = type;
     mXpos = x;
     mYpos = y;
-    mOptions = null;
+    mOptions = options;
+    mScale   = SCALE_NONE;
     mOrientation = 0.0;
     if ( DrawingBrushPaths.canRotate( type ) ) {
       // Log.v("DistoX", "new point type " + type + " setOrientation to " + DrawingBrushPaths.orientation(type) );
       setOrientation( DrawingBrushPaths.orientation(type) );
     }
-    setPaint( DrawingBrushPaths.pointPaint[ type ] );
-    if ( type != DrawingBrushPaths.POINT_LABEL ) {
-      path = new Path( DrawingBrushPaths.get( type ) );
-      path.offset( x, y );
+    setPaint( DrawingBrushPaths.pointPaint[ mPointType ] );
+    if ( mPointType != DrawingBrushPaths.POINT_LABEL ) {
+      setScale( scale );
+    } else {
+      mScale = SCALE_M;
     }
   }
+
+  void setScale( int scale )
+  {
+    if ( scale != mScale ) {
+      mScale = scale;
+      if ( mPointType != DrawingBrushPaths.POINT_LABEL ) {
+        float f = 1.0f;
+        switch ( mScale ) {
+          case SCALE_XS: f = 0.60f;
+          case SCALE_S:  f = 0.77f;
+          case SCALE_L:  f = 1.30f;
+          case SCALE_XL: f = 1.70f;
+        }
+        Matrix m = new Matrix();
+        m.postScale(f,f);
+        path = new Path( DrawingBrushPaths.get( mPointType ) );
+        path.transform( m );
+        path.offset( mXpos, mYpos );
+      }
+    }  
+  }
+      
+  int getScale() { return mScale; }
+      
 
   // public void setPos( float x, float y ) 
   // {
@@ -109,11 +147,26 @@ public class DrawingPointPath extends DrawingPath
       }
     }
 
+    toTherionOptions( pw );
+    pw.format("\n");
+
+    return sw.getBuffer().toString();
+  }
+
+  protected void toTherionOptions( PrintWriter pw )
+  {
+    if ( mScale != SCALE_M ) {
+      switch ( mScale ) {
+        case SCALE_XS: pw.format( " -scale xs" ); break;
+        case SCALE_S:  pw.format( " -scale s" ); break;
+        case SCALE_L:  pw.format( " -scale l" ); break;
+        case SCALE_XL: pw.format( " -scale xl" ); break;
+      }
+    }
+
     if ( mOptions != null && mOptions.length() > 0 ) {
       pw.format(" %s", mOptions );
     }
-    pw.format("\n");
-    return sw.getBuffer().toString();
   }
 
 }

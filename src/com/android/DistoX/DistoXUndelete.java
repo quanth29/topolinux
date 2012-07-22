@@ -88,7 +88,7 @@ public class DistoXUndelete extends Dialog
     List< DistoXDBlock > shots = mData.selectAllShots( mSID, TopoDroidApp.STATUS_DELETED );
     List< PlotInfo > plots   = mData.selectAllPlots( mSID, TopoDroidApp.STATUS_DELETED );
     if ( shots.size() == 0 && plots.size() == 0 ) {
-      Toast.makeText( mParent, "No item to undelete", Toast.LENGTH_LONG ).show();
+      Toast.makeText( mParent, R.string.no_undelete, Toast.LENGTH_LONG ).show();
       dismiss();
       // finish();
     }

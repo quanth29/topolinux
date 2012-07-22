@@ -286,6 +286,7 @@ public class TopoDroidActivity extends Activity
     // Handle item selection
     if ( item == mMIoptions ) { // OPTIONS DIALOG
       Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
+      optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_ALL );
       startActivity( optionsIntent );
     } else if ( item == mMIabout ) { // ABOUT DIALOG
       TopoDroidAbout.show( this );
@@ -308,7 +309,7 @@ public class TopoDroidActivity extends Activity
         (new ImportDialog( this, this, app )).show();
       } else {
         // TODO import calib
-        Toast.makeText( this, "Not implemented yet", Toast.LENGTH_LONG ).show();
+        Toast.makeText( this, R.string.not_implemented, Toast.LENGTH_LONG ).show();
       }
     } else if ( item == mMIdevice ) { // DEVICE
       if ( app.mBTAdapter.isEnabled() ) {
@@ -326,7 +327,6 @@ public class TopoDroidActivity extends Activity
     if ( filename.endsWith(".th") ) {
       String filepath = TopoDroidApp.getImportFile( filename );
       String name = filename.replace(".th", "" );
-
       if ( app.mData.hasSurveyName( name ) ) {
         Toast.makeText(this, R.string.file_parse_already, Toast.LENGTH_SHORT).show();
         return;
@@ -350,8 +350,14 @@ public class TopoDroidActivity extends Activity
       }
     } else if ( filename.endsWith(".zip") ) {
       Archiver archiver = new Archiver( app );
-      archiver.unArchive( TopoDroidApp.getZipFile( filename ), filename.replace(".zip", "") );
-      updateDisplay( );
+      int ret = archiver.unArchive( TopoDroidApp.getZipFile( filename ), filename.replace(".zip", ""));
+      if ( ret == -2 ) {
+        Toast.makeText(this, R.string.unzip_fail, Toast.LENGTH_SHORT).show();
+      } else if ( ret == -1 ) {
+        Toast.makeText(this, R.string.file_parse_already, Toast.LENGTH_SHORT).show();
+      } else {
+        updateDisplay( );
+      }
     }
   }
   
