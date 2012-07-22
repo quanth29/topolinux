@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120517 angle units
+ * 20120715 per-category preferences
  */
 package com.android.DistoX;
 
@@ -360,6 +361,7 @@ public class GMActivity extends Activity
       startActivity( deviceIntent );
     } else if ( item == mMIoptions ) { // OPTIONS DIALOG
       Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
+      optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_CALIB );
       startActivity( optionsIntent );
     } else if ( item == mMIhelp ) {
       TopoDroidHelp.show( this, R.string.help_gm );

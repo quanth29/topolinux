@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+     <com.android.DistoX.MyEditPreference
+       android:key="DISTOX_DEVICE"
+       android:title="@string/pref_device_title"
+       android:summary="@string/pref_device_summary"
+       android:dialogTitle="@string/pref_device_title"
+       android:dialogMessage="@string/pref_device_message"
+       android:enabled="false"
+       android:defaultValue="" />
+
+     <CheckBoxPreference
+       android:key="DISTOX_CHECK_BT"
+       android:summary="@string/pref_checkBT_summary"
+       android:title="@string/pref_checkBT_title"
+       android:defaultValue="true"
+     />
+
+     <com.android.DistoX.MyListPreference
+       android:key="DISTOX_CONN_MODE"
+       android:summary="@string/pref_conn_mode_summary"
+       android:title="@string/pref_conn_mode_title"
+       android:defaultValue="0"
+       android:entries="@array/connMode"
+       android:entryValues="@array/connModeValue"
+     />
+
+
+</PreferenceScreen>

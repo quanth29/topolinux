@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120522 created
+ * 20120519 added shot name
  */
 package com.android.DistoX;
 
@@ -20,19 +21,22 @@ class PhotoInfo
 {
   public long sid;       // survey id
   public long id;        // photo id
-  public String station;
-  public String name;    // photo filename without extension ".jpg" and survey prefix dir
-  // public String date;
-  public String comment;
+  public long shotid;    // shot id
+  public String mTitle;   // photo title
+  public String mShotName; // shot name
+  // public String mName; // photo filename without extension ".jpg" and survey prefix dir = photo id
+  // public String mDate;
+  public String mComment;
 
-  public PhotoInfo( long _sid, long _id, String st, String nm, String cmt )
+  public PhotoInfo( long _sid, long _id, long _shotid, String t, String sn, String cmt )
   {
-    sid = _sid;
-    id  = _id;
-    station = st;
-    name = nm;
-    // date = dt;
-    comment = cmt;
+    sid    = _sid;
+    id     = _id;
+    shotid = _shotid;
+    mTitle  = t;
+    mShotName = sn;
+    // mDate = dt;
+    mComment = cmt;
   }
 
   // String getPhotoName() 
@@ -42,5 +46,12 @@ class PhotoInfo
   //   pw.format( "%d-%03d", sid, id );
   //   return sw.getBuffer().toString();
   // }
+
+  public String toString()
+  {
+    return id 
+           + " <" + ( (mShotName == null)? "-" : mShotName )
+           + "> " + mTitle;
+  }
 
 }

@@ -20,6 +20,10 @@
  * 20120531 STATUS const's
  * 20120602 fixed-info exports
  * 20120611 made filename compositions private
+ * 20120705 symbols screen units
+ * 20120706 screen scale factor (for drawing on the canvas)
+ * 20120715 forced no_spaces in names (survey, station, scrap, calib)
+ * 20120720 added manifest
  */
 package com.android.DistoX;
 
@@ -29,6 +33,10 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 import java.io.FileWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.BufferedReader;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.ArrayList;
@@ -46,14 +54,24 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.SharedPreferences.Editor;
 import android.content.Context;
 import android.content.Intent;
+
+import android.view.WindowManager;
+import android.view.Display;
+import android.graphics.Point;
+
 // import android.util.Log;
+import android.util.DisplayMetrics;
 
 import android.bluetooth.BluetoothAdapter;
+
+// import android.widget.Toast;
 
 public class TopoDroidApp extends Application
                           implements OnSharedPreferenceChangeListener
 {
   // private static final String TAG = "DistoX App";
+
+  static final String VERSION = "1.0.4"; // must agree with AndroidManifest.xml
 
   private SharedPreferences prefs;
 
@@ -97,8 +115,13 @@ public class TopoDroidApp extends Application
   int mLineStyle;       // line style: BEZIER, NONE, TWO, THREE
   int mLineType;        // line type:  1       1     2    3
   boolean mCheckBT;     // check BT on start
+  boolean mCheckAttached; 
   boolean mListRefresh; // whether to refresh list on edit-dialog ok-return
   int mGroupBy;         // how to group calib data
+
+  public float mScaleFactor   = 1.0f;
+  public float mDisplayWidth  = 200f;
+  public float mDisplayHeight = 320f;
 
   // consts
   public static final float M_PI  = 3.1415926536f; // Math.PI;
@@ -203,7 +226,8 @@ public class TopoDroidApp extends Application
     "DISTOX_UNIT_LENGTH",
     "DISTOX_UNIT_ANGLE",
     "DISTOX_CONN_MODE",
-    "DISTOX_BASE_PATH"
+    "DISTOX_BASE_PATH",
+    "DISTOX_CHECK_ATTACHED"   // 20
   };
 
   public static final int DISTOX_EXPORT_TH  = 0;
@@ -232,6 +256,7 @@ public class TopoDroidApp extends Application
   public static final  String DEVICE_NAME    = "";
   // public static final  boolean SAVE_ON_DESTROY = true;
   public static final  boolean CHECK_BT      = true;
+  public static final  boolean CHECK_ATTACHED = false;
   public static final  boolean LIST_REFRESH  = false;
   public static final  String UNIT_LENGTH    = "meters";
   public static final  String UNIT_ANGLE     = "degrees";
@@ -289,6 +314,11 @@ public class TopoDroidApp extends Application
   // ---------------------------------------------------------------
   // survey/calib info
   //
+
+  static String noSpaces( String s )
+  {
+    return ( s == null )? null : s.trim().replaceAll("\\s+", "_");
+  }
 
   public SurveyInfo getSurveyInfo()
   {
@@ -353,6 +383,7 @@ public class TopoDroidApp extends Application
     
     mCheckBT       = prefs.getBoolean( key[12], CHECK_BT );
     mListRefresh   = prefs.getBoolean( key[15], LIST_REFRESH );
+    mCheckAttached = prefs.getBoolean( key[20], CHECK_ATTACHED );
     mUnitLength    = prefs.getString( key[16], UNIT_LENGTH ).equals("feet") ?  M2FT : 1.0f;
     mUnitAngle     = prefs.getString( key[17], UNIT_ANGLE ).equals("grads") ?  DEG2GRAD : 1.0f;
 
@@ -381,6 +412,20 @@ public class TopoDroidApp extends Application
     DistoXConnectionError[3] = getResources().getString( R.string.distox_err_headtail_eof );
     DistoXConnectionError[4] = getResources().getString( R.string.distox_err_connected );
     
+    // WindowManager wm = (WindowManager)getSystemService( Context.WINDOW_SERVICE );
+    // Display d = wm.getDefaultDisplay();
+    // Point s = new Point();
+    // d.getSize( s );
+    // Log.v( TAG, "display " + d.getWidth() + " " + d.getHeight() );
+    // mDisplayWidth  = d.getWidth();
+    // mDisplayHeight = d.getHeight();
+    DisplayMetrics dm = getResources().getDisplayMetrics();
+    float density  = dm.density;
+    mDisplayWidth  = dm.widthPixels;
+    mDisplayHeight = dm.heightPixels;
+    mScaleFactor   = (mDisplayHeight / 320.0f) * density;
+    // Log.v( TAG, "display " + mDisplayWidth + " " + mDisplayHeight + " scale " + mScaleFactor );
+
   }
 
   private void setLineStyleAndType( String style )
@@ -439,6 +484,52 @@ public class TopoDroidApp extends Application
   public static String getSqlFile()
   {
     return APP_BASE_PATH + "survey.sql";
+  }
+
+  public static String getManifestFile()
+  {
+    return APP_BASE_PATH + "manifest";
+  }
+
+  public void writeManifestFile()
+  {
+    SurveyInfo info = mData.selectSurveyInfo( mSID );
+    try {
+      FileWriter fw = new FileWriter( getManifestFile() );
+      PrintWriter pw = new PrintWriter( fw );
+      pw.format( "%s\n", VERSION );
+      pw.format( "%s\n", DataHelper.DB_VERSION );
+      pw.format( "%s\n", info.name );
+      fw.flush();
+      fw.close();
+    } catch ( FileNotFoundException e ) {
+      // FIXME
+    } catch ( IOException e ) {
+      // FIXME
+    }
+  }
+
+  public int checkManifestFile( String filename, String surveyname )
+  {
+    String line;
+    if ( mData.hasSurveyName( surveyname ) ) {
+      return -1;
+    }
+    try {
+      FileReader fr = new FileReader( filename );
+      BufferedReader br = new BufferedReader( fr );
+      // first line is version
+      line = br.readLine().trim();
+      if ( ! line.equals( VERSION ) ) return -2;
+      line = br.readLine().trim();
+      if ( ! line.equals( DataHelper.DB_VERSION ) ) return -2;
+      line = br.readLine().trim();
+      if ( ! line.equals( surveyname ) ) return -2;
+      fr.close();
+    } catch ( FileNotFoundException e ) {
+    } catch ( IOException e ) {
+    }
+    return 0;
   }
 
   public static String getSurveyNoteFile( String title ) 
@@ -505,13 +596,13 @@ public class TopoDroidApp extends Application
 
   public String getSurveyPhotoDir( ) { return APP_FOTO_PATH + mySurvey; }
 
-  public String getSurveyJpgFile( String name )
+  public String getSurveyJpgFile( long id )
   {
     File imagedir = new File( TopoDroidApp.APP_FOTO_PATH + mySurvey + "/" );
     if ( ! ( imagedir.exists() ) ) {
       imagedir.mkdirs();
     }
-    return TopoDroidApp.APP_FOTO_PATH + mySurvey + "/" + name + ".jpg";
+    return TopoDroidApp.APP_FOTO_PATH + mySurvey + "/" + id + ".jpg";
   }
 
   public String getSurveyZipFile()
@@ -683,6 +774,8 @@ public class TopoDroidApp extends Application
       // FIXME need to restart the app ?
       mData        = new DataHelper( this );
       mCalibration = new Calibration( 0, this );
+    } else if ( k.equals( key[20] ) ) {
+      mCheckAttached = sp.getBoolean( k, CHECK_ATTACHED );
     }
   }
 
@@ -844,7 +937,7 @@ public class TopoDroidApp extends Application
       pw.format("  endcenterline\n");
 
       for ( PlotInfo plt : plots ) {
-        pw.format("  # input %s-%s.th2\n", mySurvey, plt.name );
+        pw.format("  # input \"%s-%s.th2\"\n", mySurvey, plt.name );
       }
 
       pw.format("endsurvey\n");

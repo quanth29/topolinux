@@ -36,11 +36,12 @@ public class DrawingStation extends DrawingPointPath
   public DrawingStation( String n, float x, float y )
   {
     super( DrawingBrushPaths.POINT_LABEL,
-           x+DrawingActivity.CENTER_X,
-           y+DrawingActivity.CENTER_Y );
+           x, // scene coordinate
+           y, 
+           DrawingPointPath.SCALE_M, null );
     mName = n;
-    mX = x + DrawingActivity.CENTER_X;
-    mY = y + DrawingActivity.CENTER_Y;
+    mX = x; // scene coordinate
+    mY = y; 
     
     path = new Path();
     path.moveTo( 0, 0 );

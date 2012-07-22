@@ -87,6 +87,8 @@ public class SurveyActivity extends Activity
   private Button mBTNnotes;
   private Button mBTNlocation;
   private Button mBTNarchive;
+  private Button mBTNstat;
+  private Button mBTNphoto;
 
   private TopoDroidApp app;
   private SurveyInfo info;
@@ -164,6 +166,8 @@ public class SurveyActivity extends Activity
     mBTNnotes    = (Button) findViewById( R.id.surveyNotes );
     mBTNlocation = (Button) findViewById( R.id.surveyLocation );
     mBTNarchive  = (Button) findViewById( R.id.surveyArchive );
+    mBTNstat     = (Button) findViewById( R.id.surveyStat );
+    mBTNphoto    = (Button) findViewById( R.id.surveyPhoto );
 
     setButtons();
   }
@@ -239,6 +243,8 @@ public class SurveyActivity extends Activity
     mBTNnotes.setEnabled( isSaved );
     mBTNlocation.setEnabled( isSaved );
     mBTNarchive.setEnabled( isSaved );
+    mBTNstat.setEnabled( isSaved );
+    mBTNphoto.setEnabled( isSaved );
   }
 
   private void setNameNotEditable()
@@ -279,6 +285,13 @@ public class SurveyActivity extends Activity
         break;
       case R.id.surveyArchive:
         doArchive();
+        break;
+      case R.id.surveyStat:
+        (new SurveyStatDialog( this, app.mData.getSurveyStat( app.mSID ) )).show();
+        break;
+      case R.id.surveyPhoto:
+        Intent photoIntent = new Intent( this, PhotoActivity.class );
+        startActivity( photoIntent );
         break;
     }
   }
@@ -424,6 +437,12 @@ public class SurveyActivity extends Activity
     String team = mEditTeam.getText().toString();
     String comment = mEditComment.getText().toString();
 
+    // FIXME FORCE NAMES WITHOUT SPACES
+    name = TopoDroidApp.noSpaces( name );
+    if ( date != null ) { date = date.trim(); }
+    if ( team != null ) { team = team.trim(); }
+    if ( comment != null ) { comment = comment.trim(); }
+
     if ( isSaved ) { // survey already saved
       // Log.v( TAG, "INSERT survey id " + id + " date " + date + " name " + name + " comment " + comment );
       app.mData.updateSurveyDayAndComment( app.mSID, date, comment );
@@ -431,6 +450,7 @@ public class SurveyActivity extends Activity
         app.mData.updateSurveyTeam( app.mSID, team );
       } 
     } else { // new survey
+     
       if ( app.hasSurveyName( name ) ) { // name already exists
         Toast.makeText( mContext, R.string.survey_exists, Toast.LENGTH_LONG ).show();
       } else {

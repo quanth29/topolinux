@@ -66,7 +66,7 @@ public class DrawingModeDialog extends Dialog
         mCBstation.setChecked( (mode & DrawingCommandManager.DISPLAY_STATION) != 0 );
         mCBgrid.setChecked(    (mode & DrawingCommandManager.DISPLAY_GRID) != 0 );
 
-        setTitle("MODE");
+        setTitle( R.string.title_mode );
     }
 
     public void onClick(View view)

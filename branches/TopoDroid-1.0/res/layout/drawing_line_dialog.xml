@@ -3,12 +3,12 @@
     android:layout_width="fill_parent" 
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:paddingLeft="6dip"
-    android:paddingRight="6dip"
-    android:paddingBottom="3dip">
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp"
+    android:paddingBottom="3dp">
    					  
     <TextView android:id="@+id/line_type"
-      android:layout_marginBottom="2dip"
+      android:layout_marginBottom="2dp"
       android:layout_width="fill_parent" 
       android:layout_height="wrap_content"
       />
@@ -22,7 +22,7 @@
     <CheckBox android:id="@+id/line_reversed"
       android:layout_width="fill_parent" 
       android:layout_height="wrap_content"
-      android:text="reversed"
+      android:text="@string/reversed"
       />
 
     <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android" 
@@ -34,22 +34,22 @@
         <TextView 
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
-           android:text="outline"
+           android:text="@string/outline"
         />
         <RadioButton android:id="@+id/line_outline_out"
           android:layout_width="wrap_content" 
           android:layout_height="wrap_content" 
-          android:text="out"
+          android:text="@string/out"
           />
         <RadioButton android:id="@+id/line_outline_in"
           android:layout_width="wrap_content" 
           android:layout_height="wrap_content" 
-          android:text="in"
+          android:text="@string/in"
           />
         <RadioButton android:id="@+id/line_outline_none"
           android:layout_width="wrap_content" 
           android:layout_height="wrap_content" 
-          android:text="none"
+          android:text="@string/none"
           />
     </RadioGroup>
 

@@ -15,7 +15,7 @@ package com.android.DistoX;
 import android.app.Dialog;
 import android.os.Bundle;
 
-// import android.util.Log;
+import android.util.Log;
 
 import android.content.Intent;
 import android.content.Context;
@@ -31,7 +31,7 @@ import android.view.KeyEvent;
 public class PhotoDialog extends Dialog
                          implements View.OnClickListener
 {
-  // private static final String TAG = "DistoX";
+  private static final String TAG = "DistoX";
   private ShotActivity mParent;
 
   private EditText mETname;     // station name / photo name
@@ -49,6 +49,7 @@ public class PhotoDialog extends Dialog
   {
     super( context );
     mParent = parent;
+    Log.v(TAG, "PhotoDialog");
   }
 
 // -------------------------------------------------------------------
@@ -56,7 +57,7 @@ public class PhotoDialog extends Dialog
   protected void onCreate(Bundle savedInstanceState) 
   {
     super.onCreate(savedInstanceState);
-    // Log.v( TAG, "onCreate" );
+    // Log.v( TAG, "PhotoDialog onCreate" );
     setContentView(R.layout.distox_photo_dialog);
     mETname       = (EditText) findViewById(R.id.photo_name);
     mETcomment    = (EditText) findViewById(R.id.photo_comment);

@@ -3,12 +3,12 @@
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingLeft="6dip"
-    android:paddingRight="6dip"
-    android:paddingBottom="3dip">
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp"
+    android:paddingBottom="3dp">
 
     <TextView android:id="@+id/gm_text"
-        android:layout_marginTop="2dip"
+        android:layout_marginTop="2dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" 
         android:text=""
@@ -16,7 +16,7 @@
    					  
     <EditText android:id="@+id/gm_name" 
         android:maxLines="1" 
-        android:layout_marginTop="2dip"
+        android:layout_marginTop="2dp"
         android:layout_width="fill_parent"
       	android:ems="25"
         android:layout_height="wrap_content" 

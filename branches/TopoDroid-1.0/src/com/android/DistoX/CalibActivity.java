@@ -233,17 +233,23 @@ public class CalibActivity extends Activity
     String date = mEditDate.getText().toString();
     String device = mEditDevice.getText().toString();
     String comment = mEditComment.getText().toString();
+    if ( date    != null ) { date    = date.trim(); }
+    if ( device  != null ) { device  = device.trim(); }
+    if ( comment != null ) { comment = comment.trim(); }
 
     if ( isSaved ) { // calib already saved
       app.mData.updateCalibInfo( app.mCID, date, device, comment );
     } else { // new calib
-      if ( app.hasCalibName( name ) ) { // name already exists
-        Toast.makeText( this, R.string.calib_exists, Toast.LENGTH_LONG ).show();
-      } else {
-        app.setCalibFromName( name );
-        app.mData.updateCalibInfo( app.mCID, date, device, comment );
-        isSaved = true;
-        setNameNotEditable();
+      name = TopoDroidApp.noSpaces( name );
+      if ( name != null && name.length() > 0 ) {
+        if ( app.hasCalibName( name ) ) { // name already exists
+          Toast.makeText( this, R.string.calib_exists, Toast.LENGTH_LONG ).show();
+        } else {
+          app.setCalibFromName( name );
+          app.mData.updateCalibInfo( app.mCID, date, device, comment );
+          isSaved = true;
+          setNameNotEditable();
+        }
       }
     }
   }

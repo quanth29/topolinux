@@ -72,7 +72,8 @@ public class PlotDialog extends Dialog
   {
     if ( app.mData != null && app.mSID >= 0 ) {
       List< PlotInfo > list = app.mData.selectAllPlots( app.mSID, TopoDroidApp.STATUS_NORMAL ); 
-      setTitle( app.getSurvey() + " scraps" );
+      setTitle( String.format( mContext.getResources().getString( R.string.title_scraps ),
+                               app.getSurvey() ) );
       if ( list.size() == 0 ) {
         Toast.makeText( mContext, R.string.no_plots, Toast.LENGTH_LONG ).show();
         dismiss();

@@ -73,9 +73,9 @@ public class DistoXPlotDialog extends Dialog
     mBtnVSection = (RadioButton) findViewById( R.id.btn_plot_vcross );
     mBtnHSection = (RadioButton) findViewById( R.id.btn_plot_hcross );
 
-    mEditName.setHint(  "scrap name" );
-    mEditStart.setHint( "base station" );
-    mEditView.setHint(  "viewed station" );
+    mEditName.setHint( R.string.scrap_name );
+    mEditStart.setHint( R.string.station_base );
+    mEditView.setHint(  R.string.station_viewed );
     mBtnPlan.setChecked( true ); // default is plan
 
     mBtnOK = (Button) findViewById(R.id.button_ok_plot_name );
@@ -96,17 +96,23 @@ public class DistoXPlotDialog extends Dialog
       String name  = mEditName.getText().toString();
       String start = mEditStart.getText().toString();
       String view  = mEditView.getText().toString();
+
+      name = TopoDroidApp.noSpaces( name );
       if ( name == null || name.length() == 0 ) {
         Toast.makeText( mContext, R.string.plot_null_name, Toast.LENGTH_LONG ).show();
-      } else if ( start == null || start.length() == 0 ) {
-        Toast.makeText( mContext, R.string.plot_null_start, Toast.LENGTH_LONG ).show();
       } else {
-        long type = TopoDroidApp.PLOT_PLAN;
-        if ( mBtnPlan.isChecked() )          { type = TopoDroidApp.PLOT_PLAN; }
-        else if ( mBtnExtended.isChecked() ) { type = TopoDroidApp.PLOT_EXTENDED; }
-        else if ( mBtnVSection.isChecked() ) { type = TopoDroidApp.PLOT_V_SECTION; }
-        else if ( mBtnHSection.isChecked() ) { type = TopoDroidApp.PLOT_H_SECTION; }
-        mMaker.makeNewPlot( name, type, start, view );
+        start = TopoDroidApp.noSpaces( start );
+        if ( start == null || start.length() == 0 ) {
+          Toast.makeText( mContext, R.string.plot_null_start, Toast.LENGTH_LONG ).show();
+        } else {
+          long type = TopoDroidApp.PLOT_PLAN;
+          if ( mBtnPlan.isChecked() )          { type = TopoDroidApp.PLOT_PLAN; }
+          else if ( mBtnExtended.isChecked() ) { type = TopoDroidApp.PLOT_EXTENDED; }
+          else if ( mBtnVSection.isChecked() ) { type = TopoDroidApp.PLOT_V_SECTION; }
+          else if ( mBtnHSection.isChecked() ) { type = TopoDroidApp.PLOT_H_SECTION; }
+          view = TopoDroidApp.noSpaces( view );
+          mMaker.makeNewPlot( name, type, start, view );
+        }
       }
     }
     // finish();

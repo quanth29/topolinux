@@ -61,7 +61,7 @@ public class DrawingZoomDialog extends Dialog
         mBtnMinus.setOnClickListener( this );
         mBtnCancel.setOnClickListener( this );
 
-        setTitle("ZOOM");
+        setTitle( R.string.title_zoom );
     }
 
     public void onClick(View view)

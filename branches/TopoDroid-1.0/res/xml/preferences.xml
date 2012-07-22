@@ -77,7 +77,16 @@
 
   <PreferenceCategory 
      android:title="@string/pref_cat_drawing"
-     android:key="survey_category">
+     android:key="drawing_category">
+
+     <com.android.DistoX.MyEditPreference
+       android:key="DISTOX_DRAWING_UNIT"
+       android:title="@string/pref_drawing_unit_title"
+       android:summary="@string/pref_drawing_unit_summary"
+       android:dialogTitle="@string/pref_drawing_unit_title"
+       android:dialogMessage="@string/pref_drawing_unit_message"
+       android:inputType="numberDecimal"
+       android:defaultValue="1.2" />
 
      <com.android.DistoX.MyEditPreference
        android:key="DISTOX_LINE_SEGMENT"
@@ -114,6 +123,13 @@
        android:dialogMessage="@string/pref_linecorner_message"
        android:inputType="numberDecimal"
        android:defaultValue="20.0" />
+
+     <CheckBoxPreference
+       android:key="DISTOX_CHECK_ATTACHED"
+       android:summary="@string/pref_checkAttached_summary"
+       android:title="@string/pref_checkAttached_title"
+       android:defaultValue="false"
+     />
 
   </PreferenceCategory>
 

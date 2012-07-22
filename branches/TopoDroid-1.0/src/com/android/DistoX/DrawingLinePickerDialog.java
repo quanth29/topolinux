@@ -80,7 +80,8 @@ public class DrawingLinePickerDialog extends Dialog
         mBtnOK.setOnClickListener( this );
         mBtnCancel.setOnClickListener( this );
 
-        setTitle("LINE " + DrawingBrushPaths.lineLocalName[ mIndex ] );
+        setTitle( String.format( mContext.getResources().getString( R.string.title_draw_line ),
+                                 DrawingBrushPaths.lineLocalName[ mIndex ] ) );
     }
 
     public void onClick(View view)
