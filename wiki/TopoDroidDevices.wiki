@@ -14,6 +14,7 @@ any comment that might be useful to others.
 || *Device* || *Android* || *TopoDroid* || *Status* || *Comment* ||
 || Asus EEPAD Transformer TF101 10"|| 4.0.3 || 0.7.1 || <font color="green">Mostly working || calibration untested ||
 || Haiwei Vodaphone 858 Smart || 2.2 || 0.7.1 - 1.0.3 || <font color="green">Fully working || ||
+|| HTC Desire Senser || 2.3.5 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || HTC EVO 3D || 2.3 || 0.7.1 || <font color="green">Mostly working || calibration untested ||
 || HTC Wilfire || 2.3 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || HTC Wilfire S || 2.3.5 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
