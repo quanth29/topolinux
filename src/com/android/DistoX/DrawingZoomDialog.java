@@ -20,13 +20,9 @@ import android.graphics.*;
 import android.view.View;
 import android.widget.Button;
 
-// import android.util.Log;
-
 public class DrawingZoomDialog extends Dialog 
                                implements View.OnClickListener
 {
-    // private static final String TAG = "DistoX DrawingZoom";
-
     // private static final int ZOOM_NONE  = 0;
     // private static final int ZOOM_MINUS = 1;
     // private static final int ZOOM_ONE   = 2;
@@ -66,7 +62,7 @@ public class DrawingZoomDialog extends Dialog
 
     public void onClick(View view)
     {
-      // Log.v( TAG, "onClick()" );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "ZoomDialog onClick()" );
       switch (view.getId()){
         case R.id.button_zoom_plus:
           mActivity.zoomIn();

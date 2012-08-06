@@ -36,8 +36,6 @@ import android.os.Bundle;
 // import android.os.Message;
 // import android.os.Parcelable;
 
-// import android.util.Log;
-
 import android.content.Context;
 import android.content.Intent;
 
@@ -54,7 +52,6 @@ import android.widget.AdapterView.OnItemClickListener;
 public class GMActivity extends Activity
                            implements OnItemClickListener, ILister
 {
-  // private static final String TAG = "DistoX GM";
   private TopoDroidApp app;
 
   private String mSaveData;                // saved GM text representation
@@ -156,7 +153,7 @@ public class GMActivity extends Activity
         }
         break;
       case TopoDroidApp.GROUP_BY_FOUR:
-        // Log.v(TAG, "group by four");
+        // TopoDroidApp.Log( TopoDroidApp.LOG_CALIB, "group by four");
         group = 1;
         for ( CalibCBlock item : list ) {
           item.setGroup( group );
@@ -164,7 +161,7 @@ public class GMActivity extends Activity
           ++ cnt;
           if ( (cnt%4) == 0 ) {
             ++group;
-            // Log.v(TAG, "cnt " + cnt + " new group " + group );
+            // TopoDroidApp.Log( TopoDroidApp.LOG_CALIB, "cnt " + cnt + " new group " + group );
           }
         }
         break;
@@ -240,7 +237,7 @@ public class GMActivity extends Activity
   {
      String msg = mSaveTextView.getText().toString();
      String[] st = msg.split( " ", 3 );
-     // Log.v( TAG, "TextItem: (" + st[0] + ") (" + st[1] + ") (" + st[2] + ")" );
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_CALIB, "TextItem: (" + st[0] + ") (" + st[1] + ") (" + st[2] + ")" );
      mCIDid    = Long.parseLong(st[0]);
      String name = st[1];
      mSaveData = st[2];
@@ -296,7 +293,7 @@ public class GMActivity extends Activity
   @Override
   public boolean onOptionsItemSelected(MenuItem item) 
   {
-    // Log.v( TAG, "onOptionsItemSelected() " + StatusName() );
+    // TopoDroidApp.Log(  TopoDroidApp.LOG_CALIB, "onOptionsItemSelected() " + StatusName() );
     // Handle item selection
     if ( item == mMIrefresh ) {
       updateDisplay( );
@@ -456,7 +453,7 @@ public class GMActivity extends Activity
 
   public int downloadData()
   {
-    // Log.v( TAG, "downloadData() device " + app.mDevice );
+    // TopoDroidApp.Log(  TopoDroidApp.LOG_CALIB, "downloadData() device " + app.mDevice );
     if ( app.mComm != null && app.mDevice != null ) {
       return app.mComm.downloadData( app.mDevice );
     }

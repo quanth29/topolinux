@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES 
+ * 20120725 TopoDroidApp log
  */
 package com.android.DistoX;
 
@@ -14,8 +17,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Matrix;
-
-// import android.util.Log;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -27,7 +28,6 @@ import java.util.ArrayList;
  */
 public class DrawingAreaPath extends DrawingPath
 {
-  // private static final String TAG = "DistoX";
   private static int area_id_cnt = 0;
 
   private String makeId() 
@@ -47,7 +47,7 @@ public class DrawingAreaPath extends DrawingPath
   public DrawingAreaPath( int type, String id )
   {
     super( DrawingPath.DRAWING_PATH_AREA );
-    // Log.v( TAG, "new DrawingAreaPath type " + type );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "new DrawingAreaPath type " + type );
     mAreaType = type;
     if ( id != null ) {
       mAreaCnt = Integer.parseInt( id.substring(1) );

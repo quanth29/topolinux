@@ -21,8 +21,6 @@ import android.os.Bundle;
 
 import android.content.Intent;
 
-// import android.util.Log;
-
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -38,8 +36,6 @@ import android.content.Context;
 public class ImportDialog extends Dialog
                           implements OnItemClickListener
 { 
-  // private static final String TAG = "DistoX";
-  
   private Context mContext;
   private TopoDroidApp app;
   private TopoDroidActivity mParent;

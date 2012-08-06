@@ -28,13 +28,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
 
-// import android.util.Log;
 
 public class SurveyStatDialog extends Dialog 
                                     // implements View.OnClickListener
 {
-  // private static final String TAG = "DistoX stats";
-
     private Context mContext;
 
     private TextView mTextLeg;
@@ -54,7 +51,7 @@ public class SurveyStatDialog extends Dialog
       super(context);
       mContext = context;
       mStat = stat;
-      // Log.v(TAG, "SurveyStat cstr");
+      // TopoDroidApp.Log(TopoDroidApp.LOG_STAT, "SurveyStat cstr");
     }
 
     @Override
@@ -65,7 +62,7 @@ public class SurveyStatDialog extends Dialog
 
         Resources res = mContext.getResources();
 
-        // Log.v(TAG, " SurveyStat onCreate");
+        // TopoDroidApp.Log(TopoDroidApp.LOG_STAT, " SurveyStat onCreate");
         mTextLeg       = (TextView) findViewById(R.id.stat_leg);
         mTextDuplicate = (TextView) findViewById(R.id.stat_duplicate);
         mTextSurface   = (TextView) findViewById(R.id.stat_surface);
@@ -91,7 +88,7 @@ public class SurveyStatDialog extends Dialog
     // @Override
     // public void onClick(View view)
     // {
-    //   // Log.v( TAG, "onClick()" );
+    //   // TopoDroidApp.Log( TopoDroidApp.LOG_STAT, "onClick()" );
     //   dismiss();
     // }
 }

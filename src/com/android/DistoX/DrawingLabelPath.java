@@ -19,8 +19,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Locale;
 
-// import android.util.Log;
-
 /**
  */
 public class DrawingLabelPath extends DrawingPointPath
@@ -52,14 +50,14 @@ public class DrawingLabelPath extends DrawingPointPath
   @Override
   public void draw( Canvas canvas )
   {
-    // Log.v( "DistoX", "LABEL " + mText );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PATH, "DrawingLabelPath::draw " + mText );
     canvas.drawTextOnPath( mText, path, 0f, 0f, mPaint );
   }
 
   @Override
   public void draw( Canvas canvas, Matrix matrix )
   {
-    // Log.v( "DistoX", "LABEL " + mText );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PATH, "DrawingLabelPath::draw[matrix] " + mText );
     mTransformedPath = new Path( path );
     mTransformedPath.transform( matrix );
     canvas.drawTextOnPath( mText, mTransformedPath, 0f, 0f, mPaint );

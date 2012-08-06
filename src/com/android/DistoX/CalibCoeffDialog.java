@@ -16,8 +16,6 @@ import java.io.PrintWriter;
 import android.app.Dialog;
 import android.os.Bundle;
 
-// import android.util.Log;
-
 import android.content.Context;
 
 import android.widget.TextView;
@@ -25,10 +23,8 @@ import android.widget.Button;
 import android.view.View;
 
 public class CalibCoeffDialog extends Dialog
-                              implements View.OnClickListener
+                              // implements View.OnClickListener
 {
-  // private static final String TAG = "DistoX CoeffDialog";
-
   private TextView mTextBG;
   private TextView mTextAGx;
   private TextView mTextAGy;
@@ -40,7 +36,7 @@ public class CalibCoeffDialog extends Dialog
   private TextView mTextDelta;
   private TextView mTextMaxError;
   private TextView mTextIter;
-  private Button   mButtonBack;
+  // private Button   mButtonBack;
 
   private String bg0;
   private String agx;
@@ -112,7 +108,6 @@ public class CalibCoeffDialog extends Dialog
   protected void onCreate(Bundle savedInstanceState) 
   {
     super.onCreate(savedInstanceState);
-    // Log.v( TAG, "onCreate" );
 
     setContentView(R.layout.distox_coeff_dialog);
     mTextBG  = (TextView) findViewById(R.id.coeff_bg);
@@ -140,14 +135,14 @@ public class CalibCoeffDialog extends Dialog
     mTextMaxError.setText( error0 );
     mTextIter.setText( iter0 );
 
-    mButtonBack = (Button) findViewById( R.id.button_coeff_back );
-    mButtonBack.setOnClickListener( this );
+    // mButtonBack = (Button) findViewById( R.id.button_coeff_back );
+    // mButtonBack.setOnClickListener( this );
   }
 
-  public void onClick(View v) 
-  {
-    dismiss();
-  }
+  // public void onClick(View v) 
+  // {
+  //   dismiss();
+  // }
 
 }
 

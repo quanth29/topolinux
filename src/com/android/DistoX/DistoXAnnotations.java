@@ -20,8 +20,6 @@ import java.io.IOException;
 import android.app.Activity;
 import android.os.Bundle;
 
-// import android.util.Log;
-
 import android.content.Intent;
 
 import android.widget.TextView;
@@ -35,8 +33,6 @@ import android.view.View;
 public class DistoXAnnotations extends Activity
                                implements View.OnClickListener
 {
-  private static final String TAG = "DistoXAnnotations";
-
   private TextView mTVtitle;
   private EditText mETtext;
   private Button   mButtonOK;
@@ -45,7 +41,7 @@ public class DistoXAnnotations extends Activity
 
   private void load( )
   {
-    // Log.v(TAG, "reading from file " + mFilename );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_NOTE, "reading from file " + mFilename );
     try {
       FileReader fr = new FileReader( mFilename );
       BufferedReader br = new BufferedReader( fr );
@@ -56,8 +52,7 @@ public class DistoXAnnotations extends Activity
       }
       fr.close();
     } catch ( IOException e ) {
-      // ignore
-      // Log.v( TAG, "ioexception " + e.toString() );
+      TopoDroidApp.Log(  TopoDroidApp.LOG_ERR, "load IOexception " + e.toString() );
     }
   }
 
@@ -70,8 +65,7 @@ public class DistoXAnnotations extends Activity
       fw.flush();
       fw.close();
     } catch ( IOException e ) {
-      // ignore
-      // Log.v( TAG, "ioexception " + e.toString() );
+      TopoDroidApp.Log(  TopoDroidApp.LOG_ERR, "save IOexception " + e.toString() );
     }
   }
 
@@ -85,8 +79,7 @@ public class DistoXAnnotations extends Activity
       fw.flush();
       fw.close();
     } catch ( IOException e ) {
-      // ignore
-      // Log.v( TAG, "ioexception " + e.toString() );
+      TopoDroidApp.Log(  TopoDroidApp.LOG_ERR, "append IOexception " + e.toString() );
     }
   }
 

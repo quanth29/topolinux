@@ -16,8 +16,6 @@ package com.android.DistoX;
 import android.app.Dialog;
 import android.os.Bundle;
 
-// import android.util.Log;
-
 import android.content.Intent;
 import android.content.Context;
 
@@ -61,7 +59,6 @@ public class CalibGMDialog extends Dialog
   protected void onCreate(Bundle savedInstanceState) 
   {
     super.onCreate(savedInstanceState);
-    // Log.v( TAG, "onCreate" );
     setContentView(R.layout.distox_gm_dialog);
     mTextView = (TextView) findViewById(R.id.gm_text);
     mEditText = (EditText) findViewById(R.id.gm_name);

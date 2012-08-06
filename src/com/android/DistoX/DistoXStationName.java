@@ -10,10 +10,9 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120520 created
+ * 20120726 TopoDroid log
  */
 package com.android.DistoX;
-
-// import android.util.Log;
 
 public class DistoXStationName
 {
@@ -38,20 +37,20 @@ public class DistoXStationName
         int k = Character.getNumericValue( ch );
         if ( k >= 10 && k < 35 ) {
           k -= 9; // - 10 + 1
-          // Log.v(TAG, "not numeric " + k );
+          // TopoDroidApp.Log( TopoDroidApp.LOG_NAME, "not numeric " + k );
           return name.substring( 0, len - 1 ) + 
            ( Character.isLowerCase( ch )? lc[k] : uc[k] );
         } else if ( k >= 0 && k < 10 ) {
           int n = 0;
           int s = 1;
-          // Log.v(TAG, "name >" + name + "< n " + n );
+          // TopoDroidApp.Log( TopoDroidApp.LOG_NAME, "name >" + name + "< n " + n );
           while ( len > 0 ) {
             -- len;
             k = Character.getNumericValue( name.charAt(len) );
             if ( k < 0 || k >= 10 ) { ++len; break; }
             n += s * k;
             s *= 10;
-            // Log.v(TAG, "k " + k + " n " + n + " len " + len);
+            // TopoDroidApp.Log( TopoDroidApp.LOG_NAME, "k " + k + " n " + n + " len " + len);
           }
           if ( len > 0 ) {
             return name.substring( 0, len ) + Integer.toString( n+1 );

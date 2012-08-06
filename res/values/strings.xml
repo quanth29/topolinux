@@ -62,16 +62,19 @@
     <string name="connected_not">Not connected</string>
     <string name="connect_failed">Failed connect</string>
     <string name="data"> data</string>
+    <string name="using">Using %1$s</string>
    
     <!-- string name="device_busy">device busy</string -->
-    <string name="device_comm_thread">Continuous data download</string>
-    <string name="device_action_thread">On-demand download and read/write</string>
+    <!-- string name="device_comm_thread">Continuous data download</string -->
+    <!-- string name="device_action_thread">On-demand download and read/write</string -->
     <string name="device_off">DistoX off</string>
+    <string name="device_none">No DistoX selected</string>
+
     <!-- string name="disto_bad_type">DistoX bad data type</string -->
     <string name="comment">comment</string>
-    <string name="connection">Connection</string>
-    <string name="download_batch">Batch</string>
-    <string name="download_continuous">Continuous</string>
+    <!-- string name="connection">Connection</string -->
+    <!-- string name="download_batch">Batch</string -->
+    <!-- string name="download_continuous">Continuous</string -->
     <string name="duplicate">duplicate</string>
     <string name="surface">surface</string>
     <string name="extend_left">Left</string>
@@ -255,8 +258,8 @@
     <string name="button_back"      >Back      </string>
     <string name="button_cancel"    >Cancel    </string>
     <!-- string name="button_close"     >Close     </string -->
-    <string name="button_connect"   >Connect   </string>
-    <string name="button_disconnect">Disconnect</string>
+    <!-- string name="button_connect"   >Connect   </string -->
+    <!-- string name="button_disconnect">Disconnect</string -->
     <string name="button_drop"      >Delete    </string>
     <string name="button_eval"      >Eval      </string>
     <string name="button_eval_cal"  >Eval w. calib.</string>
@@ -288,9 +291,9 @@
     <string name="btn_area">Area</string>
 
     <string name="title_calib">CALIBRATIONS</string>
-    <string name="title_connected"> - CONNECTED</string>
     <string name="title_coverage">Calibration data distibution</string>
-    <string name="title_not_connected"> - NOT CONNECTED</string>
+    <!-- nstring name="title_connected"> - CONNECTED</string -->
+    <!-- nstring name="title_not_connected"> - NOT CONNECTED</string -->
     <string name="title_device">DistoX devices</string>
     <string name="title_discover">Scanning for DistoX devices ... wait</string>
     <string name="title_draw_area">AREA %1$s</string>
@@ -311,8 +314,8 @@
   <string name="pref_cat_calib">Calibration options</string>
   <string name="pref_cat_device">DistoX options</string>
 
-  <string name="pref_conn_mode_title">Connection mode</string>
-  <string name="pref_conn_mode_summary">DistoX connection mode</string>
+  <!-- string name="pref_conn_mode_title">Connection mode</string -->
+  <!-- string name="pref_conn_mode_summary">DistoX connection mode</string -->
   <string name="pref_base_path_title">Parent directory</string>
   <string name="pref_base_path_summary">TopoDroid parent directory</string>
   <string name="pref_base_path_message">Enter TopoDroid parent directory</string>

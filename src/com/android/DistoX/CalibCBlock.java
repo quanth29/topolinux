@@ -10,16 +10,15 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120517 angle units
+ * 20120725 TopoDroidApp log
  */
 package com.android.DistoX;
 
 import java.io.StringWriter;
 import java.io.PrintWriter;
-// import android.util.Log;
 
 public class CalibCBlock
 {
-  // private static final String TAG = "DistoX CBlock";
   private static final float grad2rad = TopoDroidApp.GRAD2RAD_FACTOR;
 
   private static int[] colors = { 0xffcccccc, 0xffffcccc, 0xffccccff };
@@ -99,7 +98,7 @@ public class CalibCBlock
     // StringWriter sw = new StringWriter();
     // PrintWriter pw = new PrintWriter( sw );
     // pw.format(" G %d %d %d M %d %d %d E %.2f", gx, gy, gz, mx, my, mz, mError );
-    // Log.v( TAG, sw.getBuffer().toString() );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_DATA, sw.getBuffer().toString() );
     Vector g = new Vector( gx/f, gy/f, gz/f );
     Vector m = new Vector( mx/f, my/f, mz/f );
     doComputeBearingAndClino( g, m );

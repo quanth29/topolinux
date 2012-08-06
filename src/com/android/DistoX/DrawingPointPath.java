@@ -19,8 +19,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Matrix;
 
-// import android.util.Log;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Locale;
@@ -49,7 +47,7 @@ public class DrawingPointPath extends DrawingPath
   public DrawingPointPath( int type, float x, float y, int scale, String options )
   {
     super( DrawingPath.DRAWING_PATH_POINT );
-    // Log.v( "DistoX", "Point " + type + " X " + x + " Y " + y );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PATH, "Point " + type + " X " + x + " Y " + y );
     mPointType = type;
     mXpos = x;
     mYpos = y;
@@ -57,7 +55,7 @@ public class DrawingPointPath extends DrawingPath
     mScale   = SCALE_NONE;
     mOrientation = 0.0;
     if ( DrawingBrushPaths.canRotate( type ) ) {
-      // Log.v("DistoX", "new point type " + type + " setOrientation to " + DrawingBrushPaths.orientation(type) );
+      // TopoDroidApp.Log(TopoDroidApp.LOG_PATH, "new point type " + type + " setOrientation to " + DrawingBrushPaths.orientation(type) );
       setOrientation( DrawingBrushPaths.orientation(type) );
     }
     setPaint( DrawingBrushPaths.pointPaint[ mPointType ] );
@@ -109,7 +107,7 @@ public class DrawingPointPath extends DrawingPath
   @Override
   public void setOrientation( double angle ) 
   { 
-    // Log.v( "DistoX", "Point " + mPointType + " setOrientation " + angle );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PATH, "Point " + mPointType + " setOrientation " + angle );
     mOrientation = angle; 
     while ( mOrientation >= 360.0 ) mOrientation -= 360.0;
     while ( mOrientation < 0.0 ) mOrientation += 360.0;
@@ -142,7 +140,7 @@ public class DrawingPointPath extends DrawingPath
          mXpos*toTherion, -mYpos*toTherion, 
          DrawingBrushPaths.pointThName[mPointType] );
       if ( mOrientation != 0.0 ) {
-        // Log.v( "DistoX", "point.toTherion type " + mPointType + " orientation " + mOrientation );
+        // TopoDroidApp.Log( TopoDroidApp.LOG_PATH, "point.toTherion type " + mPointType + " orientation " + mOrientation );
         pw.format(Locale.ENGLISH, " -orientation %.2f", mOrientation);
       }
     }

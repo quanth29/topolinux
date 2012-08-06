@@ -15,14 +15,11 @@ import android.preference.Preference;
 import android.preference.ListPreference;
 import android.util.AttributeSet;
 import android.preference.Preference.OnPreferenceChangeListener;
-// import android.util.Log;
 
 /**
  */
 public class MyListPreference extends ListPreference
 {
-  // private static final String TAG = "DistoX";
-
   public MyListPreference( Context c, AttributeSet a ) 
   {
     super(c,a);

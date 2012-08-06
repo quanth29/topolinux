@@ -15,8 +15,6 @@ package com.android.DistoX;
 import android.app.Dialog;
 import android.os.Bundle;
 
-import android.util.Log;
-
 import android.content.Intent;
 import android.content.Context;
 
@@ -34,7 +32,6 @@ import android.graphics.BitmapFactory;
 public class PhotoEditDialog extends Dialog
                              implements View.OnClickListener
 {
-  private static final String TAG = "DistoX";
   private PhotoActivity mParent;
   private PhotoInfo mPhoto;
   private String mFilename;
@@ -54,7 +51,7 @@ public class PhotoEditDialog extends Dialog
     mParent = parent;
     mPhoto  = photo;
     mFilename = filename;
-    Log.v(TAG, "PhotoEditDialog " + mFilename);
+    // TopoDroidApp.Log(TopoDroidApp.LOG_PHOTO, "PhotoEditDialog " + mFilename);
   }
 
 // -------------------------------------------------------------------
@@ -62,7 +59,7 @@ public class PhotoEditDialog extends Dialog
   protected void onCreate(Bundle savedInstanceState) 
   {
     super.onCreate(savedInstanceState);
-    // Log.v( TAG, "onCreate" );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PHOTO, "onCreate" );
     setContentView(R.layout.photo_dialog);
 
     mIVimage      = (ImageView) findViewById( R.id.photo_image );
@@ -98,7 +95,7 @@ public class PhotoEditDialog extends Dialog
   public void onClick(View v) 
   {
     Button b = (Button) v;
-    // Log.v(TAG, "text " + mETtitle.getText().toString() );
+    // TopoDroidApp.Log(TopoDroidApp.LOG_PHOTO, "text " + mETtitle.getText().toString() );
     if ( b == mButtonOK && mETtitle.getText() != null ) {
       if ( mETcomment.getText() == null ) {
         mParent.updatePhoto( mPhoto, mETtitle.getText().toString(), "" );

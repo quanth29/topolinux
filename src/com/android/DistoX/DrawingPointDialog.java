@@ -16,8 +16,6 @@ import java.io.PrintWriter;
 import android.app.Dialog;
 import android.os.Bundle;
 
-// import android.util.Log;
-
 import android.content.Context;
 
 import android.widget.TextView;
@@ -30,8 +28,6 @@ import android.view.View;
 public class DrawingPointDialog extends Dialog
                                implements View.OnClickListener
 {
-  // private static final String TAG = "DistoX";
-
   private DrawingPointPath mPoint;
 
   private TextView mTVtype;

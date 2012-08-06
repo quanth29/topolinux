@@ -136,6 +136,9 @@
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="right"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
         android:text="@string/button_save"
         />
    		
@@ -143,6 +146,9 @@
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="right"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
         android:text="@string/button_cancel"
         />
     </LinearLayout>

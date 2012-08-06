@@ -22,8 +22,6 @@ import java.io.BufferedReader;
 // import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import android.util.Log;
-
 public class TherionParser
 {
   private static final String TAG = "DistoX";
@@ -147,13 +145,13 @@ public class TherionParser
       int i = filename.lastIndexOf('/');
       if ( i > 0 ) dirname = filename.substring(0, i+1);
       // System.out.println("readFile dir " + dirname + " filename " + filename );
-      // Log.v( TAG, "reading file " + filename + " dir " + dirname );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_THERION, "reading file " + filename + " dir " + dirname );
 
       FileReader fr = new FileReader( filename );
       BufferedReader br = new BufferedReader( fr );
       String line = nextLine( br );
       while ( line != null ) {
-        // Log.v(TAG, "TH " + line );
+        // TopoDroidApp.Log( TopoDroidApp.LOG_THERION, "TH " + line );
         line = line.trim();
         int pos = line.indexOf( '#' );
         if ( pos >= 0 ) {

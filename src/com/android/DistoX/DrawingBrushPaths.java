@@ -12,6 +12,7 @@
  * 20120614 new points: end (narrow-end, low-end) pebbles, snow
  * 20120614 new area: snow
  * 20120619 new line: overhang
+ * 20120725 TopoDroidApp log
  */
 package com.android.DistoX;
 
@@ -24,15 +25,12 @@ import android.content.res.Resources;
 
 import java.lang.Math;
 
-// import android.util.Log;
 
 /**
  * gereric brush 
  */
 public class DrawingBrushPaths
 {
-  // private static final String TAG = "DistoX";
-
   public static final int STROKE_WIDTH_CURRENT = 1;
   public static final int STROKE_WIDTH_FIXED   = 1;
   public static final int STROKE_WIDTH_PREVIEW = 1;
@@ -204,7 +202,7 @@ public class DrawingBrushPaths
 
   public static void resetPointOrientations( )
   {
-    // Log.v( TAG, "resetPointOrientations()" );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "resetPointOrientations()" );
     for ( int k=0; k<=POINT_MAX; ++k ) mOrientation[k] = 0.0;
     paths = null;
     makePaths( );

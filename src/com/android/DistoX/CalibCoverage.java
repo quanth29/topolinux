@@ -18,7 +18,6 @@ import android.graphics.Bitmap.Config;
 import android.app.Dialog;
 import android.os.Bundle;
 
-// import android.util.Log;
 import android.widget.Toast;
 
 import android.content.Context;
@@ -31,8 +30,6 @@ import android.view.View;
 public class CalibCoverage extends Dialog
                            implements View.OnClickListener
 {
-  // private static final String TAG = "DistoX Cover";
-
   private class Direction
   {
     public float mCompass;
@@ -95,10 +92,10 @@ public class CalibCoverage extends Dialog
     mImage = (ImageView) findViewById( R.id.coverage_image );
     mBtnEval = (Button) findViewById( R.id.coverage_eval );
     mBtnEvalCal = (Button) findViewById( R.id.coverage_eval_cal );
-    Button back = (Button) findViewById( R.id.coverage_back );
+    // Button back = (Button) findViewById( R.id.coverage_back );
     mBtnEval.setOnClickListener( this );
     mBtnEvalCal.setOnClickListener( this );
-    back.setOnClickListener( this );
+    // back.setOnClickListener( this );
     reset();
   }
 

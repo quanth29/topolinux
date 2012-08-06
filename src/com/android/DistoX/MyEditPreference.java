@@ -16,14 +16,11 @@ import android.preference.Preference;
 import android.preference.EditTextPreference;
 import android.util.AttributeSet;
 import android.preference.Preference.OnPreferenceChangeListener;
-// import android.util.Log;
 
 /**
  */
 public class MyEditPreference extends EditTextPreference
 {
-  // private static final String TAG = "DistoX";
-
   public MyEditPreference( Context c, AttributeSet a ) 
   {
     super(c,a);
@@ -44,7 +41,7 @@ public class MyEditPreference extends EditTextPreference
       {
         p.setSummary( getText() );
         // String key = p.getKey();
-        // Log.v( TAG, "pref, key " + key + " val " + getText() );
+        // TopoDroidApp.Log( TopoDroidApp.LOG_PREFS, "pref, key " + key + " val " + getText() );
         return true;
       }
     } );

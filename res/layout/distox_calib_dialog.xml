@@ -59,7 +59,9 @@
         <Button
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:width="70dp"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
                 android:onClick="onClick"
                 android:id="@+id/calibSave"
                 android:text="@string/menu_save"
@@ -67,7 +69,9 @@
         <Button
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:width="70dp"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
                 android:onClick="onClick"
                 android:id="@+id/calibOpen"
                 android:text="@string/menu_open"
@@ -81,7 +85,9 @@
         <Button
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:width="70dp"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
                 android:onClick="onClick"
                 android:id="@+id/calibDelete"
                 android:text="@string/menu_delete"

@@ -13,6 +13,7 @@
  * 20120621 begin long-click (item options editing)
  * 20120706 display screen scale factor
  * 20120715 per-category preferences
+ * 20120725 TopoDroidApp log
  */
 package com.android.DistoX;
 
@@ -38,7 +39,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-// import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
@@ -58,7 +58,6 @@ public class DrawingActivity extends Activity
                                       , View.OnLongClickListener
                                       , DrawingPointPickerDialog.OnPointSelectedListener
 {
-    // private static final String TAG = "DistoX DrawingActivity";
     private TopoDroidApp app;
 
     // private static final String TITLE_DRAW_POINT = "Draw point ";
@@ -172,7 +171,7 @@ public class DrawingActivity extends Activity
 
     public void zoomView( )
     {
-      // Log.v( TAG, "zoomView ");
+      // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "zoomView ");
       DrawingZoomDialog zoom = new DrawingZoomDialog( mDrawingSurface.getContext(), this );
       zoom.show();
     }
@@ -302,7 +301,7 @@ public class DrawingActivity extends Activity
 
     private boolean saveTh2()
     {
-      // Log.v( TAG, "saving th2 file\n");
+      // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, " savingTh2 ");
       if ( mFullName != null && mDrawingSurface != null ) {
         try {
           String filename = app.getTh2FileWithExt( mFullName );
@@ -386,7 +385,8 @@ public class DrawingActivity extends Activity
      
       if ( mType == TopoDroidApp.PLOT_PLAN || mType == TopoDroidApp.PLOT_EXTENDED ) {
         List<DistoXDBlock> list = mData.selectAllShots( mSid, TopoDroidApp.STATUS_NORMAL );
-        // Log.v( TAG, "onCreate SID " + mSid + " start at " + start + " shots " + list.size() );
+        // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT,
+        //   "DrawingActivity::onCreate SID " + mSid + " start at " + start + " shots " + list.size() );
         if ( list.size() == 0 ) {
            Toast.makeText( this, R.string.few_data, Toast.LENGTH_LONG ).show();
            finish();
@@ -395,14 +395,14 @@ public class DrawingActivity extends Activity
           List< DistoXNum.Station > stations = mNum.getStations();
           List< DistoXNum.Shot > shots = mNum.getShots();
           List< DistoXNum.Splay > splays = mNum.getSplays();
-          // Log.v( TAG, "stations " + stations.size() + " legs " + shots.size() );
+          // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "stations " + stations.size() + " legs " + shots.size() );
           for ( DistoXNum.Shot sh : shots ) {
             DistoXNum.Station st1 = sh.from;
             DistoXNum.Station st2 = sh.to;
             if ( mType == TopoDroidApp.PLOT_PLAN ) {
               addFixedLine( sh.block, (float)(st1.e), (float)(st1.s), (float)(st2.e), (float)(st2.s), false );
-              // Log.v( TAG, "add line " + (float)(st1.e) + " " + (float)(st1.s) + " "
-              //        + (float)(st2.e) + " " + (float)(st2.s) );
+              // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, 
+              //   "add line " + (float)(st1.e) + " " + (float)(st1.s) + " " + (float)(st2.e) + " " + (float)(st2.s) );
             } else if ( mType == TopoDroidApp.PLOT_EXTENDED ) {
               addFixedLine( sh.block, (float)(st1.h), (float)(st1.v), (float)(st2.h), (float)(st2.v), false );
             } 
@@ -443,30 +443,21 @@ public class DrawingActivity extends Activity
         float xmax = 0.0f;
         float ymin = 0.0f;
         float ymax = 0.0f;
-        String station = start;
-        String view_station = null;
-        int idx = start.indexOf('-');
-        if ( idx < 0 ) idx = start.indexOf(' ');
-        if ( idx > 0 ) {
-          station = start.substring(0, idx);
-          view_station = start.substring( idx+1 );
-        }
-        // Log.v( TAG, "station " + station + " view-station " + view_station );
-        List<DistoXDBlock> list = mData.selectAllShotsAtStation( mSid, station );
+        String viewed  = extras.getString( app.TOPODROID_PLOT_VIEW );
+        List<DistoXDBlock> list = mData.selectAllShotsAtStation( mSid, start );
+        // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "start " + start + " viewed " + viewed + " shots " + list.size() );
         if ( list.size() == 0 ) {
           Toast.makeText( this, R.string.few_data, Toast.LENGTH_LONG ).show();
           finish();
         } else if ( mType == TopoDroidApp.PLOT_H_SECTION ) {
-          mDrawingSurface.addStation( station, toSceneX(0.0f) - mOffset.x,
-                                               toSceneY(0.0f) - mOffset.y );
+          mDrawingSurface.addStation( start, toSceneX(0.0f) - mOffset.x, toSceneY(0.0f) - mOffset.y );
           for ( DistoXDBlock bl : list ) {
             float b = bl.mBearing;
             float d = bl.mLength * (float)Math.cos( bl.mClino * app.GRAD2RAD_FACTOR );
             float s = - d * (float)Math.cos( b * app.GRAD2RAD_FACTOR );
             float e =   d * (float)Math.sin( b * app.GRAD2RAD_FACTOR );
-            if ( bl.mTo != null ) {
-              mDrawingSurface.addStation( view_station, toSceneX(e) - mOffset.x,
-                                                        toSceneY(s) - mOffset.y );
+            if ( bl.mTo != null && bl.mTo.equals( viewed ) ) {
+              mDrawingSurface.addStation( viewed, toSceneX(e) - mOffset.x, toSceneY(s) - mOffset.y );
               addFixedLine( bl, 0.0f, 0.0f, e, s, false );
               if ( e < xmin ) { xmin = e; } else if ( e > xmax ) { xmax = e; }
               if ( s < ymin ) { ymin = s; } else if ( s > ymax ) { ymax = s; }
@@ -477,14 +468,13 @@ public class DrawingActivity extends Activity
             }
           }
         } else { // ( mType == TopoDroidApp.PLOT_V_SECTION )
-          mDrawingSurface.addStation( station, toSceneX(0.0f) - mOffset.x,
-                                               toSceneY(0.0f) - mOffset.y );
+          mDrawingSurface.addStation( start, toSceneX(0.0f) - mOffset.x, toSceneY(0.0f) - mOffset.y );
           float bearing = 0.0f;
           DistoXDBlock bl0 = null;
           for ( DistoXDBlock bl : list ) {
             String to = bl.mTo;
             if ( to == null ) continue;
-            if ( to.equals( view_station ) ) {
+            if ( to.equals( viewed ) ) {
               bearing = bl.mBearing;
               extend0 = bl.mExtend;
               // float s = - bl.mLength * (float)Math.sin( bl.mClino * app.GRAD2RAD_FACTOR );
@@ -500,9 +490,8 @@ public class DrawingActivity extends Activity
             if ( bl.mExtend != extend0 ) {
               e = -e;
             }
-            if ( bl.mTo != null ) {
-              mDrawingSurface.addStation( view_station, toSceneX(e) - mOffset.x,
-                                                        toSceneY(s) - mOffset.y );
+            if ( bl.mTo != null && bl.mTo.equals( viewed ) ) {
+              mDrawingSurface.addStation( viewed, toSceneX(e) - mOffset.x, toSceneY(s) - mOffset.y );
               addFixedLine( bl, 0.0f, 0.0f, e, s, false );
               if ( e < xmin ) { xmin = e; } else if ( e > xmax ) { xmax = e; }
               if ( s < ymin ) { ymin = s; } else if ( s > ymax ) { ymax = s; }
@@ -570,7 +559,7 @@ public class DrawingActivity extends Activity
 
     // void refreshSurface()
     // {
-    //   // Log.v( TAG, "refresh surface");
+    //   // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "refresh surface");
     //   mDrawingSurface.refresh();
     // }
 
@@ -582,7 +571,7 @@ public class DrawingActivity extends Activity
       float y_scene = y_canvas/mZoom - mOffset.y;
       if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
         if ( mMode == MODE_DRAW ) {
-          // Log.v( TAG, "onTouch ACTION_DOWN symbol " + mSymbol );
+          // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "onTouch ACTION_DOWN symbol " + mSymbol );
           mPointCnt = 0;
           if ( mSymbol == SYMBOL_LINE ) {
             mDrawingSurface.isDrawing = true;
@@ -590,7 +579,7 @@ public class DrawingActivity extends Activity
             mCurrentLinePath.addStartPoint( x_scene, y_scene );
             mCurrentBrush.mouseDown( mDrawingSurface.previewPath.path, x_canvas, y_canvas );
           } else if ( mSymbol == SYMBOL_AREA ) {
-            // Log.v( TAG, "onTouch ACTION_DOWN area type " + mCurrentArea );
+            // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "onTouch ACTION_DOWN area type " + mCurrentArea );
             mDrawingSurface.isDrawing = true;
             mCurrentAreaPath = new DrawingAreaPath( mCurrentArea, null );
             mCurrentAreaPath.addStartPoint( x_scene, y_scene );
@@ -600,9 +589,9 @@ public class DrawingActivity extends Activity
             mSaveY = y_canvas;
           }
         } else if ( mMode == MODE_MOVE ) { // MODE_EDIT
-          // Log.v(TAG, "highlight scene " + x_scene + " " + y_scene );
-          // Log.v(TAG, "  center " + mCenter.x + " " + mCenter.y );
-          // Log.v(TAG, "  offset " + mOffset.x + " " + mOffset.y );
+          // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "highlight scene " + x_scene + " " + y_scene );
+          // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "  center " + mCenter.x + " " + mCenter.y );
+          // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "  offset " + mOffset.x + " " + mOffset.y );
           // setTitle( R.string.title_edit );
           setTitle( R.string.title_move );
 
@@ -648,7 +637,7 @@ public class DrawingActivity extends Activity
           if ( mMode == MODE_MOVE ) {
             mOffset.x += x_shift / mZoom;                // add shift to offset
             mOffset.y += y_shift / mZoom; 
-            // Log.v( TAG, "shift: offset " + mOffset.x + " " + mOffset.y );
+            // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "shift offset " + mOffset.x + " " + mOffset.y );
             mDrawingSurface.setTransform( mOffset.x, mOffset.y, mZoom );
           }
         }
@@ -657,8 +646,9 @@ public class DrawingActivity extends Activity
         float y_shift = y_canvas - mSaveY;
         if ( mMode == MODE_DRAW ) {
           if ( mSymbol == SYMBOL_LINE || mSymbol == SYMBOL_AREA ) {
-            // Log.v( TAG, "onTouch ACTION_UP line style " + app.mLineStyle );
-            // Log.v( TAG, "  path size " + ((mSymbol == SYMBOL_LINE )? mCurrentLinePath.size() : mCurrentAreaPath.size()) );
+            // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "onTouch ACTION_UP line style " + app.mLineStyle );
+            // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, 
+            //   "  path size " + ((mSymbol == SYMBOL_LINE )? mCurrentLinePath.size() : mCurrentAreaPath.size()) );
             mCurrentBrush.mouseUp( mDrawingSurface.previewPath.path, x_canvas, y_canvas );
             mDrawingSurface.previewPath.path = new Path();
 
@@ -682,7 +672,7 @@ public class DrawingActivity extends Activity
                   mBezierInterpolator.fitCurve( pts, nPts, app.mLineAccuracy, app.mLineCorner );
                   ArrayList< BezierCurve > curves = mBezierInterpolator.getCurves();
                   int k0 = curves.size();
-                  // Log.v( TAG, " Bezier size " + k0 );
+                  // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, " Bezier size " + k0 );
                   if ( k0 > 0 ) {
                     BezierCurve c = curves.get(0);
                     BezierPoint p0 = c.getPoint(0);
@@ -786,7 +776,7 @@ public class DrawingActivity extends Activity
 
     public void onClick(View view)
     {
-        // Log.v( TAG, "onClick() point " + mCurrentPoint + " symbol " + mSymbol );
+        // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "DrawingActivity onClick() point " + mCurrentPoint + " symbol " + mSymbol );
         switch (view.getId()){
             case R.id.undoBtn:
                 mDrawingSurface.undo();
@@ -834,11 +824,11 @@ public class DrawingActivity extends Activity
 
         public ExportBitmapToFile( Context context, Handler handler, Bitmap bitmap, String name )
         {
-            mContext  = context;
-            mBitmap   = bitmap;
-            mHandler  = handler;
-            mFullName = name;
-            // Log.v( TAG, "Export as file " + mFullName );
+           mContext  = context;
+           mBitmap   = bitmap;
+           mHandler  = handler;
+           mFullName = name;
+           // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "ExportBitmapToFile " + mFullName );
         }
 
         @Override
@@ -874,7 +864,6 @@ public class DrawingActivity extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-      // Log.v( TAG, "onCreateOptionsMenu()");
       mMIsaveTH2 = menu.add( R.string.menu_save_th2 );
       mMIredo    = menu.add( R.string.menu_redo );
       mMIdisplay = menu.add( R.string.menu_display );
@@ -904,7 +893,6 @@ public class DrawingActivity extends Activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-      // Log.v( TAG, "onOptionsItemSelected()");
       if ( item == mMIredo ) {
         if ( canRedo ) {
           mDrawingSurface.redo();

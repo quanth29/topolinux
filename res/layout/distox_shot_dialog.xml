@@ -22,12 +22,18 @@
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="left"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
         android:text="@string/button_prev"
         />
       <Button android:id="@+id/button_next"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="right"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
         android:text="@string/button_next"
         />
     </LinearLayout>
@@ -126,18 +132,27 @@
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="left"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
         android:text="@string/button_ok"
         />
       <Button android:id="@+id/button_save"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="left"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
         android:text="@string/button_save"
         />
       <Button android:id="@+id/button_back"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="left"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
         android:text="@string/button_back"
         />
       <LinearLayout 
@@ -149,6 +164,9 @@
       <Button android:id="@+id/button_drop"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
         android:text="@string/button_drop"
         />
       </LinearLayout>

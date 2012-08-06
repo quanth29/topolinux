@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120621 item editoing: getPointAt getLineAt
+ * 20120726 TopoDroidApp log
  */
 package com.android.DistoX;
 
@@ -20,8 +21,6 @@ import android.graphics.RectF;
 import android.graphics.PorterDuff;
 import android.graphics.PointF;
 import android.os.Handler;
-
-// import android.util.Log;
 
 import java.util.Iterator;
 import java.util.List;
@@ -133,8 +132,8 @@ public class DrawingCommandManager
 
   public void addCommand( DrawingPath path )
   {
-    // Log.v(TAG, " stack size  " + mCurrentStack.size() );
-    // Log.v(TAG, "   path " + path.toString() );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "addCommand stack size  " + mCurrentStack.size() );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "addCommand path " + path.toString() );
     mRedoStack.clear();
     mCurrentStack.add( path );
   }
@@ -164,7 +163,7 @@ public class DrawingCommandManager
         }
       }
     }
-    // Log.v( TAG, "Bounds " + bounds.left + " " + bounds.top + " " + bounds.right + " " + bounds.bottom );
+    // TopoDroidApp.Log(  TopoDroidApp.LOG_PLOT, "getBitmap Bounds " + bounds.left + " " + bounds.top + " " + bounds.right + " " + bounds.bottom );
     int width  = (int)(bounds.right - bounds.left + 2 * BORDER);
     int height = (int)(bounds.bottom - bounds.top + 2 * BORDER);
 
@@ -358,7 +357,7 @@ public class DrawingCommandManager
           out.newLine();
         } else if ( p.mType == DrawingPath.DRAWING_PATH_LINE ) {
           DrawingLinePath lp = (DrawingLinePath)p;
-          // Log.v( TAG, " saving line " + lp.lineType() );
+          // TopoDroidApp.Log(  TopoDroidApp.LOG_PLOT, "exportTherion line " + lp.lineType() );
           if ( lp.lineType() == DrawingBrushPaths.LINE_WALL ) {
             ArrayList< LinePoint > pts = lp.getPoints();
             for ( LinePoint pt : pts ) {
@@ -378,7 +377,7 @@ public class DrawingCommandManager
           out.newLine();
         } else if ( p.mType == DrawingPath.DRAWING_PATH_AREA ) {
           DrawingAreaPath ap = (DrawingAreaPath)p;
-          // Log.v( TAG, " saving area " + ap.areaType() );
+          // TopoDroidApp.Log(  TopoDroidApp.LOG_PLOT, "exportTherion area " + ap.areaType() );
           out.write( ap.toTherion() );
           out.newLine();
         }

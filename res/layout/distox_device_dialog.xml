@@ -9,18 +9,19 @@
 
     <TextView android:id="@+id/device_address"
         android:layout_marginTop="2dp"
-        android:layout_width="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content" 
         android:text=""
         />
 
-    <TextView 
+    <!-- TextView 
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
         android:text="@string/connection"
-        />
-    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android" 
+        / -->
+    <!-- RadioGroup xmlns:android="http://schemas.android.com/apk/res/android" 
       android:id="@+id/download_connection"
       android:layout_marginTop="2dp"
       android:layout_width="wrap_content" 
@@ -39,54 +40,58 @@
           android:layout_gravity="right"
           android:text="@string/download_continuous"
           />
-    </RadioGroup>
+    </RadioGroup -->
 
 <!-- BATCH -->
-    <TextView android:id="@+id/device_action_thread"
+    <!-- TextView android:id="@+id/device_action_thread"
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
         android:text="@string/device_action_thread"
-        />
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+        / -->
+    <!-- LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
       android:layout_width="wrap_content" 
       android:layout_height="wrap_content"
       android:orientation="horizontal"
-      >
+      -->
       <Button android:id="@+id/button_toggle_device"
-        android:layout_width="wrap_content" 
+        android:layout_marginTop="5dp"
+        android:layout_width="fill_parent" 
         android:layout_height="wrap_content" 
         android:layout_gravity="right"
         android:text="@string/button_toggle"
         />
       <Button android:id="@+id/button_head_tail_device"
-        android:layout_width="wrap_content" 
+        android:layout_marginTop="5dp"
+        android:layout_width="fill_parent" 
         android:layout_height="wrap_content" 
         android:layout_gravity="right"
         android:text="@string/button_head_tail"
         />
-    </LinearLayout>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    <!-- /LinearLayout -->
+    <!-- LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
       android:layout_width="wrap_content" 
       android:layout_height="wrap_content"
       android:orientation="horizontal"
-      >
+      -->
       <Button android:id="@+id/button_read_device"
-        android:layout_width="wrap_content" 
+        android:layout_marginTop="5dp"
+        android:layout_width="fill_parent" 
         android:layout_height="wrap_content" 
         android:layout_gravity="right"
         android:text="@string/button_read"
         />
-      <Button android:id="@+id/button_write_device"
+      <!-- Button android:id="@+id/button_write_device"
+        android:layout_marginTop="5dp"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="right"
         android:text="@string/button_write"
-        />
-    </LinearLayout>
+        / -->
+    <!-- /LinearLayout -->
 
 <!-- CONTINUOS -->
-    <TextView android:id="@+id/device_comm_thread"
+    <!-- TextView android:id="@+id/device_comm_thread"
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
@@ -103,26 +108,36 @@
         android:layout_gravity="right"
         android:text="@string/button_connect"
         />
-      <!-- Button android:id="@+id/button_reconnect_device"
+      <!++ Button android:id="@+id/button_reconnect_device"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="right"
         android:text="@string/button_reconnect"
-        / -->
+        / ++>
       <Button android:id="@+id/button_disconnect_device"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="right"
         android:text="@string/button_disconnect"
         />
-    </LinearLayout>
+    </LinearLayout -->
 
-    <Button android:id="@+id/button_back_device"
+    <!-- Button android:id="@+id/button_back_device"
         android:layout_marginTop="20dp"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="right"
         android:text="@string/button_back"
-        />
+        / -->
    		
+   <ListView android:id="@+id/dev_list"
+          android:layout_marginTop="20dp"
+          android:layout_width="fill_parent"
+          android:layout_height="match_parent"
+          android:stackFromBottom="true"
+          android:transcriptMode="alwaysScroll"
+          android:layout_weight="1"
+          android:textSize="12sp"
+    />
+
 </LinearLayout>

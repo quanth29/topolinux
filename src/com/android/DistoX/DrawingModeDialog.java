@@ -21,13 +21,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 
-// import android.util.Log;
 
 public class DrawingModeDialog extends Dialog 
                                implements View.OnClickListener
 {
-    // private static final String TAG = "DistoX DrawingMode";
-
     private CheckBox mCBleg;      // whether to show legs
     private CheckBox mCBsplay;    // whether to show splays
     private CheckBox mCBstation;  // whether to show stations
@@ -71,7 +68,7 @@ public class DrawingModeDialog extends Dialog
 
     public void onClick(View view)
     {
-      // Log.v( TAG, "onClick()" );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "DrawingModeDialog::onClick" );
       switch (view.getId()){
         case R.id.button_mode_ok:
           int mode = DrawingCommandManager.DISPLAY_NONE;

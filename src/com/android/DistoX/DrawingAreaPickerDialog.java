@@ -23,13 +23,10 @@ import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
-// import android.util.Log;
 
 public class DrawingAreaPickerDialog extends Dialog 
                                implements View.OnClickListener
 {
-    // private static final String TAG = "DistoX DrawingAreaPicker";
-
     private Button[] mBtnArea;
     private Button mBtnOK;
     private Button mBtnCancel;
@@ -85,7 +82,6 @@ public class DrawingAreaPickerDialog extends Dialog
 
     public void onClick(View view)
     {
-      // Log.v( TAG, "onClick()" );
       switch (view.getId()) {
         case R.id.button_ok:
           mActivity.areaSelected( mIndex );

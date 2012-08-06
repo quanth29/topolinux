@@ -46,8 +46,6 @@ import android.os.Bundle;
 // import android.os.Message;
 // import android.os.Parcelable;
 
-// import android.util.Log;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
@@ -57,8 +55,8 @@ import android.location.LocationManager;
 import android.content.Context;
 import android.content.Intent;
 
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.app.Dialog;
@@ -84,7 +82,6 @@ public class TopoDroidActivity extends Activity
                                , OnItemLongClickListener
                                , View.OnClickListener
 {
-  // private static final String TAG = "DistoX";
   private TopoDroidApp app;
 
   // private static final int REQUEST_DEVICE    = 1;
@@ -124,7 +121,7 @@ public class TopoDroidActivity extends Activity
     
   public void updateDisplay( )
   {
-    // Log.v( TAG, "updateDisplay() status: " + StatusName() + " forcing: " + force_update );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "updateDisplay() status: " + StatusName() + " forcing: " + force_update );
     // mArrayAdapter.clear();
     DataHelper data = app.mData;
     switch ( mStatus ) {
@@ -167,7 +164,7 @@ public class TopoDroidActivity extends Activity
 
   private void updateList( List<String> list )
   {
-    // Log.v(TAG, "updateList" );
+    // TopoDroidApp.Log(TopoDroidApp.LOG_MAIN, "updateList" );
     mList.setAdapter( mArrayAdapter );
     mArrayAdapter.clear();
     if ( list.size() > 0 ) {
@@ -193,7 +190,7 @@ public class TopoDroidActivity extends Activity
           break;
         default:
       }
-      // Log.v( TAG, "onClick() status " + mStatus );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "onClick() status " + mStatus );
       if ( status != mStatus ) {
         updateDisplay( );
       }
@@ -282,7 +279,7 @@ public class TopoDroidActivity extends Activity
   @Override
   public boolean onOptionsItemSelected(MenuItem item) 
   {
-    // Log.v( TAG, "onOptionsItemSelected() " + StatusName() );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "onOptionsItemSelected() " + StatusName() );
     // Handle item selection
     if ( item == mMIoptions ) { // OPTIONS DIALOG
       Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
@@ -385,7 +382,7 @@ public class TopoDroidActivity extends Activity
     mBtnCalibs.setOnClickListener( this );
 
     // if ( savedInstanceState == null) {
-    //   Log.v(TAG, "onCreate null savedInstanceState" );
+    //   TopoDroidApp.Log(TopoDroidApp.LOG_MAIN, "onCreate null savedInstanceState" );
     // } else {
     //   Bundle map = savedInstanceState.getBundle(DISTOX_KEY);
     //   restoreInstanceState( map );
@@ -402,7 +399,7 @@ public class TopoDroidActivity extends Activity
   // private void restoreInstanceState(Bundle map )
   // {
   //   if ( map != null ) {
-  //     Log.v( TAG, "onRestoreInstanceState non-null bundle");
+  //     TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "onRestoreInstanceState non-null bundle");
   //     mStatus        = map.getInt( DISTOX_KEY_STATUS );
   //     mOldStatus     = map.getInt( DISTOX_KEY_OLD_STATUS );
   //     mSplay         = map.getBoolean( DISTOX_KEY_SPLAY );
@@ -413,31 +410,31 @@ public class TopoDroidActivity extends Activity
   //     if ( survey != null ) setSurveyFromName( survey );
   //     if ( calib  != null ) setCalibFromName( calib );
   //   } else {
-  //     Log.v( TAG, "onRestoreInstanceState null bundle");
+  //     TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "onRestoreInstanceState null bundle");
   //     // mStatus ??
   //   }
   // }
 
   private void restoreInstanceFromData()
   { 
-    // Log.v( TAG, "restoreInstanceFromData ");
+    // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "restoreInstanceFromData ");
     DataHelper data = app.mData;
     String status = data.getValue( "DISTOX_STATUS" );
-    // Log.v( TAG, "restore STATUS " + status );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "restore STATUS " + status );
     if ( status != null ) {
       String[] vals = status.split( " " );
       // FIXME
     }
      
     String survey = data.getValue( "DISTOX_SURVEY" );
-    // Log.v( TAG, "restore SURVEY >" + survey + "<" );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "restore SURVEY >" + survey + "<" );
     if ( survey != null && survey.length() > 0 ) {
       app.setSurveyFromName( survey );
     } else {
       app.setSurveyFromName( null );
     }
     String calib = data.getValue( "DISTOX_CALIB" );
-    // Log.v( TAG, "restore CALIB >" + calib + "<" );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "restore CALIB >" + calib + "<" );
     if ( calib != null && calib.length() > 0 ) {
       app.setCalibFromName( calib );
     } else {
@@ -447,14 +444,14 @@ public class TopoDroidActivity extends Activity
     
   private void saveInstanceToData()
   {
-    // Log.v(TAG, "saveInstanceToData");
+    // TopoDroidApp.Log(TopoDroidApp.LOG_MAIN, "saveInstanceToData");
     DataHelper data = app.mData;
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter( sw );
     pw.format("%d ", mStatus );
-    // Log.v( TAG, "save STATUS " + sw.getBuffer().toString() );
-    // Log.v( TAG, "save SURVEY >" + app.getSurvey() + "<" );
-    // Log.v( TAG, "save CALIB >" + app.getCalib() + "<" );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "save STATUS " + sw.getBuffer().toString() );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "save SURVEY >" + app.getSurvey() + "<" );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "save CALIB >" + app.getCalib() + "<" );
     data.setValue( "DISTOX_STATUS", sw.getBuffer().toString() );
     data.setValue( "DISTOX_SURVEY", (app.getSurvey() == null)? "" : app.getSurvey() );
     data.setValue( "DISTOX_CALIB", (app.getCalib() == null)? "" : app.getCalib() );
@@ -464,7 +461,7 @@ public class TopoDroidActivity extends Activity
   // @Override
   // public void onSaveInstanceState(Bundle outState) 
   // {
-  //   Log.v( TAG, "onSaveInstanceState");
+  //   TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "onSaveInstanceState");
   //   // outState.putBundle(DISTOX_KEY, mList.saveState());
   //   outState.putInt(DISTOX_KEY_STATUS, mStatus );
   //   outState.putInt(DISTOX_KEY_OLD_STATUS, mOldStatus );
@@ -488,7 +485,7 @@ public class TopoDroidActivity extends Activity
   {
     super.onStart();
     // restoreInstanceFromFile();
-    // Log.v( TAG, "onStart check BT " + app.mCheckBT + " enabled " + app.mBTAdapter.isEnabled() );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "onStart check BT " + app.mCheckBT + " enabled " + app.mBTAdapter.isEnabled() );
 
     if ( do_check_bt ) {
       do_check_bt = false;
@@ -506,7 +503,7 @@ public class TopoDroidActivity extends Activity
   public synchronized void onResume() 
   {
     super.onResume();
-    // Log.v( TAG, "onResume " );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "onResume " );
     if ( app.mComm != null ) { app.mComm.resume(); }
 
     // restoreInstanceFromFile();
@@ -521,7 +518,7 @@ public class TopoDroidActivity extends Activity
   protected synchronized void onPause() 
   { 
     super.onPause();
-    // Log.v( TAG, "onPause " );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "onPause " );
     if ( app.mComm != null ) { app.mComm.suspend(); }
   }
 
@@ -529,7 +526,7 @@ public class TopoDroidActivity extends Activity
   public synchronized void onStop()
   { 
     super.onStop();
-    // Log.v( TAG, "onStop " );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "onStop " );
     // mSavedState = new Bundle();
   }
 
@@ -537,7 +534,7 @@ public class TopoDroidActivity extends Activity
   public synchronized void onDestroy() 
   {
     super.onDestroy();
-    // Log.v( TAG, "onDestroy " );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "onDestroy " );
     // FIXME if ( app.mComm != null ) { app.mComm.interrupt(); }
     saveInstanceToData();
   }
@@ -552,7 +549,7 @@ public class TopoDroidActivity extends Activity
 
   public void onActivityResult( int request, int result, Intent intent ) 
   {
-    // Log.v( TAG, "onActivityResult() request " + mRequestName[request] + " result: " + result );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "onActivityResult() request " + mRequestName[request] + " result: " + result );
     DataHelper data = app.mData;
     Bundle extras = (intent != null )? intent.getExtras() : null;
     switch ( request ) {
@@ -570,7 +567,7 @@ public class TopoDroidActivity extends Activity
         break;
 
     }
-    // Log.v( TAG, "onActivityResult() done " );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "onActivityResult() done " );
   }
 
 
@@ -641,7 +638,7 @@ public class TopoDroidActivity extends Activity
     String comment = mEditComment.getText().toString();
 
     if ( isSaved ) { // survey already saved
-      // Log.v( TAG, "INSERT survey id " + id + " date " + date + " name " + name + " comment " + comment );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "INSERT survey id " + id + " date " + date + " name " + name + " comment " + comment );
       app.mData.updateSurveyDayAndComment( app.mSID, date, comment );
       if ( team != null ) {
         app.mData.updateSurveyTeam( app.mSID, team );

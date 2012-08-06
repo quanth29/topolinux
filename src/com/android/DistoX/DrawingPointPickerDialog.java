@@ -24,12 +24,8 @@ import android.graphics.*;
 import android.view.View;
 import android.view.MotionEvent;
 
-// import android.util.Log;
-
 public class DrawingPointPickerDialog extends Dialog 
 {
-    // private static final String TAG_CP = "DistoX DrawingPointPicker";
-
     private static final int CENTER_RADIUS = 30;
     private static final int MIDDLE_RADIUS = 60;
     private static final int DIAM = 260; 
@@ -149,7 +145,7 @@ public class DrawingPointPickerDialog extends Dialog
             int x0 = (int)( (event.getX() - mSize/2 ) / mSize );
             int y0 = (int)( (event.getY() + mSize/2 - 30) / mSize );
             int idx = x0 + mNN * y0;
-            // Log.v( TAG_CP, "Event X " + x0 + " Y " + y0 + " index " + idx );
+            // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "Event X " + x0 + " Y " + y0 + " index " + idx );
         
             float x = event.getX() - mCenterX; // mCanvas.getWidth();
             float y = event.getY() - mCenterY - EXTRA_Y; // mCanvas.getHeight();
@@ -157,7 +153,7 @@ public class DrawingPointPickerDialog extends Dialog
             boolean inCenter = d <= CENTER_RADIUS;
             boolean inMiddle = ( d > CENTER_RADIUS && d <= MIDDLE_RADIUS );
             // if ( d > CENTER ) return true;
-            // Log.v( TAG_CP, "Event OK: X " + x + " Y " + y + " center " + inCenter + " tracking " + mTrackingCenter );
+            // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "Event OK: X " + x + " Y " + y + " center " + inCenter + " tracking " + mTrackingCenter );
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:

@@ -10,14 +10,15 @@
  * --------------------------------------------------------
  * This software is adapted from TopoLinux implementation,
  * which, in turns, is based on PocketTopo implementation.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120725 TopoDroidApp log
  */
 package com.android.DistoX;
 
 import java.lang.Math;
 import java.io.StringWriter;
 import java.io.PrintWriter;
-
-// import android.util.Log;
 
 public class Calibration
 {
@@ -250,7 +251,7 @@ public class Calibration
     // StringWriter sw = new StringWriter();
     // PrintWriter  pw = new PrintWriter( sw );
     // pw.format("Add %d G %d %d %d M %d %d %d Grp %d", idx, gx, gy, gz, mx, my, mz, group0 );
-    // Log.v( TAG, sw.getBuffer().toString() );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_CALIB, sw.getBuffer().toString() );
     idx ++;
   }
 
@@ -259,7 +260,7 @@ public class Calibration
   public int Calibrate()
   {
     mDelta = 0.0f;
-    // Log.v( TAG, "Calibrate idx " + idx);
+    // TopoDroidApp.Log( TopoDroidApp.LOG_CALIB, "Calibrate idx " + idx);
     if ( idx < 16 ) return -1;
     return Optimize( idx, g, m );
   }
@@ -311,9 +312,9 @@ public class Calibration
     gxt = gf.TurnX( s1, c1 );
     mxt = mf.TurnX( s1, c1 );
     // if ( print ) {
-    //   LogSC( "TurnVectors", s1, c1 );
-    //   LogVectors( "TurnVectors", -1, gf, gxt );
-    //   LogVectors( "TurnVectors", -1, mf, mxt );
+    //   TopoDroidApp.Log( TopoDroidApp.LOG_CALIB, "TurnVectors", s1, c1 );
+    //   TopoDroidApp.Log( TopoDroidApp.LOG_CALIB, "TurnVectors", -1, gf, gxt );
+    //   TopoDroidApp.Log( TopoDroidApp.LOG_CALIB, "TurnVectors", -1, mf, mxt );
     // }
   }
 
@@ -321,7 +322,7 @@ public class Calibration
 
   private void LogNumber( String msg, int it )
   {
-    Log.v( TAG, msg + " " + it );
+    TopoDroidApp.Log( TopoDroidApp.LOG_CALIB, msg + " " + it );
   }
 
   private void LogMatrixVector( String msg, Matrix m1, Vector v1 ) 
@@ -332,7 +333,7 @@ public class Calibration
        m1.x.x, m1.x.y, m1.x.z, v1.x, 
        m1.y.x, m1.y.y, m1.y.z, v1.y, 
        m1.z.x, m1.z.y, m1.z.z, v1.z );
-    Log.v( TAG, msg + sw.getBuffer().toString() );
+    TopoDroidApp.Log( TopoDroidApp.LOG_CALIB, msg + sw.getBuffer().toString() );
   }
 
   private void LogVectors( String msg, long group, Vector v1, Vector v2 )
@@ -340,7 +341,7 @@ public class Calibration
     StringWriter sw = new StringWriter();
     PrintWriter  pw = new PrintWriter( sw );
     pw.format(" %3d V1 %8.4f %8.4f %8.4f\n    V2 %8.4f %8.4f %8.4f", group, v1.x, v1.y, v1.z, v2.x, v2.y, v2.z ); 
-    Log.v( TAG, msg + sw.getBuffer().toString() );
+    TopoDroidApp.Log( TopoDroidApp.LOG_CALIB, msg + sw.getBuffer().toString() );
   }
 
   private void LogSC( String msg, float s, float c )
@@ -348,7 +349,7 @@ public class Calibration
     StringWriter sw = new StringWriter();
     PrintWriter  pw = new PrintWriter( sw );
     pw.format(" S %8.4f C %8.4f", s, c ); 
-    Log.v( TAG, msg + sw.getBuffer().toString() );
+    TopoDroidApp.Log( TopoDroidApp.LOG_CALIB, msg + sw.getBuffer().toString() );
   }
 
 ============================================================ */
@@ -413,9 +414,10 @@ public class Calibration
     Matrix invG = (sumG2.minus( new Matrix(sumG, avG) ) ).Inverse();
     Matrix invM = (sumM2.minus( new Matrix(sumM, avM) ) ).Inverse();
 
-    // LogNumber( "Number", nn );
-    // LogMatrixVector( "invG", invG, avG );
-    // LogMatrixVector( "invM", invM, avM ); // this is OK
+
+    // TopoDroidApp.Log( TopoDroidApp.LOG_CALIB, "Number", nn );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_CALIB, "invG", invG, avG );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_CALIB, "invM", invM, avM ); // this is OK
 
     InitializeAB();
     // LogAB( 0, aG, bG, aM, bM ); // this is OK
