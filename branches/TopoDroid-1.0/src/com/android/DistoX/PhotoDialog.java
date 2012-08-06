@@ -15,8 +15,6 @@ package com.android.DistoX;
 import android.app.Dialog;
 import android.os.Bundle;
 
-import android.util.Log;
-
 import android.content.Intent;
 import android.content.Context;
 
@@ -31,7 +29,6 @@ import android.view.KeyEvent;
 public class PhotoDialog extends Dialog
                          implements View.OnClickListener
 {
-  private static final String TAG = "DistoX";
   private ShotActivity mParent;
 
   private EditText mETname;     // station name / photo name
@@ -49,7 +46,7 @@ public class PhotoDialog extends Dialog
   {
     super( context );
     mParent = parent;
-    Log.v(TAG, "PhotoDialog");
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PHOTO, "PhotoDialog");
   }
 
 // -------------------------------------------------------------------
@@ -57,7 +54,7 @@ public class PhotoDialog extends Dialog
   protected void onCreate(Bundle savedInstanceState) 
   {
     super.onCreate(savedInstanceState);
-    // Log.v( TAG, "PhotoDialog onCreate" );
+    // TopoDroidApp.Log(  TopoDroidApp.LOG_PHOTO, "PhotoDialog onCreate" );
     setContentView(R.layout.distox_photo_dialog);
     mETname       = (EditText) findViewById(R.id.photo_name);
     mETcomment    = (EditText) findViewById(R.id.photo_comment);
@@ -73,7 +70,7 @@ public class PhotoDialog extends Dialog
   public void onClick(View v) 
   {
     Button b = (Button) v;
-    // Log.v(TAG, "text " + mETname.getText().toString() );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PHOTO, "PhotoDialog::onClick text " + mETname.getText().toString() );
     if ( b == mButtonOK && mETname.getText() != null ) {
       if ( mETcomment.getText() == null ) {
         mParent.takePhoto( mETname.getText().toString(), "" );

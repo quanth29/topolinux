@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120726 TopoDroidApp log
  */
 package com.android.DistoX;
 
@@ -21,14 +24,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-// import android.util.Log;
-
 
 public class DrawingLabelDialog extends Dialog 
                                 implements View.OnClickListener
 {
-    // private static final String TAG = "DistoX DrawingLabel";
-
     private EditText mLabel;
     private Button mBtnOK;
     private Button mBtnCancel;
@@ -63,7 +62,7 @@ public class DrawingLabelDialog extends Dialog
 
     public void onClick(View view)
     {
-      // Log.v( TAG, "onClick()" );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "DrawingLabelDialog onClick()" );
       if (view.getId() == R.id.label_ok ) {
         mActivity.addLabel( mLabel.getText().toString(), mX, mY );
       }

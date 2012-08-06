@@ -7,6 +7,11 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120801 BT RFcomm connect method call with UUID
+ * 20120803 taken nr. of read packets out of RFcomm thread
+ * 20120803 commented connectRemoteDevice
  */
 package com.android.DistoX;
 
@@ -30,8 +35,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
 
-// import android.util.Log;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
@@ -48,7 +51,7 @@ import android.database.DataSetObserver;
 
 public class DistoXComm
 {
-  // private static final String TAG = "DistoX Comm";
+  private static final String TAG = "DistoX Comm";
 
   private TopoDroidApp app;
 
@@ -69,30 +72,28 @@ public class DistoXComm
 // --------------------------------------------------
   // DataHelper getData() { return app.mData; }
 
+  int nReadPackets;  // number of received data-packet
+
   private class RfcommThread extends Thread
   {
-    private static final String TAG_RF = "DistoX RfThread";
     private DistoXProtocol mProto;
-    private int nData;  // number of received data-packet
     private int toRead; // number of packet to read
 
     public RfcommThread( DistoXProtocol protocol, int to_read )
     {
-      nData  = 0;
+      nReadPackets = 0; // reset nr of read packets
       toRead = to_read;
       mProto = protocol;
-      // Log.v( TAG_RF, "cstr ToRead " + toRead );
+      TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "RFcommThread cstr ToRead " + toRead );
     }
-
-    public int nrReadDataPacket() { return nData; }
 
     public void run()
     {
       boolean hasG = false;
       boolean doWork = true;
 
-      // Log.v( TAG_RF, "running ..." );
-      while ( doWork && nData != toRead ) {
+      TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "RFcomm thread running ..." );
+      while ( doWork && nReadPackets != toRead ) {
             int res = mProto.readPacket();
             if ( res == DistoXProtocol.DISTOX_PACKET_NONE ) {
               doWork = false;
@@ -101,20 +102,20 @@ public class DistoXComm
               // Toast.makeText(app.getApplicationContext(), R.string.device_off, Toast.LENGTH_LONG).show()
               doWork = false;
             } else if ( res == DistoXProtocol.DISTOX_PACKET_DATA ) {
-              ++nData;
+              ++nReadPackets;
               double d = mProto.Distance();
               double b = mProto.Compass();
               double c = mProto.Clino();
               double r = mProto.Roll();
-              // Log.v( TAG_RF, "DATA PACKET " + d + " " + b + " " + c );
+              TopoDroidApp.Log( TopoDroidApp.LOG_DISTOX, "DATA PACKET " + d + " " + b + " " + c );
               app.mData.insertShot( app.getSurveyId(), -1L, d, b, c, r );
             } else if ( res == DistoXProtocol.DISTOX_PACKET_G ) {
-              // Log.v( TAG_RF, "G PACKET");
-              ++nData;
+              // TopoDroidApp.Log( TopoDroidApp.LOG_DISTOX, "G PACKET" );
+              ++nReadPackets;
               hasG = true;
             } else if ( res == DistoXProtocol.DISTOX_PACKET_M ) {
-              // Log.v( TAG_RF, "M PACKET");
-              ++nData;
+              // TopoDroidApp.Log( TopoDroidApp.LOG_DISTOX, "M PACKET" );
+              ++nReadPackets;
               // get G and M from mProto and save them to store
               app.mData.insertGM( app.getCalibId(), mProto.GX(), mProto.GY(), mProto.GZ(), mProto.MX(), mProto.MY(), mProto.MZ() );
               hasG = false;
@@ -126,26 +127,26 @@ public class DistoXComm
               PrintWriter pw  = new PrintWriter(sw);
               pw.format("%02x %02x %02x %02x at %02x%02x", reply[0], reply[1], reply[2], reply[3], addr[1], addr[0] );
               String result = sw.getBuffer().toString();
-              // Log.v( TAG_RF, "REPLY PACKET: " + result ); 
+              // TopoDroidApp.Log( TopoDroidApp.LOG_DISTOX, "REPLY PACKET: " + result ); 
 
               if ( addr[0] == (byte)0x00 && addr[1] == (byte)0x80 ) { // 0x8000
-                // Log.v( TAG_RF, "toggle reply" );
+                // TopoDroidApp.Log( TopoDroidApp.LOG_DISTOX, "toggle reply" );
                 // if ( (reply[0] & CALIB_BIT) == 0 ) {
                 //     mProto.sendCommand( (byte)0x31 );  // TOGGLE CALIB ON
                 // } else {
                 //     mProto.sendCommand( (byte)0x30 );  // TOGGLE CALIB OFF
                 // }
               } else if ( ( addr[1] & (byte)0x80) == (byte)0x80 ) { // REPLY TO READ/WRITE-CALIBs
-                // Log.v( TAG_RF, "write reply" );
+                // TopoDroidApp.Log( TopoDroidApp.LOG_DISTOX, "write reply" );
                 mProto.setWrittenCalib( true );
               } else if ( addr[0] == 0x20 && addr[1] == (byte)0xC0 ) { // C020 READ HEAD-TAIL
-                // Log.v( TAG_RF, "read head-tail reply" );
+                // TopoDroidApp.Log( TopoDroidApp.LOG_DISTOX, "read head-tail reply");
                 // mHead = (int)( reply[0] | ( (int)(reply[1]) << 8 ) );
                 // mTail = (int)( reply[2] | ( (int)(reply[3]) << 8 ) );
               }
             }
       }
-      // Log.v( TAG_RF, "run() exiting");
+      TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "RFcomm thread run() exiting");
       mRfcommThread = null;
       app.notifyConnState( );
     }
@@ -162,7 +163,7 @@ public class DistoXComm
     mRfcommThread = null;
     mBTConnected  = false;
     mBTSocket     = null;
-    // Log.v( TAG, "DistoXComm cstr");
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "DistoXComm cstr");
   }
 
   public void resume()
@@ -183,7 +184,7 @@ public class DistoXComm
    */
   private void closeSocket( boolean wait_thread )
   {
-    // Log.v( TAG, "closeSocket() wait thread " + wait_thread );
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "closeSocket() wait thread " + wait_thread );
     if ( mBTSocket != null ) {
       try {
         mBTSocket.close();
@@ -196,9 +197,9 @@ public class DistoXComm
           mRfcommThread = null;
         }
       } catch ( InterruptedException e ) {
-        // Log.e(TAG, "closeSocket interrupt " + e.getMessage() );
+        TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "closeSocket interrupt " + e.getMessage() );
       } catch ( IOException e ) {
-        // Log.e(TAG, "closeSocket IO " + e.getMessage() );
+        TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "closeSocket IOexception " + e.getMessage() );
       } finally {
         mBTConnected = false;
       }
@@ -211,7 +212,7 @@ public class DistoXComm
    */
   private void destroySocket( boolean wait_thread )
   {
-    // Log.v( TAG, "destroySocket() " );
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "destroySocket()" );
     closeSocket( wait_thread );
     mBTConnected = false;
     mBTSocket = null;
@@ -224,20 +225,22 @@ public class DistoXComm
    */
   private void createSocket( String address )
   {
-    // Log.v( TAG, "createSocket() " );
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "createSocket()" );
     if ( mProtocol == null || address != mAddress ) {
       if ( mProtocol != null && address != mAddress ) {
         disconnectRemoteDevice();
       }
       mBTDevice     = app.mBTAdapter.getRemoteDevice( address );
       String device_name = mBTDevice.getName();
+      TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "createSocket() device " + device_name );
       try {
         if ( mBTSocket != null ) {
-          // Log.v( TAG, "createSocket BTSocket not null ... closing");
+          TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "createSocket() BTSocket not null ... closing");
           mBTSocket.close();
           mBTSocket = null;
         }
         if ( mBTDevice.getBondState() == BluetoothDevice.BOND_NONE ) {
+          TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "createSocket() binding device ..." );
           // byte[] pin = mBTDevice.convertPinToBytes( "0000" );
           // FIXME tried to replace the two following lines with the next one
           // String spin = "0000";
@@ -256,34 +259,41 @@ public class DistoXComm
           m.invoke( mBTDevice );
         }
 
-        // mBTSocket = mBTDevice.createInsecureRfcommSocket( 0 );
-        Class[] classes1 = new Class[ 1 ];
-        classes1[0] = int.class;
-        Method m = mBTDevice.getClass().getMethod( "createInsecureRfcommSocket", classes1 );
-        mBTSocket = (BluetoothSocket) m.invoke( mBTDevice, 1 );
+        // TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "createSocket() createInsecureRfcommSocket " );
+        // // mBTSocket = mBTDevice.createInsecureRfcommSocket( 0 );
+        // Class[] classes1 = new Class[ 1 ];
+        // classes1[0] = int.class;
+        // Method m = mBTDevice.getClass().getMethod( "createInsecureRfcommSocket", classes1 );
+        // mBTSocket = (BluetoothSocket) m.invoke( mBTDevice, 1 );
+
+        // FIXME FIXME FIXME
+        // mBTSocket = mBTDevice.createInsecureRfcommSocketToServiceRecord( 
+        // TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "createSocket() createRfcommSocketToServiceRecord " );
+        mBTSocket = mBTDevice.createRfcommSocketToServiceRecord( 
+                       UUID.fromString("00001101-0000-1000-8000-00805F9B34FB") );
 
       } catch ( InvocationTargetException e ) {
-        // Log.e(TAG, "createSocket invoke target " + e.getMessage() );
+        TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "createSocket invoke target " + e.getMessage() );
         if ( mBTSocket != null ) { mBTSocket = null; }
       } catch ( UnsupportedEncodingException e ) {
-        // Log.e(TAG, "createSocket encoding " + e.getMessage() );
+        TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "createSocket encoding " + e.getMessage() );
         if ( mBTSocket != null ) { mBTSocket = null; }
       } catch ( NoSuchMethodException e ) {
-        // Log.e(TAG, "createSocket no method " + e.getMessage() );
+        TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "createSocket no method " + e.getMessage() );
         if ( mBTSocket != null ) { mBTSocket = null; }
       } catch ( IllegalAccessException e ) {
-        // Log.e(TAG, "createSocket access " + e.getMessage() );
+        TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "createSocket access " + e.getMessage() );
         if ( mBTSocket != null ) { mBTSocket = null; }
       } catch ( IOException e ) {
-        // Log.e(TAG, "createSocket IO " + e.getMessage() );
+        TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "createSocket IO " + e.getMessage() );
         if ( mBTSocket != null ) { mBTSocket = null; }
       }
       if ( mBTSocket != null ) {
-        // Log.v( TAG, "created socket");
+        TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "createSocket OK");
         mProtocol = new DistoXProtocol( mBTSocket );
         mAddress = address;
       } else {
-        // Log.v( TAG, "create socket failed");
+        TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "createSocket fail");
         mProtocol = null;
         mAddress = null;
       }
@@ -295,63 +305,64 @@ public class DistoXComm
    */
   private boolean connectSocket()
   {
-    // Log.v( TAG, "connectSocket() connected: " + mBTConnected );
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "connectSocket(): connected is " + mBTConnected );
     if ( mBTSocket != null ) {
       if ( ! mBTConnected ) {
         try {
           mBTSocket.connect();
           mBTConnected = true;
         } catch ( IOException e ) {
-          // Log.e(TAG, "connectSocket IO " + e.getMessage() );
+          TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "connectSocket() IO " + e.getMessage() );
           return false;
         }
       }
     } else {
-      // Log.w(TAG, "connectSocket: null socket" );
+      TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "connectSocket() null socket");
     }
-    // Log.v(TAG, "connectSocket " + mBTConnected );
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "connectSocket() result " + mBTConnected );
     return mBTConnected;
   }
 
   private boolean startRfcommThread( int to_read )
   {
-    // Log.v(TAG, "startRFcommThread to_read " + to_read );
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "startRFcommThread to_read " + to_read );
     if ( mBTSocket != null ) {
       if ( mRfcommThread == null ) {
         mRfcommThread = new RfcommThread( mProtocol, to_read );
         mRfcommThread.start();
         // downloadLoop();
-        // Log.v(TAG, "startRFcommThread true");
+        TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "startRFcommThread true");
       }
       return true;
     } else {
       mRfcommThread = null;
-      // Log.v(TAG, "startRFcommThread false");
+      TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "startRFcommThread false");
       return false;
     }
   }
 
   // -------------------------------------------------------- 
-
+  /*
   public boolean connectRemoteDevice( String address )
   {
-    // Log.v( TAG, "connectRemoteDevice address " + address );
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "connectRemoteDevice address " + address );
     createSocket( address );
     if ( connectSocket() ) {
       if ( mProtocol != null ) {
         return startRfcommThread( -1 );
       }
-      // Log.v(TAG, "connectRemoteDevice null protocol");
+      TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "connectRemoteDevice null protocol");
       destroySocket( true );
     } else {
-      // Log.w( TAG, "connectRemoteDevice failed on connectSocket()" );
+      TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "connectRemoteDevice failed on connectSocket()" );
     }
     return false;
   }
+   */
 
   public void disconnectRemoteDevice( )
   {
-    // Log.v( TAG, "disconnectRemoteDevice ");
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "disconnectRemoteDevice ");
     if ( mBTSocket != null ) {
       destroySocket( true );
       if ( mRfcommThread != null ) {
@@ -368,7 +379,7 @@ public class DistoXComm
 
   public boolean toggleCalibMode( String address )
   {
-    // Log.v( TAG, "toggleCalibMode sddress " + address );
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "toggleCalibMode address " + address );
     if ( mRfcommThread != null ) {
       return false;
     }
@@ -380,6 +391,7 @@ public class DistoXComm
         destroySocket( true );
         return false;
       }
+      TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "toggleCalibMode result " + result[0] );
       if ( (result[0] & CALIB_BIT) == 0 ) {
         ret = mProtocol.sendCommand( (byte)0x31 );  // TOGGLE CALIB ON
       } else {
@@ -392,7 +404,7 @@ public class DistoXComm
 
   public boolean writeCoeff( String address, byte[] coeff )
   {
-    // Log.v( TAG, "writeCoeff sddress " + address );
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "writeCoeff address " + address );
     if ( mRfcommThread != null ) {
       // Toast.makeText(getApplicationContext(), R,string.device_busy, Toast.LENGTH_LONG).show();
       return false;
@@ -411,7 +423,7 @@ public class DistoXComm
 
   public boolean readCoeff( String address, byte[] coeff )
   {
-    // Log.v( TAG, "readCoeff sddress " + address );
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "readCoeff address " + address );
     if ( mRfcommThread != null ) {
       // Toast.makeText(getApplicationContext(), R,string.device_busy, Toast.LENGTH_LONG).show();
       return false;
@@ -437,9 +449,9 @@ public class DistoXComm
 
   public String readHeadTail( String address )
   {
-    // Log.v( TAG, "readHeadTail sddress " + address );
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "readHeadTail address " + address );
     if ( mRfcommThread != null ) {
-      // Log.v( TAG, "readHeadTail() Rfcomm thread not null");
+      TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "readHeadTail() Rfcomm thread not null");
       // Toast.makeText(getApplicationContext(), R.string.device_busy, Toast.LENGTH_LONG).show();
       return null;
     }
@@ -447,7 +459,7 @@ public class DistoXComm
     if ( connectSocket() ) {
       String result = mProtocol.readHeadTail();
       destroySocket( true );
-      // Log.v( TAG, "readHeadTail() " + result);
+      TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "readHeadTail() result " + result );
       return result; 
     }
     return null;
@@ -457,28 +469,31 @@ public class DistoXComm
   // on-demand data download
   public int downloadData( String address )
   {
-    // Log.v( TAG, "downloadData address " + address );
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "downloadData address " + address );
     if ( mRfcommThread != null ) {
-      // Log.v( TAG, "RFcomm thread not null");
+      TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "downloadData RFcomm thread not null");
       return DistoXProtocol.DISTOX_ERR_CONNECTED;
     }
     createSocket( address );
     if ( connectSocket() ) {
+      int prev_read = -1;
       int to_read = mProtocol.readToRead();
-      // Log.v( TAG, "data to read " + to_read );
+      TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "downloadData to read " + to_read );
       if ( to_read <= 0 ) {
         destroySocket( true );
         return to_read;
       }
 
       // FIXME asyncTask ?
-      int nr_read = 0;
+      // nReadPackets = 0; // done in RfcommThread cstr
       startRfcommThread( to_read );
-      while ( mRfcommThread != null && nr_read < to_read ) {
-        nr_read = mRfcommThread.nrReadDataPacket();
-        // Log.v( TAG, "nr read " + nr_read + " / " + to_read );
+      while ( mRfcommThread != null && nReadPackets < to_read ) {
+        if ( nReadPackets != prev_read ) {
+          TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "downloadData read " + nReadPackets + " / " + to_read );
+          prev_read = nReadPackets;
+        }
       }
-      // Log.v( TAG, "nr read " + nr_read );
+      TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "downloadData read " + nReadPackets );
       destroySocket( true );
       if ( mRfcommThread != null ) {
         try {
@@ -488,7 +503,7 @@ public class DistoXComm
         }
         mRfcommThread = null;
       }
-      return nr_read;
+      return nReadPackets;
     }
     return -1; // failure
   }

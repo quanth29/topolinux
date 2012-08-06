@@ -12,6 +12,7 @@
  * 20120520 created
  * 20120524 added device in CalibInfo
  * 20120531 activated doDelete with askDelete first
+ * 20120725 TopoDroidApp log
  */
 package com.android.DistoX;
 
@@ -25,8 +26,6 @@ import android.content.DialogInterface;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.os.Bundle;
-
-// import android.util.Log;
 
 import android.content.Context;
 // import android.content.Intent;
@@ -55,8 +54,6 @@ public class CalibActivity extends Activity
                            // implements OnItemClickListener, ILister
                            implements View.OnClickListener
 {
-  // private static final String TAG = "DistoX";
-
   private EditText mEditName;
   private EditText mEditDate;
   private EditText mEditDevice;
@@ -88,7 +85,7 @@ public class CalibActivity extends Activity
     mBTNdelete   = (Button) findViewById( R.id.calibDelete );
 
     app     = (TopoDroidApp)getApplication();
-    // Log.v( TAG, "app mCID " + app.mCID );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_CALIB, "app mCID " + app.mCID );
     isSaved = ( app.mCID >= 0 );
     if ( isSaved ) {
       info = app.getCalibInfo();
@@ -156,7 +153,6 @@ public class CalibActivity extends Activity
   // @Override
   // public boolean onOptionsItemSelected(MenuItem item) 
   // {
-  //   // Log.v( TAG, "onOptionsItemSelected() " + StatusName() );
   //   // Handle item selection
   //   if ( item == mMIsave ) {
   //     doSave( );
@@ -182,7 +178,6 @@ public class CalibActivity extends Activity
   @Override
   public void onClick(View view)
   {
-    // Log.v( TAG, "onClick() ");
     switch (view.getId()){
       case R.id.calibSave:
         doSave();

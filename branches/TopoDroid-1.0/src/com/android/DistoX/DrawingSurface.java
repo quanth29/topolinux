@@ -23,8 +23,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
-// import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -40,8 +38,6 @@ import java.io.EOFException;
 public class DrawingSurface extends SurfaceView
                             implements SurfaceHolder.Callback
 {
-    // private static final String TAG = "DistoX DrawingSurface";
-
     private Boolean _run;
     protected DrawThread thread;
     private Bitmap mBitmap;
@@ -174,7 +170,7 @@ public class DrawingSurface extends SurfaceView
 
     public void addStation( String name, float x, float y )
     {
-      // Log.v( TAG, "addStation " + name + " " + x + " " + y );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "addStation " + name + " " + x + " " + y );
       DrawingStation st = new DrawingStation(name, x, y );
       st.setPaint( DrawingBrushPaths.fixedStationPaint );
       commandManager.addStation( st );
@@ -235,7 +231,7 @@ public class DrawingSurface extends SurfaceView
 
     public void surfaceChanged(SurfaceHolder mHolder, int format, int width,  int height) 
     {
-      // Log.v( TAG, "surfaceChanged " );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "surfaceChanged " );
       // TODO Auto-generated method stub
       mBitmap =  Bitmap.createBitmap (width, height, Bitmap.Config.ARGB_8888);;
     }
@@ -243,7 +239,7 @@ public class DrawingSurface extends SurfaceView
 
     public void surfaceCreated(SurfaceHolder mHolder) 
     {
-      // Log.v( TAG, "surfaceCreated " );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "surfaceCreated " );
       // TODO Auto-generated method stub
       if (thread == null ) {
         thread = new DrawThread(mHolder);
@@ -254,7 +250,7 @@ public class DrawingSurface extends SurfaceView
 
     public void surfaceDestroyed(SurfaceHolder mHolder) 
     {
-      // Log.v( TAG, "surfaceDestroyed " );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "surfaceDestroyed " );
       // TODO Auto-generated method stub
       boolean retry = true;
       thread.setRunning(false);
@@ -293,10 +289,10 @@ public class DrawingSurface extends SurfaceView
   public void loadTherion( String filename )
   {
     float x, y, x1, y1, x2, y2;
-    // Log.v( TAG, "loadTherion file " + filename );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "loadTherion file " + filename );
     DrawingBrushPaths.makePaths( );
     DrawingBrushPaths.resetPointOrientations();
-    // Log.v( TAG, "after reset 0: " + DrawingBrushPaths.mOrientation[0]
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "after reset 0: " + DrawingBrushPaths.mOrientation[0]
     //                      + " 7: " + DrawingBrushPaths.mOrientation[7] );
     try {
       FileReader fr = new FileReader( filename );
@@ -314,7 +310,7 @@ public class DrawingSurface extends SurfaceView
           continue;
         }
 
-        // Log.v( TAG, "  line: >>" + line + "<<");
+        // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "  line: >>" + line + "<<");
         String[] vals = line.split( " " );
         if ( vals[0].equals( "point" ) ) {
           // ****** THERION POINT **********************************
@@ -334,7 +330,7 @@ public class DrawingSurface extends SurfaceView
             if ( vals[k].equals( "-orientation" ) ) {
               has_orientation = true;
               orientation = Float.parseFloat( vals[k+1] );
-              // Log.v(TAG, "point orientation " + orientation );
+              // TopoDroidApp.Log(TopoDroidApp.LOG_PLOT, "point orientation " + orientation );
               k += 2;
             } else if ( vals[k].equals( "-scale" ) ) {
               if ( vals[k+1].equals("xs") ) {
@@ -382,7 +378,7 @@ public class DrawingSurface extends SurfaceView
           if ( ptType == DrawingBrushPaths.POINT_MAX ) continue;
 
           if ( has_orientation ) {
-            // Log.v( TAG, "[2] point " + ptType + " has orientation " + orientation );
+            // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "[2] point " + ptType + " has orientation " + orientation );
             DrawingBrushPaths.rotateGrad( ptType, orientation );
             DrawingPointPath path = new DrawingPointPath( ptType, x, y, scale, options );
             addDrawingPath( path );
@@ -405,7 +401,7 @@ public class DrawingSurface extends SurfaceView
         } else if ( vals[0].equals( "line" ) ) {
           // ********* THERION LINES ************************************************************
           if ( vals.length == 6 && vals[1].equals( "border" ) && vals[2].equals( "-id" ) ) { // THERION AREAS
-            // Log.v( TAG, "area id " + vals[3] );
+            // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "area id " + vals[3] );
             int arType = DrawingBrushPaths.AREA_MAX;
             DrawingAreaPath path = new DrawingAreaPath( arType, vals[3] );
 
@@ -423,14 +419,14 @@ public class DrawingSurface extends SurfaceView
                   for ( arType=0; arType < DrawingBrushPaths.AREA_MAX; ++arType ) {
                     if ( vals2[1].equals( DrawingBrushPaths.areaThName[ arType ] ) ) break;
                   }
-                  // Log.v(TAG, "set area type " + arType );
+                  // TopoDroidApp.Log(TopoDroidApp.LOG_PLOT, "set area type " + arType );
                   path.setAreaType( arType );
                   addDrawingPath( path );
                   line = readLine( br ); // skip two lines
                   line = readLine( br );
                   break;
                 }
-                // Log.v( TAG, "  line point: >>" + line + "<<");
+                // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "  line point: >>" + line + "<<");
                 String[] pt2 = line.split( " " );
                 if ( pt.length == 2 ) {
                   x  =   Float.parseFloat( pt2[0] ) / TopoDroidApp.TO_THERION;
@@ -448,7 +444,7 @@ public class DrawingSurface extends SurfaceView
               }
             }
           } else { // ********* regular lines
-            // Log.v( TAG, "line type " + vals[1] );
+            // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "line type " + vals[1] );
             boolean closed = false;
             boolean reversed = false;
             int outline = DrawingLinePath.OUTLINE_UNDEF;
@@ -500,7 +496,7 @@ public class DrawingSurface extends SurfaceView
                 if ( outline != DrawingLinePath.OUTLINE_UNDEF ) path.mOutline = outline;
                 if ( options != null ) path.mOptions = options;
 
-                // Log.v( TAG, "  line start point: >>" + line + "<<");
+                // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "  line start point: >>" + line + "<<");
                 String[] pt = line.split( "\\s+" );
                 x =   Float.parseFloat( pt[0] ) / TopoDroidApp.TO_THERION;
                 y = - Float.parseFloat( pt[1] ) / TopoDroidApp.TO_THERION;
@@ -515,7 +511,7 @@ public class DrawingSurface extends SurfaceView
                   break;
                 }
                 if ( path != null ) {
-                  // Log.v( TAG, "  line point: >>" + line + "<<");
+                  // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "  line point: >>" + line + "<<");
                   String[] pt = line.split( " " );
                   if ( pt.length == 2 ) {
                     x  =   Float.parseFloat( pt[0] ) / TopoDroidApp.TO_THERION;

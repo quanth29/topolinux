@@ -11,6 +11,7 @@
  * CHANGES
  * 20120517 length and angle units
  * 20120711 added dataString
+ * 20120726 TopoDroid log
  */
 package com.android.DistoX;
 
@@ -18,11 +19,8 @@ package com.android.DistoX;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
-import android.util.Log;
-
 public class DistoXDBlock
 {
-  private static final String TAG = "DistoX";
   private static final float grad2rad = TopoDroidApp.GRAD2RAD_FACTOR;
 
   public static final char[] mExtendTag = { '<', '|', '>', '-' };
@@ -134,7 +132,7 @@ public class DistoXDBlock
     float ul = TopoDroidApp.mUnitLength;
     float ua = TopoDroidApp.mUnitAngle;
 
-    // Log.v(TAG, "From " + mFrom + " To " + mTo + " extend " + mExtend );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_DATA, "DBlock::toString From " + mFrom + " To " + mTo + " extend " + mExtend );
     StringWriter sw = new StringWriter();
     PrintWriter pw  = new PrintWriter(sw);
     pw.format("%d <%s-%s> %.2f %.1f %.1f [%c]",

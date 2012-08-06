@@ -24,6 +24,8 @@
  * 20120706 screen scale factor (for drawing on the canvas)
  * 20120715 forced no_spaces in names (survey, station, scrap, calib)
  * 20120720 added manifest
+ * 20120725 centralized log
+ * 20120803 removed connection-mode preference
  */
 package com.android.DistoX;
 
@@ -59,7 +61,7 @@ import android.view.WindowManager;
 import android.view.Display;
 import android.graphics.Point;
 
-// import android.util.Log;
+import android.util.Log;
 import android.util.DisplayMetrics;
 
 import android.bluetooth.BluetoothAdapter;
@@ -69,9 +71,43 @@ import android.bluetooth.BluetoothAdapter;
 public class TopoDroidApp extends Application
                           implements OnSharedPreferenceChangeListener
 {
-  // private static final String TAG = "DistoX App";
+  static final String TAG = "DistoX";
 
-  static final String VERSION = "1.0.4"; // must agree with AndroidManifest.xml
+  static final boolean LOG_BEZIER = false;
+  static final boolean LOG_BT     = false;   // bluetooth
+  static final boolean LOG_CALIB  = false;
+  static final boolean LOG_COMM   = false;    // connection
+  static final boolean LOG_DATA   = false;   // shot data
+  static final boolean LOG_DB     = false;   // sqlite database
+  static final boolean LOG_DEVICE = false;
+  static final boolean LOG_DISTOX = false;   // DistoX packets
+  static final boolean LOG_ERR    = true;
+  static final boolean LOG_FIXED  = false;
+  static final boolean LOG_LOC    = false;   // location manager
+  static final boolean LOG_NOTE   = false;   // annotation
+  static final boolean LOG_MAIN   = false;   // main app
+  static final boolean LOG_NAME   = false;   // names
+  static final boolean LOG_NUM    = false;  
+  static final boolean LOG_PATH   = false;
+  static final boolean LOG_PLOT   = false;
+  static final boolean LOG_PHOTO  = false;
+  static final boolean LOG_PREFS  = false;   // preferences
+  static final boolean LOG_PROTO  = false;   // protocol
+  static final boolean LOG_SHOT   = false;   // shot
+  static final boolean LOG_STATS  = false;
+  static final boolean LOG_SURVEY = false;
+  static final boolean LOG_THERION= false;
+  static final boolean LOG_ZIP    = false;   // archive
+
+  static void Log( boolean flag, String msg )
+  {
+    if ( flag ) {
+      Log.v( TAG, msg );
+    }
+  }
+
+
+  static final String VERSION = "1.0.5"; // must agree with AndroidManifest.xml
 
   private SharedPreferences prefs;
 
@@ -87,7 +123,7 @@ public class TopoDroidApp extends Application
   Calibration mCalibration = null;
 
   final static int CONN_MODE_BATCH = 0;
-  final static int CONN_MODE_CONTINUOUS = 1;
+  // final static int CONN_MODE_CONTINUOUS = 1;
   int mConnectionMode = CONN_MODE_BATCH; 
 
   long mSID   = -1;   // id of the current survey
@@ -225,7 +261,7 @@ public class TopoDroidApp extends Application
     "DISTOX_LIST_REFRESH",    // 15
     "DISTOX_UNIT_LENGTH",
     "DISTOX_UNIT_ANGLE",
-    "DISTOX_CONN_MODE",
+    "DISTOX_CONN_MODE",       // key[18] is no longer used
     "DISTOX_BASE_PATH",
     "DISTOX_CHECK_ATTACHED"   // 20
   };
@@ -387,7 +423,7 @@ public class TopoDroidApp extends Application
     mUnitLength    = prefs.getString( key[16], UNIT_LENGTH ).equals("feet") ?  M2FT : 1.0f;
     mUnitAngle     = prefs.getString( key[17], UNIT_ANGLE ).equals("grads") ?  DEG2GRAD : 1.0f;
 
-    mConnectionMode = Integer.parseInt( prefs.getString( key[18], "0" ) );
+    // mConnectionMode = Integer.parseInt( prefs.getString( key[18], "0" ) );
 
     DrawingBrushPaths.doMakePaths( );
     DrawingBrushPaths.doMakeThNames( getResources() );
@@ -766,8 +802,8 @@ public class TopoDroidApp extends Application
       mUnitLength = prefs.getString( key[16], UNIT_LENGTH ).equals("feet") ? M2FT : 1.0f;
     } else if ( k.equals( key[17] ) ) {
       mUnitAngle = prefs.getString( key[17], UNIT_ANGLE ).equals("grads") ? DEG2GRAD : 1.0f;
-    } else if ( k.equals( key[18] ) ) { // "DISTOX_CONN_MODE" 
-      mConnectionMode = Integer.parseInt( prefs.getString( key[18], "0" ) );
+    // } else if ( k.equals( key[18] ) ) { // "DISTOX_CONN_MODE" 
+    //   mConnectionMode = Integer.parseInt( prefs.getString( key[18], "0" ) );
     } else if ( k.equals( key[19] ) ) { // "DISTOX_BASE_PATH" 
       mBasePath = prefs.getString( key[19], mBasePath );
       setPaths( mBasePath );
@@ -1435,12 +1471,17 @@ public class TopoDroidApp extends Application
 
   // -----------------------------------------------------------------------
   // VISUALTOPO EXPORT 
+  // FIXME photos
 
   private void printStartShotToTro( PrintWriter pw, DistoXDBlock item, List< DistoXDBlock > list )
   {
     LRUD lrud = computeLRUD( item, list, true );
     pw.format(Locale.ENGLISH, "%s %s 0.00 0.00 0.00 ", item.mFrom, item.mFrom );
-    pw.format(Locale.ENGLISH, "%.2f %.2f %.2f %.2f N I\r\n", lrud.l, lrud.r, lrud.u, lrud.d );
+    pw.format(Locale.ENGLISH, "%.2f %.2f %.2f %.2f N I", lrud.l, lrud.r, lrud.u, lrud.d );
+    if ( item.mComment != null && item.mComment.length() > 0 ) {
+      pw.format(" ;%s;", item.mComment );
+    }
+    pw.format("\r\n");
   }
 
   private void printShotToTro( PrintWriter pw, DistoXDBlock item, float l, float b, float c, int n, LRUD lrud )
@@ -1448,13 +1489,14 @@ public class TopoDroidApp extends Application
     b = in360( b/n );
     pw.format("%s %s ", item.mFrom, item.mTo );
     pw.format(Locale.ENGLISH, "%.2f %.1f %.1f ", (l/n), b, c/n );
-    pw.format(Locale.ENGLISH, "%.2f %.2f %.2f %.2f N I\r\n", lrud.l, lrud.r, lrud.u, lrud.d );
+    pw.format(Locale.ENGLISH, "%.2f %.2f %.2f %.2f N I", lrud.l, lrud.r, lrud.u, lrud.d );
     // if ( duplicate ) {
     //   // pw.format(" #|L#");
     // }
-    // if ( comment != null && comment.length() > 0 ) {
-    //   // pw.format(" %s", comment );
-    // }
+    if ( item.mComment != null && item.mComment.length() > 0 ) {
+      pw.format(" ;%s;", item.mComment );
+    }
+    pw.format("\r\n");
   }
 
   public String exportSurveyAsTro()

@@ -12,6 +12,7 @@
  * 20120611 created
  * 20120619 added therion export to the zip
  * 20120720 added manifest
+ * 20120725 TopoDroidApp log
  */
 package com.android.DistoX;
 
@@ -35,13 +36,10 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 
 public class Archiver
 {
-  private static final String TAG = "DistoX";
-
   private TopoDroidApp app;
   private static final int BUF_SIZE = 2048;
   private byte[] data = new byte[ BUF_SIZE ];
@@ -118,6 +116,21 @@ public class Archiver
         addEntry( zos, therion );
       }
 
+      File vtopo = new File( app.getSurveyTroFile( ) );
+      if ( vtopo != null && vtopo.exists() ) {
+        addEntry( zos, vtopo );
+      }
+
+      File survex = new File( app.getSurveySvxFile( ) );
+      if ( survex != null && survex.exists() ) {
+        addEntry( zos, survex );
+      }
+
+      File compass = new File( app.getSurveyDatFile( ) );
+      if ( compass != null && compass.exists() ) {
+        addEntry( zos, compass );
+      }
+
       File note = new File( TopoDroidApp.getSurveyNoteFile( app.mySurvey ) );
       if ( note != null && note.exists() ) {
         addEntry( zos, note );
@@ -181,7 +194,7 @@ public class Archiver
               dir.mkdirs();
             }
           } else {
-            // Log.v(TAG, "Zip entry \"" + ze.getName() + "\"" );
+            TopoDroidApp.Log( TopoDroidApp.LOG_ZIP, "Zip entry \"" + ze.getName() + "\"" );
             boolean sql = false;
             pathname = null;
             if ( ze.getName().equals( "manifest" ) ) {
@@ -200,7 +213,7 @@ public class Archiver
             } else {
               pathname = TopoDroidApp.getNoteFile( ze.getName() );
             }
-            // Log.v(TAG, "filename \"" + pathname + "\"");
+            // TopoDroidApp.Log( TopoDroidApp.LOG_ZIP, "Zip filename \"" + pathname + "\"" );
             if ( pathname != null ) {
               FileOutputStream fout = new FileOutputStream( pathname );
               int c;
@@ -209,7 +222,7 @@ public class Archiver
               }
               fout.close();
               if ( sql ) {
-                // Log.v(TAG, "loadFromFile \"" + pathname + "\"");
+                // TopoDroidApp.Log( TopoDroidApp.LOG_ZIP, "Zip sqlfile \"" + pathname + "\"" );
                 app.mData.loadFromFile( pathname );
                 File f = new File( pathname );
                 f.delete();

@@ -15,14 +15,10 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Matrix;
 
-// import android.util.Log;
-
 /**
  */
 public class DrawingPath implements DrawingICanvasCommand
 {
-  // private static final String TAG = "DistoX";
-
   public static final int DRAWING_PATH_FIXED   = 0;
   public static final int DRAWING_PATH_SPLAY   = 1;
   public static final int DRAWING_PATH_GRID    = 2;
@@ -79,7 +75,7 @@ public class DrawingPath implements DrawingICanvasCommand
   public boolean isCloseTo( float x, float y )
   {
     if ( mBlock == null ) return false;
-    // Log.v( TAG, "isClose " + x + " " + y + " " + cx + " " + cy );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "isCloseTo " + x + " " + y + " " + cx + " " + cy );
     return ( Math.abs( x - cx ) < 4.0 && Math.abs( y - cy ) < 4.0 ); // FIXME 
   }
 
@@ -88,7 +84,7 @@ public class DrawingPath implements DrawingICanvasCommand
   public void draw( Canvas canvas )
   {
     if ( mType == DRAWING_PATH_AREA ) {
-      // Log.v(TAG, "draw [1] area" );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "DrawingPath::draw area" );
       path.close();
       canvas.save();
       canvas.clipPath( path );
@@ -102,10 +98,10 @@ public class DrawingPath implements DrawingICanvasCommand
   public void draw( Canvas canvas, Matrix matrix )
   {
     // if ( mType == DRAWING_PATH_AREA ) {
-    //   // Log.v(TAG, "draw [2] area" );
+    //   // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "DrawingPath::draw[matrix] area" );
     //   path.close();
     // }
-    // Log.v( TAG, "draw " + mPaint );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "DrawingPath::draw[matrix] " + mPaint );
     mTransformedPath = new Path( path );
     mTransformedPath.transform( matrix );
     if ( mType == DRAWING_PATH_AREA ) {

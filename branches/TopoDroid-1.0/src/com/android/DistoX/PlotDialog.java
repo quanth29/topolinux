@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import android.os.Bundle;
 import android.app.Dialog;
 
-// import android.util.Log;
-
 import android.content.Context;
 
 import android.view.View;
@@ -87,11 +85,11 @@ public class PlotDialog extends Dialog
         pw.format("%d <%s> %s", item.id, item.name, item.getTypeString() );
         String result = sw.getBuffer().toString();
         mArrayAdapter.add( result );
-        // Log.v( TAG, "Data " + result );
+        // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "Data " + result );
       }
       // mArrayAdapter.add("0 <new_plot> NONE");
     } else {
-      // Log.e( TAG, "null data or survey (" + app.mSID + ")" );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "null data or survey (" + app.mSID + ")" );
     }
   }
  

@@ -15,6 +15,8 @@
  * 20120522 photo support
  * 20120603 fixed update and delete support
  * 20120610 archive (zip)
+ * 20120722 put table create in a transaction
+ * 20120725 TopoDroidApp log
  */
 package com.android.DistoX;
 
@@ -29,13 +31,12 @@ import java.io.PrintWriter;
 import android.content.Context;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.DataSetObservable;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.database.sqlite.SQLiteException;
-
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +45,6 @@ import java.util.HashMap;
 
 public class DataHelper extends DataSetObservable
 {
-   private static final String TAG = "DistoX_DH";
-
-
    private static String DATABASE_NAME = TopoDroidApp.getDirFile( "distox7.db" );
    static final int DATABASE_VERSION = 7;
    static final String DB_VERSION = "7";
@@ -149,7 +147,7 @@ public class DataHelper extends DataSetObservable
 
       } catch ( SQLiteException e ) {
         myDB = null;
-        // Log.e( TAG, "Failed to get DB " + e.getMessage() );
+        TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "DataHelper cstr failed to get DB " + e.getMessage() );
       }
    }
    
@@ -158,7 +156,7 @@ public class DataHelper extends DataSetObservable
 
   public SurveyStat getSurveyStat( long sid )
   {
-    // Log.v(TAG, "sid " + sid );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "getSurveyStat sid " + sid );
     HashMap< String, Integer > map = new HashMap();
     int n0 = 0;
     int nc = 0;
@@ -243,7 +241,7 @@ public class DataHelper extends DataSetObservable
     stat.countStation = map.size();
     stat.countLoop = nl;
     stat.countComponent = nc;
-    // Log.v(TAG, "NV " + nv + " NE " + ne + " NL " + nl + " NC " + nc);
+    // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "getSurveyStats NV " + nv + " NE " + ne + " NL " + nl + " NC " + nc);
    
 
     cursor = myDB.query( SHOT_TABLE,
@@ -264,7 +262,7 @@ public class DataHelper extends DataSetObservable
 
    public int updateShot( long id, long sid, String fStation, String tStation, long extend, long flag, String comment )
    {
-     // Log.v( TAG, "updateShot " + fStation + "-" + tStation + " " + extend + " " + flag + " <" + comment + ">");
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "updateShot " + fStation + "-" + tStation + " " + extend + " " + flag + " <" + comment + ">");
      if ( myDB == null ) return -1;
      // if ( makesCycle( id, sid, fStation, tStation ) ) return -2;
 
@@ -296,7 +294,7 @@ public class DataHelper extends DataSetObservable
    //   int cnt = 0;
    //   if ( hasShotAtStation( id, sid, f ) ) ++cnt;
    //   if ( hasShotAtStation( id, sid, t ) ) ++cnt;
-   //   Log.v( TAG, "makesCycle cnt " + cnt );
+   //   TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "makesCycle cnt " + cnt );
    //   return cnt >= 2;
    // }
      
@@ -342,7 +340,7 @@ public class DataHelper extends DataSetObservable
    public void deleteShot( long shot_id, long survey_id ) 
    {
      if ( myDB == null ) return;
-     // Log.v( TAG, "delete shot: " + shot_id + "/" + survey_id );
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "deleteShot: " + shot_id + "/" + survey_id );
      deleteShotStmt.bindLong( 1, survey_id ); 
      deleteShotStmt.bindLong( 2, shot_id );
      deleteShotStmt.execute();
@@ -351,7 +349,7 @@ public class DataHelper extends DataSetObservable
    public void undeleteShot( long shot_id, long survey_id ) 
    {
      if ( myDB == null ) return;
-     // Log.v( TAG, "undelete shot: " + shot_id + "/" + survey_id );
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "undeleteShot: " + shot_id + "/" + survey_id );
      undeleteShotStmt.bindLong( 1, survey_id ); 
      undeleteShotStmt.bindLong( 2, shot_id );
      undeleteShotStmt.execute();
@@ -360,6 +358,7 @@ public class DataHelper extends DataSetObservable
    public void deletePlot( long plot_id, long survey_id )
    {
      if ( myDB == null ) return;
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "deletePlot: " + plot_id + "/" + survey_id );
      deletePlotStmt.bindLong( 1, survey_id );
      deletePlotStmt.bindLong( 2, plot_id );
      deletePlotStmt.execute();
@@ -368,7 +367,7 @@ public class DataHelper extends DataSetObservable
    public void undeletePlot( long plot_id, long survey_id )
    {
      if ( myDB == null ) return;
-     // Log.v( TAG, "undelete plot: " + plot_id + "/" + survey_id );
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "undeletePlot: " + plot_id + "/" + survey_id );
      undeletePlotStmt.bindLong( 1, survey_id );
      undeletePlotStmt.bindLong( 2, plot_id );
      undeletePlotStmt.execute();
@@ -483,10 +482,10 @@ public class DataHelper extends DataSetObservable
      Cursor cursor = myDB.query( PHOTO_TABLE,
 			         new String[] { "id", "shotId", "title", "comment" }, // columns
                                  "surveyId=? AND status=?", 
-                                new String[] { Long.toString(sid), Long.toString(status) },
-                                null,  // groupBy
-                                null,  // having
-                                null ); // order by
+                                 new String[] { Long.toString(sid), Long.toString(status) },
+                                 null,  // groupBy
+                                 null,  // having
+                                 null ); // order by
      if (cursor.moveToFirst()) {
        do {
          list.add( new PhotoInfo( sid, 
@@ -497,7 +496,7 @@ public class DataHelper extends DataSetObservable
                                   cursor.getString(3) ) );
        } while (cursor.moveToNext());
      }
-     // Log.v( TAG, "list size " + list.size() );
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "selectAllPhotos list size " + list.size() );
      if (cursor != null && !cursor.isClosed()) {
        cursor.close();
      }
@@ -518,7 +517,7 @@ public class DataHelper extends DataSetObservable
 /* FIXME PHOTO
    public List< PhotoInfo > selectPhotoAtShot( long sid, long shotid )
    {
-     // Log.v( TAG, "selectPhoto(AtStation) survey " + sid + " shot " + shotid );
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "selectPhotoAtShot " + shotid + "/" + sid );
      List< PhotoInfo > list = new ArrayList< PhotoInfo >();
      Cursor cursor = myDB,query( SHOT_TABLE, 
                                  new String[] { "fStation", "tStation" },
@@ -572,7 +571,7 @@ public class DataHelper extends DataSetObservable
                                   cursor.getString(5) ) );
        } while (cursor.moveToNext());
      }
-     // Log.v( TAG, "list size " + list.size() );
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "seletAllFixed list size " + list.size() );
      if (cursor != null && !cursor.isClosed()) {
        cursor.close();
      }
@@ -598,7 +597,7 @@ public class DataHelper extends DataSetObservable
          list.add( plot );
        } while (cursor.moveToNext());
      }
-     // Log.v( TAG, "list size " + list.size() );
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "selectAllPlots list size " + list.size() );
      if (cursor != null && !cursor.isClosed()) {
        cursor.close();
      }
@@ -607,6 +606,7 @@ public class DataHelper extends DataSetObservable
 
    public DistoXDBlock selectShot( long shot_id, long survey_id )
    {
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "selectShot " + shot_id + "/" + survey_id );
      Cursor cursor = myDB.query(SHOT_TABLE,
        new String[] { "fStation", "tStation", "distance", "bearing", "clino", "extend", "flag", "comment" }, // columns
        "surveyId=? and id=?", 
@@ -626,7 +626,6 @@ public class DataHelper extends DataSetObservable
        block.mFlag    = cursor.getLong(6);
        block.mComment = cursor.getString(7);
      }
-     // Log.v( TAG, "list size " + list.size() );
      if (cursor != null && !cursor.isClosed()) {
        cursor.close();
      }
@@ -636,6 +635,7 @@ public class DataHelper extends DataSetObservable
 
    public DistoXDBlock selectPreviousLegShot( long shot_id, long survey_id )
    {
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "selectPreviousLegShot " + shot_id + "/" + survey_id );
      Cursor cursor = myDB.query(SHOT_TABLE,
        new String[] { "fStation", "tStation", "distance", "bearing", "clino", "extend", "flag", "comment" }, // columns
        "surveyId=? and id<?",
@@ -668,6 +668,7 @@ public class DataHelper extends DataSetObservable
 
    public DistoXDBlock selectNextLegShot( long shot_id, long survey_id ) 
    {
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "selectNextLegShot " + shot_id + "/" + survey_id );
      Cursor cursor = myDB.query(SHOT_TABLE,
        new String[] { "fStation", "tStation", "distance", "bearing", "clino", "extend", "flag", "comment" }, // columns
        "surveyId=? and id>?",
@@ -711,7 +712,7 @@ public class DataHelper extends DataSetObservable
    //   if (cursor.moveToFirst()) {
    //     do {
    //       long idc = (long)cursor.getLong(0);
-   //       Log.v(TAG, "hasShotAtStation " + id + " " + idc ); 
+   //       TopoDroidApp.Log( TopoDroidApp.LOG_DB, "hasShotAtStation " + id + " " + idc ); 
    //       if ( id != idc ) {
    //         ret = true;
    //       }
@@ -720,7 +721,7 @@ public class DataHelper extends DataSetObservable
    //   if (cursor != null && !cursor.isClosed()) {
    //     cursor.close();
    //   }
-   //   Log.v(TAG, "hasShotAtStation returns " + ret );
+   //   TopoDroidApp.Log( TopoDroidApp.LOG_DB, "hasShotAtStation returns " + ret );
    //   return ret;
    // }
 
@@ -750,7 +751,7 @@ public class DataHelper extends DataSetObservable
          list.add( block );
        } while (cursor.moveToNext());
      }
-     // Log.v( TAG, "list size " + list.size() );
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "selectAllShotsAtStation list size " + list.size() );
      if (cursor != null && !cursor.isClosed()) {
        cursor.close();
      }
@@ -851,7 +852,7 @@ public class DataHelper extends DataSetObservable
          list.add( block );
        } while (cursor.moveToNext());
      }
-     // Log.v( TAG, "list size " + list.size() );
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "selectAllShots list size " + list.size() );
      if (cursor != null && !cursor.isClosed()) {
        cursor.close();
      }
@@ -972,6 +973,8 @@ public class DataHelper extends DataSetObservable
 
    private List<String> selectAllNames( String table )
    {
+     TopoDroidApp.Log( TopoDroidApp.LOG_DB, "selectAllNames table " + table );
+
      List< String > list = new ArrayList< String >();
      Cursor cursor = myDB.query( table,
                                 new String[] { "name" }, // columns
@@ -1065,7 +1068,7 @@ public class DataHelper extends DataSetObservable
    {
      long id = -1;
      if ( myDB == null ) { return 0; }
-     // Log.v( TAG, "setName >" + name + "< table " + table );
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "setName >" + name + "< table " + table );
      Cursor cursor = myDB.query( table, new String[] { "id" },
                                  "name = ?", new String[] { name },
                                  null, null, null );
@@ -1268,7 +1271,8 @@ public class DataHelper extends DataSetObservable
 
    public boolean updateSurveyDayAndComment( long id, String date, String comment )
    {
-     // Log.v( TAG, "update survey: id " + id + " day " + date + " comment \"" + comment + "\"" );
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB,
+     //   "updateSurveyDayAndComment id " + id + " day " + date + " comment \"" + comment + "\"" );
      if ( date == null ) return false;
      updateSurveyStmt.bindString( 1, date );
      updateSurveyStmt.bindString( 2, (comment != null)? comment : "" );
@@ -1279,7 +1283,7 @@ public class DataHelper extends DataSetObservable
 
    public boolean updateSurveyTeam( long id, String team )
    {
-     // Log.v( TAG, "update survey: id " + id + " team \"" + team + "\"" );
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "updateSurveyTeam id " + id + " team \"" + team + "\"" );
      updateSurveyTeamStmt.bindString( 1, (team != null)? team : "" );
      updateSurveyTeamStmt.bindLong( 2, id );
      updateSurveyTeamStmt.execute();
@@ -1305,7 +1309,7 @@ public class DataHelper extends DataSetObservable
 
    // public boolean updateSurveyName( long id, String name )
    // {
-   //   // Log.v( TAG, "update survey: id " + id + " name \"" + name + "\"" );
+   //   // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "updateSurveyName id " + id + " name \"" + name + "\"" );
    //   updateSurveyNameStmt.bindString( 1, (name != null)? name : "" );
    //   updateSurveyNameStmt.bindLong( 2, id );
    //   updateSurveyNameStmt.execute();
@@ -1314,7 +1318,7 @@ public class DataHelper extends DataSetObservable
 
    public boolean updateCalibInfo( long id, String date, String device, String comment )
    {
-     // Log.v( TAG, "data update calibs: id " + id + " day " + date + " comm. " + comment );
+     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "updateCalibInfo id " + id + " day " + date + " comm. " + comment );
      if ( date == null ) return false;
      updateCalibStmt.bindString( 1, date );
      updateCalibStmt.bindString( 2, (device != null)? device : "" );
@@ -1380,7 +1384,7 @@ public class DataHelper extends DataSetObservable
       
    public void dumpToFile( String filename, long sid )
    {
-     // Log.v(TAG, "dumpToFile " + filename );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "dumpToFile " + filename );
      // String where = "surveyId=" + Long.toString(sid);
      try {
        FileWriter fw = new FileWriter( filename );
@@ -1537,7 +1541,7 @@ public class DataHelper extends DataSetObservable
      ++pos; // skip '"'
      int next_pos = nextQuote( val );
      String ret = (pos == next_pos )? "" : val.substring(pos, next_pos );
-     // Log.v(TAG, "STRING <" + ret + ">" );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "stringValue <" + ret + ">" );
      pos = next_pos + 1;
      skipCommaAndSpaces( val );
      return ret;
@@ -1547,7 +1551,7 @@ public class DataHelper extends DataSetObservable
    {
      long ret = -1;
      int next_pos = nextCommaOrSpace( val );
-     // Log.v(TAG, "LONG " + pos + " " + next_pos + " " + len + " <" + val.substring(pos,next_pos) + ">" );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "longValue " + pos + " " + next_pos + " " + len + " <" + val.substring(pos,next_pos) + ">" );
      String toParse = val.substring( pos, next_pos );
      if ( ! toParse.equals("\"null\"") ) {
        ret = Long.parseLong( val.substring( pos, next_pos ) );
@@ -1561,7 +1565,7 @@ public class DataHelper extends DataSetObservable
    {
      int next_pos = nextCommaOrSpace( val );
      double ret = Double.parseDouble( val.substring(pos, next_pos ) );
-     // Log.v(TAG, "DOUBLE " + pos + " " + next_pos + " " + len + " <" + val.substring(pos,next_pos) + ">" );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "doubleValue " + pos + " " + next_pos + " " + len + " <" + val.substring(pos,next_pos) + ">" );
      pos = next_pos;
      skipCommaAndSpaces( val );
      return ret;
@@ -1581,14 +1585,13 @@ public class DataHelper extends DataSetObservable
        BufferedReader br = new BufferedReader( fr );
        // first line is survey
        line = br.readLine();
-       // Log.v(TAG, line );
+       // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "loadFromFile: " + line );
        String[] vals = line.split(" ", 4);
        String table = vals[2];
        String v = vals[3];
        pos = v.indexOf( '(' ) + 1;
        len = v.lastIndexOf( ')' );
        skipSpaces( v );
-       // Log.v(TAG, v + " " + pos + " " + len );
        if ( table.equals(SURVEY_TABLE) ) {
          long skip_sid = longValue( v );
          name        = stringValue( v );
@@ -1599,14 +1602,14 @@ public class DataHelper extends DataSetObservable
          updateSurveyDayAndComment( sid, day, comment );
          updateSurveyTeam( sid, team );
          while ( (line = br.readLine()) != null ) {
-           // Log.v(TAG, line );
+           // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "loadFromFile: " + line );
            vals = line.split(" ", 4);
            table = vals[2];
            v = vals[3];
            pos = v.indexOf( '(' ) + 1;
            len = v.lastIndexOf( ')' );
            skipSpaces( v );
-           // Log.v(TAG, table + " " + v );
+           // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "loafFromFile " + table + " " + v );
            skip_sid = longValue( v );
            id = longValue( v );
            if ( table.equals(PHOTO_TABLE) ) {
@@ -1616,7 +1619,7 @@ public class DataHelper extends DataSetObservable
              comment = stringValue( v );
              if ( shotid >= 0 ) {
                insertPhoto( sid, id, shotid, title, comment );
-               // Log.v(TAG, "insertPhoto " + sid + " " + id + " " + title + " " + name );
+               // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "loadFromFile photo " + sid + " " + id + " " + title + " " + name );
              }
            } else if ( table.equals(PLOT_TABLE) ) {
              name         = stringValue( v );
@@ -1625,7 +1628,7 @@ public class DataHelper extends DataSetObservable
              String start = stringValue( v );
              String view  = stringValue( v );
              insertPlot( sid, id, name, type, status, start, view );
-             // Log.v(TAG, "insertPlot " + sid + " " + id + " " + start + " " + name );
+             // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "loadFromFile plot " + sid + " " + id + " " + start + " " + name );
            } else if ( table.equals(SHOT_TABLE) ) {
              String from = stringValue( v );
              String to   = stringValue( v );
@@ -1638,7 +1641,7 @@ public class DataHelper extends DataSetObservable
              status      = longValue( v );
              comment     = stringValue( v );
              insertShot( sid, id, from, to, d, b, c, r, extend, flag, status, comment );
-             // Log.v(TAG, "insertShot " + sid + " " + id + " " + from + " " + to );
+             // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "insertShot " + sid + " " + id + " " + from + " " + to );
            } else if ( table.equals(FIXED_TABLE) ) {
              station    = stringValue( v );
              double lng = doubleValue( v );
@@ -1647,7 +1650,7 @@ public class DataHelper extends DataSetObservable
              comment    = stringValue( v );
              status     = longValue( v );
              insertFixed( sid, id, station, lng, lat, alt, comment, status );
-             // Log.v(TAG, "insertFixed " + sid + " " + id + " " + station  );
+             // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "loadFromFile fixed " + sid + " " + id + " " + station  );
            }
          }
        }
@@ -1674,132 +1677,150 @@ public class DataHelper extends DataSetObservable
       @Override
       public void onCreate(SQLiteDatabase db) 
       {
+        createTables( db );
+      }
 
-         // Log.v( "DistoX DH", "onCreate ..." );
-         db.execSQL( 
-             create_table + CONFIG_TABLE
-           + " ( key TEXT NOT NULL,"
-           +   " value TEXT )"
-         );
+      private void createTables( SQLiteDatabase db )
+      {
+         // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "createTables ... " + DATABASE_NAME + " version " + DATABASE_VERSION );
+         db.beginTransaction();
+         try {
+           db.execSQL( 
+               create_table + CONFIG_TABLE
+             + " ( key TEXT NOT NULL,"
+             +   " value TEXT )"
+           );
 
-         // db.execSQL("DROP TABLE IF EXISTS " + SHOT_TABLE);
-         // db.execSQL("DROP TABLE IF EXISTS " + SURVEY_TABLE);
-         db.execSQL(
-             create_table + SURVEY_TABLE 
-           + " ( id INTEGER, " //  PRIMARY KEY AUTOINCREMENT, "
-           +   " name TEXT, "
-           +   " day TEXT, "
-           +   " team TEXT, "
-           +   " comment TEXT "
-           +   ")"
-         );
-         db.execSQL(
-             create_table + SHOT_TABLE 
-           + " ( surveyId INTEGER, "
-           +   " id INTEGER, " //  PRIMARY KEY AUTOINCREMENT, "
-           +   " fStation TEXT, "
-           +   " tStation TEXT, "
-           +   " distance DOUBLE, "
-           +   " bearing DOUBLE, "
-           +   " clino DOUBLE, "
-           +   " roll DOUBLE, "
-           +   " extend INTEGER, "
-           +   " flag INTEGER, "
-           +   " status INTEGER, "
-           +   " comment TEXT "
-           // +   " surveyId REFERENCES " + SURVEY_TABLE + "(id)"
-           // +   " ON DELETE CASCADE "
-           +   ")"
-         );
-         db.execSQL(
-             create_table + FIXED_TABLE
-           + " ( surveyId INTEGER, "
-           +   " id INTEGER, "   //  PRIMARY KEY AUTOINCREMENT, "
-           +   " station TEXT, "
-           +   " longitude DOUBLE, "
-           +   " latitude DOUBLE, "
-           +   " altitude DOUBLE, "
-           +   " comment TEXT, "
-           +   " status INTEGER"
-           // +   " surveyId REFERENCES " + SURVEY_TABLE + "(id)"
-           // +   " ON DELETE CASCADE "
-           +   ")"
-         );
-          
-         db.execSQL(
-             create_table + CALIB_TABLE
-           + " ( id INTEGER, " // PRIMARY KEY AUTOINCREMENT, "
-           +   " name TEXT, "
-           +   " day TEXT, "
-           +   " device TEXT, "
-           +   " comment TEXT )"
-         );
-         db.execSQL(
-             create_table + GM_TABLE 
-           + " ( calibId INTEGER, "
-           +   " id INTEGER, " // PRIMARY KEY AUTOINCREMENT, "
-           +   " gx INTEGER, "
-           +   " gy INTEGER, "
-           +   " gz INTEGER, "
-           +   " mx INTEGER, "
-           +   " my INTEGER, "
-           +   " mz INTEGER, "
-           +   " grp INTEGER, "
-           +   " error REAL "
-           // +   " calibId REFERENCES " + CALIB_TABLE + "(id)"
-           // +   " ON DELETE CASCADE "
-           +   ")"
-         );
-         db.execSQL(
-             create_table + PLOT_TABLE 
-           + " ( surveyId INTEGER, "
-           +   " id INTEGER, " // PRIMARY KEY AUTOINCREMENT, "
-           +   " name TEXT, "
-           +   " type INTEGER, "
-           +   " status INTEGER, "
-           +   " start TEXT, "
-           +   " view TEXT "
-           // +   " surveyId REFERENCES " + SURVEY_TABLE + "(id)"
-           // +   " ON DELETE CASCADE "
-           +   ")"
-         );
+           // db.execSQL("DROP TABLE IF EXISTS " + SHOT_TABLE);
+           // db.execSQL("DROP TABLE IF EXISTS " + SURVEY_TABLE);
+           db.execSQL(
+               create_table + SURVEY_TABLE 
+             + " ( id INTEGER, " //  PRIMARY KEY AUTOINCREMENT, "
+             +   " name TEXT, "
+             +   " day TEXT, "
+             +   " team TEXT, "
+             +   " comment TEXT "
+             +   ")"
+           );
 
-         db.execSQL(
-             create_table + PHOTO_TABLE
-           + " ( surveyId INTEGER, "
-           +   " id INTEGER, " //  PRIMARY KEY AUTOINCREMENT, "
-           +   " shotId INTEGER, "
-           +   " status INTEGER, "
-           +   " title TEXT, "
-           +   " comment TEXT, "
-           // +   " surveyId REFERENCES " + SURVEY_TABLE + "(id)"
-           // +   " ON DELETE CASCADE "
-           +   ")"
-         );
+           db.execSQL(
+               create_table + SHOT_TABLE 
+             + " ( surveyId INTEGER, "
+             +   " id INTEGER, " //  PRIMARY KEY AUTOINCREMENT, "
+             +   " fStation TEXT, "
+             +   " tStation TEXT, "
+             +   " distance DOUBLE, "
+             +   " bearing DOUBLE, "
+             +   " clino DOUBLE, "
+             +   " roll DOUBLE, "
+             +   " extend INTEGER, "
+             +   " flag INTEGER, "
+             +   " status INTEGER, "
+             +   " comment TEXT "
+             // +   " surveyId REFERENCES " + SURVEY_TABLE + "(id)"
+             // +   " ON DELETE CASCADE "
+             +   ")"
+           );
 
-         // db.execSQL(
-         //     " CREATE TRIGGER fk_insert_shot BEFORE "
-         //   + " INSERT on " + SHOT_TABLE 
-         //   + " FOR EACH ROW BEGIN "
-         //   +   " SELECT RAISE "
-         //   +   " (ROLLBACK, 'insert on \"" + SHOT_TABLE + "\" violates foreing key constraint')"
-         //   +   " WHERE ( SELECT id FROM " + SURVEY_TABLE + " WHERE id = NEW.surveyId ) IS NULL; "
-         //   + " END;"
-         // );
-         // db.execSQL(
-         //     "CREATE TRIGGER fk_delete_survey BEFORE DELETE ON " + SURVEY_TABLE
-         //   + " FOR EACH ROW BEGIN "
-         //   +   " SELECT RAISE "
-         //   +   " (ROLLBACK, 'delete from \"" + SURVEY_TABLE + "\" violates constraint')"
-         //   +   " WHERE ( id IS IN ( SELECT DISTINCT surveyId FROM " + SHOT_TABLE + " ) );"
-         //   + " END;"
-         // );
+           db.execSQL(
+               create_table + FIXED_TABLE
+             + " ( surveyId INTEGER, "
+             +   " id INTEGER, "   //  PRIMARY KEY AUTOINCREMENT, "
+             +   " station TEXT, "
+             +   " longitude DOUBLE, "
+             +   " latitude DOUBLE, "
+             +   " altitude DOUBLE, "
+             +   " comment TEXT, "
+             +   " status INTEGER"
+             // +   " surveyId REFERENCES " + SURVEY_TABLE + "(id)"
+             // +   " ON DELETE CASCADE "
+             +   ")"
+           );
+            
+           db.execSQL(
+               create_table + CALIB_TABLE
+             + " ( id INTEGER, " // PRIMARY KEY AUTOINCREMENT, "
+             +   " name TEXT, "
+             +   " day TEXT, "
+             +   " device TEXT, "
+             +   " comment TEXT )"
+           );
+
+           db.execSQL(
+               create_table + GM_TABLE 
+             + " ( calibId INTEGER, "
+             +   " id INTEGER, " // PRIMARY KEY AUTOINCREMENT, "
+             +   " gx INTEGER, "
+             +   " gy INTEGER, "
+             +   " gz INTEGER, "
+             +   " mx INTEGER, "
+             +   " my INTEGER, "
+             +   " mz INTEGER, "
+             +   " grp INTEGER, "
+             +   " error REAL "
+             // +   " calibId REFERENCES " + CALIB_TABLE + "(id)"
+             // +   " ON DELETE CASCADE "
+             +   ")"
+           );
+
+           db.execSQL(
+               create_table + PLOT_TABLE 
+             + " ( surveyId INTEGER, "
+             +   " id INTEGER, " // PRIMARY KEY AUTOINCREMENT, "
+             +   " name TEXT, "
+             +   " type INTEGER, "
+             +   " status INTEGER, "
+             +   " start TEXT, "
+             +   " view TEXT "
+             // +   " surveyId REFERENCES " + SURVEY_TABLE + "(id)"
+             // +   " ON DELETE CASCADE "
+             +   ")"
+           );
+
+           db.execSQL(
+               create_table + PHOTO_TABLE
+             + " ( surveyId INTEGER, "
+             +   " id INTEGER, " //  PRIMARY KEY AUTOINCREMENT, "
+             +   " shotId INTEGER, "
+             +   " status INTEGER, "
+             +   " title TEXT, "
+             +   " comment TEXT "
+             // +   " surveyId REFERENCES " + SURVEY_TABLE + "(id)"
+             // +   " ON DELETE CASCADE "
+             +   ")"
+           );
+
+           // db.execSQL(
+           //     " CREATE TRIGGER fk_insert_shot BEFORE "
+           //   + " INSERT on " + SHOT_TABLE 
+           //   + " FOR EACH ROW BEGIN "
+           //   +   " SELECT RAISE "
+           //   +   " (ROLLBACK, 'insert on \"" + SHOT_TABLE + "\" violates foreing key constraint')"
+           //   +   " WHERE ( SELECT id FROM " + SURVEY_TABLE + " WHERE id = NEW.surveyId ) IS NULL; "
+           //   + " END;"
+           // );
+           // db.execSQL(
+           //     "CREATE TRIGGER fk_delete_survey BEFORE DELETE ON " + SURVEY_TABLE
+           //   + " FOR EACH ROW BEGIN "
+           //   +   " SELECT RAISE "
+           //   +   " (ROLLBACK, 'delete from \"" + SURVEY_TABLE + "\" violates constraint')"
+           //   +   " WHERE ( id IS IN ( SELECT DISTINCT surveyId FROM " + SHOT_TABLE + " ) );"
+           //   + " END;"
+           // );
+
+           db.setTransactionSuccessful();
+         } catch ( SQLException e ) {
+           TopoDroidApp.Log( TopoDroidApp.LOG_DB, "createTables exception " + e.toString() );
+         } finally {
+           db.endTransaction();
+         }
       }
 
       @Override
       public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
-      {
-         // Log.w("DistoXOpenHelper", "Upgrading database: drop tables and recreate.");
+      {  
+         // FIXME this is called at each start when the database file exists
+         // TopoDroidApp.Log(TopoDroidApp.LOG_DB, "onUpgrade drop tables and recreate.");
          // db.execSQL("DROP TABLE IF EXISTS " + SHOT_TABLE);
          // onCreate(db);
       }

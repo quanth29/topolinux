@@ -15,8 +15,6 @@
  */
 package com.android.DistoX;
 
-// import android.util.Log;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -30,8 +28,6 @@ import android.view.MenuItem;
  */
 public class TopoDroidPreferences extends PreferenceActivity 
 {
-  // private static final String TAG = "DistoX";
-
   private MyEditPreference mCloseDistance;
   private MyEditPreference mVThreshold;
   private MyEditPreference mLineSegment;

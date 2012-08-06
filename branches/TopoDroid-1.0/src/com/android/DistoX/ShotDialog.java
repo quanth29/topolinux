@@ -11,6 +11,7 @@
  * CHANGES
  * 20120702 shot surface flag
  * 20120711 back-next buttons
+ * 20120725 TopoDroidApp log
  */
 package com.android.DistoX;
 
@@ -21,7 +22,6 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.widget.RadioButton;
 
-import android.util.Log;
 import android.text.InputType;
 
 import android.content.Context;
@@ -39,7 +39,7 @@ import android.view.KeyEvent;
 public class ShotDialog extends Dialog
                               implements View.OnClickListener
 {
-  private static final String TAG = "DistoX";
+  // private static final String TAG = "DistoX";
   private ShotActivity mParent;
   private DistoXDBlock mBlk;
   private DistoXDBlock mPrevBlk;
@@ -73,13 +73,12 @@ public class ShotDialog extends Dialog
   String shot_comment;
 
   public ShotDialog( Context context, ShotActivity parent,
-                     DistoXDBlock blk, DistoXDBlock prev )
+                     DistoXDBlock blk, DistoXDBlock prev, DistoXDBlock next )
   {
     super(context);
     mParent      = parent;
-    DistoXDBlock next = mParent.getNextLegShot( blk );
     loadDBlock( blk, prev, next );
-    // Log.v(TAG, "ShotDialog " + blk.toString() );
+    TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "ShotDialog " + blk.toString() );
   }
 
 
@@ -88,7 +87,13 @@ public class ShotDialog extends Dialog
     mPrevBlk     = prev;
     mNextBlk     = next;
     mBlk         = blk;
-    // Log.v(TAG, "ShotDialog LOAD " + blk.toString() );
+    TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "ShotDialog LOAD " + blk.toString() );
+    if ( prev != null ) {
+      TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "           prev " + prev.toString() );
+    }
+    if ( next != null ) {
+      TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "           next " + next.toString() );
+    }
 
     shot_from    = blk.mFrom;
     shot_to      = blk.mTo;
@@ -101,7 +106,6 @@ public class ShotDialog extends Dialog
     shot_extend  = blk.mExtend;
     shot_flag    = blk.mFlag;
     shot_comment = blk.mComment;
-
   }
 
   private void updateView()
@@ -136,7 +140,7 @@ public class ShotDialog extends Dialog
   protected void onCreate(Bundle savedInstanceState) 
   {
     super.onCreate(savedInstanceState);
-    // Log.v( TAG, "onCreate" );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "ShotDialog::onCreate" );
     setContentView(R.layout.distox_shot_dialog);
     mTVdata    = (TextView) findViewById(R.id.shot_data );
     // mETname = (EditText) findViewById(R.id.shot_name );
@@ -219,26 +223,25 @@ public class ShotDialog extends Dialog
       //
       // saveDBlock();
       if ( mPrevBlk != null ) {
-        DistoXDBlock prevBlock = mParent.getPreviousLegShot( mPrevBlk );
-        // Log.v(TAG, "PREV " + mPrevBlk.toString() );
+        DistoXDBlock prevBlock = mParent.getPreviousLegShot( mPrevBlk, true );
+        TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "PREV " + mPrevBlk.toString() );
         loadDBlock( mPrevBlk, prevBlock, mBlk );
         updateView();
-      // } else {
-      //   Log.v(TAG, "PREV is null");
+      } else {
+        TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "PREV is null" );
       }
     } else if ( b == mButtonNext ) {
       // shift:
       //        prev -- blk -- next
       //                blk -- next -- nextOfNext
       // saveDBlock();
-      DistoXDBlock nextBlock = mParent.getNextLegShot( mBlk );
-      if ( nextBlock != null ) {
-        DistoXDBlock next = mParent.getNextLegShot( nextBlock );
-        // Log.v(TAG, "NEXT " + nextBlock.toString() );
-        loadDBlock( nextBlock, mBlk, next );
+      if ( mNextBlk != null ) {
+        DistoXDBlock next = mParent.getNextLegShot( mNextBlk, true );
+        TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "NEXT " + mNextBlk.toString() );
+        loadDBlock( mNextBlk, mBlk, next );
         updateView();
-      // } else {
-      //   Log.v(TAG, "NEXT is null");
+      } else {
+        TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "NEXT is null" );
       }
     } else if ( b == mButtonDrop ) {
       mParent.dropShot( mBlk );

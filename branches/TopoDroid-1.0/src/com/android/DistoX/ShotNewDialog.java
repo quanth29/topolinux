@@ -16,8 +16,6 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.widget.RadioButton;
 
-// import android.util.Log;
-
 import android.content.Context;
 import android.text.InputType;
 
@@ -33,7 +31,6 @@ import android.view.KeyEvent;
 public class ShotNewDialog extends Dialog
                            implements View.OnClickListener
 {
-  private static final String TAG = "DistoX ShotNewDialog";
   private ShotActivity mParent;
   private boolean  notDone;
 
@@ -64,7 +61,7 @@ public class ShotNewDialog extends Dialog
   protected void onCreate(Bundle savedInstanceState) 
   {
     super.onCreate(savedInstanceState);
-    // Log.v( TAG, "onCreate" );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "ShotNewDialog onCreate" );
     setContentView(R.layout.distox_shot_new_dialog);
     mETfrom = (EditText) findViewById(R.id.shot_from );
     mETto   = (EditText) findViewById(R.id.shot_to );

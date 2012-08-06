@@ -7,27 +7,27 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120726 TopoDroid log
  */
 package com.android.DistoX;
 
 // import java.Thread;
 
-// import android.util.Log;
 import android.widget.Toast;
 import android.os.AsyncTask;
 
 
 public class DistoXRefresh extends AsyncTask< String, Integer, Integer >
 {
-  // private static final String TAG = "DistoX Refresh";
-
   private TopoDroidApp app;
   private ILister lister;                       // list display
   private static DistoXRefresh running = null;
 
   DistoXRefresh( TopoDroidApp parent, ILister il )
   {
-    // Log.v( TAG, "DistoXRefresh" );
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "DistoXRefresh cstr" );
     app = parent;
     lister = il;
   }
@@ -41,22 +41,21 @@ public class DistoXRefresh extends AsyncTask< String, Integer, Integer >
     // if ( nRead < 0 ) {
     //   TopoDroidApp app = (TopoDroidApp) getApplication();
     //   Toast.makeText( getApplicationContext(), app.DistoXConnectionError[ -nRead ], Toast.LENGTH_LONG ).show();
-    // }
-    // Log.v( TAG, "DistoXRefresh in background read " + nRead );
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "doInBackground read " + nRead );
     return nRead;
   }
 
   @Override
   protected void onProgressUpdate( Integer... values)
   {
-    // Log.v( TAG, "DistoXRefresh on progress update " + values );
     super.onProgressUpdate( values );
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "onProgressUpdate " + values );
   }
 
   @Override
   protected void onPostExecute( Integer res )
   {
-    // Log.v( TAG, "DistoXRefresh on post execute res " + res );
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "onPostExecute res " + res );
     if ( res != null ) {
       int r = res.intValue();
       lister.refreshDisplay( r );

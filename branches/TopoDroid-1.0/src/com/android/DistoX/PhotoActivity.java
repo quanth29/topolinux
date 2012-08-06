@@ -42,8 +42,6 @@ import android.view.SubMenu;
 // import android.view.MenuInflater;
 // import android.content.res.ColorStateList;
 
-// import android.util.Log;
-
 // import android.location.LocationManager;
 
 import android.content.Context;
@@ -69,7 +67,6 @@ import android.net.Uri;
 public class PhotoActivity extends Activity
                           implements OnItemClickListener, ILister
 {
-  // private static final String TAG = "DistoX";
   private TopoDroidApp app;
   // FIXME PHOTO
   // private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
@@ -97,11 +94,11 @@ public class PhotoActivity extends Activity
 
   public void updateDisplay( )
   {
-    // Log.v( TAG, "updateDisplay() status: " + StatusName() + " forcing: " + force_update );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PHOTO, "updateDisplay() status: " + StatusName() + " forcing: " + force_update );
     DataHelper data = app.mData;
     if ( data != null && app.mSID >= 0 ) {
       List< PhotoInfo > list = data.selectAllPhotos( app.mSID, TopoDroidApp.STATUS_NORMAL );
-      // Log.v( TAG, "update shot list size " + list.size() );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_PHOTO, "update shot list size " + list.size() );
       updatePhotoList( list );
       setTitle( app.getSurvey() );
     } else {
@@ -111,7 +108,7 @@ public class PhotoActivity extends Activity
 
   private void updatePhotoList( List< PhotoInfo > list )
   {
-    // Log.v(TAG, "updatePhotoList size " + list.size() );
+    // TopoDroidApp.Log(TopoDroidApp.LOG_PHOTO, "updatePhotoList size " + list.size() );
     mDataAdapter.clear();
     mList.setAdapter( mDataAdapter );
     if ( list.size() == 0 ) {
@@ -157,7 +154,7 @@ public class PhotoActivity extends Activity
       mPhotoTitle   = name;
       mPhotoComment = comment;
       File imagefile = new File( app.getSurveyJpgFile( mPhotoId ) );
-      // Log.v("DistoX", "photo " + imagefile.toString() );
+      // TopoDroidApp.Log("DistoX", "photo " + imagefile.toString() );
 
       Uri outfileuri = Uri.fromFile( imagefile );
       Intent intent = new Intent( android.provider.MediaStore.ACTION_IMAGE_CAPTURE );
@@ -175,7 +172,7 @@ public class PhotoActivity extends Activity
     switch ( reqCode ) {
       case CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE:
         if ( resCode == Activity.RESULT_OK ) {
-          // Log.v("DistoX", "insert photo in db " + mPhotoId );
+          // TopoDroidApp.Log("DistoX", "insert photo in db " + mPhotoId );
           app.mData.insertPhoto( app.mSID, -1L, mShotId, mPhotoTitle, mPhotoComment );
         }
     }
@@ -212,7 +209,7 @@ public class PhotoActivity extends Activity
 
   public void updatePhoto( PhotoInfo photo, String title, String comment )
   {
-    // Log.v( TAG, "updatePhoto From >" + from + "< To >" + to + "< comment " + comment );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PHOTO, "updatePhoto From >" + from + "< To >" + to + "< comment " + comment );
     if ( app.mData.updatePhoto( photo.sid, photo.id, title, comment ) ) {
       if ( app.mListRefresh ) {
         // This works but it refreshes the whole list

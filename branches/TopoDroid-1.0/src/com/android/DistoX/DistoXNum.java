@@ -13,6 +13,7 @@
  * 20120601 more loop closure
  * 20120702 surface shots
  * 20120719 added check whether survey is attached
+ * 20120726 TopoDroid log
  */
 package com.android.DistoX;
 
@@ -23,11 +24,8 @@ import java.util.Stack;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
-// import android.util.Log;
-
 class DistoXNum
 {
-  // private static final String TAG = "DistoX Num";
   private static final float grad2rad = TopoDroidApp.GRAD2RAD_FACTOR;
 
   /* bounding box */
@@ -79,7 +77,7 @@ class DistoXNum
 
     Station( String id, Station from, float d, float b, float c, int extend )
     {
-      // Log.v( TAG, "station " + id + " from " + from + " (extend " + extend + ")" );
+      // TopoDroidApp.Log( TopoDroiaApp.LOC_NUM, "Station cstr " + id + " from " + from + " (extend " + extend + ")" );
       name = id;
       v = from.v - d * (float)Math.sin(c * grad2rad);
       float h0 = d * (float)Math.abs( Math.cos(c * grad2rad) );
@@ -200,7 +198,7 @@ class DistoXNum
   DistoXNum( List<DistoXDBlock> data, String start )
   {
     surveyAttached = compute( data, start );
-    // Log.v( TAG, " length " + mLength + " depth " + mZmin + " " + mZmax );
+    // TopoDroidApp.Log( TopoDroiaApp.LOC_NUM, "DistoXNum cstr length " + mLength + " depth " + mZmin + " " + mZmax );
   }
 
   public List<Station> getStations() { return mStations; }
@@ -210,13 +208,13 @@ class DistoXNum
 
   // public void dump()
   // {
-  //   Log.v( TAG, "Stations:" );
+  //   TopoDroidApp.Log( TopoDroiaApp.LOC_NUM, "DistoXNum Stations:" );
   //   for ( Station st : mStations ) {
-  //     Log.v( TAG, "   " + st.name + " S: " + st.s + " E: " + st.e );
+  //     TopoDroidApp.Log( TopoDroiaApp.LOC_NUM, "   " + st.name + " S: " + st.s + " E: " + st.e );
   //   }
-  //   Log.v( TAG, "Shots:" );
+  //   TopoDroidApp.Log( TopoDroiaApp.LOC_NUM, "Shots:" );
   //   for ( Shot sh : mShots ) {
-  //     Log.v( TAG, "   From: " + sh.from.name + " To: " + sh.to.name );
+  //     TopoDroidApp.Log( TopoDroiaApp.LOC_NUM, "   From: " + sh.from.name + " To: " + sh.to.name );
   //   }
   // } 
 
@@ -341,7 +339,8 @@ class DistoXNum
           break;
       }
     }
-    // Log.v( TAG, " tmp-shots " + tmpshots.size() + " tmp-splays " + tmpsplays.size() );
+    // TopoDroidApp.Log( TopoDroiaApp.LOC_NUM,
+    //   "DistoXNum::compute tmp-shots " + tmpshots.size() + " tmp-splays " + tmpsplays.size() );
 
 
     mStations.add( new Station( start ) );
@@ -407,13 +406,13 @@ class DistoXNum
         }
       }
     }
-    // Log.v( TAG, " done leg shots ");
+    // TopoDroidApp.Log( TopoDroiaApp.LOC_NUM, "DistoXNum::compute done leg shots ");
 
     for ( TmpShot ts : tmpsplays ) {
       Station sf = getStation( ts.from );
       if ( sf != null ) {
-        // Log.v( TAG, "splay from " + ts.from + " " + ts.d + " " + ts.b + " " + ts.c
-        //             + " (extend " + ts.extend + ")" );
+        // TopoDroidApp.Log( TopoDroiaApp.LOC_NUM,
+        //   "DistoXNum::compute splay from " + ts.from + " " + ts.d + " " + ts.b + " " + ts.c + " (extend " + ts.extend + ")" );
         Splay sh = new Splay( sf, ts.d, ts.b, ts.c, ts.extend, ts.block );
         mSplays.add( sh );
       }

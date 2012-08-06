@@ -18,8 +18,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Matrix;
 
-// import android.util.Log;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
@@ -30,7 +28,6 @@ import java.util.ArrayList;
  */
 public class DrawingLinePath extends DrawingPath
 {
-  // private static final String TAG = "DistoX";
   static final int OUTLINE_OUT = 1;
   static final int OUTLINE_IN = -1;
   static final int OUTLINE_NONE = 0;
@@ -51,7 +48,7 @@ public class DrawingLinePath extends DrawingPath
   {
     super( DrawingPath.DRAWING_PATH_LINE );
     DrawingBrushPaths.makePaths( );
-    // Log.v( TAG, "new DrawingLinePath type " + type );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PATH, "DrawingLinePath cstr type " + type );
     mLineType = type;
     mClosed   = false;
     mReversed = false;

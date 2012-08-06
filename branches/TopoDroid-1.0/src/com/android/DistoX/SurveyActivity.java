@@ -38,8 +38,6 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.os.Bundle;
 
-// import android.util.Log;
-
 import android.content.Context;
 // import android.content.Intent;
 
@@ -70,7 +68,6 @@ public class SurveyActivity extends Activity
                             // extends Dialog
                             implements View.OnClickListener
 {
-  // private static final String TAG = "DistoX";
   // private TopoDroidActivity mParent;
   private Context mContext;
 
@@ -128,7 +125,7 @@ public class SurveyActivity extends Activity
     mEditTeam    = (EditText) findViewById(R.id.survey_team);
     mEditComment = (EditText) findViewById(R.id.survey_comment);
 
-    // Log.v( TAG, "app mSID " + app.mSID );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_SURVEY, "app mSID " + app.mSID );
     isSaved = ( app.mSID >= 0 );
     if ( isSaved ) {
       info = app.getSurveyInfo();
@@ -260,7 +257,7 @@ public class SurveyActivity extends Activity
   @Override
   public void onClick(View view)
   {
-    // Log.v( TAG, "onClick() ");
+    // TopoDroidApp.Log( TopoDroidApp.LOG_SURVEY, "onClick() ");
     switch (view.getId()){
       case R.id.surveySave:
         doSave();
@@ -269,7 +266,7 @@ public class SurveyActivity extends Activity
         doOpen();
         break;
       case R.id.surveyExport:
-        doExport();
+        doExport( true );
         break;
       case R.id.survey3D:
         do3D();
@@ -298,7 +295,10 @@ public class SurveyActivity extends Activity
 
   private void doArchive()
   {
-    app.exportSurveyAsTh(); // make sure to have survey exported as therion
+    doExport( false );
+    if ( app.mExportType != TopoDroidApp.DISTOX_EXPORT_TH ) {
+      app.exportSurveyAsTh(); // make sure to have survey exported as therion
+    }
     Archiver archiver = new Archiver( app );
     if ( archiver.archive( ) ) {
       String msg = getResources().getString( R.string.zip_saved ) + " " + archiver.zipname;
@@ -333,14 +333,14 @@ public class SurveyActivity extends Activity
   // @Override
   // public boolean onOptionsItemSelected(MenuItem item) 
   // {
-  //   // Log.v( TAG, "onOptionsItemSelected() " + StatusName() );
+  //   // TopoDroidApp.Log( TopoDroidApp.LOG_SURVEY, "onOptionsItemSelected() " + StatusName() );
   //   // Handle item selection
   //   if ( item == mMIsave ) {
   //     doSave();
   //   } else if ( item == mMIopen ) {
   //     doOpen();
   //   } else if ( item == mMIexport ) {
-  //     doExport();
+  //     doExport( true );
   //   } else if ( item == mMInotes ) {
   //     doNotes();
   //   } else if ( item == mMIlocation ) {  
@@ -382,7 +382,7 @@ public class SurveyActivity extends Activity
 
   private void doOpen()
   {
-    // Log.v( TAG, "do OPEN " );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_SURVEY, "do OPEN " );
     // dismiss();
     Intent openIntent = new Intent( mContext, ShotActivity.class );
     mContext.startActivity( openIntent );
@@ -444,7 +444,7 @@ public class SurveyActivity extends Activity
     if ( comment != null ) { comment = comment.trim(); }
 
     if ( isSaved ) { // survey already saved
-      // Log.v( TAG, "INSERT survey id " + id + " date " + date + " name " + name + " comment " + comment );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_SURVEY, "INSERT survey id " + id + " date " + date + " name " + name + " comment " + comment );
       app.mData.updateSurveyDayAndComment( app.mSID, date, comment );
       if ( team != null ) {
         app.mData.updateSurveyTeam( app.mSID, team );
@@ -465,10 +465,12 @@ public class SurveyActivity extends Activity
     }
   }
   
-  private void doExport()
+  private void doExport( boolean warn )
   {
     if ( app.getSurveyId() < 0 ) {
-      Toast.makeText( mContext, R.string.no_survey, Toast.LENGTH_LONG ).show();
+      if ( warn ) {
+        Toast.makeText( mContext, R.string.no_survey, Toast.LENGTH_LONG ).show();
+      }
     } else {
       String filename = null;
       switch ( app.mExportType ) {
@@ -488,10 +490,12 @@ public class SurveyActivity extends Activity
           filename = app.exportSurveyAsTro();
           break;
       }
-      if ( filename != null ) {
-        Toast.makeText( mContext, mContext.getString(R.string.saving_) + filename, Toast.LENGTH_LONG ).show();
-      } else {
-        Toast.makeText( mContext, R.string.saving_file_failed, Toast.LENGTH_LONG ).show();
+      if ( warn ) { 
+        if ( filename != null ) {
+          Toast.makeText( mContext, mContext.getString(R.string.saving_) + filename, Toast.LENGTH_LONG ).show();
+        } else {
+          Toast.makeText( mContext, R.string.saving_file_failed, Toast.LENGTH_LONG ).show();
+        }
       }
     }
   }

@@ -17,8 +17,6 @@ package com.android.DistoX;
 import android.app.Dialog;
 import android.os.Bundle;
 
-// import android.util.Log;
-
 import android.content.Context;
 
 import android.widget.EditText;
@@ -32,7 +30,6 @@ import android.widget.Toast;
 public class DistoXPlotDialog extends Dialog
                               implements View.OnClickListener
 {
-  // private static final String DPTAG = "DistoX PlotDialog";
   private Context mContext;
   private INewPlot mMaker;
   private boolean notDone;

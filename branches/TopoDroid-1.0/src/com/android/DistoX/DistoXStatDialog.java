@@ -11,6 +11,7 @@
  * CHANGES
  * 20120530 loop closures
  * 20120702 shot surface flag
+ * 20120726 TopoDroid log
  */
 package com.android.DistoX;
 
@@ -33,13 +34,9 @@ import android.widget.TextView;
 import android.widget.Button;
 import android.widget.ListView;
 
-// import android.util.Log;
-
 public class DistoXStatDialog extends Dialog 
                               // implements View.OnClickListener
 {
-    // private static final String TAG = "DistoX stats";
-
     private Context mContext;
 
     private TextView mTextLength;
@@ -111,7 +108,7 @@ public class DistoXStatDialog extends Dialog
     // @Override
     // public void onClick(View view)
     // {
-    //   // Log.v( TAG, "onClick()" );
+    //   // TopoDroidApp.Log( TopoDroidApp.LOG_DATA, "StatDialog onClick()" );
     //   dismiss();
     // }
 }

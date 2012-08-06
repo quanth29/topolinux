@@ -16,17 +16,16 @@
  * Adapted from fit_cubic.c Piecewise cubic fitting code
  * Modified to add corner detection previous to cubic fitting.
  *
+ * --------------------------------------------------------
+ * CHANGES
+ * 20120725 TopoDroidApp log
  */
 package com.android.DistoX;
 
 import java.util.ArrayList;
-// import android.util.Log;
-
 
 public class BezierInterpolator
 {
-  // private static final String TAG = "DistoX";
-
   private ArrayList< BezierCurve > curves;  // array of cubic splines
   private float[][] C;                      // Matrix C: 2x2
   private float[]   X;                      // Matrix X: 2x1
@@ -136,10 +135,10 @@ public class BezierInterpolator
     float alpha_r = det_C0_X / det_C0_C1;
 
     if ( Float.isNaN( alpha_l ) || Float.isNaN( alpha_r ) ) {
-      // Log.v( TAG, "Npts " + nPts + " alpha " + alpha_l + " " + alpha_r );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_BEZIER, "Npts " + nPts + " alpha " + alpha_l + " " + alpha_r );
       for (int i = 0; i < nPts; i++) {
         BezierPoint p = d.get(first + i);
-        // Log.v(TAG, "Pt " + i + ": " + p.mX + " " + p.mY );
+        // TopoDroidApp.Log( TopoDroidApp.LOG_BEZIER, "Pt " + i + ": " + p.mX + " " + p.mY );
       }
     }
   
@@ -211,7 +210,7 @@ public class BezierInterpolator
     BezierPoint bl = d.get( last );
 
     if ( nPts < 2 ) {
-      // Log.v( TAG, "fitCubic with " + nPts + " points");
+      // TopoDroidApp.Log( TopoDroidApp.LOG_BEZIER, "fitCubic with " + nPts + " points");
       // bezCurve = new BezierCurve( bf, bf, bl, bl );
       // insertBezierCurve( bezCurve );
       return 0.0f; 
@@ -341,7 +340,7 @@ public class BezierInterpolator
    */
   public float fitCurve( ArrayList<BezierPoint> d, int nPts, float error, float len_thr )
   {
-    // Log.v(TAG, "fitCurve nr. pts " + nPts );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_BEZIER, "fitCurve nr. pts " + nPts );
     if ( nPts <= 1 ) return 0.0f;
     curves.clear();
     ArrayList<Integer> corners = findCorners( d, nPts, len_thr );
@@ -349,7 +348,7 @@ public class BezierInterpolator
     float err = 0.0f;
     for ( int k=1; k<corners.size(); ++k ) {
       int i2 = corners.get(k).intValue(); // nPts-1
-      // Log.v(TAG, "fitting from " + i1 + " to " + i2 );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_BEZIER, "fitting from " + i1 + " to " + i2 );
       /*  Unit tangent vectors at endpoints */
       BezierPoint tHat1 = computeLeftTangent( d, i1 );
       BezierPoint tHat2 = computeRightTangent( d, i2 );

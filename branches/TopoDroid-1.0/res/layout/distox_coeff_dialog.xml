@@ -66,17 +66,17 @@
         android:layout_height="wrap_content" 
         />
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    <!-- LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
       android:layout_width="wrap_content" 
       android:layout_height="wrap_content"
       android:orientation="horizontal" 
       >
-      <!-- Button android:id="@+id/button_coeff_write"
+      <Button android:id="@+id/button_coeff_write"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="right"
         android:text="@string/button_write"
-        / -->
+        />
    		
       <Button android:id="@+id/button_coeff_back"
         android:layout_width="wrap_content" 
@@ -84,6 +84,6 @@
         android:layout_gravity="right"
         android:text="@string/button_back"
         />
-    </LinearLayout>
+    </LinearLayout -->
 
 </LinearLayout>

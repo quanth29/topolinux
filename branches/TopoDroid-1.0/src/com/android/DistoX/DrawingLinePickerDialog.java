@@ -23,13 +23,9 @@ import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
-// import android.util.Log;
-
 public class DrawingLinePickerDialog extends Dialog 
                                implements View.OnClickListener
 {
-    // private static final String TAG = "DistoX DrawingLinePicker";
-
     private Button[] mBtnLine;
     private Button mBtnOK;
     private Button mBtnCancel;
@@ -58,7 +54,7 @@ public class DrawingLinePickerDialog extends Dialog
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawing_item_dialog);
 
-        // Log.v( TAG, "line index " + mIndex );
+        // TopDroidApp.Log( TopoDroidApp.LOG_PLOT, "DrawingLinePickerDialog::onCreate index " + mIndex );
         TableLayout layout = (TableLayout) findViewById( R.id.layout_items );
 
         int k0 = 0;
@@ -86,7 +82,7 @@ public class DrawingLinePickerDialog extends Dialog
 
     public void onClick(View view)
     {
-      // Log.v( TAG, "onClick()" );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "DrawingLinePickerDialog::onClick" );
       switch (view.getId()) {
         case R.id.button_ok:
           mActivity.lineSelected( mIndex );

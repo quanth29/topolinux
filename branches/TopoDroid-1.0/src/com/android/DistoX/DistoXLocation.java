@@ -12,6 +12,7 @@
  * 20120517 comments
  * 20120521 parented with SurveyActivity
  * 20120603 fixed-info list
+ * 20120726 TopoDroid log
  */
 package com.android.DistoX;
 
@@ -54,8 +55,6 @@ public class DistoXLocation extends Dialog
                                      , LocationListener
                                      , GpsStatus.Listener
 {
-  // private static final String TAG = "DistoX";
-
   // private boolean  mLocated;
   private LocationManager locManager;
   private Context mContext;
@@ -97,7 +96,7 @@ public class DistoXLocation extends Dialog
   protected void onCreate(Bundle savedInstanceState) 
   {
     super.onCreate(savedInstanceState);
-    // Log.v( TAG, "onCreate" );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_LOC, "Location onCreate" );
     setContentView(R.layout.distox_location);
     mTVlong = (TextView) findViewById(R.id.longitude );
     mTVlat  = (TextView) findViewById(R.id.latitude  );
@@ -134,7 +133,7 @@ public class DistoXLocation extends Dialog
   @Override 
   public void onItemClick(AdapterView<?> parent, View view, int pos, long id)
   {
-    // Log.v( TAG, "item click pos " + pos );
+    // TopoDroidApp.Log.v( TopoDroidApp.LOG_LOC, "Location::onItemClick pos " + pos );
     // CharSequence item = ((TextView) view).getText();
     // String value = item.toString();
     // // setListPos( position  );
@@ -213,8 +212,8 @@ public class DistoXLocation extends Dialog
       mTVlat.setText( mContext.getResources().getString( R.string.latitude ) + " " + FixedInfo.double2ddmmss( sp ) );
       mTVlong.setText( mContext.getResources().getString( R.string.longitude ) + " " + FixedInfo.double2ddmmss( sl ) );
       mTValt.setText( mContext.getResources().getString( R.string.altitude ) + " " + Integer.toString( (int)(altitude) ) );
-    // } else {
-    //   Log.w(TAG, "null location");
+    } else {
+      TopoDroidApp.Log(TopoDroidApp.LOG_ERR, "displayLocation null");
     }
   }
 
@@ -228,7 +227,7 @@ public class DistoXLocation extends Dialog
 
   public void onStatusChanged( String provider, int status, Bundle extras )
   {
-    // Log.v(TAG, "onStatusChanged status " + status );
+    // TopoDroidApp.Log(TopoDroidApp.LOG_LOC, "onStatusChanged status " + status );
   }
 
   public void onGpsStatusChanged( int event ) 
@@ -241,7 +240,7 @@ public class DistoXLocation extends Dialog
         GpsSatellite sat = sats.next();
         if ( sat.usedInFix() ) ++nr;
       }
-      // Log.v(TAG, "nr satellites used in fix " + nr );
+      // TopoDroidApp.Log(TopoDroidApp.LOG_LOC, "onGpsStatusChanged nr satellites used in fix " + nr );
       mBtnStatus.setText( Integer.toString( nr ) );
       switch ( nr ) {
         case 0: mBtnStatus.setBackgroundColor( 0x80ff0000 );
@@ -261,9 +260,9 @@ public class DistoXLocation extends Dialog
         Location loc = locManager.getLastKnownLocation( LocationManager.GPS_PROVIDER );
         displayLocation( loc );
       } catch ( IllegalArgumentException e ) {
-        // Log.e(TAG, "Location Manager IllegalArgumentException " );
+        TopoDroidApp.Log(TopoDroidApp.LOG_ERR, "onGpsStatusChanged IllegalArgumentException " );
       } catch ( SecurityException e ) {
-        // Log.e(TAG, "Location Manager SecurityException " );
+        TopoDroidApp.Log(TopoDroidApp.LOG_ERR, "onGpsStatusChanged SecurityException " );
       }
     }
   }

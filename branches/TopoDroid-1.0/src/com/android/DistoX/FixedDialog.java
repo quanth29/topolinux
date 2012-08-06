@@ -19,7 +19,6 @@ package com.android.DistoX;
 import android.app.Dialog;
 import android.os.Bundle;
 
-// import android.util.Log;
 import android.text.InputType;
 
 import android.content.Context;
@@ -36,7 +35,6 @@ import android.view.View.OnKeyListener;
 public class FixedDialog extends Dialog
                               implements View.OnClickListener
 {
-  // private static final String TAG = "DistoX FixedDialog";
   private SurveyActivity mParent;
   private DistoXLocation mSubParent;
   private FixedInfo mFxd;
@@ -60,7 +58,7 @@ public class FixedDialog extends Dialog
   protected void onCreate(Bundle savedInstanceState) 
   {
     super.onCreate(savedInstanceState);
-    // Log.v( TAG, "onCreate" );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_FIXED, "FixedDialog onCreate" );
     setContentView(R.layout.distox_fixed_dialog);
     mTVdata    = (TextView) findViewById(R.id.fix_data );
     mETstation = (EditText) findViewById(R.id.fix_station );
