@@ -28,8 +28,8 @@ any comment that might be useful to others.
 || Samsung Galaxy Mini S5570 || 2.3.6 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy Ace S5830 || 2.2 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy Ace GTS5830 || 2.3.4 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
-|| Samsung Galaxy S Plus I9001 || 2.3.6 || 2.0.5 || <font color="green">Fully working || ||
-|| Samsung Galaxy Tab P1000 7" || 2.3.6 || 2.0.5 || <font color="green">Fully working || ||
+|| Samsung Galaxy S Plus I9001 || 2.3.6 || 1.0.5 || <font color="green">Fully working || ||
+|| Samsung Galaxy Tab P1000 7" || 4.0.3 || 1.0.5 || <font color="green">Fully working || ||
 || Samsung Galaxy S II (16 GB) || 4.0 || 0.7.1 || <font color="green">Mostly working || ||
 || Samsung Galaxy Xcover GT S569 || 2.3.6 || 1.0.5 || <font color="green">Mostly working || ||
 || Samsung Note GT-N7000 || 2.3.6 || 0.7.1 - 1.0.3 || <font color="green">Working || ||
