@@ -76,7 +76,7 @@ public class TopoDroidApp extends Application
   static final boolean LOG_BEZIER = false;
   static final boolean LOG_BT     = false;   // bluetooth
   static final boolean LOG_CALIB  = false;
-  static final boolean LOG_COMM   = false;    // connection
+  static final boolean LOG_COMM   = false;   // connection
   static final boolean LOG_DATA   = false;   // shot data
   static final boolean LOG_DB     = false;   // sqlite database
   static final boolean LOG_DEVICE = false;
@@ -90,9 +90,10 @@ public class TopoDroidApp extends Application
   static final boolean LOG_NUM    = false;  
   static final boolean LOG_PATH   = false;
   static final boolean LOG_PLOT   = false;
-  static final boolean LOG_PHOTO  = false;
+  static final boolean LOG_PHOTO  = false;   // photos
   static final boolean LOG_PREFS  = false;   // preferences
   static final boolean LOG_PROTO  = false;   // protocol
+  static final boolean LOG_SENSOR = false;   // sensors and measures
   static final boolean LOG_SHOT   = false;   // shot
   static final boolean LOG_STATS  = false;
   static final boolean LOG_SURVEY = false;
@@ -310,6 +311,10 @@ public class TopoDroidApp extends Application
   public static final String TOPODROID_DEVICE_ACTION = "topodroid.device_action";
   // public static final String TOPODROID_DEVICE_ADDR   = "topodroid.device_addr";
   // public static final String TOPODROID_DEVICE_CNCT   = "topodroid.device_cnct";
+
+  public static final String TOPODROID_SENSOR_TYPE  = "topodroid.sensor_type";
+  public static final String TOPODROID_SENSOR_VALUE = "topodroid.sensor_value";
+  public static final String TOPODROID_SENSOR_COMMENT = "topodroid.sensor_comment";
 
   public String[] DistoXConnectionError;
 

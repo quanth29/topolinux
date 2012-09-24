@@ -3,7 +3,7 @@
  * @author marco corvi
  * @date may 2012
  *
- * @brief TopoDroid survey shots management
+ * @brief TopoDroid survey photo listing
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
@@ -207,16 +207,17 @@ public class PhotoActivity extends Activity
     updateDisplay( ); // FIXME
   }
 
-  public void updatePhoto( PhotoInfo photo, String title, String comment )
+  public void updatePhoto( PhotoInfo photo, String comment )
   {
-    // TopoDroidApp.Log( TopoDroidApp.LOG_PHOTO, "updatePhoto From >" + from + "< To >" + to + "< comment " + comment );
-    if ( app.mData.updatePhoto( photo.sid, photo.id, title, comment ) ) {
-      if ( app.mListRefresh ) {
-        // This works but it refreshes the whole list
-        mDataAdapter.notifyDataSetChanged();
-      } else {
-        mSavePhoto.mTitle = title;
-      }
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PHOTO, "updatePhoto comment " + comment );
+    if ( app.mData.updatePhoto( photo.sid, photo.id, comment ) ) {
+      // if ( app.mListRefresh ) {
+      //   // This works but it refreshes the whole list
+      //   mDataAdapter.notifyDataSetChanged();
+      // } else {
+      //   mSavePhoto.mComment = comment;
+      // }
+      updateDisplay(); // FIXME
     } else {
       Toast.makeText( this, R.string.no_db, Toast.LENGTH_LONG ).show();
     }
