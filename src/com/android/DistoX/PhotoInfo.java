@@ -22,7 +22,7 @@ class PhotoInfo
   public long sid;       // survey id
   public long id;        // photo id
   public long shotid;    // shot id
-  public String mTitle;   // photo title
+  public String mTitle;   // photo title FIXME TITLE
   public String mShotName; // shot name
   // public String mName; // photo filename without extension ".jpg" and survey prefix dir = photo id
   // public String mDate;
@@ -33,7 +33,7 @@ class PhotoInfo
     sid    = _sid;
     id     = _id;
     shotid = _shotid;
-    mTitle  = t;
+    mTitle  = t; // FIXME TITLE
     mShotName = sn;
     // mDate = dt;
     mComment = cmt;
@@ -51,7 +51,7 @@ class PhotoInfo
   {
     return id 
            + " <" + ( (mShotName == null)? "-" : mShotName )
-           + "> " + mTitle;
+           + "> " + mComment; 
   }
 
 }

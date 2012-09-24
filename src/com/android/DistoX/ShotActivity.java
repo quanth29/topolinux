@@ -30,6 +30,10 @@ import java.io.FileWriter;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.util.Date;
+import java.util.Locale;
+import java.text.SimpleDateFormat;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -75,6 +79,8 @@ public class ShotActivity extends Activity
 {
   private static final String TAG = "DistoX";
   private TopoDroidApp app;
+  private static final int SENSOR_ACTIVITY_REQUEST_CODE = 1;
+  private static final int EXTERNAL_ACTIVITY_REQUEST_CODE = 2;
   private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 
   // private static final int REQUEST_DEVICE    = 1;
@@ -98,8 +104,8 @@ public class ShotActivity extends Activity
   private int mNextPos  = 0;   // next shot entry position
   // private DistoXDBlock mSaveBlock = null;
 
-  String mPhotoTitle;
-  String mPhotoComment;
+  // String mPhotoTitle;
+  long   mSensorId;
   long   mPhotoId;
 
   private MenuItem mMIdevice = null;
@@ -113,6 +119,7 @@ public class ShotActivity extends Activity
   private MenuItem mMIundelete;
   // private MenuItem mMIlocation;
   private MenuItem mMIphoto;
+  private MenuItem mMIsensor;
   private MenuItem mMI3d;
   private MenuItem mMIplot;
   private MenuItem mMInotes;
@@ -254,7 +261,7 @@ public class ShotActivity extends Activity
   {
     DistoXDBlock blk = mDataAdapter.get(pos);
     mSIDid = blk.mId;
-    (new PhotoDialog(this, this) ).show();
+    (new PhotoSensorsDialog(this, this) ).show();
     return true;
   }
 
@@ -320,6 +327,7 @@ public class ShotActivity extends Activity
       mMIundelete = mSMmore.add( R.string.menu_undelete );
       // mMIlocation = mSMmore.add( R.string.menu_location );
       mMIphoto    = mSMmore.add( R.string.menu_photo );
+      mMIsensor   = mSMmore.add( R.string.menu_sensor );
       mMI3d       = mSMmore.add( R.string.menu_3d );
       mMIoptions  = mSMmore.add( R.string.menu_options );
       mMIhelp     = mSMmore.add( R.string.menu_help  );
@@ -380,10 +388,12 @@ public class ShotActivity extends Activity
       } else {
         Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
       }
-    } else if ( item == mMIphoto ) { // PHOTO: start dialog to ask the PhotoTitle
-      //   (new PhotoDialog(this, this) ).show();
+    } else if ( item == mMIphoto ) { // photo listing
       Intent photoIntent = new Intent( this, PhotoActivity.class );
       startActivity( photoIntent );
+    } else if ( item == mMIsensor ) {  // sensor listing
+      Intent sensorIntent = new Intent( this, SensorListActivity.class );
+      startActivity( sensorIntent );
     } else if ( item == mMI3d ) { // 3D
       app.exportSurveyAsTh(); // make sure to have survey exported as therion
       Intent intent = new Intent( "Cave3D.intent.action.Launch" );
@@ -449,24 +459,44 @@ public class ShotActivity extends Activity
     return true;
   }
 
-  void takePhoto( String name, String comment )
+  void askPhoto( )
   {
-    if ( name != null && name.length() > 0 ) {
-      // using mSIDid as shotid
-      mPhotoTitle   = name;
-      mPhotoComment = comment;
-      mPhotoId      = app.mData.nextPhotoId( app.mSID );
-      File imagefile = new File( app.getSurveyJpgFile( mPhotoId ) );
-      // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "photo " + imagefile.toString() );
+    // using mSIDid as shotid
+    mPhotoId      = app.mData.nextPhotoId( app.mSID );
 
-      Uri outfileuri = Uri.fromFile( imagefile );
-      Intent intent = new Intent( android.provider.MediaStore.ACTION_IMAGE_CAPTURE );
-      intent.putExtra( MediaStore.EXTRA_OUTPUT, outfileuri );
-      intent.putExtra( "outputFormat", Bitmap.CompressFormat.JPEG.toString() );
-      startActivityForResult( intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE );
-    } else {
-      Toast.makeText( this, R.string.picture_no_station, Toast.LENGTH_SHORT ).show();
-    }
+    // imageFile := PHOTO_DIR / surveyId / photoId .jpg
+    File imagefile = new File( app.getSurveyJpgFile( mPhotoId ) );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "photo " + imagefile.toString() );
+
+    Uri outfileuri = Uri.fromFile( imagefile );
+    Intent intent = new Intent( android.provider.MediaStore.ACTION_IMAGE_CAPTURE );
+    intent.putExtra( MediaStore.EXTRA_OUTPUT, outfileuri );
+    intent.putExtra( "outputFormat", Bitmap.CompressFormat.JPEG.toString() );
+    startActivityForResult( intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE );
+  }
+
+  void askSensor( )
+  {
+    // using mSIDid as shotid
+    mSensorId = app.mData.nextSensorId( app.mSID );
+    TopoDroidApp.Log( TopoDroidApp.LOG_SENSOR, "sensor " + mSensorId );
+    Intent intent = new Intent( this, SensorActivity.class );
+    startActivityForResult( intent, SENSOR_ACTIVITY_REQUEST_CODE );
+  }
+
+  void askExternal( )
+  {
+    // using mSIDid as shotid
+    mSensorId = app.mData.nextSensorId( app.mSID );
+    TopoDroidApp.Log( TopoDroidApp.LOG_SENSOR, "sensor " + mSensorId );
+    Intent intent = new Intent( this, ExternalActivity.class );
+    startActivityForResult( intent, EXTERNAL_ACTIVITY_REQUEST_CODE );
+  }
+
+  void insertPhoto( String comment )
+  {
+    // long shotid = 0;
+    app.mData.insertPhoto( app.mSID, mPhotoId, mSIDid, "", comment ); // FIXME TITLE 
   }
 
   @Override
@@ -475,9 +505,27 @@ public class ShotActivity extends Activity
     switch ( reqCode ) {
       case CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE:
         if ( resCode == Activity.RESULT_OK ) {
-          long shotid = 0;
-          app.mData.insertPhoto( app.mSID, mPhotoId, mSIDid, mPhotoTitle, mPhotoComment );
+          // ask the photo comment
+          (new PhotoCommentDialog(this, this) ).show();
         }
+        break;
+      case SENSOR_ACTIVITY_REQUEST_CODE:
+      case EXTERNAL_ACTIVITY_REQUEST_CODE:
+        if ( resCode == Activity.RESULT_OK ) {
+          Bundle extras = data.getExtras();
+          String type  = extras.getString( TopoDroidApp.TOPODROID_SENSOR_TYPE );
+          String value = extras.getString( TopoDroidApp.TOPODROID_SENSOR_VALUE );
+          String comment = extras.getString( TopoDroidApp.TOPODROID_SENSOR_COMMENT );
+          TopoDroidApp.Log( TopoDroidApp.LOG_SENSOR, "insert sensor " + type + " " + value + " " + comment );
+
+          SimpleDateFormat sdf = new SimpleDateFormat( "yyyy.MM.dd", Locale.US );
+          app.mData.insertSensor( app.mSID, mSensorId, mSIDid, "", 
+                                  sdf.format( new Date() ),
+                                  comment,
+                                  type,
+                                  value );
+        }
+        break;
     }
   }
 

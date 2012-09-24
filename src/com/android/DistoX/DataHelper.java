@@ -57,6 +57,7 @@ public class DataHelper extends DataSetObservable
    private static final String GM_TABLE     = "gms";
    private static final String PLOT_TABLE   = "plots";
    private static final String PHOTO_TABLE  = "photos";
+   private static final String SENSOR_TABLE = "sensors";
 
    private SQLiteDatabase myDB = null;
    private long           myNextId;   // id of next shot
@@ -81,6 +82,8 @@ public class DataHelper extends DataSetObservable
    private SQLiteStatement undeletePlotStmt;
    private SQLiteStatement deletePhotoStmt;
    private SQLiteStatement updatePhotoStmt;
+   private SQLiteStatement deleteSensorStmt;
+   private SQLiteStatement updateSensorStmt;
 
    private SQLiteStatement updateFixedStationStmt;
    private SQLiteStatement updateFixedStatusStmt;
@@ -131,8 +134,11 @@ public class DataHelper extends DataSetObservable
         undeletePlotStmt = myDB.compileStatement( "UPDATE plots set status=0 WHERE surveyId=? AND id=?" );
 
         deletePhotoStmt  = myDB.compileStatement( "UPDATE photos set status=0 WHERE surveyId=? AND id=?" );
-        updatePhotoStmt  = myDB.compileStatement( "UPDATE photos set title=?, comment=? WHERE surveyId=? AND id=?" );
+        updatePhotoStmt  = myDB.compileStatement( "UPDATE photos set comment=? WHERE surveyId=? AND id=?" );
 
+        deleteSensorStmt = myDB.compileStatement( "UPDATE sensors set status=0 WHERE surveyId=? AND id=?" );
+        updateSensorStmt = myDB.compileStatement( "UPDATE sensors set comment=? WHERE surveyId=? AND id=?" );
+ 
         updateFixedStationStmt = myDB.compileStatement( "UPDATE fixeds set station=? WHERE surveyId=? AND id=?" );
         updateFixedStatusStmt = myDB.compileStatement( "UPDATE fixeds set status=? WHERE surveyId=? AND id=?" );
 
@@ -294,7 +300,7 @@ public class DataHelper extends DataSetObservable
    //   int cnt = 0;
    //   if ( hasShotAtStation( id, sid, f ) ) ++cnt;
    //   if ( hasShotAtStation( id, sid, t ) ) ++cnt;
-   //   TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "makesCycle cnt " + cnt );
+   //   TopoDroidApp.Log( TopoDroidApp.LOG_DB, "makesCycle cnt " + cnt );
    //   return cnt >= 2;
    // }
      
@@ -340,7 +346,7 @@ public class DataHelper extends DataSetObservable
    public void deleteShot( long shot_id, long survey_id ) 
    {
      if ( myDB == null ) return;
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "deleteShot: " + shot_id + "/" + survey_id );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "deleteShot: " + shot_id + "/" + survey_id );
      deleteShotStmt.bindLong( 1, survey_id ); 
      deleteShotStmt.bindLong( 2, shot_id );
      deleteShotStmt.execute();
@@ -349,7 +355,7 @@ public class DataHelper extends DataSetObservable
    public void undeleteShot( long shot_id, long survey_id ) 
    {
      if ( myDB == null ) return;
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "undeleteShot: " + shot_id + "/" + survey_id );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "undeleteShot: " + shot_id + "/" + survey_id );
      undeleteShotStmt.bindLong( 1, survey_id ); 
      undeleteShotStmt.bindLong( 2, shot_id );
      undeleteShotStmt.execute();
@@ -358,7 +364,7 @@ public class DataHelper extends DataSetObservable
    public void deletePlot( long plot_id, long survey_id )
    {
      if ( myDB == null ) return;
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "deletePlot: " + plot_id + "/" + survey_id );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "deletePlot: " + plot_id + "/" + survey_id );
      deletePlotStmt.bindLong( 1, survey_id );
      deletePlotStmt.bindLong( 2, plot_id );
      deletePlotStmt.execute();
@@ -367,7 +373,7 @@ public class DataHelper extends DataSetObservable
    public void undeletePlot( long plot_id, long survey_id )
    {
      if ( myDB == null ) return;
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "undeletePlot: " + plot_id + "/" + survey_id );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "undeletePlot: " + plot_id + "/" + survey_id );
      undeletePlotStmt.bindLong( 1, survey_id );
      undeletePlotStmt.bindLong( 2, plot_id );
      undeletePlotStmt.execute();
@@ -476,6 +482,47 @@ public class DataHelper extends DataSetObservable
    // ----------------------------------------------------------------------
    // SELECT STATEMENTS
 
+   public List< SensorInfo > selectAllSensors( long sid, long status )
+   {
+     List< SensorInfo > list = new ArrayList< SensorInfo >();
+     Cursor cursor = myDB.query( SENSOR_TABLE,
+			         new String[] { "id", "shotId", "title", "date", "comment", "type", "value" }, // columns
+                                 "surveyId=? AND status=?", 
+                                 new String[] { Long.toString(sid), Long.toString(status) },
+                                 null,  // groupBy
+                                 null,  // having
+                                 null ); // order by
+     if (cursor.moveToFirst()) {
+       do {
+         list.add( new SensorInfo( sid, 
+                                  cursor.getLong(0), // id
+                                  cursor.getLong(1), // shot-id
+                                  cursor.getString(2), // title
+                                  null,                // shot name
+                                  cursor.getString(3), // date
+                                  cursor.getString(4), // comment
+                                  cursor.getString(5), // type
+                                  cursor.getString(6) ) ); // value
+       } while (cursor.moveToNext());
+     }
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "selectAllSensors list size " + list.size() );
+     if (cursor != null && !cursor.isClosed()) {
+       cursor.close();
+     }
+     for ( SensorInfo si : list ) { // set shot-names to the sensor infos
+       cursor = myDB.query( SHOT_TABLE, 
+                            new String[] { "fStation", "tStation" },
+                            "surveyId=? and id=?",
+                            new String[] { Long.toString(sid), Long.toString(si.shotid) },
+                            null, null, null );
+       if (cursor.moveToFirst()) {
+         si.mShotName = cursor.getString(0) + "-" + cursor.getString(1);
+       }
+       if (cursor != null && !cursor.isClosed()) cursor.close();
+     }
+     return list;
+   }
+
    public List< PhotoInfo > selectAllPhotos( long sid, long status )
    {
      List< PhotoInfo > list = new ArrayList< PhotoInfo >();
@@ -496,7 +543,7 @@ public class DataHelper extends DataSetObservable
                                   cursor.getString(3) ) );
        } while (cursor.moveToNext());
      }
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "selectAllPhotos list size " + list.size() );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "selectAllPhotos list size " + list.size() );
      if (cursor != null && !cursor.isClosed()) {
        cursor.close();
      }
@@ -517,7 +564,7 @@ public class DataHelper extends DataSetObservable
 /* FIXME PHOTO
    public List< PhotoInfo > selectPhotoAtShot( long sid, long shotid )
    {
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "selectPhotoAtShot " + shotid + "/" + sid );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "selectPhotoAtShot " + shotid + "/" + sid );
      List< PhotoInfo > list = new ArrayList< PhotoInfo >();
      Cursor cursor = myDB,query( SHOT_TABLE, 
                                  new String[] { "fStation", "tStation" },
@@ -571,7 +618,7 @@ public class DataHelper extends DataSetObservable
                                   cursor.getString(5) ) );
        } while (cursor.moveToNext());
      }
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "seletAllFixed list size " + list.size() );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "seletAllFixed list size " + list.size() );
      if (cursor != null && !cursor.isClosed()) {
        cursor.close();
      }
@@ -597,7 +644,7 @@ public class DataHelper extends DataSetObservable
          list.add( plot );
        } while (cursor.moveToNext());
      }
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "selectAllPlots list size " + list.size() );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "selectAllPlots list size " + list.size() );
      if (cursor != null && !cursor.isClosed()) {
        cursor.close();
      }
@@ -606,7 +653,7 @@ public class DataHelper extends DataSetObservable
 
    public DistoXDBlock selectShot( long shot_id, long survey_id )
    {
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "selectShot " + shot_id + "/" + survey_id );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "selectShot " + shot_id + "/" + survey_id );
      Cursor cursor = myDB.query(SHOT_TABLE,
        new String[] { "fStation", "tStation", "distance", "bearing", "clino", "extend", "flag", "comment" }, // columns
        "surveyId=? and id=?", 
@@ -635,7 +682,7 @@ public class DataHelper extends DataSetObservable
 
    public DistoXDBlock selectPreviousLegShot( long shot_id, long survey_id )
    {
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "selectPreviousLegShot " + shot_id + "/" + survey_id );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "selectPreviousLegShot " + shot_id + "/" + survey_id );
      Cursor cursor = myDB.query(SHOT_TABLE,
        new String[] { "fStation", "tStation", "distance", "bearing", "clino", "extend", "flag", "comment" }, // columns
        "surveyId=? and id<?",
@@ -668,7 +715,7 @@ public class DataHelper extends DataSetObservable
 
    public DistoXDBlock selectNextLegShot( long shot_id, long survey_id ) 
    {
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "selectNextLegShot " + shot_id + "/" + survey_id );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "selectNextLegShot " + shot_id + "/" + survey_id );
      Cursor cursor = myDB.query(SHOT_TABLE,
        new String[] { "fStation", "tStation", "distance", "bearing", "clino", "extend", "flag", "comment" }, // columns
        "surveyId=? and id>?",
@@ -751,7 +798,7 @@ public class DataHelper extends DataSetObservable
          list.add( block );
        } while (cursor.moveToNext());
      }
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "selectAllShotsAtStation list size " + list.size() );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "selectAllShotsAtStation list size " + list.size() );
      if (cursor != null && !cursor.isClosed()) {
        cursor.close();
      }
@@ -852,7 +899,7 @@ public class DataHelper extends DataSetObservable
          list.add( block );
        } while (cursor.moveToNext());
      }
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "selectAllShots list size " + list.size() );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "selectAllShots list size " + list.size() );
      if (cursor != null && !cursor.isClosed()) {
        cursor.close();
      }
@@ -1068,7 +1115,7 @@ public class DataHelper extends DataSetObservable
    {
      long id = -1;
      if ( myDB == null ) { return 0; }
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "setName >" + name + "< table " + table );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "setName >" + name + "< table " + table );
      Cursor cursor = myDB.query( table, new String[] { "id" },
                                  "name = ?", new String[] { name },
                                  null, null, null );
@@ -1173,12 +1220,11 @@ public class DataHelper extends DataSetObservable
      return maxId( PHOTO_TABLE, sid );
    }
 
-   public boolean updatePhoto( long sid, long id, String title, String comment )
+   public boolean updatePhoto( long sid, long id, String comment )
    {
-     updatePhotoStmt.bindString( 1, title );
-     updatePhotoStmt.bindString( 2, comment );
-     updatePhotoStmt.bindLong( 3, sid );
-     updatePhotoStmt.bindLong( 4, id );
+     updatePhotoStmt.bindString( 1, comment );
+     updatePhotoStmt.bindLong( 2, sid );
+     updatePhotoStmt.bindLong( 3, id );
      updatePhotoStmt.execute();
      return true;
    }
@@ -1191,6 +1237,56 @@ public class DataHelper extends DataSetObservable
      deletePhotoStmt.execute();
    }
 
+
+   /**
+    * @param sid       survey id
+    * @param id        photo id (or -1)
+    * @param shotid    shot id
+    * @param title     sensor title
+    * @param date      sensor date
+    * @param comment
+    * @param type      sensor type
+    * @param value     sensor value
+    */
+   public long insertSensor( long sid, long id, long shotid, String title, String date, String comment, 
+                             String type, String value )
+   {
+     if ( id == -1L ) id = maxId( SENSOR_TABLE, sid );
+     ContentValues cv = new ContentValues();
+     cv.put( "surveyId",  sid );
+     cv.put( "id",        id );
+     cv.put( "shotId",    shotid );
+     cv.put( "status",    TopoDroidApp.STATUS_NORMAL );
+     cv.put( "title",     title );
+     cv.put( "date",      date );
+     cv.put( "comment",   (comment == null)? "" : comment );
+     cv.put( "type",      type );
+     cv.put( "value",     value );
+     myDB.insert( SENSOR_TABLE, null, cv );
+     return id;
+   }
+
+   public long nextSensorId( long sid )
+   {
+     return maxId( SENSOR_TABLE, sid );
+   }
+
+   public void deleteSensor( long sid, long id )
+   {
+     if ( myDB == null ) return;
+     deleteSensorStmt.bindLong( 1, sid );
+     deleteSensorStmt.bindLong( 2, id );
+     deleteSensorStmt.execute();
+   }
+
+   public boolean updateSensor( long sid, long id, String comment )
+   {
+     updateSensorStmt.bindString( 1, comment );
+     updateSensorStmt.bindLong( 2, sid );
+     updateSensorStmt.bindLong( 3, id );
+     updateSensorStmt.execute();
+     return true;
+   }
    
 
    public long insertFixed( long sid, long id, String station, double lng, double lat, double alt, String comment, long status )
@@ -1271,7 +1367,7 @@ public class DataHelper extends DataSetObservable
 
    public boolean updateSurveyDayAndComment( long id, String date, String comment )
    {
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB,
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB,
      //   "updateSurveyDayAndComment id " + id + " day " + date + " comment \"" + comment + "\"" );
      if ( date == null ) return false;
      updateSurveyStmt.bindString( 1, date );
@@ -1283,7 +1379,7 @@ public class DataHelper extends DataSetObservable
 
    public boolean updateSurveyTeam( long id, String team )
    {
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "updateSurveyTeam id " + id + " team \"" + team + "\"" );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "updateSurveyTeam id " + id + " team \"" + team + "\"" );
      updateSurveyTeamStmt.bindString( 1, (team != null)? team : "" );
      updateSurveyTeamStmt.bindLong( 2, id );
      updateSurveyTeamStmt.execute();
@@ -1309,7 +1405,7 @@ public class DataHelper extends DataSetObservable
 
    // public boolean updateSurveyName( long id, String name )
    // {
-   //   // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "updateSurveyName id " + id + " name \"" + name + "\"" );
+   //   // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "updateSurveyName id " + id + " name \"" + name + "\"" );
    //   updateSurveyNameStmt.bindString( 1, (name != null)? name : "" );
    //   updateSurveyNameStmt.bindLong( 2, id );
    //   updateSurveyNameStmt.execute();
@@ -1318,7 +1414,7 @@ public class DataHelper extends DataSetObservable
 
    public boolean updateCalibInfo( long id, String date, String device, String comment )
    {
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "updateCalibInfo id " + id + " day " + date + " comm. " + comment );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "updateCalibInfo id " + id + " day " + date + " comm. " + comment );
      if ( date == null ) return false;
      updateCalibStmt.bindString( 1, date );
      updateCalibStmt.bindString( 2, (device != null)? device : "" );
@@ -1790,6 +1886,22 @@ public class DataHelper extends DataSetObservable
              +   ")"
            );
 
+           db.execSQL(
+               create_table + SENSOR_TABLE
+             + " ( surveyId INTEGER, "
+             +   " id INTEGER, " //  PRIMARY KEY AUTOINCREMENT, "
+             +   " shotId INTEGER, "
+             +   " status INTEGER, "
+             +   " title TEXT, "
+             +   " date TEXT, "
+             +   " comment TEXT, "
+             +   " type TEXT, "
+             +   " value TEXT "
+             // +   " surveyId REFERENCES " + SURVEY_TABLE + "(id)"
+             // +   " ON DELETE CASCADE "
+             +   ")"
+           );
+
            // db.execSQL(
            //     " CREATE TRIGGER fk_insert_shot BEFORE "
            //   + " INSERT on " + SHOT_TABLE 
@@ -1820,7 +1932,7 @@ public class DataHelper extends DataSetObservable
       public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
       {  
          // FIXME this is called at each start when the database file exists
-         // TopoDroidApp.Log(TopoDroidApp.LOG_DB, "onUpgrade drop tables and recreate.");
+         // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "onUpgrade drop tables and recreate.");
          // db.execSQL("DROP TABLE IF EXISTS " + SHOT_TABLE);
          // onCreate(db);
       }

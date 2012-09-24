@@ -36,7 +36,6 @@ public class PhotoEditDialog extends Dialog
   private PhotoInfo mPhoto;
   private String mFilename;
 
-  private EditText mETtitle;    // photo title / photo name
   private EditText mETcomment;  // photo comment
   private ImageView mIVimage;   // photo image
   private Button   mButtonOK;
@@ -63,13 +62,11 @@ public class PhotoEditDialog extends Dialog
     setContentView(R.layout.photo_dialog);
 
     mIVimage      = (ImageView) findViewById( R.id.photo_image );
-    mETtitle      = (EditText) findViewById( R.id.photo_title );
     mETcomment    = (EditText) findViewById( R.id.photo_comment );
     mButtonOK     = (Button) findViewById( R.id.photo_ok );
     mButtonCancel = (Button) findViewById( R.id.photo_cancel );
 
     setTitle( R.string.title_photo );
-    mETtitle.setText( mPhoto.mTitle );
     // public String mPhoto.mDate;
     if ( mPhoto.mComment != null ) {
       mETcomment.setText( mPhoto.mComment );
@@ -95,12 +92,11 @@ public class PhotoEditDialog extends Dialog
   public void onClick(View v) 
   {
     Button b = (Button) v;
-    // TopoDroidApp.Log(TopoDroidApp.LOG_PHOTO, "text " + mETtitle.getText().toString() );
-    if ( b == mButtonOK && mETtitle.getText() != null ) {
+    if ( b == mButtonOK ) {
       if ( mETcomment.getText() == null ) {
-        mParent.updatePhoto( mPhoto, mETtitle.getText().toString(), "" );
+        mParent.updatePhoto( mPhoto, "" );
       } else {
-        mParent.updatePhoto( mPhoto, mETtitle.getText().toString(), mETcomment.getText().toString() );
+        mParent.updatePhoto( mPhoto, mETcomment.getText().toString() );
       }
     }
     dismiss();
