@@ -1,0 +1,50 @@
+#summary TopoDroid drawing quick intro
+#labels Featured,Phase-Support
+
+= TopoDroid Drawing =
+
+Drawing in TopoDroid is done a-la Therion.
+So some knowledge of "the Therion approach" is useful to
+do good scketches. Here is a brief introduction to how Therion
+views the cave maps. 
+
+  - cave maps  are split in sketches (*scrap* in therion jargon). For small caves a plan scrap and an extended elevation scrap are usually enough.
+
+  - there are three types of objects in the sketches: *points* (iconic symbols, like that for od the wiggling arrow for water-flow), *lines* (cave wall, pit, etc.) and *areas* (for example a pond).
+
+  - to draw a point you choose the symbol and tap the place of the screen where you want it to show.
+
+  - to draw a line, you choose the type and drag a path on the screen where you want the line to be
+
+  - to draw an area, you choose the type, and draw the area contour line. The most useful area is the "water".
+
+  - for the extended section, for each shot, you have to choose whether to draw it to the left or to the right (there is a third option: "vertical"; Therion has other option(s), but these are for advanced complex drawings).
+
+
+== Remarks ==
+
+TopoDroid attach a start station to a sketch: this station is placed at the origin of the canvas and the rest of the centerline is computed from it.
+For cross sections you have to specify also the direction by giving the station you are looking at: this is used only to show the splay shots properly.
+
+The scrap files are are saved in the "th2" directory of TopoDroid.
+They are named composing the survey name with the scrap name: for example
+the file of the scrap "p1" of the survey "my_cave" is "my_cave-p1.th2".
+
+<wiki:comment>
+All the files are inserted in the zip archive without the directory name
+in the path. Therefore, when you unzip the archive you get the "th" file
+and the "th2" files in the same directory. 
+</wiki:comment>
+
+
+If you map small caves, you can do all the work in the cave.
+When you get back, you create the zip archive of the survey, download it to the pc, unzip it, add a thconfig file with two lines:
+{{{
+    source your_cave.th
+    export map -proj plan -o your_cave.pdf
+}}}
+(maybe you must also to uncomment the input of the th2 files in the th: don't
+remember exactly)
+
+Then run therion on it, and you have your pdf map.
+The quality depends on your ability top draw sketches, of course.
