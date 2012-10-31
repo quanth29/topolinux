@@ -1,4 +1,4 @@
-#summary Cave3D
+#summary Cave3D - Therion 3D display
 #labels Featured
 
 = Cave3D =
@@ -43,4 +43,3 @@ Version 3.0 uses Android canvas for the display.
 
 Version 1.0 uses the openGL. It can show either the perspective view
 or the orthogonal view, but it cannot display the station names.
-
