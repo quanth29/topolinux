@@ -35,3 +35,4 @@ any comment that might be useful to others.
 || Samsung Note GT-N7000 || 2.3.6 || 0.7.1 - 1.0.3 || <font color="green">Working || ||
 || Sony Ericson Xperia Neo MT15i || 2.3.3 || 0.7.1 || <font color="green">Mostly working || calibration untested ||
 || Sony Ericson Xperia ARC LT15i || 2.3.3 || 0.7.1 || <font color="green">Mostly working || calibration untested ||
+|| Sony Xperia ST21i || 4.0.4 || 0.7.1 || <font color="green">Mostly working || calibration untested ||
