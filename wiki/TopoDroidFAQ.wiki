@@ -45,9 +45,8 @@ is missing xtherion complaints.
 
 === Does TopoDroid save data in other formats (Survex, Compass, VisualTopo, ...) ? ===
 
-Compass and Survex export are now (2012.02) available.
-I was considering also VisualTopo export: it will be included
-when the VisualTopo developer(s) provide the file format specs.
+Compass, Survex and VisualTopo export are now (2012.11) available.
+Data export in other formats may be added, if needed.
 
 
 === How can I erase the TopoDroid data ? ===
@@ -107,26 +106,26 @@ The debug info is usually disabled, to limit the log.
 
 
 
-=== Why is TopoDroid not on the market ? ===
+=== Why is TopoDroid not on the Google Play (market) ? ===
 
-The market is a place where a developper sells its work to users.
+The market is a place where developpers sell or give their work to users.
 One pays to put apps on the market, expecting to get something
 in return for that.
-So far it seems that TopoDroid will have enough buyers to pay 
+So far it seems that TopoDroid will not have enough buyers to pay 
 for it to be on the market.
 
 
 === How can I help TopoDroid ? ===
 
 There are several ways you can help TopoDroid:
-  * sending an email with your comments. Telling me what you think of it, even if you do use it. This will surely help me to improve the program.
+  * sending an email with your comments. Telling me what you think of it, even if you do not use it. This will surely help me to improve the program.
   * installing to try it out, and letting me know what you dislike (bad features) and what you would like (missing features).
   * you may [http://marcocorvi.altervista.org/marco/donate0.htm donate] money. This is the easiest way to tell me that you are interested in it and want it to continue. All the funding will go in buying new hardware to test TopoDroid.
   * writing some documentaton. This requires more time on your side but it also means that you are more involved in it.
   * translating documentation in other languages.
-  * internationalizing TopoDroid, ie, translating the strings in other languages.
-  * setting up a user mail-list (in case, please let me know of it: i might participate if i understand a bit the list language)
-  * developing the software. Definitely this is a major involvement, and requires a lot of time.
+  * internationalizing TopoDroid, ie, translating the strings in other languages. So far (2012-11) only english and spanish are provided.
+  * enrolling to the user mail-list and writing questions and comments.
+  * developing the software. Definitely this is a major involvement, and requires a great deal of of time.
 
 Please contact me if you want to help with documentation that may go on this website, or with a translation, or with program development.
 
