@@ -11,79 +11,69 @@ This page describes TopoDroid db v 1.0 (name "distox5.db").
 
 The database contains the following tables
   * surveys: list of surveys
-  * shots: the surveys shots
-  * plots: the surveys plot metadata
-  * fixeds: for fixed stations (GPS localized)
+  * shots: the survey shots
+  * plots: the metadata of the survey plots
+  * fixeds: fixed stations (GPS location)
   * calibs: list of calibrations
-  * gms: the calibrations data
+  * gms: the calibration data
 
-The *surveys* table contains the following fields
+The table *surveys* contains the following fields
   * id: unique identifier of the survey (integer)
   * name: survey nickname (text, one word)
-  * date: survey date (yyyy-mm-dd)
+  * day: survey date (yyyy-mm-dd)
   * team: team members
   * comment: survey description (text)
 
-The *shots* table contains the following fields
+The table *shots* contains the following fields
   * surveyId: id of the survey to which the shot belongs (integer)
   * id: unique shot identifier (integer)
-  * fStation: shot from station
-  * tStation: shot to station (blank for splay shots)
-  * distance (double) as tranferred from the DistoX (meters)
-  * bearing (double) as tranferred from the DistoX (decimal degrees)
-  * clino (double) as tranferred from the DistoX (decimal degrees)
-  * roll (double) as tranferred from the DistoX (decimal degrees)
-  * status (integer), can be 0 (normal) or 1 (deleted)
-  * extend (integer). It can be
-     * -1 (left)
-     * +1 (right)
-     * 0  (vertical)
-  * flag (integer): it can be
-     * 0 cave (normal) shot
-     * 1 surface shot
-     * 2 duplicate shot
+  * fStation: "from" station
+  * tStation: "to" station (blank for splay shots)
+  * distance: as tranferred from the DistoX (meters) (real)
+  * bearing: as tranferred from the DistoX (decimal degrees) (real)
+  * clino: as tranferred from the DistoX (decimal degrees) (real)
+  * roll: as tranferred from the DistoX (decimal degrees) (real)
+  * status: either 0 (normal) or 1 (deleted)
+  * extend: -1 (left), +1 (right), 0 (vertical)
+  * flag: 0 (normal shot), 1 (surface shot), 2 (duplicate shot)
   * comment (text)
 
-The *plots* table has the following fields
+The table *plots* has the following fields
   * surveyId: id of the survey to which the plot belongs (integer)
   * id: unique plot identifier (integer)
-  * name (text) plot/scrap name
-  * type (integer), scrap type: 
-      * 0 (none)
-      * 1 (plan)
-      * 2 (extended)
-      * 3 (x-section)
-  * status (integer), can be 0 (normal) or 1 (deleted)
-  * start (text) plot reference station. The plot data are relative to this station which is the origin of the plot coordinate system.
-  * view the viewing station for cross sections
+  * name: plot/scrap name (text)
+  * type: scrap type, 0 (none), 1 (plan), 2 (extended), 3 (x-section), 4 (horizontal x-section)
+  * status: either 0 (normal) or 1 (deleted)
+  * start: reference station. The plot data are relative to this station which is the origin of the plot coordinate system.
+  * view: viewed station for cross sections, ie, the station you are looking at in the cross-section.
 
-The *fixeds* table contains the following fields
+The table *fixeds* contains the following fields
   * surveyId
   * id
-  * station
+  * station: name of the fix station
   * longitude (decimal degrees)
   * latitude (decimal degrees)
   * altitude (meters)
   * comment
-  * status
+  * status: either 0 (normal) or 1 (deleted)
 
-The *photos* table contains
+The table *photos* contains
   * surveyId
   * id
-  * station
+  * station: station at which the photo has been taken
   * comment
 
-The *calibs* table has the following fields
-  * id (integer) unique identifier
-  * name (text) calibration name
-  * day (text) calibration date (yyyy-mm-dd)
-  * device, the DistoX device
-  * comment (text) additional description
+The table *calibs* has the following fields
+  * id: unique identifier (integer)
+  * name: calibration name (one word text)
+  * day: calibration date (yyyy-mm-dd)
+  * device: the DistoX device
+  * comment: additional description
 
-The *gms* table has the following fields
-  * calibId (integer) id of the calibration to which this data belongs
-  * id (integer) unique identifier
-  * gx, gy, gz (integer)
-  * mx, my, mz (integer)
-  * grp (integer) group. It must be positive; data with group "0" are not used to compute the calibration
-  * error (double) error of this data, in the computation of the calibration
+The table *gms* has the following fields
+  * calibId: id of the calibration to which this data belongs
+  * id: unique identifier
+  * gx, gy, gz: gravity field components
+  * mx, my, mz: magnetic field components
+  * grp: group to which the data belongs (integer). Data with group "0" or negative are not used to compute the calibration
+  * error: error of this data in the computation of the calibration.
