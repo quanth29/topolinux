@@ -12,7 +12,7 @@ views the cave maps.
 
   - there are three types of objects in the sketches: *points* (iconic symbols, like those for the speleothems or the wiggling arrow for water-flow), *lines* (cave wall, pit, etc.) and *areas* (for example a pond). In Therion labels can be either point or lines (to write the label along a curve); TopoDroid has only point labels.
 
-  - to draw a point you choose the symbol and tap on the screen where you want it to show. For labels you also have to enter the label text in the coming dialog. 
+  - to draw a point you choose the symbol and tap on the screen where you want to place it. For labels you must also enter the label text in the coming dialog. 
 
   - to draw a line, you choose the type and drag a path on the screen which becomes the line. The most important line type is "wall" which defines the cave walls. The drawing is clipped in Therion to the "inside" of the cave, therefore lines extending beyond the walls will be drawn in Therion only up to the wall. Obviously certain symbols, in particular labels, are not clipped. 
 
@@ -26,7 +26,7 @@ views the cave maps.
 TopoDroid attach a start station to a sketch: this station is placed at the origin of the canvas and the rest of the centerline is computed from it.
 For cross sections you have to specify also the direction by giving the station you are looking at: this is used only to show the splay shots properly.
 
-The depth statistics are referred to the start station.
+The statistics are referred to the start station. In particular the depth is measured from this station.
 
 The scrap files are saved in the "th2" directory of TopoDroid.
 They are named composing the survey name with the scrap name: for example
