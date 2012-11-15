@@ -21,12 +21,12 @@ TopoDroid v. 1.0.X uses the database "distox6.db".
 The two databases have different table schema.
 
 
-== COMPILE and INSTALL ==
+== INSTALL and COMPILE ==
 
 To install the compiled app on a device, copy (or download) the latest apk on the
 sdcard.
 
-To compile the package you need an android SDK.
+If you really want to compile the package from the sources you need an android SDK.
 Edit the AndroidMakefile.xml to suit your device.
 Then compile and install
 {{{
@@ -65,14 +65,12 @@ The main widow menus:
 The "DistoX" menu opens the Device window. With this you can manage DistoX:
 list the paired devices, scan for new ones, reset TopoDroid BlueTooth.
 TopoDroid connects to one device at a time: the current device can be changed by selecting a new one from the list of paired (or scanned) devices.
-The name of the current DistoX device is displayed in the title bar, together with
-the connection state.
+The name of the current DistoX device is displayed in the title bar.
 
-The data transfer between the DistoX and TopoDroid can be continuous or on-demand. In the first case TopoDroid is continuously connected to the DistoX and this sends data to TopoDroid as soon as they are acquired. This connection may fail when the DistoX switches off, or gets too far away from the Android. TopoDroid detect such a failure (there is a timeout of 25 seconds), and turns the connection off if it happens. With the on-demand connection TopoDroid connects to the DistoX only when needed to fulfill a user request. Certain actions (toggling the DistoX in calibration mode, reading and writing the calibration coefficients) can be done only with the on-demand connection.
+The data transfer between the DistoX and TopoDroid is always initiated by TopoDroid on user request. In particular when you need to get some more data
+from the DistoX, you press the Download menu, and wait for the data to be downloaded. The downloaded data go into the active survey or the active calibration depending on the type of the data.
 
-When a DistoX is connected the downloaded data go into the active survey or the active calibration depending on the type of the data.
-
-The menu "New" creates a new survey/calibration. The menu "Import" is used to import an external Therion survey or a zip archive of a previous survey.
+The menu "New" creates a new survey/calibration. The menu "Import" is used to import an external Therion survey or the zip archive of a previous survey.
 
 Tapping a survey in the list opens the Survey window. This displays the survey infos
 (name, date, team, description) and a list of buttons:
@@ -83,11 +81,12 @@ Tapping a survey in the list opens the Survey window. This displays the survey i
   * 3D: display the 3D
   * Notes: edit survey annotations
   * Location: manage fixed stations
+  * Photos: ...
   * Delete: delete the survey and all associated data and files
 
 
 The Shots window displays the list of survey shots. There are three types of shots:
-leg (white) with bot FROM and TO stations, splay (blue) with only FROM station, and blank (red) with no station. Groups of consecutive close shots are taken to make a centerline leg and usually only the first is displayed. The display of splay and blank shots can be turned off. Each shot is shown as
+leg (white) with both FROM and TO stations, splay (blue) with only FROM station, and blank (red) with no station. Groups of consecutive close shots are taken to make a centerline leg and usually only the first is displayed. The display of splay and blank shots can be turned off. Each shot is shown as
 {{{
    id <from-to> distance compass clino [extend]
 }}}
@@ -98,9 +97,9 @@ To assign the stations to a shot tap on the shot and enter the stations in the s
 The extend is one of '<' (left), '>' (right) or '|' vertical (enclosed in square brackets). The shot extend can be changed in the shot dialog.
 
 An asterisk "`*`" follows the _extend_ if the shot is marked as "duplicate".
-The duplicate flag can be toggled in the shot dialog.
+The duplicate flag can be toggled in the shot dialog. A dash "`-`" is used for "surface" shots.
 
-With the shot dialog you can also add a brief note (comment) to the shot.
+With the shot dialog you can also add a brief note (comment) to the shot. Shots with comment are denoted in the list with an "N".
 
 The "Scraps" menu lists the scraps of the current survey. Tapping on one of them opend the Drawing window.
 
@@ -112,8 +111,10 @@ Available point typesi (Nov. 2011):
   * blocks
   * clay
   * continuation
+  * crystal
   * danger
   * debris
+  * dig
   * end: either narrow-end or low-end
   * entrance (orientable)
   * flowstone
@@ -158,7 +159,7 @@ Additionally there are the menus
   * redo
   * save the plot (scrap) as therion th2 file
   * export the plot as PNG image
-  * toggle display mode
+  * toggle the display of the drawing references
   * stats
   * delete
 
