@@ -25,7 +25,7 @@ without loop closure.
 As a matter of fact loop closure is not allowed in TopoDroid.
 I use similar names for the closure station, eg, "14" and "14a".
 This way I can see the misclosures in the scraps.
-The when I complete the work with Therion, I close
+Then when I complete the work with Therion, I close
 the loops with "equate" commands.
 
 === Why are areas only single-line bordered ? ===
@@ -36,11 +36,10 @@ or multiple intersections. There has been a discussion in the Therion
 user list and the single-line solution turned out to be the preferable
 way for areas.
 
-Note that TopoDroid closes the line bordering the area. However
-xtherion needs that the first point is repeated at the end and may
+Note that TopoDroid needs the first point repeated at the end and may
 display a "strange" error dialog.
 The repeated point is not required by the therion language, but if it
-is missing xtherion complaints.
+is missing xtherion complains.
 
 
 === Does TopoDroid save data in other formats (Survex, Compass, VisualTopo, ...) ? ===
@@ -70,7 +69,7 @@ survey is selected. TopoDroid saves the selected survey in the
 database.
 
 
-=== Why can't toggle the DistoX in calibration mode ? ===
+=== Why can't I toggle the DistoX in calibration mode ? ===
 
 First of all make sure that your device is paired with the DistoX.
 You can check this in the "Settings" of th e device, under 
@@ -79,17 +78,6 @@ You can check this in the "Settings" of th e device, under
 Next make sure that TopoDroid is talking to the correct DistoX device.
 TopoDroid talks to one DistoX at a time: the address of the DistoX is
 displayed in the "device window", at the top.
-
-Last TopoDroid should not be connected to the DistoX.
-When "connected" TopoDroid downloads data (both survey and calibration data)
-continuosly, and stores them in the database.
-In this mode it does not send other commands to the DistoX. 
-In particular it does not toggle the DistoX mode, nor read/write the
-calibration coefficients.
-
-There is no need to keep TopoDroid connected to a DistoX.
-You can use TopoDroid downloading data from the DistoX
-only when you are ready to work on them, through the "Download" menu.
 
 
 === What can i do if TopoDroid crashes ? ===
@@ -113,28 +101,30 @@ One pays to put apps on the market, expecting to get something
 in return for that.
 So far it seems that TopoDroid will not have enough buyers to pay 
 for it to be on the market.
+I do not want to have a free version, with limited functionalities and 
+clogged with ads, and a paid version ad-free and fully working.
 
 
 === How can I help TopoDroid ? ===
 
 There are several ways you can help TopoDroid:
-  * sending an email with your comments. Telling me what you think of it, even if you do not use it. This will surely help me to improve the program.
-  * installing to try it out, and letting me know what you dislike (bad features) and what you would like (missing features).
+  * sending me an email with your comments. Telling me what you think of it, even if you do not use it. This will surely help me to improve the program.
+  * installing it to try out, and letting me know what you dislike (bad features) and what you would like (missing features).
   * you may [http://marcocorvi.altervista.org/marco/donate0.htm donate] money. This is the easiest way to tell me that you are interested in it and want it to continue. All the funding will go in buying new hardware to test TopoDroid.
   * writing some documentaton. This requires more time on your side but it also means that you are more involved in it.
-  * translating documentation in other languages.
+  * writing the documentation for other languages.
   * internationalizing TopoDroid, ie, translating the strings in other languages. So far (2012-11) only english and spanish are provided.
   * enrolling to the user mail-list and writing questions and comments.
-  * developing the software. Definitely this is a major involvement, and requires a great deal of of time.
+  * developing the software. Definitely this is a major involvement, and requires a great deal of time.
 
 Please contact me if you want to help with documentation that may go on this website, or with a translation, or with program development.
 
 
 === How can I be assured that TopoDroid will continue ? ===
 
-If I get enough feedbacks, one way or another, I will feel 
-sort of obliged to do a better effort to keep TopoDroid going,
-because of the people that rely on it.
+If I get enough feedback, one way or another, I will feel 
+sort of obliged to put a better effort to keep TopoDroid going,
+because it would mean tha some people rely on it.
 
 If other developpers get involved, that will be an even stronger
-basis for the project, because it will not rely on me.
+basis for the project.
