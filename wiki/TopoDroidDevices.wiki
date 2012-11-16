@@ -12,8 +12,9 @@ any comment that might be useful to others.
 
 
 || *Device* || *Android* || *TopoDroid* || *Status* || *Comment* ||
+|| Archos 32 (minitablet) || 2.2.1 || 1.0.6 || <font color="green">Mostly working || ||
 || Asus EEPAD Transformer TF101 10"|| 4.0.3 || 0.7.1 || <font color="green">Mostly working || calibration untested ||
-|| Haiwei Vodaphone 858 Smart || 2.2 || 0.7.1 - 1.0.5 || <font color="green">Fully working || ||
+|| Haiwei Vodaphone 858 Smart || 2.2 || 0.7.1 - 1.0.7 || <font color="green">Fully working || ||
 || HTC Desire Senser || 2.3.5 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || HTC EVO 3D || 2.3 || 0.7.1 || <font color="green">Mostly working || calibration untested ||
 || HTC Wilfire || 2.3 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
@@ -29,8 +30,9 @@ any comment that might be useful to others.
 || Samsung Galaxy Ace S5830 || 2.2 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy Ace GTS5830 || 2.3.4 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy S Plus I9001 || 2.3.6 || 1.0.5 || <font color="green">Fully working || ||
-|| Samsung Galaxy Tab P1000 7" || 4.0.3 || 1.0.5 || <font color="green">Fully working || ||
+|| Samsung Galaxy Tab P1000 7" || 4.0.3 || 1.0.6 || <font color="green">Fully working || ||
 || Samsung Galaxy S II (16 GB) || 4.0 || 0.7.1 || <font color="green">Mostly working || ||
+|| Samsung Galaxy S II || 4.0.4 || 1.0.6 || <font color="green">Mostly working || Input keyboard problems ||
 || Samsung Galaxy Xcover GT S569 || 2.3.6 || 1.0.5 || <font color="green">Mostly working || ||
 || Samsung Note GT-N7000 || 2.3.6 || 0.7.1 - 1.0.3 || <font color="green">Working || ||
 || Sony Ericson Xperia Neo MT15i || 2.3.3 || 0.7.1 || <font color="green">Mostly working || calibration untested ||
