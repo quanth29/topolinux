@@ -5,11 +5,13 @@
 This page collects the list of the devices where TopoDroid works,
 and those where users experienced problems.
 
+It is compiled only from the users' feedback, and I cannot
+guarantee that the information is correct.
+
 If your device is not in this list, please
 send me an email about how TopoDroid works on it.
 Include the device model, the Android version, the TopoDroid version, and
 any comment that might be useful to others. 
-
 
 || *Device* || *Android* || *TopoDroid* || *Status* || *Comment* ||
 || Archos 32 (minitablet) || 2.2.1 || 1.0.6 || <font color="green">Mostly working || ||
@@ -30,6 +32,7 @@ any comment that might be useful to others.
 || Samsung Galaxy Ace S5830 || 2.2 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy Ace GTS5830 || 2.3.4 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy S Plus I9001 || 2.3.6 || 1.0.5 || <font color="green">Fully working || ||
+|| Samsung Galaxy Tab P1000 7" || 2.2 || ? || <font color="red">Bluetooth fails || ||
 || Samsung Galaxy Tab P1000 7" || 4.0.3 || 1.0.6 || <font color="green">Fully working || ||
 || Samsung Galaxy S II (16 GB) || 4.0 || 0.7.1 || <font color="green">Mostly working || ||
 || Samsung Galaxy S II || 4.0.4 || 1.0.6 || <font color="green">Mostly working || Input keyboard problems ||
