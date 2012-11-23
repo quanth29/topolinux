@@ -5,8 +5,8 @@
 This page collects the list of the devices where TopoDroid works,
 and those where users experienced problems.
 
-It is compiled only from the users' feedback, and I cannot
-guarantee that the information is correct. 
+It is compiled from the users' feedback, and I cannot
+guarantee that the information is correct. In particular a reported bluetooth failure does not mean that TopoDroid will not work on that device.
 
 If your device is not in this list, please
 send me an email about how TopoDroid works on it.
@@ -23,7 +23,7 @@ any comment that might be useful to others.
 || HTC Wilfire S || 2.3.5 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || HTC Sense || 2.3.3 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || HTC Sense || 3.2.1 || 1.0.3 || <font color="red">Bluetooth fails || unable to communicate with DistoX ||
-|| Motorola Defy || 2.2.2 || 0.7.1 || Calib & Surveying working || Drawing not really tested ||
+|| Motorola Defy || 2.2.2 || 0.7.1 || Calib & Surveying working || drawing not really tested ||
 || Samsung Galaxy S Captivate SGH-i897 || 2.1-update1 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX from Android "Settings" ||
 || Samsung Galaxy S Captivate SGH-i897 || 2.2 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX from Android "Settings" ||
 || Samsung Galaxy S Captivate SGH-i897 || 2.3.5 || 0.7.1 || <font color="green">Mostly working || calibration untested ||
