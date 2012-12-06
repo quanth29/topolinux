@@ -10,11 +10,20 @@ Make sure that you have selected the following settings on your device:
 
 Next copy the apk to your device, or if you use adb do "adb install TopoDroid.apk".
 
+=== Where did the drawing symbols (points, lines and areas) go (v. 1.1) ?
+
+Since v. 1.1 TopoDroid has only very few predefined drawing symbols. The
+other symbols must be loaded from file. TopoDroid looks for symbol files in the
+subdirectories "point", "line", and "area" of the directory "TopoDroid/symbol".
+
+See [TopoDroidSymbols].
+
 
 === Why TopoDroid saves the survey (data and sketches) in Therion format ? ===
 
 Mainly because Therion is my primary tool to put together the maps of 
-cave surveys.
+cave surveys. The real answer is that the Therion language provides
+the syntax to specify a cave drawing properly.
 
 
 === Why loops do not close in the plots ? ===
