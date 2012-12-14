@@ -1,1 +1,0 @@
-../QTshot/ThPointType.h

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp"
+    android:paddingBottom="3dp">
+
+    <TextView
+        android:id="@+id/external_prompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/external_prompt"
+        />
+
+    <EditText
+        android:id="@+id/external_type"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/sensor_type"
+        android:layout_marginTop="10dp"
+        />
+    <EditText 
+      android:id="@+id/external_value"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:hint="@string/sensor_value"
+      />
+    <EditText 
+      android:id="@+id/external_comment"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:hint="@string/sensor_comment"
+      android:layout_marginBottom="10dp"
+      />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_width="fill_parent" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal" 
+      >
+      <Button android:id="@+id/external_ok"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+        android:text="@string/button_ok"
+        />
+   		
+      <Button android:id="@+id/external_cancel"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+        android:text="@string/button_cancel"
+        />
+    </LinearLayout>
+   		
+
+</LinearLayout>
