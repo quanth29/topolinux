@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="wrap_content" 
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp"
+    android:paddingBottom="3dp">
+   					  
+    <!-- TextView android:id="@+id/text_survey"
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:text="@string/survey_info"
+        android:textSize="18sp"
+        / -->
+   					  
+    <EditText android:id="@+id/survey_name" 
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+      	android:ems="25"
+        android:layout_height="wrap_content" 
+        android:singleLine="true"
+        android:hint="@string/name"
+        android:scrollHorizontally="true" />
+   		
+    <EditText android:id="@+id/survey_date" 
+        android:maxLines="1" 
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+      	android:ems="25"
+        android:layout_height="wrap_content" 
+        android:inputType="date"
+        android:singleLine="true"
+        android:scrollHorizontally="true" />
+   		
+    <EditText android:id="@+id/survey_team" 
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+      	android:ems="25"
+        android:layout_height="wrap_content" 
+        android:singleLine="true"
+        android:hint="@string/team"
+        android:scrollHorizontally="true" />
+   		
+    <EditText android:id="@+id/survey_comment" 
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+      	android:ems="25"
+        android:layout_height="wrap_content" 
+        android:singleLine="true"
+        android:hint="@string/description"
+        android:scrollHorizontally="true" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      >
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:onClick="onClick"
+                android:id="@+id/surveySave"
+                android:text="@string/menu_save"
+                android:textSize="12sp"
+        />
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:onClick="onClick"
+                android:id="@+id/surveyOpen"
+                android:text="@string/menu_open"
+                android:textSize="12sp"
+        />
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:onClick="onClick"
+                android:id="@+id/surveyExport"
+                android:text="@string/menu_export"
+                android:textSize="12sp"
+        />
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:onClick="onClick"
+                android:id="@+id/surveyArchive"
+                android:text="@string/menu_zip"
+                android:textSize="12sp"
+        />
+    </LinearLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_marginTop="6dp"
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      >
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:onClick="onClick"
+                android:id="@+id/surveyNotes"
+                android:text="@string/menu_notes"
+                android:textSize="12sp"
+        />
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:onClick="onClick"
+                android:id="@+id/surveyLocation"
+                android:text="@string/menu_location"
+                android:textSize="12sp"
+        />
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:onClick="onClick"
+                android:id="@+id/surveyStat"
+                android:text="@string/menu_stats"
+                android:textSize="12sp"
+        />
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:onClick="onClick"
+                android:id="@+id/survey3D"
+                android:text="@string/menu_3d"
+                android:textSize="12sp"
+        />
+    </LinearLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_marginTop="6dp"
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      >
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:onClick="onClick"
+                android:id="@+id/surveyPhoto"
+                android:text="@string/menu_photo"
+                android:textSize="12sp"
+        />
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:layout_gravity="right"
+                android:onClick="onClick"
+                android:id="@+id/surveyDelete"
+                android:text="@string/menu_delete"
+                android:textSize="12sp"
+        />
+    </LinearLayout>
+
+   		
+</LinearLayout>

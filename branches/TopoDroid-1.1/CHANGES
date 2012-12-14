@@ -1,0 +1,12 @@
+CHANGES
+
+20120424 Bug fix: Bezier style index mismatch
+20120224 Spanish translation (Thanks to Manu Guerrero) 
+20120426 Fixed Locale.ENGLISH in th2 export
+20120515 Fixed leg shot display
+20120515 DB new table, fixed stations, and new field (team) in surveys table
+20120516 fixed station(s)
+20120516 length and angle units prefs (only prefs, no effect)
+20120516 survey edit dialog
+20120517 undelete cstr signature
+20120520 started on branch TopoDroid 1.0 (workflow nr. 3)
