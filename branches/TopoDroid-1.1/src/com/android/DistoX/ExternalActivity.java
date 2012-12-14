@@ -30,10 +30,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.view.View;
 
-import android.hardware.Sensor;
-import android.hardware.SensorListener;
-import android.hardware.SensorManager;
-
 
 public class ExternalActivity extends Activity
                             implements View.OnClickListener

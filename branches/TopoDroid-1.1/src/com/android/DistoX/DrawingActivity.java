@@ -189,7 +189,7 @@ public class DrawingActivity extends Activity
 
     public void areaSelected( int k ) 
     {
-      if ( k >= 0 && k < DrawingBrushPaths.AREA_MAX ) {
+      if ( k >= 0 && k < DrawingBrushPaths.mAreaLib.mAreaNr ) {
         mSymbol = SYMBOL_AREA;
         mCurrentArea = k;
       }
@@ -198,7 +198,7 @@ public class DrawingActivity extends Activity
 
     public void lineSelected( int k ) 
     {
-      if ( k >= 0 && k < DrawingBrushPaths.LINE_MAX ) {
+      if ( k >= 0 && k < DrawingBrushPaths.mLineLib.mLineNr ) {
         mSymbol = SYMBOL_LINE;
         mCurrentLine = k;
       }
@@ -207,7 +207,7 @@ public class DrawingActivity extends Activity
 
     public void pointSelected( int p )
     {
-      if ( p >= 0 && p < DrawingBrushPaths.POINT_MAX ) {
+      if ( p >= 0 && p < DrawingBrushPaths.mPointLib.mPointNr ) {
         mSymbol = SYMBOL_POINT;
         // pointBtn.setText("Point");
         mCurrentPoint = p;
@@ -283,13 +283,13 @@ public class DrawingActivity extends Activity
         // modeBtn.setBackgroundResource( R.drawable.draw );
         if ( mSymbol == SYMBOL_POINT ) {
           setTitle( String.format( res.getString(R.string.title_draw_point), 
-                                   DrawingBrushPaths.pointLocalName[mCurrentPoint] ) );
+                                   DrawingBrushPaths.mPointLib.getPointName(mCurrentPoint) ) );
         } else if ( mSymbol == SYMBOL_LINE ) {
           setTitle( String.format( res.getString(R.string.title_draw_line),
-                                   DrawingBrushPaths.lineLocalName[mCurrentLine] ) );
+                                   DrawingBrushPaths.getLineName(mCurrentLine) ) );
         } else  {  // if ( mSymbol == SYMBOL_LINE ) 
           setTitle( String.format( res.getString(R.string.title_draw_area),
-                                   DrawingBrushPaths.areaLocalName[mCurrentArea] ) );
+                                   DrawingBrushPaths.mAreaLib.getAreaName(mCurrentArea) ) );
         }
       } else if ( mMode == MODE_MOVE ) {
         modeBtn.setText( res.getString(R.string.btn_move ) );
@@ -341,9 +341,9 @@ public class DrawingActivity extends Activity
 
       // setCurrentPaint();
       mCurrentBrush = new DrawingPenBrush();
-      mCurrentPoint = DrawingBrushPaths.POINT_BLOCK;
-      mCurrentLine  = DrawingBrushPaths.LINE_WALL;
-      mCurrentArea  = DrawingBrushPaths.AREA_WATER;
+      mCurrentPoint = 0; // DrawingBrushPaths.POINT_LABEL;
+      mCurrentLine  = 0; // DrawingBrushPaths.mLineLib.mLineWallIndex;
+      mCurrentArea  = 0; // DrawingBrushPaths.AREA_WATER;
 
       mDrawingSurface = (DrawingSurface) findViewById(R.id.drawingSurface);
       mDrawingSurface.previewPath = new DrawingPath( DrawingPath.DRAWING_PATH_LINE );
@@ -372,6 +372,7 @@ public class DrawingActivity extends Activity
       undoBtn.setEnabled(false);
       zoomBtn.setEnabled(true);
 
+      DrawingBrushPaths.makePaths( getResources() );
       setTheTitle();
 
       mData        = app.mData; // new DataHelper( this ); 
@@ -742,7 +743,7 @@ public class DrawingActivity extends Activity
             }
           } else { // SYMBOL_POINT
             if ( Math.abs( x_shift ) < 16 && Math.abs( y_shift ) < 16 ) {
-              if ( mCurrentPoint == DrawingBrushPaths.POINT_LABEL ) {
+              if ( DrawingBrushPaths.mPointLib.pointHasText(mCurrentPoint) ) {
                 DrawingLabelDialog label = new DrawingLabelDialog( mDrawingSurface.getContext(), this, x_scene, y_scene );
                 label.show();
               } else {

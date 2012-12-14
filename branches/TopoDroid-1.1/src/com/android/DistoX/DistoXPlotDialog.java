@@ -88,6 +88,8 @@ public class DistoXPlotDialog extends Dialog
     // When the user clicks, just finish this activity.
     // onPause will be called, and we save our data there.
     Button b = (Button) v;
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "PlotDialog onClick() button " + b.getText().toString() ); 
+
     if ( notDone && b == mBtnOK ) {
       notDone = false;
       String name  = mEditName.getText().toString();

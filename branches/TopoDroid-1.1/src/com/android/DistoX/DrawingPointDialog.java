@@ -58,7 +58,7 @@ public class DrawingPointDialog extends Dialog
     mTVtype = (TextView) findViewById( R.id.point_type );
     mEToptions = (EditText) findViewById( R.id.point_options );
 
-    mTVtype.setText( DrawingBrushPaths.pointThName[ mPoint.mPointType ] );
+    mTVtype.setText( DrawingBrushPaths.mPointLib.getPointThName( mPoint.mPointType, mPoint.mFlip ) );
     if ( mPoint.mOptions != null ) {
       mEToptions.setText( mPoint.mOptions );
     }

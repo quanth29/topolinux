@@ -10,10 +10,12 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120826 created
+ * 20121212 using SensorEvent
  */
 package com.android.DistoX;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import java.io.StringWriter;
 import java.io.PrintWriter;
@@ -31,7 +33,8 @@ import android.widget.Toast;
 import android.view.View;
 
 import android.hardware.Sensor;
-import android.hardware.SensorListener;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 
 
@@ -43,8 +46,8 @@ public class SensorActivity extends Activity
   private TopoDroidApp app;
   private SensorManager mSensorManager;
   private float[] mValues;
-  private int mSensor; // current sensor
-  private String mSensorType; // current sensor type
+  private int mSensorType; // current sensor type
+  private ArrayList< Sensor > mSensor;
 
   private RadioButton mRBLight = null;
   private RadioButton mRBMagnetic = null;
@@ -81,9 +84,12 @@ public class SensorActivity extends Activity
     mETvalue = ( EditText ) findViewById( R.id.sensor_value );
     mETcomment = ( EditText ) findViewById( R.id.sensor_comment );
 
+    mSensor = new ArrayList< Sensor >();
+
     List< Sensor > sl = mSensorManager.getSensorList( Sensor.TYPE_LIGHT );
     if ( sl.size() > 0 ) {
       mRBLight.setOnClickListener( this );
+      for ( Sensor s : sl ) mSensor.add( s );
     } else {
       mRBLight.setEnabled( false );
     }
@@ -91,6 +97,7 @@ public class SensorActivity extends Activity
     sl = mSensorManager.getSensorList( Sensor.TYPE_MAGNETIC_FIELD );
     if ( sl.size() > 0 ) {
       mRBMagnetic.setOnClickListener( this );
+      for ( Sensor s : sl ) mSensor.add( s );
     } else {
       mRBMagnetic.setEnabled( false );
     }
@@ -98,6 +105,7 @@ public class SensorActivity extends Activity
     // sl = mSensorManager.getSensorList( Sensor.TYPE_PROXIMITY );
     // if ( sl.size() > 0 ) {
     //   mRBProximity.setOnClickListener( this );
+    //   for ( Sensor s : sl ) mSensor.add( s );
     // } else {
     //   mRBProximity.setEnabled( false );
     // }
@@ -105,6 +113,7 @@ public class SensorActivity extends Activity
     sl = mSensorManager.getSensorList( Sensor.TYPE_TEMPERATURE );
     if ( sl.size() > 0 ) {
       mRBTemperature.setOnClickListener( this );
+      for ( Sensor s : sl ) mSensor.add( s );
     } else {
       mRBTemperature.setEnabled( false );
     }
@@ -112,6 +121,7 @@ public class SensorActivity extends Activity
     sl = mSensorManager.getSensorList( Sensor.TYPE_PRESSURE );
     if ( sl.size() > 0 ) {
       mRBPressure.setOnClickListener( this );
+      for ( Sensor s : sl ) mSensor.add( s );
     } else {
       mRBPressure.setEnabled( false );
     }
@@ -119,6 +129,7 @@ public class SensorActivity extends Activity
     sl = mSensorManager.getSensorList( Sensor.TYPE_ORIENTATION );
     if ( sl.size() > 0 ) {
       mRBGravity.setOnClickListener( this );
+      for ( Sensor s : sl ) mSensor.add( s );
     } else {
       mRBGravity.setEnabled( false );
     }
@@ -126,6 +137,7 @@ public class SensorActivity extends Activity
     // sl = mSensorManager.getSensorList( Sensor.TYPE_RELATIVE_HUMIDITY );
     // if ( sl.size() > 0 ) {
     //   mRBHumidity.setOnClickListener( this );
+    //   for ( Sensor s : sl ) mSensor.add( s );
     // } else {
     //   mRBHumidity.setEnabled( false );
     // }
@@ -143,67 +155,81 @@ public class SensorActivity extends Activity
 
   private void setSensor( )
   { 
-    if ( mSensor != -1 ) {
+    if ( mSensorType != -1 ) {
       mSensorManager.unregisterListener(mListener);
     }
     mETvalue.setText( null );
-    mSensor = -1;
+    mSensorType = -1;
     if ( mRBLight != null && mRBLight.isChecked() ) {
-      mSensor = Sensor.TYPE_LIGHT;
+      mSensorType = Sensor.TYPE_LIGHT;
       mETtype.setText( R.string.sensor_light );
     } else if ( mRBMagnetic != null && mRBMagnetic.isChecked() ) {
-      mSensor = Sensor.TYPE_MAGNETIC_FIELD;
+      mSensorType = Sensor.TYPE_MAGNETIC_FIELD;
       mETtype.setText( R.string.sensor_magnetic_field );
     // } else if ( mRBProximity != null && mRBProximity.isChecked() ) {
-    //   mSensor = Sensor.TYPE_PROXIMITY;
+    //   mSensorType = Sensor.TYPE_PROXIMITY;
     //   mETtype.setText( R.string.sensor_proximity );
     } else if ( mRBTemperature != null && mRBTemperature.isChecked() ) {
-      mSensor = Sensor.TYPE_TEMPERATURE; //  Sensor.TYPE_AMBIENT_TEMPERATURE;
+      mSensorType = Sensor.TYPE_TEMPERATURE; //  Sensor.TYPE_AMBIENT_TEMPERATURE;
       mETtype.setText( R.string.sensor_temperature );
     } else if ( mRBPressure != null && mRBPressure.isChecked() ) {
-      mSensor = Sensor.TYPE_PRESSURE;
+      mSensorType = Sensor.TYPE_PRESSURE;
       mETtype.setText( R.string.sensor_pressure );
     } else if ( mRBGravity != null && mRBGravity.isChecked() ) {
-      mSensor = Sensor.TYPE_ORIENTATION; // Sensor.TYPE_GRAVITY;
+      mSensorType = Sensor.TYPE_ORIENTATION; // Sensor.TYPE_GRAVITY;
       mETtype.setText( R.string.sensor_gravity );
     // } else if ( mRBHumidity != null && mRBHumidity.isChecked() ) {
-    //   mSensor = Sensor.TYPE_RELATIVE_HUMIDITY;
+    //   mSensorType = Sensor.TYPE_RELATIVE_HUMIDITY;
     //   mETtype.setText( R.string.sensor_humidity );
     }
-    if ( mSensor != -1 ) {
-      mSensorManager.registerListener(mListener, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+    registerSensorEventListener();
+  }
+
+
+  private void registerSensorEventListener()
+  {
+    if ( mSensorType != -1 ) {
+      for ( Sensor s : mSensor ) {
+        if ( s.getType() == mSensorType ) {
+          mSensorManager.registerListener(mListener, s, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+      }
     }
   }
     
-  private final SensorListener mListener = new SensorListener()
+  private final SensorEventListener mListener = new SensorEventListener() 
   {
-    public void onSensorChanged(int sensor, float[] values)
+    @Override
+    public void onSensorChanged( SensorEvent event) // int sensor, float[] values)
     {
-      // TopoDroidApp.Log( TopoDroidApp.LOG_SENSOR, "sensorChanged (" + values[0] + ", " + values[1] + ", " + values[2] + ")");
-      mValues = values;
-      StringWriter sw = new StringWriter();
-      PrintWriter  pw = new PrintWriter( sw );
-      switch ( mSensor ) {
-        case Sensor.TYPE_LIGHT:
-        // case Sensor.TYPE_PROXIMITY:
-        case Sensor.TYPE_TEMPERATURE:
-        case Sensor.TYPE_PRESSURE:
-        // case Sensor.TYPE_RELATIVE_HUMIDITY:
-          pw.format( "%.2f", values[0] );
-          break;
-        case Sensor.TYPE_MAGNETIC_FIELD:
-        case Sensor.TYPE_ORIENTATION:
-        // case Sensor.TYPE_ACCELEROMETER:
-          pw.format( "%.2f %.2f %.2f", values[0], values[1], values[2] );
-          break;
-        default:
-          pw.format( "%.2f %.2f %.2f", values[0], values[1], values[2] );
-          break;
+      if ( event.sensor.getType() == mSensorType ) {
+        mValues = event.values;
+        // TopoDroidApp.Log( TopoDroidApp.LOG_SENSOR, "sensorChanged (" + mValues[0] + ", " + mValues[1] + ", " + mValues[2] + ")");
+        StringWriter sw = new StringWriter();
+        PrintWriter  pw = new PrintWriter( sw );
+        switch ( mSensorType ) {
+          case Sensor.TYPE_LIGHT:
+          // case Sensor.TYPE_PROXIMITY:
+          case Sensor.TYPE_TEMPERATURE:
+          case Sensor.TYPE_PRESSURE:
+          // case Sensor.TYPE_RELATIVE_HUMIDITY:
+            pw.format( "%.2f", mValues[0] );
+            break;
+          case Sensor.TYPE_MAGNETIC_FIELD:
+          case Sensor.TYPE_ORIENTATION:
+          // case Sensor.TYPE_ACCELEROMETER:
+            pw.format( "%.2f %.2f %.2f", mValues[0], mValues[1], mValues[2] );
+            break;
+          default:
+            pw.format( "%.2f %.2f %.2f", mValues[0], mValues[1], mValues[2] );
+            break;
+        }
+        mETvalue.setText( sw.getBuffer().toString() );
       }
-      mETvalue.setText( sw.getBuffer().toString() );
     }
 
-    public void onAccuracyChanged(int sensor, int accuracy)
+    @Override
+    public void onAccuracyChanged( Sensor sensor, int accuracy )
     {
       // TODO Auto-generated method stub
     }
@@ -240,7 +266,7 @@ public class SensorActivity extends Activity
   protected void onResume()
   {
     super.onResume();
-    mSensorManager.registerListener(mListener, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+    registerSensorEventListener();
   }
     
   @Override

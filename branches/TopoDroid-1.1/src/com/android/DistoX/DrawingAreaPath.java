@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES 
  * 20120725 TopoDroidApp log
+ * 20121210 symbol area lib
  */
 package com.android.DistoX;
 
@@ -24,11 +25,14 @@ import java.util.Iterator;
 // import java.util.List;
 import java.util.ArrayList;
 
+// import android.util.Log;
+
 /**
  */
 public class DrawingAreaPath extends DrawingPath
 {
   private static int area_id_cnt = 0;
+  // private static final String TAG = "DistoX";
 
   private String makeId() 
   {
@@ -47,7 +51,7 @@ public class DrawingAreaPath extends DrawingPath
   public DrawingAreaPath( int type, String id )
   {
     super( DrawingPath.DRAWING_PATH_AREA );
-    // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "new DrawingAreaPath type " + type );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "new DrawingAreaPath type " + type + " id " + id );
     mAreaType = type;
     if ( id != null ) {
       mAreaCnt = Integer.parseInt( id.substring(1) );
@@ -58,8 +62,8 @@ public class DrawingAreaPath extends DrawingPath
     }
     points  = new ArrayList< LinePoint >();
     path    = new Path();
-    if ( mAreaType < DrawingBrushPaths.AREA_MAX ) {
-      setPaint( DrawingBrushPaths.areaPaint[ mAreaType ] );
+    if ( mAreaType < DrawingBrushPaths.mAreaLib.mAreaNr ) {
+      setPaint( DrawingBrushPaths.getAreaPaint( mAreaType ) );
     }
   }
 
@@ -67,30 +71,34 @@ public class DrawingAreaPath extends DrawingPath
   {
     points.add( new LinePoint(x,y) );
     path.moveTo( x, y );
+    // Log.v(TAG, "area start " + x + " " + y );
   }
 
   public void addPoint( float x, float y ) 
   {
     points.add( new LinePoint(x,y) );
     path.lineTo( x, y );
+    // Log.v(TAG, "area point " + x + " " + y );
   }
 
   public void addPoint3( float x1, float y1, float x2, float y2, float x, float y ) 
   {
     points.add( new LinePoint( x1,y1, x2,y2, x,y ) );
     path.cubicTo( x1,y1, x2,y2, x,y );
+    // Log.v(TAG, "area cubic " + x1 + " " + y1 + " " + x2 + " " + y2 + " " + x + " " + y );
   }
 
   public void close() 
   {
     path.close();
+    // Log.v(TAG, "area close path" );
   }
 
   public void setAreaType( int t ) 
   {
     mAreaType = t;
-    if ( mAreaType < DrawingBrushPaths.AREA_MAX ) {
-      setPaint( DrawingBrushPaths.areaPaint[ mAreaType ] );
+    if ( mAreaType < DrawingBrushPaths.mAreaLib.mAreaNr ) {
+      setPaint( DrawingBrushPaths.getAreaPaint( mAreaType ) );
     }
   }
   public int areaType() { return mAreaType; }
@@ -109,7 +117,7 @@ public class DrawingAreaPath extends DrawingPath
       pt.toTherion( pw );
     }
     pw.format("endline\n");
-    pw.format("area %s\n", DrawingBrushPaths.areaThName[mAreaType] );
+    pw.format("area %s\n", DrawingBrushPaths.getAreaThName( mAreaType ) );
     pw.format("  a%d\n", mAreaCnt );
     pw.format("endarea\n");
     return sw.getBuffer().toString();

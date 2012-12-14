@@ -41,6 +41,15 @@
      />
 
      <com.android.DistoX.MyListPreference
+       android:key="DISTOX_UNIT_LOCATION"
+       android:summary="@string/pref_unit_location_summary"
+       android:title="@string/pref_unit_location_title"
+       android:defaultValue="degrees"
+       android:entries="@array/unitLocation"
+       android:entryValues="@array/unitLocationValue"
+     />
+
+     <com.android.DistoX.MyListPreference
        android:key="DISTOX_EXPORT_TYPE"
        android:summary="@string/pref_export_summary"
        android:title="@string/pref_export_title"

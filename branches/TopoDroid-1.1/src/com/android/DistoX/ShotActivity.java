@@ -18,6 +18,7 @@
  * 20121113 mLastExtend to limit auto-extend of splays to new ones only
  * 20121129 included extend guess for splays in number assignment (only blank splay are "extend"-ed)
  * 20121129 commented MenuItem mMIextend
+ * 20121215 merged update splays name+extend in a single db call (updateShotNameAndExtend)
  */
 package com.android.DistoX;
 
@@ -146,7 +147,7 @@ public class ShotActivity extends Activity
     double db = Math.cos( (bearing - item.mBearing)*Math.PI/180 );
     long ext = ( db > TopoDroidApp.mExtendThr )? extend : ( db < -TopoDroidApp.mExtendThr )? -extend : 0;
     if ( flip ) ext = -ext;
-    app.mData.updateShotExtend( item.mId, app.mSID, ext );
+    // app.mData.updateShotExtend( item.mId, app.mSID, ext ); // NOTE done by the caller
   }
 
   // private boolean extendSplays()
@@ -176,6 +177,7 @@ public class ShotActivity extends Activity
   //       } else if ( t == DistoXDBlock.BLOCK_SPLAY ) {
   //         if ( from.equals( item.mFrom ) || to.equals( item.mFrom ) ) {
   //           tryExtendSplay( item, bearing, extend, to.equals( item.mFrom ) );
+  //           app.mData.updateShotExtend( item.mId, app.mSID, ext );
   //         }
   //       }
   //     }
@@ -192,6 +194,7 @@ public class ShotActivity extends Activity
       Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
       return false;
     } else {
+      ArrayList<DistoXDBlock> updatelist = new ArrayList<DistoXDBlock>();
       List<DistoXDBlock> list = app.mData.selectAllShots( sid, TopoDroidApp.STATUS_NORMAL );
       int size = list.size();
       int from = 0;
@@ -215,8 +218,10 @@ public class ShotActivity extends Activity
               for ( ; from < k; ++from ) {
                 DistoXDBlock splay = list.get( from );
                 splay.setName( name, "" );
-                app.mData.updateShotName( splay.mId, sid, name, "" );
                 tryExtendSplay( splay, item.mBearing, item.mExtend, false );
+                // app.mData.updateShotName( splay.mId, sid, name, "" );
+                // app.mData.updateShotExtend( item.mId, app.mSID, ext ); // NOTE done by the caller
+                updatelist.add( splay ); 
                 mLastExtend = item.mId;
               }
             }
@@ -226,6 +231,9 @@ public class ShotActivity extends Activity
             from = k+1;
           }
         }
+      }
+      if ( updatelist.size() > 0 ) {
+        app.mData.updateShotNameAndExtend( sid, updatelist );
       }
     }
     return true;

@@ -389,7 +389,7 @@ public class DrawingCommandManager
         } else if ( p.mType == DrawingPath.DRAWING_PATH_LINE ) {
           DrawingLinePath lp = (DrawingLinePath)p;
           // TopoDroidApp.Log(  TopoDroidApp.LOG_PLOT, "exportTherion line " + lp.lineType() );
-          if ( lp.lineType() == DrawingBrushPaths.LINE_WALL ) {
+          if ( lp.lineType() == DrawingBrushPaths.mLineLib.mLineWallIndex ) {
             ArrayList< LinePoint > pts = lp.getPoints();
             for ( LinePoint pt : pts ) {
               if ( pt.mX < xmin ) xmin = pt.mX;

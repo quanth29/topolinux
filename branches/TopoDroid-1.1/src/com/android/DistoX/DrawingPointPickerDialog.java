@@ -78,55 +78,57 @@ public class DrawingPointPickerDialog extends Dialog
       {
           super(c);
           mParent = parent;
-            mIndex  = point;
-            mListen = l;
-            mPoints = DrawingBrushPaths.getPaths();
-            mAngle  = 2*Math.PI / ( mPoints.length );
-           
-            // Shader s = new SweepGradient(0, 0, mColors, null);
+          mIndex  = point;
+          mListen = l;
+          // mPoints = DrawingBrushPaths.getPaths();
+          // mAngle  = 2*Math.PI / ( mPoints.length );
+          mPointNr = DrawingBrushPaths.mPointLib.mPointNr;
+         
+          // Shader s = new SweepGradient(0, 0, mColors, null);
 
-            mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            // mPaint.setShader(s);
-            mPaint.setStyle(Paint.Style.STROKE);
-            mPaint.setColor( 0xffffffff );
-            mPaint.setStrokeWidth(2);
+          mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+          // mPaint.setShader(s);
+          mPaint.setStyle(Paint.Style.STROKE);
+          mPaint.setColor( 0xffffffff );
+          mPaint.setStrokeWidth(2);
 
-            mCenterPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            mCenterPaint.setColor( 0xffff0000 );
-            mCenterPaint.setStyle(Paint.Style.STROKE);
-            mCenterPaint.setStrokeWidth(1);
-            mCenterPaint.setTextSize( 14.0f );
-        }
+          mCenterPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+          mCenterPaint.setColor( 0xffff0000 );
+          mCenterPaint.setStyle(Paint.Style.STROKE);
+          mCenterPaint.setStrokeWidth(1);
+          mCenterPaint.setTextSize( 14.0f );
+      }
 
-        private void setCenterPath( )
-        {
-          if ( mIndex >= 0 && mIndex < DrawingBrushPaths.POINT_MAX ) {
-            Path path = new Path( mPoints[mIndex] );
+      private void setCenterPath( )
+      {
+        // Log.v( "DistoX", "center point " + mIndex );
+        if ( mIndex >= 0 && mIndex < mPointNr ) {
+          Path path = new Path( DrawingBrushPaths.getPointPath( mIndex ) );
           path.offset( EXTRA_X, EXTRA_Y );
-            mCanvas.drawPath( path, mCenterPaint);
-            // mCanvas.drawPath( mPoints[ mIndex ], mCenterPaint);
-            mCanvas.drawText( DrawingBrushPaths.pointLocalName[ mIndex ], 10, 20, mCenterPaint ); // FIXME point name pos.
-          }
+          mCanvas.drawPath( path, mCenterPaint);
+          mCanvas.drawText( DrawingBrushPaths.mPointLib.getPointName(mIndex), 10, 20, mCenterPaint ); // FIXME point name pos.
+          // mParent.setTitle( DrawingBrushPaths.getPointName(mIndex) );
         }
+      }
 
-        @Override
-        protected void onDraw(Canvas canvas) 
-        {
-            mCanvas = canvas;
+      @Override
+      protected void onDraw(Canvas canvas) 
+      {
+        mCanvas  = canvas;
         mSize    = (mCanvas.getWidth() * (2 * mNN - 1)) / (2 * mNN * mNN); // width / 7
-            mCenterX = mCanvas.getWidth() / 2;
-            mCenterY = mCanvas.getHeight() / 2;
-            mXoffset = mCenterX - mSize / 2;
-            mYoffset = mCenterY - mSize / 2;
+        mCenterX = mCanvas.getWidth() / 2;
+        mCenterY = mCanvas.getHeight() / 2;
+        mXoffset = mCenterX - mSize / 2 ;
+        mYoffset = mCenterY - mSize / 2 ;
         mCanvas.translate( mCenterX, mCenterY );
-            int k;
-            for ( k=0; k<mPoints.length; ++k ) {
-              float x = (float)( mSize * ( k % mNN )) - mXoffset;
+        int k;
+        for ( k=0; k<mPointNr; ++k ) {
+          float x = (float)( mSize * ( k % mNN )) - mXoffset;
           float y = (float)( mSize * ( k / mNN )) - mYoffset + 10;
-              Path path = new Path( mPoints[k] );
-              path.offset( x, y );
-              mCanvas.drawPath( path, mPaint );
-            }
+          Path path = new Path( DrawingBrushPaths.getPointPath(k) );
+          path.offset( x, y );
+          mCanvas.drawPath( path, mPaint );
+        }
 
         setCenterPath( );
       }
@@ -155,7 +157,7 @@ public class DrawingPointPickerDialog extends Dialog
 
           switch (event.getAction()) {
               case MotionEvent.ACTION_DOWN:
-                    if ( idx >= 0 && idx < DrawingBrushPaths.POINT_MAX ) {
+                  if ( idx >= 0 && idx < DrawingBrushPaths.mPointLib.mPointNr ) {
                     mIndex = idx;
                     // setCenterPath();
                     invalidate();
@@ -189,7 +191,7 @@ public class DrawingPointPickerDialog extends Dialog
                   if (mTrackingCenter) {
                     if (inCenter) {
                       if ( mIndex >= 0 ) {
-                          if ( mIndex < DrawingBrushPaths.POINT_MAX ) {
+                        if ( mIndex < DrawingBrushPaths.mPointLib.mPointNr ) {
                           mListen.pointSelected( mIndex );
                         }
                       }

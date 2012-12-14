@@ -13,6 +13,8 @@
  * 20120606 import survey (therion format)
  * 20120610 import zip (unarchive)
  * 20120619 added "long-press" for immediate survey opening
+ * 20121211 thconfig-manager and symbol-manager menus
+ * 20121212 AsyncTask to import therion files
  */
 package com.android.DistoX;
 
@@ -30,12 +32,15 @@ import java.util.UUID;
 import java.util.List;
 import java.util.ArrayList;
 
+import android.os.AsyncTask;
+
 // import java.lang.Long;
 // import java.lang.reflect.Method;
 // import java.lang.reflect.InvocationTargetException;
 
 import android.app.Application;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.view.Menu;
 import android.view.SubMenu;
 import android.view.MenuItem;
@@ -108,6 +113,8 @@ public class TopoDroidActivity extends Activity
   private MenuItem mMIimport;
   // private MenuItem mMIopen;
   private SubMenu  mSMmore;
+  private MenuItem mMIsymbol;
+  private MenuItem mMIthconfig;
   private MenuItem mMIoptions;
   private MenuItem mMIlogs;
   private MenuItem mMIhelp;
@@ -263,6 +270,8 @@ public class TopoDroidActivity extends Activity
     // mMIopen    = menu.add( R.string.menu_open);
     mMIimport  = menu.add( R.string.menu_import );
     mSMmore    = menu.addSubMenu( R.string.menu_more );
+      mMIthconfig = mSMmore.add( R.string.menu_thconfig );
+      mMIsymbol   = mSMmore.add( R.string.menu_symbol );
       mMIoptions = mSMmore.add( R.string.menu_options );
       mMIlogs    = mSMmore.add( R.string.menu_logs );
       mMIhelp    = mSMmore.add( R.string.menu_help  );
@@ -274,6 +283,8 @@ public class TopoDroidActivity extends Activity
     mMIimport.setIcon( R.drawable.insert );
     // mMIopen.setIcon( R.drawable.open );
     mSMmore.setIcon( R.drawable.more );
+    // mMIthconfig.setIcon( R.drawable.therion );
+    // mMIsymbol.setIcon( R.drawable.symbol );
     // mMIoptions.setIcon( R.drawable.prefs );
     // mMIlogs.setIcon( R.drawable.prefs );
     // mMIhelp.setIcon( R.drawable.help );
@@ -288,7 +299,23 @@ public class TopoDroidActivity extends Activity
   {
     // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "TopoDroidActivity onOptionsItemSelected() " + item.toString() );
     // Handle item selection
-    if ( item == mMIoptions ) { // OPTIONS DIALOG
+    if ( item == mMIthconfig ) { 
+      Intent intent = new Intent( "ThManager.intent.action.Launch" );
+      // intent.putExtra( "survey", app.getSurveyThFile() );
+      try {
+        startActivity( intent );
+      } catch ( ActivityNotFoundException e ) {
+        Toast.makeText( this, R.string.no_thmanager, Toast.LENGTH_LONG ).show();
+      }
+    } else if ( item == mMIsymbol ) { 
+      Intent intent = new Intent( "TdSymbol.intent.action.Launch" );
+      try {
+        startActivity( intent );
+        DrawingBrushPaths.clearPaths(); // force reloading paths
+      } catch ( ActivityNotFoundException e ) {
+        Toast.makeText( this, R.string.no_tdsymbol, Toast.LENGTH_LONG ).show();
+      }
+    } else if ( item == mMIoptions ) { // OPTIONS DIALOG
       Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
       optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_ALL );
       startActivity( optionsIntent );
@@ -332,6 +359,33 @@ public class TopoDroidActivity extends Activity
     return true;
   }
 
+  private class ImportTask extends AsyncTask<String , Integer, Long >
+  {
+    protected Long doInBackground( String... str )
+    {
+      long sid = 0;
+      try {
+        TherionParser parser = new TherionParser( str[0] );
+        ArrayList< TherionParser.Shot > shots  = parser.getShots();
+        ArrayList< TherionParser.Shot > splays = parser.getSplays();
+
+        sid = app.setSurveyFromName( str[1] );
+        String date = parser.mDate;
+        app.mData.updateSurveyDayAndComment( sid, date, "" );
+        long id = app.mData.insertShots( sid, 1, shots ); // start id = 1
+      } catch ( ParserException e ) {
+        // Toast.makeText(this, R.string.file_parse_fail, Toast.LENGTH_SHORT).show();
+      }
+      return sid;
+    }
+
+    protected void onProgressUpdate(Integer... progress) { }
+
+    protected void onPostExecute(Long result) {
+      updateDisplay( );
+    }
+  }
+
   void importFile( String filename )
   {
     if ( filename.endsWith(".th") ) {
@@ -341,23 +395,22 @@ public class TopoDroidActivity extends Activity
         Toast.makeText(this, R.string.file_parse_already, Toast.LENGTH_SHORT).show();
         return;
       }
-      try {
-        TherionParser parser = new TherionParser( filepath );
-        ArrayList< TherionParser.Shot > shots  = parser.getShots();
-        ArrayList< TherionParser.Shot > splays = parser.getSplays();
+      Toast.makeText(this, R.string.file_import, Toast.LENGTH_LONG).show();
+      new ImportTask() .execute( filepath, name );
+      // try {
+      //   TherionParser parser = new TherionParser( filepath );
+      //   ArrayList< TherionParser.Shot > shots  = parser.getShots();
+      //   ArrayList< TherionParser.Shot > splays = parser.getSplays();
 
-        long sid = app.setSurveyFromName( name );
-        String date = parser.mDate;
-        app.mData.updateSurveyDayAndComment( sid, date, "" );
-        for ( TherionParser.Shot s : shots ) {
-          long id = app.mData.insertShot( app.mSID, -1L, s.len, s.ber, s.cln, 0.0 );
-          app.mData.updateShotName( id, app.mSID, s.from, s.to );
-        }
-        updateDisplay( );
-        // Toast.makeText(this, R.string.file_parse_ok, Toast.LENGTH_SHORT).show();
-      } catch ( ParserException e ) {
-        Toast.makeText(this, R.string.file_parse_fail, Toast.LENGTH_SHORT).show();
-      }
+      //   long sid = app.setSurveyFromName( name );
+      //   String date = parser.mDate;
+      //   app.mData.updateSurveyDayAndComment( sid, date, "" );
+      //   long id = app.mData.insertShots( sid, 1, shots ); // start id = 1
+      //   updateDisplay( );
+      //   Toast.makeText(this, R.string.file_parse_ok, Toast.LENGTH_SHORT).show();
+      // } catch ( ParserException e ) {
+      //   Toast.makeText(this, R.string.file_parse_fail, Toast.LENGTH_SHORT).show();
+      // }
     } else if ( filename.endsWith(".zip") ) {
       Archiver archiver = new Archiver( app );
       int ret = archiver.unArchive( TopoDroidApp.getZipFile( filename ), filename.replace(".zip", ""));

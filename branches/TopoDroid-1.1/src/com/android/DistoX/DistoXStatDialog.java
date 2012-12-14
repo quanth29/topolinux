@@ -108,7 +108,7 @@ public class DistoXStatDialog extends Dialog
     // @Override
     // public void onClick(View view)
     // {
-    //   // TopoDroidApp.Log( TopoDroidApp.LOG_DATA, "StatDialog onClick()" );
+    //   // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "StatDialog onClick()" );
     //   dismiss();
     // }
 }

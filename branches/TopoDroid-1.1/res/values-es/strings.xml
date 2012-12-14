@@ -1,14 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="iso-8859-1"?>
 <resources>
-    <string name="surveys">TOPOGRAF\u00cdA</string>
-    <string name="calibs">CALIBRACI\u00d3N</string>
-
-    <string name="plan">PLANTA</string>
-    <string name="extended">ALZADO</string>
-    <string name="v_section">V-SECC\u00d3N</string>
-    <string name="h_section">H-SECC\u00d3N</string>
-
-
     <string name="app_name">TopoDroid</string>
     <string name="app_name_calib">TopoDroid - Nombre calibraci\u00f3n</string>
     <string name="app_name_device">TopoDroid - Dispositivo DistoX</string>
@@ -17,72 +8,69 @@
     <string name="app_name_options">TopoDroid - Opciones</string>
 
     <string name="thp_air_draught">Corriente de aire</string>
-    <string name="thp_anchor">Columna</string>
+    <string name="thp_label">Texto</string>
+    <string name="thp_danger">Peligro</string>
+    <string name="thp_water_flow">Curso activo</string>
+<!--
+    <string name="thp_anchor">Pilar</string>
     <string name="thp_blocks">Bloques</string>
     <string name="thp_clay">Arcilla</string>
     <string name="thp_continuation">Continuaci\u00f3n</string>
-    <string name="thp_danger">Peligro</string>
     <string name="thp_debris">Escombros</string>
-    <string name="thp_end">Impenetrable</string>
-    <string name="thp_entrance">Entrada</string>
+    <string name="thp_entrance">entrada</string>
     <string name="thp_flowstone">Flujo</string>
     <string name="thp_gradient">Inclinaci\u00f3n</string>
-    <string name="thp_helictite">Exc\u00e9ntricas</string>
+    <string name="thp_helictite">Helict\u00edtas</string>
     <string name="thp_ice">Hielo</string>
-    <string name="thp_label">Texto</string>
-    <string name="thp_pebbles">Guijarros</string>
-    <string name="thp_pillar">Columna</string>
+    <string name="thp_pillar">Pilar</string>
     <string name="thp_popcorn">Palomitas ma\u00edz</string>
     <string name="thp_sand">Arena</string>
-    <string name="thp_snow">Nieve</string>
     <string name="thp_stal">Stalac.</string>
     <string name="thp_water">Agua</string>
-    <string name="thp_water_flow">Curso Activo</string>
+-->
 
+    <string name="thl_wall">Pared</string>
+<!--
     <string name="thl_arrow">Flecha</string>
     <string name="thl_border">Borde</string>
     <string name="thl_chimney">Chimenea</string>
     <string name="thl_contour">Contono</string>
-    <string name="thl_overhang">Escarpe</string>
     <string name="thl_pit">Pozo</string>
     <string name="thl_rock_border">Borde roca</string>
     <string name="thl_slope">Desnivel</string>
-    <string name="thl_wall">Pared</string>
+-->
 
-    <string name="tha_blocks">Bloques</string>
+    <string name="tha_water">Agua</string>
+<!--
+    <string name="tha_blocks">bloques</string>
     <string name="tha_clay">Arcilla</string>
     <string name="tha_debris">Escombros</string>
     <string name="tha_ice">Hielo</string>
     <string name="tha_pebbles">Canto rodado</string>
     <string name="tha_sand">Arena</string>
-    <string name="tha_snow">Nieve</string>
-    <string name="tha_water">Agua</string>
-
+-->
     <string name="back_to_survey">Volver a la topograf\u00eda</string>
     <string name="calib_exists">Calibraci\u00f3n existente</string>
     <string name="calib_delete">Borrar calibraci\u00f3n</string>
     <!-- string name="calib_deleted">Calibraci\u00f3n ...</string -->
     <!-- string name="calib_info">...</string -->
     <!-- string name="calib_not_written">Fallo registro calibraci\u00f3n</string -->
-    <!-- string name="calib_written">Registro calibrati\u00f3n dispositivo</string -->
-    <string name="compute_failed">Fallo calculo calibrati\u00f3n</string>
+    <!-- string name="calib_written">Registro calibraci\u00f3n dispositivo</string -->
+    <string name="compute_failed">Fallo calculo calibraci\u00f3n</string>
     <string name="connected">Conectado</string>
     <string name="connected_already">Ya est\u00e1 conectado</string>
     <string name="connected_not">Sin conexi\u00f3n</string>
     <string name="connect_failed">Fallo conexi\u00f3n</string>
     <string name="data">Datos</string>
-    <string name="using">Utilizando %1$s</string>
 	
     <!-- string name="device_busy">Dispositivo ocupado</string -->
     <!-- string name="device_comm_thread">Descarga continua de datos</string -->
     <!-- string name="device_action_thread">Descarga bajo demanda Escritura/lectura</string -->
     <string name="device_off">DistoX off</string>
-    <string name="device_none">No DistoX seleccionados</string>
-
     <!-- string name="disto_bad_type">Datos defectuosos de DistoX</string -->
     <string name="comment">Comentario</string>
     <!-- string name="connection">Conexi\u00f3n</string -->
-    <!-- string name="download_batch">Demanda</string -->
+    <!-- string name="download_batch">Grupo</string -->
     <!-- string name="download_continuous">Continuo</string -->
     <string name="extend_left">Izq.</string>
     <string name="extend_right">Der.</string>
@@ -104,12 +92,6 @@
 
     <!-- string name="makes_cycle">Bucle de disparos</string -->
     <string name="missing_station">Falta la estaci\u00f3n</string>
-
-    <string name ="button_next">Siguiente</string>
-    <string name ="button_prev">Anterior</string>
-    <string name ="surface">superficie</string>
-    <string name ="duplicate">duplicada</string>
-
     <string name="no_calib">No hay calibraci\u00f3n</string>
     <string name="no_calibration">No seleccion\u00f3 calibraci\u00f3n\nSeleccione una calibraci\u00f3n en el men\u00fa</string>
     <string name="no_cave3d">Cave3D no instalado</string>
@@ -144,7 +126,6 @@
     <string name="saved_file_">Archivo guardado</string>
     <string name="saving_">Guardado</string>
     <string name="saving_file_failed">Error al guardar el archivo</string>
-    <string name="scrap_name">Nombre del debujo</string>
     <string name="shot_clino">Clino</string>
     <string name="shot_compass">Br\u00fajula</string>
     <string name="shot_from">Desde</string>
@@ -153,8 +134,6 @@
     <string name="shot_note">Nota</string>
     <string name="shot_to">Hasta</string>
     <string name="station">Estaci\u00f3n</string>
-    <string name="station_base">Estaci\u00f3n inicio</string>
-    <string name="station_viewed">Estaci\u00f3n final</string>
     <!-- string name="shot_tolerance">Toma: Rango</string -->
     <!-- string name="survey_export_type">Exportar topograf\u00eda: </string -->
     <string name="survey_exists">Existe topograf\u00eda</string>
@@ -174,18 +153,6 @@
     <string name="zip_saved">Guardado</string>
     <string name="zip_failed">No se pudo guardar la topograf\u00eda</string>
     <string name="zoom_in_out">Zoom adelante/atr\u00e1s</string>
-
-    <string name="stat_survey">Estad\u00edsticas topogr\u00e1f\u00edcas</string>
-    <string name="stat_component">Componentes %1$d</string>
-    <string name="stat_depth">Profundidad %1$.1f +%2$.1f"</string>
-    <string name="stat_duplicate">Tomas duplicados %1$d %2$.1f</string>
-    <string name="stat_leg">Tomas %1$d %2$.1f</string>
-    <string name="stat_length">Longitud %1$.1f</string>
-    <string name="stat_loop">Bucle %1$d</string>
-    <string name="stat_shot">Tomas  %1$d,   Duplicados 2$d,   Superficiales %3$d</string>
-    <string name="stat_splay">Tomas laterales %1$d</string>
-    <string name="stat_station">Estaciones %1$d</string>
-    <string name="stat_surface">Tomas superficiales %1$d %2$.1f</string>
 
     <string name="menu_3d">3D</string>
     <string name="menu_about">A cerca de</string>   
@@ -249,7 +216,7 @@
     <string name="button_back"      >Atr\u00e1s</string>
     <string name="button_cancel"    >Cancelar  </string>
     <!-- string name="button_close"     >Cerrar    </string -->
-    <!-- string name="button_connect"   >Conectar </string -->
+    <!-- string name="button_connect"   >Conectar  </string -->
     <!-- string name="button_disconnect">Desconectar</string -->
     <string name="button_drop"      >Eliminar    </string>
     <string name="button_eval"      >Eval      </string>
@@ -261,8 +228,8 @@
     <!-- string name="button_reconnect" >Reconectar </string -->
     <string name="button_save"      >Guardar    </string>
     <string name="button_select"    >Aceptar  </string>
-    <string name="button_start"     >Inicio     </string>
-    <string name="button_stop"      >Stop     </string>
+    <!-- string name="button_start"     >Inicio   </string -->
+    <!-- string name="button_stop"      >Stop     </string -->
     <string name="button_write"     >Enviar calibraci\u00f3n</string>
 
     <string name="mode_leg">Visual</string>
@@ -277,31 +244,20 @@
     <!-- string name="btn_redo">Reh.</string -->
     <string name="btn_point">Icono</string>
     <string name="btn_line">L\u00ednea</string>
-    <string name="btn_area">\u00c1rea</string>
+    <string name="btn_area">Area</string>
 
     <string name="title_calib">Calibraci\u00f3n</string>
-    <string name="title_coverage">Distribuci\u00f3n datos calibraci\u00f3n</string>
     <!-- string name="title_connected">- Conectado</string -->
+    <string name="title_coverage">Distribuci\u00f3n datos calibraci\u00f3n</string>
     <!-- string name="title_not_connected">- No conectado</string -->
     <string name="title_device">Dispositivo DistoX</string>
     <string name="title_discover">Buscando dispositivo DistoX ...espere</string>
-    <string name="title_draw_area">AREA %1$s</string>
-    <string name="title_draw_line">L\u00cdNEA %1$s</string>
-    <string name="title_draw_point">S\u00cdMBOLO %1$s</string>
-    <!-- string name="title_location">Localizaci\u00f3n</string -->
-    <string name="title_location">LOCALIZACI\u00c3N</string>
-    <string name="title_location_gps">LOCALIZACI\u00c3N *</string>
     <!-- string name="title_gm">Tocar para editar grupo</string -->
+    <string name="title_location">Localizaci\u00f3n</string>
     <!-- string name="title_menu">Tocar para iniciar men\u00fa</string -->
     <!-- string name="title_plot">Dibujo</string -->
     <!-- string name="title_shot">Tocar para editar estaci\u00f3n (es)</string -->
-    <string name="title_mode">DISPLAY MODE</string>
-    <string name="title_move">MOVER</string>
-    <string name="title_photo">Foto</string>
-    <string name="title_scraps">%1$s debujos</string>
-    <string name="title_stats">Estad\u00edstica</string>
     <string name="title_survey">Topograf\u00eda</string>
-    <string name="title_zoom">ZOOM</string>
 
     <string name="pref_cat_survey">Opciones de topograf\u00eda</string>
     <string name="pref_cat_drawing">Opciones de dibujo</string>
@@ -323,17 +279,14 @@
     <string name="pref_vthr_title">L\u00edmite de toma</string>
     <string name="pref_vthr_summary">L\u00edmite visual vertical para LRUD</string>
     <string name="pref_vthr_message">L\u00edmite visual vertical para LRUD</string>
-  <string name="pref_drawing_unit_title">Escala de simbolos</string>
-  <string name="pref_drawing_unit_summary">Escala de simbolos en la pantalla</string>
-  <string name="pref_drawing_unit_message">Escala de simbolos en la pantalla</string>
     <string name="pref_segment_title">L\u00ednea de Rango</string>
     <string name="pref_segment_summary">Distancia m\u00ednima entre dos punto en L\u00ednea recta</string>
     <string name="pref_segment_message">Distancia m\u00ednima entre dos punto en L\u00ednea recta</string>
     <string name="pref_lineacc_title">Precisi\u00f3n de la l\u00ednea</string>
     <string name="pref_lineacc_summary">Precisi\u00f3n de la l\u00ednea c\u00fabicade interpolaci\u00f3n</string>
     <string name="pref_lineacc_message">Precisi\u00f3n de la L\u00ednea c\u00fabicade interpolaci\u00f3n</string>
-    <string name="pref_linecorner_title">\u00c1ngulo de la L\u00ednea</string>
-    <string name="pref_linecorner_summary">L\u00edmitedel \u00e1ngulo</string>
+    <string name="pref_linecorner_title">Angulo de la L\u00ednea</string>
+    <string name="pref_linecorner_summary">L\u00edmite del \u00e1ngulo</string>
     <string name="pref_linecorner_message">Detecci\u00f3n del l\u00edmite del \u00e1ngulo</string>
     <string name="pref_linestyle_title">Estilo de L\u00ednea</string>
     <string name="pref_linestyle_summary">Estilo de dibujo de la L\u00ednea</string>
@@ -355,18 +308,16 @@
     <string name="pref_device_message">Nombre, direcci\u00f3n DistoX</string>
     <string name="pref_checkBT_title">Iniciar BT</string>
     <string name="pref_checkBT_summary">Iniciar Bluetooth con el programa</string>
-  <string name="pref_checkAttached_title">Chequeo de poligonal principal</string>
-  <string name="pref_checkAttached_summary">Chequee si las estaciones est\u00e1n unidas</string>
 
     <string name="pref_unit_length_title">Unidad longitudinal</string>
     <string name="pref_unit_length_summary">Unidad longitudinal de distancia</string>
-    <string name="pref_unit_length_message">Unidad longitudinal de distancia</string>
+    <!-- string name="pref_unit_length_message">Unidad longitudinal de distancia</string -->
     <string name="pref_unit_angle_title">Unidades de \u00e1ngulos</string>
     <string name="pref_unit_angle_summary">Mediciones de \u00e1ngulo</string>
-    <string name="pref_unit_angle_message">Mediciones de \u00e1ngulo</string>
+    <!-- string name="pref_unit_angle_message">Mediciones de \u00e1ngulo</string -->
 
 
-    <string name="welcome_title">Bienvenidos a TopoDroid 1.0</string>
+    <string name="welcome_title">Bienvenidos a TopoDroid-1.0.7</string>
     <string name="welcome_text">
     \nTopoDroid es una aplicaci\u00f3n de c\u00f3digo abierto destinado a dispositivos Android, con la finalidad de hacer topograf\u00edas en cavidades con el dispositivo DistoX.
     \nNo existen garant\u00edas: Al utilizar TopoDoid, usted acepta las condiciones de uso. El autor no se hace responsable de las p\u00e9didas de datos que puedan ocurrir.
@@ -374,17 +325,19 @@
     \nEnvia comentarios, informes de errores y peticiones de caracteristicas, a marco.corvi@gmail.com
     </string>
 
-    <string name="help_title">TopoDroid 1.0 - Ayuda</string>
-   <string name="help_topodroid">
+   <!-- string name="help_title">TopoDroid 1.0 - Ayuda</string -->
+   <!-- string name="help_topodroid">
 <b>Lista Topograf\u00edas/Calibraci\u00f3n</b>\n
 Para alternar entre las listas, pulse los botones en la parte superior.
 Pulse en un elemento de la lista para abrir la ventana de la topograf\u00edas / calibraci\u00f3n.
-Existe un menu para crear o importar una topograf\u00eda o calibraci\u00f3n. \ n  </string>
+Existe un menu para crear o importar una topograf\u00eda o calibraci\u00f3n.
+  </string -->
   <!-- string name="help_survey">
 <b>Info de topograf\u00eda</b>\n
 Usted puede editarla, sin embargo el nombre no se modificar\u00e1 una vez que se establece.
-A trav\u00e9s del men\u00fa se puede guardar la informaci\u00f3n, abrir la topograf\u00eda y borrar todos su datos asociados, escribir la notas de la topograf\u00eda, y exportar la topograf\u00eda. \ n  </string -->
-  <string name="help_shot">
+A trav\u00e9s del men\u00fa se puede guardar la informaci\u00f3n, abrir la topograf\u00eda y borrar todos su datos asociados, escribir la notas de la topograf\u00eda, y exportar la topograf\u00eda.
+  </string -->
+  <!-- string name="help_shot">
 <b>Visuales de la topograf\u00eda</b>\n
 podemos distinguir entre las siguientes tomas: En blanco (dos estaciones, blanco),
 Laterales (una estaci\u00f3n, azul) y blanco (sin estaci\u00f3n asignada, rojo).
@@ -392,28 +345,33 @@ Laterales, y/o tomas en blanco se puede esconder.
 Los grupos de dos o m\u00e1s tomas con valores similares se consideran como poligonal principal, y se puede mostrar solo el primer disparo o todos.
 Pulse sobre una base de datos para editar las tomas(topodroid inserta automaticamente la siguiente estaci\u00f3n).
 La topograf\u00eda de men\u00fa | Asigna un numero\ "de \" hasta la siguiente estaci\u00f3n.
-Existe men\u00fa para descargar los datos del DistoX, abrir el di\u00e1logo de anotaci\u00f3n, y mucho m\u00e1s. \ N  </string>
-  <string name="help_drawing">
+Existe men\u00fa para descargar los datos del DistoX, abrir el di\u00e1logo de anotaci\u00f3n, y mucho m\u00e1s.
+  </string -->
+  <!-- string name="help_drawing">
 <b>Croquis de dibujo</b>\n
 En el dibujo inserte s\u00edmbolos (puntos), l\u00edneas de trazado y las \u00e1reas.
 Estaciones, visuales (principales y secundarias), y una cuadricula de fondo para ayudar a dibujar.
 El bot\u00f3n izquierdo alterna entre el desplazamiento y el dibujo.
 Bot\u00f3n zoom para acercar y alejar. el tercer bot\u00f3n borra el \u00faltimo elemento dibujado.
-Los otros tres botones son para elegir s\u00edmbolos de puntos, tipos de l\u00ednea y tipos de la \u00e1rea. El dibujo se guarda en formato de Therion. Se puede exportar tambi\u00e9n como imagen PNG.  </string>
+Los otros tres botones son para elegir s\u00edmbolos de puntos, tipos de l\u00ednea y tipos de la \u00e1rea. El dibujo se guarda en formato de Therion. Se puede exportar tambi\u00e9n como imagen PNG.
+  </string -->
   <!-- string name="help_calib">
 <b>Info calibraci\u00f3n</b>\n
 Nombre (t\u00edtulo), la fecha y la descripci\u00f3n del dispositivo.
-Hay botones para guardar, abrir y eliminar la calibraci\u00f3n.  </string -->
-<string name="help_gm">
+Hay botones para guardar, abrir y eliminar la calibraci\u00f3n.
+  </string -->
+  <!-- string name="help_gm">
 <b>Datos calibraci\u00f3n</b>\n
 Se muestra para cada conjunto de datos, el n\u00famero de grupo, los \u00e1ngulos de rumbo, inclinaci\u00f3n y balanceo, y el error de c\u00e1lculo.
 Los datos que se diferencian s\u00f3lo por el \u00e1ngulo de balanceo forma un grupo. Antes de calcular la calibraci\u00f3n es necesario asignar n\u00famero de grupo. Esto puede hacerse manualmente, editando cada conjunto de datos o asistido por el programa. Los datos con n\u00famero de grupo 0 (cero) se excluyen de la calibraci\u00f3n.
 El c\u00f3mputo informa del error total y el error en cada dato.
-El men\u00fa Enviar carga los coeficientes de calibraci\u00f3n en el DistoX.  </string>
-<string name="help_device">
+El men\u00fa Enviar carga los coeficientes de calibraci\u00f3n en el DistoX.
+  </string -->
+  <!-- string name="help_device">
 <b>Dispositivos distoX</b>\n
 Intercambia datos con un solo DistoX a la vez. Use el men\u00fa para seleccionar el DistoX entre los dispositivos vinculados o para buscar un emparejamiento.
-La transferencia de datos puede ser a demanda (por lotes: inicia y finaliza ) o con una conexi\u00f3n continua al DistoX. En el modo continuo no cambia el modo de DistoX CAL, ni de lectura/ escritura de los coeficientes de calibraci\u00f3n. El modo a demanda se descarga por lotes de transferencia de datos, se inicia en el men\u00fa bot\u00f3n descarga de las ventana de datos.  </string>
+La transferencia de datos puede ser a demanda (por lotes: inicia y finaliza ) o con una conexi\u00f3n continua al DistoX. En el modo continuo no cambia el modo de DistoX CAL, ni de lectura/ escritura de los coeficientes de calibraci\u00f3n. El modo a demanda se descarga por lotes de transferencia de datos, se inicia en el men\u00fa bot\u00f3n descarga de las ventana de datos.
+  </string -->
 
 </resources>
 

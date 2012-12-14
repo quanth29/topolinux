@@ -32,6 +32,8 @@
  * 20121121 added log preferences
  * 20121124 added checkCalibrationDeviceMatch() 
  * 20121129 added mExtendThr and its pref 
+ * 20121201 APP_POINT_PATH APP_LINE_PATH APP_AREA_PATH
+ * 20121205 location units
  */
 package com.android.DistoX;
 
@@ -105,7 +107,7 @@ public class TopoDroidApp extends Application
   static final boolean LOG_SHOT   = false;   // shot
   static final boolean LOG_STATS  = false;
   static final boolean LOG_SURVEY = false;
-  static final boolean LOG_THERION= false;
+  static final boolean LOG_THERION= true;
   static final boolean LOG_ZIP    = false;   // archive
 
   static void Log( boolean flag, String msg )
@@ -116,7 +118,7 @@ public class TopoDroidApp extends Application
   }
 
 
-  static final String VERSION = "1.0.5"; // must agree with AndroidManifest.xml
+  static final String VERSION = "1.1.0"; // must agree with AndroidManifest.xml
 
   private SharedPreferences prefs;
 
@@ -187,10 +189,12 @@ public class TopoDroidApp extends Application
   public static final float FV = 24000.0f;
   public static final float FM = 16384.0f;
 
-  private static final float M2FT = 3.28083f; // meters to feet 
-  private static final float FT2M = 1/M2FT;
-  private static final float DEG2GRAD = 400.0f/360.0f;
-  private static final float GRAD2DEG = 360.0f/400.0f;
+  static final float M2FT = 3.28083f; // meters to feet 
+  static final float FT2M = 1/M2FT;
+  static final float DEG2GRAD = 400.0f/360.0f;
+  static final float GRAD2DEG = 360.0f/400.0f;
+  static final int DDMMSS = 0;
+  static final int DEGREE = 1;
   // private static final byte char0C = 0x0c;
   public static final String EXTEND_THR = "0.2";
 
@@ -206,6 +210,9 @@ public class TopoDroidApp extends Application
   private static String APP_FOTO_PATH; //  = APP_BASE_PATH + "photo/";
   private static String APP_IMPORT_PATH; //  = APP_BASE_PATH + "import/";
   private static String APP_ZIP_PATH; //  = APP_BASE_PATH + "zip/";
+  static String APP_POINT_PATH; //  = APP_BASE_PATH + "symbol/point/";
+  static String APP_LINE_PATH; 
+  static String APP_AREA_PATH;
 
   private void setPaths( String path )
   {
@@ -232,6 +239,9 @@ public class TopoDroidApp extends Application
     APP_FOTO_PATH = APP_BASE_PATH + "photo/";
     APP_IMPORT_PATH = APP_BASE_PATH + "import/";
     APP_ZIP_PATH  = APP_BASE_PATH + "zip/";
+    APP_POINT_PATH = APP_BASE_PATH + "symbol/point/";
+    APP_LINE_PATH = APP_BASE_PATH + "symbol/line/";
+    APP_AREA_PATH = APP_BASE_PATH + "symbol/area/";
   }
 
   // scrap types
@@ -263,6 +273,7 @@ public class TopoDroidApp extends Application
   // conversion factor from internal units (m) to user units
   public static float mUnitLength;
   public static float mUnitAngle;
+  public static int mUnitLocation; // 0 dec-degree, 1 ddmmss
   public static double mExtendThr;
 
   public static final String[] key = { // prefs keys
@@ -284,7 +295,7 @@ public class TopoDroidApp extends Application
     "DISTOX_LIST_REFRESH",    // 15 
     "DISTOX_UNIT_LENGTH",
     "DISTOX_UNIT_ANGLE",
-    "DISTOX_CONN_MODE",       // key[18] is no longer used
+    "DISTOX_UNIT_LOCATION",   // 18 "DISTOX_CONN_MODE" is no longer used
     "DISTOX_BASE_PATH",
     "DISTOX_CHECK_ATTACHED",   // 20
     "DISTOX_SOCK_TYPE",
@@ -343,6 +354,7 @@ public class TopoDroidApp extends Application
   public static final  boolean LIST_REFRESH  = false;
   public static final  String UNIT_LENGTH    = "meters";
   public static final  String UNIT_ANGLE     = "degrees";
+  public static final  String UNIT_LOCATION  = "ddmmss";
 
   // intent names
   public static final String TOPODROID_PLOT_ID     = "topodroid.plot_id";
@@ -477,8 +489,9 @@ public class TopoDroidApp extends Application
     mCheckBT       = prefs.getBoolean( key[12], CHECK_BT );
     mListRefresh   = prefs.getBoolean( key[15], LIST_REFRESH );
     mCheckAttached = prefs.getBoolean( key[20], CHECK_ATTACHED );
-    mUnitLength    = prefs.getString( key[16], UNIT_LENGTH ).equals("feet") ?  M2FT : 1.0f;
-    mUnitAngle     = prefs.getString( key[17], UNIT_ANGLE ).equals("grads") ?  DEG2GRAD : 1.0f;
+    mUnitLength    = prefs.getString( key[16], UNIT_LENGTH ).equals(UNIT_LENGTH) ?  1.0f : M2FT;
+    mUnitAngle     = prefs.getString( key[17], UNIT_ANGLE ).equals(UNIT_ANGLE) ?  1.0f : DEG2GRAD;
+    mUnitLocation  = prefs.getString( key[18], UNIT_LOCATION ).equals(UNIT_LOCATION) ? DDMMSS : DEGREE;
     mExtendThr     = Double.parseDouble( prefs.getString( key[23], EXTEND_THR ) );
     if ( mExtendThr < 0.0 ) mExtendThr = 0.0;
 
@@ -489,7 +502,7 @@ public class TopoDroidApp extends Application
     if ( mCommRetry > 5 ) mCommRetry = 5;
 
     DrawingBrushPaths.doMakePaths( );
-    DrawingBrushPaths.doMakeThNames( getResources() );
+    // DrawingBrushPaths.doMakeThNames( getResources() );
 
     mData = new DataHelper( this );
     mCalibration = new Calibration( 0, this );
@@ -525,6 +538,7 @@ public class TopoDroidApp extends Application
     mScaleFactor   = (mDisplayHeight / 320.0f) * density;
     // Log.v( TAG, "display " + mDisplayWidth + " " + mDisplayHeight + " scale " + mScaleFactor );
 
+    // DrawingBrushPaths.makePaths();
   }
 
   private void setLineStyleAndType( String style )
@@ -862,10 +876,12 @@ public class TopoDroidApp extends Application
     } else if ( k.equals( key[15] ) ) {
       mListRefresh = sp.getBoolean( k, LIST_REFRESH );
     } else if ( k.equals( key[16] ) ) {
-      mUnitLength = prefs.getString( key[16], UNIT_LENGTH ).equals("feet") ? M2FT : 1.0f;
+      mUnitLength    = prefs.getString( key[16], UNIT_LENGTH ).equals(UNIT_LENGTH) ?  1.0f : M2FT;
     } else if ( k.equals( key[17] ) ) {
-      mUnitAngle = prefs.getString( key[17], UNIT_ANGLE ).equals("grads") ? DEG2GRAD : 1.0f;
-    // } else if ( k.equals( key[18] ) ) { // "DISTOX_CONN_MODE" 
+      mUnitAngle     = prefs.getString( key[17], UNIT_ANGLE ).equals(UNIT_ANGLE) ?  1.0f : DEG2GRAD;
+    } else if ( k.equals( key[18] ) ) {
+      mUnitLocation  = prefs.getString( key[18], UNIT_LOCATION ).equals(UNIT_LOCATION) ? DDMMSS : DEGREE;
+    // } else if ( k.equals( key[??] ) ) { // "DISTOX_CONN_MODE" 
     //   mConnectionMode = Integer.parseInt( prefs.getString( key[18], "0" ) );
     } else if ( k.equals( key[19] ) ) { // "DISTOX_BASE_PATH" 
       mBasePath = prefs.getString( key[19], mBasePath );

@@ -14,6 +14,7 @@
  * 20120603 fixed-info list
  * 20120726 TopoDroid log
  * 20121114 manual fixed station
+ * 20121205 location units
  */
 package com.android.DistoX;
 
@@ -278,8 +279,13 @@ public class DistoXLocation extends Dialog
       longitude = sl;
       altitude  = loc.getAltitude();
 
-      mTVlat.setText( mContext.getResources().getString( R.string.latitude ) + " " + FixedInfo.double2ddmmss( sp ) );
-      mTVlong.setText( mContext.getResources().getString( R.string.longitude ) + " " + FixedInfo.double2ddmmss( sl ) );
+      if ( TopoDroidApp.mUnitLocation == TopoDroidApp.DDMMSS ) {
+        mTVlat.setText( mContext.getResources().getString( R.string.latitude ) + " " + FixedInfo.double2ddmmss( sp ) );
+        mTVlong.setText( mContext.getResources().getString( R.string.longitude ) + " " + FixedInfo.double2ddmmss( sl ) );
+      } else {
+        mTVlat.setText( mContext.getResources().getString( R.string.latitude ) + " " + FixedInfo.double2degree( sp ) );
+        mTVlong.setText( mContext.getResources().getString( R.string.longitude ) + " " + FixedInfo.double2degree( sl ) );
+      }
       mTValt.setText( mContext.getResources().getString( R.string.altitude ) + " " + Integer.toString( (int)(altitude) ) );
     } else {
       TopoDroidApp.Log(TopoDroidApp.LOG_ERR, "displayLocation null");

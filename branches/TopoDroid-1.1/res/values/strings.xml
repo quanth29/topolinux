@@ -10,11 +10,10 @@
     <string name="app_name_options">TopoDroid - Options</string>
 
     <string name="thp_air_draught">air-draught</string>
-    <string name="thp_anchor">anchor</string>
-    <string name="thp_blocks">blocks</string>
-    <string name="thp_clay">clay</string>
-    <string name="thp_continuation">continuation</string>
+    <string name="thp_water_flow">water-flow</string>
+    <string name="thp_label">label</string>
     <string name="thp_danger">danger</string>
+<!--
     <string name="thp_anchor">anchor</string>
     <string name="thp_blocks">blocks</string>
     <string name="thp_clay">clay</string>
@@ -25,14 +24,14 @@
     <string name="thp_dig">dig</string>
     <string name="thp_gypsum">gypsum</string>
     <string name="thp_guano">guano</string>
-    <string name="thp_end">end</string>
+    <string name="thp_end">narrow-end</string>
     <string name="thp_low_end">low-end</string>
     <string name="thp_entrance">entrance</string>
     <string name="thp_flowstone">flowstone</string>
     <string name="thp_gradient">gradient</string>
     <string name="thp_helictite">helictite</string>
     <string name="thp_ice">ice</string>
-    <string name="thp_label">label</string>
+    <string name="thp_moonmilk">moonmilk</string>
     <string name="thp_pebbles">pebbles</string>
     <string name="thp_pillar">pillar</string>
     <string name="thp_popcorn">popcorn</string>
@@ -41,9 +40,10 @@
     <string name="thp_snow">snow</string>
     <string name="thp_sodastraw">soda-straw</string>
     <string name="thp_spring">spring</string>
-    <string name="thp_stal">stal</string>
+    <string name="thp_stal">stalactite</string>
+    <string name="thp_stalagmite">stalagmite</string>
     <string name="thp_water">water</string>
-    <string name="thp_water_flow">water-flow</string>
+-->
 
     <string name="thl_arrow">arrow</string>
     <string name="thl_border">border</string>
@@ -55,6 +55,8 @@
     <string name="thl_slope">slope</string>
     <string name="thl_wall">wall</string>
 
+    <string name="tha_water">water</string>
+<!--
     <string name="tha_blocks">blocks</string>
     <string name="tha_clay">clay</string>
     <string name="tha_debris">debris</string>
@@ -62,7 +64,7 @@
     <string name="tha_pebbles">pebbles</string>
     <string name="tha_sand">sand</string>
     <string name="tha_snow">snow</string>
-    <string name="tha_water">water</string>
+-->
 
     <string name="back_to_survey">Back to survey</string>
     <string name="calib_exists">Calibration already exists</string>
@@ -99,10 +101,11 @@
     <string name="external_prompt">Enter measurement</string>
     <string name="few_data">Too few data</string>
     <string name="file_chooser_title">Select the file to import</string>
+    <string name="file_import">Importing file may take long.\nPlease wait ...</string>
     <string name="file_parse_already">Survey already imported</string>
     <string name="file_parse_fail">Failed to import file</string>
     <string name="file_parse_none">No file to import</string>
-    <!-- string name="file_parse_ok">Imported file</string -->
+    <string name="file_parse_ok">Imported file</string>
     <string name="head_tail">Head/Tail: </string>
     <string name="head_tail_failed">Failed to read Head/Tail</string>
     <string name="label_text">Enter the label text</string>
@@ -124,6 +127,8 @@
     <string name="no_calib">No calibration</string>
     <string name="no_calibration">No calibration selected\nUse menu to select one</string>
     <string name="no_cave3d">Cave3D not installed</string>
+    <string name="no_thmanager">ThManager not installed</string>
+    <string name="no_tdsymbol">TdSymbol not installed</string>
     <string name="no_db">No database</string>
     <string name="no_device_address">Device address not selected</string>
     <string name="no_device_found">No device found</string>
@@ -276,6 +281,8 @@
     <!-- string name="menu_survey_edit">Edit survey info</string -->
     <!-- string name="menu_survey_list">List surveys</string -->
     <!-- string name="menu_survey_new">New survey</string -->
+    <string name="menu_symbol">Symbol manager</string>
+    <string name="menu_thconfig">Thconfig manager</string>
     <string name="menu_toggle">DistoX mode</string>
     <string name="menu_undelete">Undelete</string>
     <string name="menu_write">Write to DistoX</string>
@@ -425,6 +432,9 @@
   <string name="pref_unit_angle_title">Angle units</string>
   <string name="pref_unit_angle_summary">Display units for angles</string>
   <!-- string name="pref_unit_angle_message">Display units for angles</string -->
+  <string name="pref_unit_location_title">Location units</string>
+  <string name="pref_unit_location_summary">Display units for locations</string>
+  <!-- string name="pref_unit_location_message">Display units for locations1</string -->
 
   <string name="pref_log_bt">Bluetooth</string>
   <string name="pref_log_calib">Calibration</string>

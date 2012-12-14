@@ -62,7 +62,7 @@ public class DrawingLabelDialog extends Dialog
 
     public void onClick(View view)
     {
-      // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "DrawingLabelDialog onClick()" );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "DrawingLabelDialog onClick() " + view.toString() );
       if (view.getId() == R.id.label_ok ) {
         mActivity.addLabel( mLabel.getText().toString(), mX, mY );
       }
