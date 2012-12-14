@@ -7,33 +7,16 @@
     android:paddingRight="6dp"
     android:paddingBottom="3dp">
 
-    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android" 
-      android:layout_width="wrap_content" 
-      android:layout_height="wrap_content"
-      android:orientation="horizontal" 
-      >
-      <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/photo_cbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/photo" />
-      <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/sensor_cbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/sensor" />
-    </RadioGroup>
-
-    <EditText android:id="@+id/photo_name" 
+    <TextView android:id="@+id/photo_comment_prompt" 
         android:maxLines="1" 
         android:layout_marginTop="2dp"
         android:layout_width="fill_parent"
       	android:ems="25"
         android:layout_height="wrap_content" 
-        android:hint="@string/photo_name"
+        android:text="@string/photo_comment_prompt"
         />
-
-    <EditText android:id="@+id/photo_comment" 
+   		
+    <EditText android:id="@+id/photo_comment_comment" 
         android:maxLines="1" 
         android:layout_marginTop="2dp"
         android:layout_width="fill_parent"
@@ -47,7 +30,7 @@
       android:layout_height="wrap_content"
       android:orientation="horizontal" 
       >
-      <Button android:id="@+id/photo_ok"
+      <Button android:id="@+id/photo_comment_ok"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
                 android:singleLine="true"
@@ -56,7 +39,7 @@
         android:text="@string/button_ok"
         />
    		
-      <Button android:id="@+id/photo_cancel"
+      <Button android:id="@+id/photo_comment_cancel"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
                 android:singleLine="true"

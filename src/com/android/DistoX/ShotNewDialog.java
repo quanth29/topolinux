@@ -91,6 +91,8 @@ public class ShotNewDialog extends Dialog
   public void onClick(View v) 
   {
     Button b = (Button) v;
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "ShotNewDialog onClick button " + b.getText().toString() );
+
     if ( notDone && b == mButtonOK ) {
       notDone = false;
       String shot_from = mETfrom.getText().toString();

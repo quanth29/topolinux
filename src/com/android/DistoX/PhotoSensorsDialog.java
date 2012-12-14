@@ -77,6 +77,8 @@ public class PhotoSensorsDialog extends Dialog
   public void onClick(View v) 
   {
     Button b = (Button) v;
+    // TopoDroidApp.Log(  TopoDroidApp.LOG_INPUT, "PhotoiSensorDialog onClick() " + b.getText().toString() );
+
     if ( b == mButtonPhoto ) {
       mParent.askPhoto( );
     } else if ( b == mButtonSensor ) {

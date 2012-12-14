@@ -13,6 +13,7 @@
  * 20120521 parented with SurveyActivity
  * 20120603 fixed-info list
  * 20120726 TopoDroid log
+ * 20121114 manual fixed station
  */
 package com.android.DistoX;
 
@@ -31,12 +32,16 @@ import android.os.Bundle;
 
 import android.content.Context;
 
+import android.view.inputmethod.EditorInfo;
+import android.view.KeyEvent;
+
 import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.Button;
 // import android.widget.ArrayAdapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView.OnEditorActionListener;
 
 import android.view.View;
 import android.widget.ListView;
@@ -48,13 +53,17 @@ import android.location.GpsStatus;
 import android.location.GpsSatellite;
 // import android.location.GpsStatus.Listener;
 
+// import android.util.Log;
 
 public class DistoXLocation extends Dialog
                             implements View.OnClickListener
                                      , AdapterView.OnItemClickListener
+                                     , TextView.OnEditorActionListener
                                      , LocationListener
                                      , GpsStatus.Listener
 {
+  // static final String TAG = "DistoX";
+
   // private boolean  mLocated;
   private LocationManager locManager;
   private Context mContext;
@@ -66,6 +75,7 @@ public class DistoXLocation extends Dialog
   private EditText mETstation;
   private Button   mBtnLoc;
   private Button   mBtnAdd;
+  private Button   mBtnMan;
   private Button   mBtnStatus;
   private ListView mList;
   private DistoXFixedAdapter mFixedAdapter;
@@ -89,6 +99,8 @@ public class DistoXLocation extends Dialog
     locManager = lm;
     mStatus = locManager.getGpsStatus( null );
     mLocating = false;
+
+    // Log.v( TAG, "UnitLocation " + TopoDroidApp.mUnitLocation + " ddmmss " + TopoDroidApp.DDMMSS );
   }
 
 // -------------------------------------------------------------------
@@ -104,28 +116,36 @@ public class DistoXLocation extends Dialog
     mETstation = (EditText) findViewById( R.id.station );
     mBtnStatus = (Button) findViewById( R.id.status );
 
+    mETstation.setOnEditorActionListener( this );
+
     mList = (ListView) findViewById(R.id.list);
     mList.setOnItemClickListener( this );
-    refreshList();
 
     mBtnLoc = (Button) findViewById( R.id.button_loc );
     mBtnAdd = (Button) findViewById(R.id.button_add );
+    mBtnMan = (Button) findViewById(R.id.button_manual );
     mBtnLoc.setOnClickListener( this );
     mBtnAdd.setOnClickListener( this );
+    mBtnMan.setOnClickListener( this );
 
+    mBtnLoc.setEnabled( false );
     mBtnAdd.setEnabled( false );
+    mBtnMan.setEnabled( false );
     mBtnStatus.setBackgroundColor( 0x80ff0000 );
-    // mBtnLoc.setText( getResources.getString( R.string.button_start ) );
+    // mBtnLoc.setText( getResources.getString( R.string.button_gps_start ) );
     
     // mLocated = false;
     // locManager = (LocationManager) getSystemService( LOCATION_SERVICE );
     mLocating = false;
     setTitle( R.string.title_location );
+
+    refreshList();
   }
 
   public void refreshList()
   {
     List< FixedInfo > fxds = app.mData.selectAllFixed( app.mSID, TopoDroidApp.STATUS_NORMAL );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_DEBUG, "Location::refreshList size " + fxds.size() );
     mFixedAdapter = new DistoXFixedAdapter( mContext, R.layout.message, fxds );
     mList.setAdapter( mFixedAdapter );
   }
@@ -133,7 +153,7 @@ public class DistoXLocation extends Dialog
   @Override 
   public void onItemClick(AdapterView<?> parent, View view, int pos, long id)
   {
-    // TopoDroidApp.Log.v( TopoDroidApp.LOG_LOC, "Location::onItemClick pos " + pos );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_LOC, "Location::onItemClick pos " + pos );
     // CharSequence item = ((TextView) view).getText();
     // String value = item.toString();
     // // setListPos( position  );
@@ -149,41 +169,90 @@ public class DistoXLocation extends Dialog
     mList.invalidate();
   }
 
+  public void addFixedPoint( double lng, // decimal degrees
+                             double lat,
+                             double alt  // meters
+                           )
+  {
+    // TopoDroidApp.Log(TopoDroidApp.LOG_DEBUG, "addFixedPoint " + lng + " " + lat + " " + alt );
+    if ( mETstation.getText() != null ) {
+      String name = mETstation.getText().toString();
+      if ( name.length() > 0 ) {
+        FixedInfo f = mParent.addLocation( name, lng, lat, alt);
+        // no need to update the adatper: fixeds are not many and can just request
+        // the list to the database 
+        // mFixedAdapter.add( f );
+        refreshList();
+      }
+    }
+  }
+
+  private void setGPSoff()
+  {
+    mBtnLoc.setText( mContext.getResources().getString( R.string.button_gps_start ) );
+    locManager.removeUpdates( this );
+    locManager.removeGpsStatusListener( this );
+    mLocating = false;
+    setTitle( R.string.title_location );
+  }
+
+  private void setGPSon()
+  {
+    mBtnLoc.setText( mContext.getResources().getString( R.string.button_gps_stop ) );
+    mBtnAdd.setEnabled( false );
+    mBtnStatus.setBackgroundColor( 0x80ff0000 );
+    locManager.addGpsStatusListener( this );
+    locManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 1000, 0, this );
+    mLocating = true;
+    setTitle( R.string.title_location_gps );
+  }
+
+  @Override
+  public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+  {
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "Location onEditorAction " + actionId );
+    // if ( actionId == 6 )
+    {
+      EditText et = (EditText)v;
+      if ( et == mETstation ) {
+        CharSequence item = v.getText();
+        if ( item != null ) {
+          String str = item.toString();
+          mBtnLoc.setEnabled( str != null && str.length() > 0 );
+          mBtnMan.setEnabled( str != null && str.length() > 0 );
+        }
+      }
+    }
+    return false;
+  }
+
   @Override
   public void onClick(View v) 
   {
     Button b = (Button) v;
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "Location onClick button " + b.getText().toString() );
     if ( b == mBtnAdd ) {
-      if ( mETstation.getText() != null ) {
-        String name = mETstation.getText().toString();
-        if ( name.length() > 0 ) {
-          FixedInfo f = mParent.addLocation( name, longitude, latitude, altitude);
-          // mFixedAdapter.add( f.toString() );
-          mFixedAdapter.add( f );
-        }
+      addFixedPoint( longitude, latitude, altitude );
+    } else if ( b == mBtnMan ) {
+      // stop GPS location and start dialog for lat/long/alt data
+      if ( mLocating ) {
+        setGPSoff();
       }
+      new DistoXLongLatAltDialog( mContext, this ).show();
     } else if ( b == mBtnLoc ) {
       if ( mLocating ) {
-        mBtnLoc.setText( mContext.getResources().getString( R.string.button_start ) );
-        locManager.removeUpdates( this );
-        locManager.removeGpsStatusListener( this );
-        mLocating = false;
-        setTitle( R.string.title_location );
+        setGPSoff();
       } else {
-        mBtnLoc.setText( mContext.getResources().getString( R.string.button_stop ) );
-        mBtnAdd.setEnabled( false );
-        mBtnStatus.setBackgroundColor( 0x80ff0000 );
-        locManager.addGpsStatusListener( this );
-        locManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 1000, 0, this );
-        mLocating = true;
-        setTitle( R.string.title_location_gps );
+        setGPSon();
       }
     }
+    // refreshList();
   }
 
   @Override
   public void onBackPressed()
   {
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "Location onBackPressed");
     if ( mLocating ) {
       locManager.removeUpdates( this );
       locManager.removeGpsStatusListener( this );

@@ -96,6 +96,7 @@ public class PlotDialog extends Dialog
   // @Override
   public void onClick(View v) 
   {
+    // TopoDroidApp.Log(  TopoDroidApp.LOG_INPUT, "PlotDialog onClick() " );
     dismiss();
   }
 
@@ -107,6 +108,8 @@ public class PlotDialog extends Dialog
   {
     CharSequence item = ((TextView) view).getText();
     String value = item.toString();
+    // TopoDroidApp.Log(  TopoDroidApp.LOG_INPUT, "PlotDialog onItemClick() " + value );
+
     String[] st = value.split( " ", 3 );
     int from = value.indexOf('<');
     int to = value.lastIndexOf('>');

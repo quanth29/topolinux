@@ -12,6 +12,7 @@
  * 20120702 shot surface flag
  * 20120711 back-next buttons
  * 20120725 TopoDroidApp log
+ * 20121118 compare stations of prev shot to increment the "bigger"
  */
 package com.android.DistoX;
 
@@ -52,8 +53,10 @@ public class ShotDialog extends Dialog
   private EditText mETfrom;
   private EditText mETto;
   private EditText mETcomment;
-  private CheckBox mRadioDup;
-  private CheckBox mRadioSurf;
+  // private CheckBox mRadioDup;
+  // private CheckBox mRadioSurf;
+  private RadioButton mRadioDup;
+  private RadioButton mRadioSurf;
 
   private RadioButton mRadioLeft;
   private RadioButton mRadioVert;
@@ -98,8 +101,13 @@ public class ShotDialog extends Dialog
     shot_from    = blk.mFrom;
     shot_to      = blk.mTo;
     if ( blk.type() == DistoXDBlock.BLOCK_BLANK && prev != null && prev.type() == DistoXDBlock.BLOCK_CENTERLINE ) {
-      shot_from = prev.mTo;
-      shot_to   = DistoXStationName.increment( prev.mTo );
+      if ( DistoXStationName.isLessOrEqual( prev.mFrom, prev.mTo ) ) {
+        shot_from = prev.mTo;
+        shot_to   = DistoXStationName.increment( prev.mTo );
+      } else {
+        shot_to = prev.mFrom;
+        shot_from = DistoXStationName.increment( prev.mFrom );
+      }
     }
     
     shot_data    = blk.dataString();
@@ -122,7 +130,7 @@ public class ShotDialog extends Dialog
     } else {
       mETcomment.setText( "" );
     }
-    
+   
     mRadioDup.setChecked( shot_flag == DistoXDBlock.BLOCK_DUPLICATE );
     mRadioSurf.setChecked( shot_flag == DistoXDBlock.BLOCK_SURFACE );
 
@@ -147,8 +155,10 @@ public class ShotDialog extends Dialog
     mETfrom    = (EditText) findViewById(R.id.shot_from );
     mETto      = (EditText) findViewById(R.id.shot_to );
     mETcomment = (EditText) findViewById(R.id.shot_comment );
-    mRadioDup  = (CheckBox) findViewById( R.id.shot_dup );
-    mRadioSurf = (CheckBox) findViewById( R.id.shot_surf );
+    // mRadioDup  = (CheckBox) findViewById( R.id.shot_dup );
+    // mRadioSurf = (CheckBox) findViewById( R.id.shot_surf );
+    mRadioDup  = (RadioButton) findViewById( R.id.shot_dup );
+    mRadioSurf = (RadioButton) findViewById( R.id.shot_surf );
 
     mRadioLeft  = (RadioButton) findViewById(R.id.radio_left );
     mRadioVert  = (RadioButton) findViewById(R.id.radio_vert );
@@ -211,6 +221,8 @@ public class ShotDialog extends Dialog
   public void onClick(View v) 
   {
     Button b = (Button) v;
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "ShotDialog onClick button " + b.getText().toString() );
+
     if ( b == mButtonOK ) {
       saveDBlock();
       dismiss();

@@ -128,6 +128,8 @@ public class PhotoActivity extends Activity
   {
     // CharSequence item = ((TextView) view).getText();
     // String value = item.toString();
+    // TopoDroidApp.Log(  TopoDroidApp.LOG_INPUT, "PhotoDialog onItemClick() " + value );
+
     // if ( value.equals( getResources().getString( R.string.back_to_survey ) ) ) {
     //   updateDisplay( );
     //   return;

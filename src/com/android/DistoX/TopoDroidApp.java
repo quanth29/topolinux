@@ -26,6 +26,12 @@
  * 20120720 added manifest
  * 20120725 centralized log
  * 20120803 removed connection-mode preference
+ * 20121001 splay extend in therion export
+ * 20121114 added LOG_DEBUG (true)
+ * 20121120 added LOG_INPUT (false) log user inputs
+ * 20121121 added log preferences
+ * 20121124 added checkCalibrationDeviceMatch() 
+ * 20121129 added mExtendThr and its pref 
  */
 package com.android.DistoX;
 
@@ -74,26 +80,28 @@ public class TopoDroidApp extends Application
   static final String TAG = "DistoX";
 
   static final boolean LOG_BEZIER = false;
-  static final boolean LOG_BT     = false;   // bluetooth
-  static final boolean LOG_CALIB  = false;
-  static final boolean LOG_COMM   = false;   // connection
-  static final boolean LOG_DATA   = false;   // shot data
-  static final boolean LOG_DB     = false;   // sqlite database
-  static final boolean LOG_DEVICE = false;
-  static final boolean LOG_DISTOX = false;   // DistoX packets
-  static final boolean LOG_ERR    = true;
-  static final boolean LOG_FIXED  = false;
-  static final boolean LOG_LOC    = false;   // location manager
+  static boolean LOG_BT     = false;   // bluetooth
+  static boolean LOG_CALIB  = false;
+  static boolean LOG_COMM   = false;   // connection
+  static boolean LOG_DATA   = false;   // shot data
+  static boolean LOG_DB     = false;   // sqlite database
+  static boolean LOG_DEBUG  = false;
+  static boolean LOG_DEVICE = false;
+  static boolean LOG_DISTOX = false;   // DistoX packets
+  static boolean LOG_ERR    = true;
+  static boolean LOG_FIXED  = false;
+  static boolean LOG_INPUT  = false;   // user input
+  static boolean LOG_LOC    = false;   // location manager
   static final boolean LOG_NOTE   = false;   // annotation
   static final boolean LOG_MAIN   = false;   // main app
   static final boolean LOG_NAME   = false;   // names
   static final boolean LOG_NUM    = false;  
   static final boolean LOG_PATH   = false;
   static final boolean LOG_PLOT   = false;
-  static final boolean LOG_PHOTO  = false;   // photos
+  static boolean LOG_PHOTO        = false;   // photos
   static final boolean LOG_PREFS  = false;   // preferences
-  static final boolean LOG_PROTO  = false;   // protocol
-  static final boolean LOG_SENSOR = false;   // sensors and measures
+  static boolean LOG_PROTO        = false;   // protocol
+  static boolean LOG_SENSOR       = false;   // sensors and measures
   static final boolean LOG_SHOT   = false;   // shot
   static final boolean LOG_STATS  = false;
   static final boolean LOG_SURVEY = false;
@@ -135,13 +143,14 @@ public class TopoDroidApp extends Application
   // preferences
   boolean mWelcomeScreen;  // whether to show the welcome screen
   String  mBasePath = Environment.getExternalStorageDirectory().getAbsolutePath(); // app base path
+  static String  mManual;
 
   float mCloseDistance;
   int   mExportType;
   float mGroupDistance;
   float mCalibEps;
   int   mCalibMaxIt;
-  String mDevice        = DEVICE_NAME;
+  String mDevice = DEVICE_NAME;
   // private boolean mSaveOnDestroy = SAVE_ON_DESTROY;
   int   mDefaultConnectionMode;
 
@@ -155,6 +164,14 @@ public class TopoDroidApp extends Application
   boolean mCheckAttached; 
   boolean mListRefresh; // whether to refresh list on edit-dialog ok-return
   int mGroupBy;         // how to group calib data
+
+  // create socket type
+  static final int TOPODROID_SOCK_DEFAULT      = 0;
+  static final int TOPODROID_SOCK_INSEC        = 1;
+  // static final int TOPODROID_SOCK_INSEC_RECORD = 2;
+  // static final int TOPODROID_SOCK_INSEC_INVOKE = 3;
+  static int mSockType = TOPODROID_SOCK_DEFAULT; // FIXME static
+  static int mCommRetry = 1;
 
   public float mScaleFactor   = 1.0f;
   public float mDisplayWidth  = 200f;
@@ -175,6 +192,7 @@ public class TopoDroidApp extends Application
   private static final float DEG2GRAD = 400.0f/360.0f;
   private static final float GRAD2DEG = 360.0f/400.0f;
   // private static final byte char0C = 0x0c;
+  public static final String EXTEND_THR = "0.2";
 
   private static String APP_BASE_PATH; //  = Environment.getExternalStorageDirectory() + "/TopoDroid/";
   private static String APP_TLX_PATH ; //  = APP_BASE_PATH + "tlx/";
@@ -191,6 +209,8 @@ public class TopoDroidApp extends Application
 
   private void setPaths( String path )
   {
+    mManual = getResources().getString( R.string.topodroid_man );
+
     APP_BASE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/TopoDroid/";
     // APP_BASE_PATH = Environment.getExternalStorageDirectory() + "/TopoDroid/";
     if ( path != null ) {
@@ -231,6 +251,7 @@ public class TopoDroidApp extends Application
   public static final int GROUP_BY_FOUR     = 1;
   public static final int GROUP_BY_ONLY_16  = 2;
 
+
   public static final String[] projName = { // therion projection names
     "none", "plan", "extended", "none"
   };
@@ -242,6 +263,7 @@ public class TopoDroidApp extends Application
   // conversion factor from internal units (m) to user units
   public static float mUnitLength;
   public static float mUnitAngle;
+  public static double mExtendThr;
 
   public static final String[] key = { // prefs keys
     "DISTOX_CLOSE_DISTANCE",  // 0
@@ -259,12 +281,36 @@ public class TopoDroidApp extends Application
     "DISTOX_CHECK_BT",
     "DISTOX_DRAWING_UNIT",
     "DISTOX_GROUP_BY",
-    "DISTOX_LIST_REFRESH",    // 15
+    "DISTOX_LIST_REFRESH",    // 15 
     "DISTOX_UNIT_LENGTH",
     "DISTOX_UNIT_ANGLE",
     "DISTOX_CONN_MODE",       // key[18] is no longer used
     "DISTOX_BASE_PATH",
-    "DISTOX_CHECK_ATTACHED"   // 20
+    "DISTOX_CHECK_ATTACHED",   // 20
+    "DISTOX_SOCK_TYPE",
+    "DISTOX_COMM_RETRY",       // 22
+    "DISTOX_EXTEND_THR",       // 23
+    "DISTOX_LOG_DEBUG",
+    "DISTOX_LOG_ERR",
+    "DISTOX_LOG_INPUT",        // 26
+    "DISTOX_LOG_BT",
+    "DISTOX_LOG_COMM",
+    "DISTOX_LOG_PROTO",
+    "DISTOX_LOG_DISTOX",
+    "DISTOX_LOG_DEVICE",       // 31
+    "DISTOX_LOG_DATA",
+    "DISTOX_LOG_DB",
+    "DISTOX_LOG_CALIB",
+    "DISTOX_LOG_FIXED",
+    "DISTOX_LOG_LOC",          // 36
+    "DISTOX_LOG_PHOTO",
+    "DISTOX_LOG_SENSOR"        // 38
+    // "DISTOX_LOG_SHOT",
+    // "DISTOX_LOG_SURVEY",
+    // "DISTOX_LOG_NUM",          // 41
+    // "DISTOX_LOG_THERION",
+    // "DISTOX_LOG_PLOT",
+    // "DISTOX_LOG_BEZIER"
   };
 
   public static final int DISTOX_EXPORT_TH  = 0;
@@ -356,6 +402,12 @@ public class TopoDroidApp extends Application
   // survey/calib info
   //
 
+  boolean checkCalibrationDeviceMatch() 
+  {
+    CalibInfo info = mData.selectCalibInfo( mCID  );
+    return ( info != null && info.device.equals( mDevice ) );
+  }
+
   static String noSpaces( String s )
   {
     return ( s == null )? null : s.trim().replaceAll("\\s+", "_");
@@ -427,8 +479,14 @@ public class TopoDroidApp extends Application
     mCheckAttached = prefs.getBoolean( key[20], CHECK_ATTACHED );
     mUnitLength    = prefs.getString( key[16], UNIT_LENGTH ).equals("feet") ?  M2FT : 1.0f;
     mUnitAngle     = prefs.getString( key[17], UNIT_ANGLE ).equals("grads") ?  DEG2GRAD : 1.0f;
+    mExtendThr     = Double.parseDouble( prefs.getString( key[23], EXTEND_THR ) );
+    if ( mExtendThr < 0.0 ) mExtendThr = 0.0;
 
-    // mConnectionMode = Integer.parseInt( prefs.getString( key[18], "0" ) );
+    // mConnectionMode = Integer.parseInt( prefs.getString( key[], "0" ) );
+    mSockType      = Integer.parseInt( prefs.getString( key[21], "0" ) );
+    mCommRetry     = Integer.parseInt( prefs.getString( key[22], "1" ) );
+    if ( mCommRetry < 1 ) mCommRetry = 1;
+    if ( mCommRetry > 5 ) mCommRetry = 5;
 
     DrawingBrushPaths.doMakePaths( );
     DrawingBrushPaths.doMakeThNames( getResources() );
@@ -817,7 +875,48 @@ public class TopoDroidApp extends Application
       mCalibration = new Calibration( 0, this );
     } else if ( k.equals( key[20] ) ) {
       mCheckAttached = sp.getBoolean( k, CHECK_ATTACHED );
-    }
+    } else if ( k.equals( key[21] ) ) { // "DISTOX_SOCK_TYPE
+      mSockType = Integer.parseInt( prefs.getString( key[21], "0" ) );
+    } else if ( k.equals( key[22] ) ) { // "DISTOX_COMM_RETRY
+      mCommRetry = Integer.parseInt( prefs.getString( key[22], "1" ) );
+      if ( mCommRetry < 1 ) mCommRetry = 1;
+      if ( mCommRetry > 5 ) mCommRetry = 5;
+    } else if ( k.equals( key[23] ) ) { 
+      mExtendThr = Double.parseDouble( prefs.getString( key[23], EXTEND_THR ) );
+      if ( mExtendThr < 0.0 ) mExtendThr = 0.0;
+    } else if ( k.equals( key[24] ) ) { // "DISTOX_LOG_DEBUG",
+      LOG_DEBUG = sp.getBoolean( k, false );
+    } else if ( k.equals( key[25] ) ) { // "DISTOX_LOG_ERR",
+      LOG_ERR = sp.getBoolean( k, true );
+    } else if ( k.equals( key[26] ) ) { // "DISTOX_LOG_INPUT",        // 26
+      LOG_INPUT = sp.getBoolean( k, false );
+    } else if ( k.equals( key[27] ) ) { // "DISTOX_LOG_BT",
+      LOG_BT = sp.getBoolean( k, false );
+    } else if ( k.equals( key[28] ) ) { // "DISTOX_LOG_COMM",
+      LOG_COMM = sp.getBoolean( k, false );
+    } else if ( k.equals( key[29] ) ) { // "DISTOX_LOG_PROTO",
+      LOG_PROTO = sp.getBoolean( k, false );
+    } else if ( k.equals( key[30] ) ) { // "DISTOX_LOG_DISTOX",
+      LOG_DISTOX = sp.getBoolean( k, false );
+    } else if ( k.equals( key[31] ) ) { // "DISTOX_LOG_DEVICE",       // 31
+      LOG_DEVICE = sp.getBoolean( k, false );
+    } else if ( k.equals( key[32] ) ) { // "DISTOX_LOG_DATA",
+      LOG_DATA = sp.getBoolean( k, false );
+    } else if ( k.equals( key[33] ) ) { // "DISTOX_LOG_DB",
+      LOG_DB = sp.getBoolean( k, false );
+    } else if ( k.equals( key[34] ) ) { // "DISTOX_LOG_CALIB",
+      LOG_CALIB = sp.getBoolean( k, false );
+    } else if ( k.equals( key[35] ) ) { // "DISTOX_LOG_FIXED",
+      LOG_FIXED = sp.getBoolean( k, false );
+    } else if ( k.equals( key[36] ) ) { // "DISTOX_LOG_LOC",          // 36
+      LOG_LOC = sp.getBoolean( k, false );
+    } else if ( k.equals( key[37] ) ) { // "DISTOX_LOG_PHOTO",
+      LOG_PHOTO = sp.getBoolean( k, false );
+    } else if ( k.equals( key[38] ) ) { // "DISTOX_LOG_SENSOR"        // 38
+      LOG_SENSOR = sp.getBoolean( k, false );
+    // } else if ( k.equals( key[39] ) ) { // "DISTOX_LOG_SHOT"        
+    //   LOG_SHOT = sp.getBoolean( k, false );
+    } 
   }
 
   public void setWelcomeScreen( boolean val )
@@ -847,7 +946,7 @@ public class TopoDroidApp extends Application
   }
 
   // =======================================================================
-  // THERION EXPORT 
+  // THERION EXPORT Therion
 
   public String exportSurveyAsTh()
   {
@@ -878,8 +977,10 @@ public class TopoDroidApp extends Application
       }
 
       pw.format("    data normal from to length compass clino\n");
-      long extend = 0;
+
+      long extend = 0;  // current extend
       float l=0.0f, b=0.0f, c=0.0f, b0=0.0f;
+
       int n = 0;
       DistoXDBlock ref_item = null;
       boolean duplicate = false;
@@ -909,12 +1010,22 @@ public class TopoDroidApp extends Application
             if ( item.mComment != null && item.mComment.length() > 0 ) {
               pw.format("  # %s\n", item.mComment );
             }
+            if ( item.mExtend != extend ) {
+              extend = item.mExtend;
+              if ( extend == -1 ) {
+                pw.format("    extend left\n");
+              } else if ( extend == 1 ) {
+                pw.format("    extend right\n");
+              } else if ( extend == 0 ) {
+                pw.format("    extend vertical\n");
+              }
+            }
             pw.format("    - %s ", to );
             pw.format(Locale.ENGLISH, "%.2f %.1f %.1f\n", item.mLength, item.mBearing, item.mClino );
           }
         } else { // with FROM station
           if ( to == null || to.length() == 0 ) { // splay shot
-            if ( n > 0 ) { // write pervious leg shot
+            if ( n > 0 ) { // finish writing previous leg shot
               b = in360( b/n );
               pw.format(Locale.ENGLISH, "%.2f %.1f %.1f\n", l/n, b, c/n );
               if ( duplicate ) {
@@ -926,6 +1037,16 @@ public class TopoDroidApp extends Application
             }
             if ( item.mComment != null && item.mComment.length() > 0 ) {
               pw.format("  # %s\n", item.mComment );
+            }
+            if ( item.mExtend != extend ) {
+              extend = item.mExtend;
+              if ( extend == -1 ) {
+                pw.format("    extend left\n");
+              } else if ( extend == 1 ) {
+                pw.format("    extend right\n");
+              } else if ( extend == 0 ) {
+                pw.format("    extend vertical\n");
+              }
             }
             pw.format("    %s - ", from ); // write splay shot
             pw.format(Locale.ENGLISH, "%.2f %.1f %.1f\n", item.mLength, item.mBearing, item.mClino );

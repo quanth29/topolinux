@@ -103,25 +103,25 @@
         android:text="@string/extend_right" />
     </RadioGroup>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android" 
       android:layout_width="wrap_content" 
       android:layout_height="wrap_content"
       android:orientation="horizontal" 
       >
-      <CheckBox xmlns:android="http://schemas.android.com/apk/res/android"
+      <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/shot_dup"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content"
         android:text="@string/duplicate"
         />
 
-      <CheckBox xmlns:android="http://schemas.android.com/apk/res/android"
+      <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/shot_surf"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content"
         android:text="@string/surface"
         />
-    </LinearLayout>
+    </RadioGroup>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
       android:layout_width="fill_parent" 

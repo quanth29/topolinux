@@ -50,6 +50,7 @@ import java.io.FileOutputStream;
 import java.util.List;
 import java.util.ArrayList;
 
+// import android.util.Log;
 
 /**
  */
@@ -58,6 +59,8 @@ public class DrawingActivity extends Activity
                                       , View.OnLongClickListener
                                       , DrawingPointPickerDialog.OnPointSelectedListener
 {
+  // static final String TAG = "DistoX";
+
     private TopoDroidApp app;
 
     // private static final String TITLE_DRAW_POINT = "Draw point ";
@@ -104,7 +107,7 @@ public class DrawingActivity extends Activity
     private MenuItem mMIsaveTH2;
     private MenuItem mMIsavePNG;
     private MenuItem mMIoptions;
-    private MenuItem mMIhelp;
+    // private MenuItem mMIhelp;
     private MenuItem mMInotes;
     private MenuItem mMIredo;
     private MenuItem mMIdisplay;
@@ -533,6 +536,8 @@ public class DrawingActivity extends Activity
 
     public boolean onLongClick( View view )
     {
+      // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "DrawingActivity onLongClick() " );
+
       if ( Math.abs( mSaveX - mStartX ) < 16 && Math.abs( mSaveY - mStartY ) < 16 ) {
         float x_scene = mStartX/mZoom - mOffset.x;
         float y_scene = mStartY/mZoom - mOffset.y;
@@ -565,6 +570,7 @@ public class DrawingActivity extends Activity
 
     public boolean onTouch( View view, MotionEvent motionEvent )
     {
+      // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "DrawingActivity onTouch() " );
       float x_canvas = motionEvent.getX();
       float y_canvas = motionEvent.getY();
       float x_scene = x_canvas/mZoom - mOffset.x;
@@ -776,6 +782,7 @@ public class DrawingActivity extends Activity
 
     public void onClick(View view)
     {
+        // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "DrawingActivity onClick() " + view.toString() );
         // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "DrawingActivity onClick() point " + mCurrentPoint + " symbol " + mSymbol );
         switch (view.getId()){
             case R.id.undoBtn:
@@ -873,7 +880,7 @@ public class DrawingActivity extends Activity
       mMIdelete  = mSMmore.add( R.string.menu_delete );
       mMIsavePNG = mSMmore.add( R.string.menu_save_png );
       mMIoptions = mSMmore.add( R.string.menu_options );
-      mMIhelp    = mSMmore.add( R.string.menu_help );
+      // mMIhelp    = mSMmore.add( R.string.menu_help );
 
       mMIsaveTH2.setIcon( R.drawable.save );
       mMIredo.setIcon( R.drawable.redo );
@@ -893,6 +900,8 @@ public class DrawingActivity extends Activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+      // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "DrawingActivity onOptionsItemSelected() " + item.toString() );
+
       if ( item == mMIredo ) {
         if ( canRedo ) {
           mDrawingSurface.redo();
@@ -944,8 +953,8 @@ public class DrawingActivity extends Activity
         Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
         optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_PLOT );
         startActivity( optionsIntent );
-      } else if ( item == mMIhelp ) { // HELP
-        TopoDroidHelp.show( this, R.string.help_drawing );
+      // } else if ( item == mMIhelp ) { // HELP
+      //   TopoDroidHelp.show( this, R.string.help_drawing );
       } else if (item == mMIsaveTH2 ) {
         if ( saveTh2() ) {
           Toast.makeText( this, getString(R.string.saved_file_) + mFullName + ".th2", Toast.LENGTH_LONG ).show();

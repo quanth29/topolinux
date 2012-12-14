@@ -81,6 +81,8 @@ public class FixedDialog extends Dialog
   public void onClick(View v) 
   {
     Button b = (Button) v;
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "FixedDialog onClick() button " + b.getText().toString() );
+
     if ( b == mButtonOK ) {
       String station = mETstation.getText().toString();
       if ( station != null ) {

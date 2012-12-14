@@ -71,6 +71,8 @@ public class ExternalActivity extends Activity
   public void onClick( View view )
   {
     Button b = (Button) view;
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "ExternalActivity onClick() button " + b.getText().toString() );
+
     if ( b == mBTok ) {
       String type = mETtype.getText().toString();
       String value = mETvalue.getText().toString();

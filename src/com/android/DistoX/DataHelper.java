@@ -17,6 +17,9 @@
  * 20120610 archive (zip)
  * 20120722 put table create in a transaction
  * 20120725 TopoDroidApp log
+ * 20121001 restored updateShotExtend
+ * 20121114 getLastShotId
+ * 20121114 allowed multiple locations for a station (commented check at insertFixed)
  */
 package com.android.DistoX;
 
@@ -69,7 +72,7 @@ public class DataHelper extends DataSetObservable
    private SQLiteStatement updateShotStmt;
    private SQLiteStatement updateShotStmtFull;
    private SQLiteStatement updateShotNameStmt;
-   // private SQLiteStatement updateShotExtendStmt;
+   private SQLiteStatement updateShotExtendStmt;
    // private SQLiteStatement updateShotFlagStmt;
    // private SQLiteStatement updateShotCommentStmt;
    private SQLiteStatement updateSurveyStmt;
@@ -120,7 +123,7 @@ public class DataHelper extends DataSetObservable
         updateShotStmtFull = myDB.compileStatement(
                              "UPDATE shots SET fStation=?, tStation=?, extend=?, flag=?, comment=? WHERE surveyId=? AND id=?" );
 
-        // updateShotExtendStmt  = myDB.compileStatement( "UPDATE shots SET extend=? WHERE surveyId=? AND id=?" );
+        updateShotExtendStmt  = myDB.compileStatement( "UPDATE shots SET extend=? WHERE surveyId=? AND id=?" );
         // updateShotFlagStmt    = myDB.compileStatement( "UPDATE shots SET flag=? WHERE surveyId=? AND id=?" );
         // updateShotCommentStmt = myDB.compileStatement( "UPDATE shots SET comment=? WHERE surveyId=? AND id=?" );
         updateSurveyStmt = myDB.compileStatement( "UPDATE surveys SET day=?, comment=? WHERE id=?" );
@@ -315,14 +318,14 @@ public class DataHelper extends DataSetObservable
      updateShotNameStmt.execute();
    }
 
-   // public void updateShotExtend( long id, long sid, long extend )
-   // {
-   //   if ( myDB == null ) return;
-   //   updateShotExtendStmt.bindLong( 1, extend );
-   //   updateShotExtendStmt.bindLong( 2, sid );
-   //   updateShotExtendStmt.bindLong( 3, id );
-   //   updateShotExtendStmt.execute();
-   // }
+   public void updateShotExtend( long id, long sid, long extend )
+   {
+     if ( myDB == null ) return;
+     updateShotExtendStmt.bindLong( 1, extend );
+     updateShotExtendStmt.bindLong( 2, sid );
+     updateShotExtendStmt.bindLong( 3, id );
+     updateShotExtendStmt.execute();
+   }
 
    // public void updateShotFlag( long id, long sid, long flag )
    // {
@@ -771,6 +774,40 @@ public class DataHelper extends DataSetObservable
    //   TopoDroidApp.Log( TopoDroidApp.LOG_DB, "hasShotAtStation returns " + ret );
    //   return ret;
    // }
+
+   public List<DistoXDBlock> selectShotsAfterId( long sid, long id , long status )
+   {
+     List< DistoXDBlock > list = new ArrayList< DistoXDBlock >();
+     Cursor cursor = myDB.query(SHOT_TABLE,
+       new String[] { "id", "fStation", "tStation", "distance", "bearing", "clino", "extend", "flag" }, // columns
+       "surveyId=? and status=? and id>?",
+       new String[] { Long.toString(sid), Long.toString(TopoDroidApp.STATUS_NORMAL), Long.toString(id) },
+       null,  // groupBy
+       null,  // having
+       "id" ); // order by
+     if (cursor.moveToFirst()) {
+       do {
+         String fStation = cursor.getString(1);
+         String tStation = cursor.getString(2);
+         DistoXDBlock block = new DistoXDBlock();
+         block.setId( cursor.getLong(0), sid );
+         block.setName( fStation, tStation );
+         block.mLength = (float)( cursor.getDouble(3) );
+         block.setBearing(  (float)( cursor.getDouble(4) ) );
+         block.mClino  =  (float)( cursor.getDouble(5) );
+         block.mExtend =  cursor.getLong(6);
+         block.mFlag   =  cursor.getLong(7);
+         // block.setComment = cursor.getLong(8) );
+         list.add( block );
+       } while (cursor.moveToNext());
+     }
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "selectAllShotsAtStation list size " + list.size() );
+     if (cursor != null && !cursor.isClosed()) {
+       cursor.close();
+     }
+     return list;
+
+   }
 
    public List<DistoXDBlock> selectAllShotsAtStation( long sid, String station )
    {
@@ -1291,9 +1328,13 @@ public class DataHelper extends DataSetObservable
 
    public long insertFixed( long sid, long id, String station, double lng, double lat, double alt, String comment, long status )
    {
-     long ret = getFixedId( sid, station ); 
-     if ( ret >= 0 ) return -1; // fixed already present in the db
+     // FIXME allow multiple locations for a station
+     // long ret = getFixedId( sid, station ); 
+     // // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "insertFixed sid " + sid + " ret " + ret );
+     // if ( ret >= 0 ) return -1; // fixed already present in the db
+
      if ( id == -1L ) id = maxId( FIXED_TABLE, sid );
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "insertFixed id " + id );
      ContentValues cv = new ContentValues();
      cv.put( "surveyId",  sid );
      cv.put( "id",        id );
@@ -1336,6 +1377,11 @@ public class DataHelper extends DataSetObservable
      }
      return id;
    }
+
+  public long getLastShotId( long sid )
+  {
+    return maxId( SHOT_TABLE, sid );
+  }
 
    public boolean updateFixedStation( long id, long sid, String station )
    {

@@ -257,7 +257,7 @@ public class SurveyActivity extends Activity
   @Override
   public void onClick(View view)
   {
-    // TopoDroidApp.Log( TopoDroidApp.LOG_SURVEY, "onClick() ");
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "SurveyActivity onClick() " + item.toString() );
     switch (view.getId()){
       case R.id.surveySave:
         doSave();
@@ -390,6 +390,7 @@ public class SurveyActivity extends Activity
 
   private void doLocation()
   {
+    // TopoDroidApp.Log( TopoDroidApp.LOG_DEBUG, "doLocation" );
     LocationManager lm = (LocationManager) mContext.getSystemService( Context.LOCATION_SERVICE );
     new DistoXLocation( mContext, this, app, lm ).show();
   }
@@ -564,9 +565,11 @@ public class SurveyActivity extends Activity
  
   public FixedInfo addLocation( String station, double latitude, double longitude, double altitude )
   {
+    
     // app.addFixed( station, latitude, longitude, altitude );
     // addFixed( station, latitude, longitude, altitude );
     long id = app.mData.insertFixed( app.mSID, -1L, station, longitude, latitude, altitude, "", 0L ); // FIXME comment
+    // TopoDroidApp.Log( TopoDroidApp.LOG_LOC, "addLocation mSID " + app.mSID + " id " + id );
 
     // StringWriter sw = new StringWriter();
     // PrintWriter pw = new PrintWriter( sw );

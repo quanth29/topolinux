@@ -88,6 +88,7 @@ public class CalibGMDialog extends Dialog
   public void onClick(View v) 
   {
     Button b = (Button) v;
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "GM dialog onClick button " + b.getText().toString() );
     if ( b == mButtonOK ) {
       mParent.updateGM( mEditText.getText().toString() );
     }

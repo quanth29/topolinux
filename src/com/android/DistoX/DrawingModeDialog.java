@@ -68,7 +68,8 @@ public class DrawingModeDialog extends Dialog
 
     public void onClick(View view)
     {
-      // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "DrawingModeDialog::onClick" );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "DrawingModeDialog onClick " + view.toString() );
+
       switch (view.getId()){
         case R.id.button_mode_ok:
           int mode = DrawingCommandManager.DISPLAY_NONE;
