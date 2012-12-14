@@ -32,6 +32,7 @@ public class DrawingAreaPickerDialog extends Dialog
     private Button mBtnCancel;
 
     private int mIndex;
+    private int mIndexMax;
     // private TextView mText;
 
     private Context mContext;
@@ -42,8 +43,10 @@ public class DrawingAreaPickerDialog extends Dialog
       super(context);
       mContext  = context;
       mActivity = activity;
-      mBtnArea = new Button[ DrawingBrushPaths.AREA_MAX ];
-      for (int k=0; k<DrawingBrushPaths.AREA_MAX; ++k ) {
+      mIndexMax = DrawingBrushPaths.mAreaLib.mAreaNr;
+      
+      mBtnArea = new Button[ mIndexMax ];
+      for (int k=0; k<mIndexMax; ++k ) {
         mBtnArea[k] = new Button( context );
       }
       mIndex = index;
@@ -59,14 +62,14 @@ public class DrawingAreaPickerDialog extends Dialog
 
         int k0 = 0;
         TableRow row = null;
-        for (int k=0; k<DrawingBrushPaths.AREA_MAX; ++k ) {
+        for (int k=0; k<mIndexMax; ++k ) {
           k0 = k0 % 3;
           if ( k0 == 0 ) {
             row = new TableRow( mContext );
             layout.addView( row );
           }
           ++ k0; 
-          mBtnArea[k].setText( DrawingBrushPaths.areaLocalName[k] );
+          mBtnArea[k].setText( DrawingBrushPaths.getAreaName( k ) );
           mBtnArea[k].setOnClickListener( this );
           row.addView( mBtnArea[k] );
         }
@@ -77,7 +80,7 @@ public class DrawingAreaPickerDialog extends Dialog
         mBtnCancel.setOnClickListener( this );
 
         setTitle( String.format( mContext.getResources().getString( R.string.title_draw_area ),
-                                 DrawingBrushPaths.areaLocalName[ mIndex ] ) );
+                                 DrawingBrushPaths.getAreaName( mIndex ) ) );
       }
 
     public void onClick(View view)
@@ -92,12 +95,12 @@ public class DrawingAreaPickerDialog extends Dialog
           break;
         default:
           Button btn = (Button)view;
-          for (int k=0; k<DrawingBrushPaths.AREA_MAX; ++k ) {
+          for (int k=0; k<mIndexMax; ++k ) {
             if ( btn == mBtnArea[k] ) {
               mIndex = k;
               setTitle( String.format( mContext.getResources().getString(R.string.title_draw_area),
-                                       DrawingBrushPaths.areaLocalName[ mIndex ] ) );
-              // mText.setText( DrawingBrushPaths.areaLocalName[ mIndex ] );
+                                       DrawingBrushPaths.getAreaName( mIndex ) ) );
+              // mText.setText( DrawingBrushPaths.getAreaName( mIndex ) );
               break;
             }
           }

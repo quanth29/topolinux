@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES 
  * 20120603 created
+ * 20121205 location units
  */
 package com.android.DistoX;
 

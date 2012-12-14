@@ -29,7 +29,7 @@ public class DrawingLabelPath extends DrawingPointPath
 
   public DrawingLabelPath( String text, float x, float y, int scale, String options )
   {
-    super( DrawingBrushPaths.POINT_LABEL, x, y, scale, options );
+    super( DrawingBrushPaths.mPointLib.mPointLabelIndex, x, y, scale, options );
     mText = text;
     // setPaint( DrawingBrushPaths.pointPaint[ DrawingBrushPaths.POINT_LABEL ] );
     // mPaint = DrawingBrushPaths.pointPaint[ DrawingBrushPaths.POINT_LABEL ];

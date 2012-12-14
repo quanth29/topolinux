@@ -33,7 +33,7 @@ public class DrawingStation extends DrawingPointPath
 
   public DrawingStation( String n, float x, float y )
   {
-    super( DrawingBrushPaths.POINT_LABEL,
+    super( DrawingBrushPaths.mPointLib.mPointLabelIndex,
            x, // scene coordinate
            y, 
            DrawingPointPath.SCALE_M, null );

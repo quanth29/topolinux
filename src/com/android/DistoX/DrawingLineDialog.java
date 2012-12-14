@@ -62,7 +62,7 @@ public class DrawingLineDialog extends Dialog
     mTVtype = (TextView) findViewById( R.id.line_type );
     mEToptions = (EditText) findViewById( R.id.line_options );
 
-    mTVtype.setText( DrawingBrushPaths.lineThName[ mLine.mLineType ] );
+    mTVtype.setText( DrawingBrushPaths.getLineThName( mLine.mLineType ) );
     if ( mLine.mOptions != null ) {
       mEToptions.setText( mLine.mOptions );
     }

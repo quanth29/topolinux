@@ -9,11 +9,15 @@
  *  See the file COPYING.
  * --------------------------------------------------------
  * 20120605 created
+ * 20121212 sorted names in alphabetical order
  */
 package com.android.DistoX;
 
-import java.util.Set;
 import java.io.File;
+import java.util.Set;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Collections;
 
 // import android.app.Activity;
 import android.app.Dialog;
@@ -65,22 +69,30 @@ public class ImportDialog extends Dialog
 
     // setTitleColor( 0x006d6df6 );
 
-    boolean added = false;
     files = TopoDroidApp.getImportFiles();
+    ArrayList<String> names = new ArrayList<String>();
     if ( files != null ) {
-      for ( File f : files ) {
-        mArrayAdapter.add( f.getName() );
-        added = true;
+      for ( File f : files ) { 
+        names.add( f.getName() );
       }
     }
     files = TopoDroidApp.getZipFiles();
     if ( files != null ) {
       for ( File f : files ) {
-        mArrayAdapter.add( f.getName() );
-        added = true;
+        names.add( f.getName() );
       }
     }
-    if ( added ) {
+    if ( names.size() > 0 ) {
+      // sort files by name (alphabetical order)
+      Comparator<String> cmp = new Comparator<String>() 
+      {
+          @Override
+          public int compare( String s1, String s2 ) { return s1.compareToIgnoreCase( s2 ); }
+      };
+      Collections.sort( names, cmp );
+      for ( int k=0; k<names.size(); ++k ) {
+        mArrayAdapter.add( names.get(k) );
+      }
       mList.setAdapter( mArrayAdapter );
     } else {
       Toast.makeText( mContext, R.string.file_parse_none, Toast.LENGTH_LONG ).show();
@@ -94,6 +106,9 @@ public class ImportDialog extends Dialog
     String item = ((TextView) view).getText().toString();
     // TopoDroidApp.Log(  TopoDroidApp.LOG_INPUT, "ImportDialog onItemClick() " + item.toString() );
 
+    hide();
+    mList.setOnItemClickListener( null );
+    setTitle(" W A I T ");
     mParent.importFile( item );
     dismiss();
   }

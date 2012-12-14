@@ -296,7 +296,7 @@ public class DrawingSurface extends SurfaceView
   {
     float x, y, x1, y1, x2, y2;
     // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "loadTherion file " + filename );
-    DrawingBrushPaths.makePaths( );
+    // DrawingBrushPaths.makePaths( );
     DrawingBrushPaths.resetPointOrientations();
     // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "after reset 0: " + DrawingBrushPaths.mOrientation[0]
     //                      + " 7: " + DrawingBrushPaths.mOrientation[7] );
@@ -320,7 +320,7 @@ public class DrawingSurface extends SurfaceView
         String[] vals = line.split( " " );
         if ( vals[0].equals( "point" ) ) {
           // ****** THERION POINT **********************************
-          int ptType = DrawingBrushPaths.POINT_MAX;
+          int ptType = DrawingBrushPaths.mPointLib.mPointNr;
           boolean has_orientation = false;
           float orientation = 0.0f;
           int scale = DrawingPointPath.SCALE_M;
@@ -362,75 +362,89 @@ public class DrawingSurface extends SurfaceView
             }
           }
 
-          if ( type.equals( "stalagmite" ) ) {
-            ptType = DrawingBrushPaths.POINT_STAL;
-            orientation = 180.0f;
-            has_orientation = true;
-          } else if ( type.equals( "stalactite" ) ) {
-            ptType = DrawingBrushPaths.POINT_STAL;
-            has_orientation = false;
-          } else if ( type.equals( "narrow-end" ) ) {
-            ptType = DrawingBrushPaths.POINT_END;
-            has_orientation = false;
-          } else if ( type.equals( "low-end" ) ) {
-            ptType = DrawingBrushPaths.POINT_END;
-            orientation = 90.0f;
-            has_orientation = true;
-          } else if ( type.equals( "spring" ) ) {
-            ptType = DrawingBrushPaths.POINT_SINK;
-            orientation = 180.0f;
-            has_orientation = true;
-          } else if ( type.equals( "sink" ) ) {
-            ptType = DrawingBrushPaths.POINT_SINK;
-            has_orientation = false;
-          } else if ( type.equals( "ice" ) ) {
-            ptType = DrawingBrushPaths.POINT_SNOW;
-            orientation = 180.0f;
-            has_orientation = true;
-          } else if ( type.equals( "snow" ) ) {
-            ptType = DrawingBrushPaths.POINT_SNOW;
-            has_orientation = false;
-          } else if ( type.equals( "moonmilk" ) ) {
-            ptType = DrawingBrushPaths.POINT_FLOWSTONE;
-            orientation = 180.0f;
-            has_orientation = true;
-          } else if ( type.equals( "flowstone" ) ) {
-            ptType = DrawingBrushPaths.POINT_FLOWSTONE;
-            has_orientation = false;
-          } else if ( type.equals( "breakdown-choke" ) ) {
-            ptType = DrawingBrushPaths.POINT_DIG;
-            orientation = 180.0f;
-            has_orientation = true;
-          } else if ( type.equals( "dig" ) ) {
-            ptType = DrawingBrushPaths.POINT_DIG;
-            has_orientation = false;
-          } else if ( type.equals( "gypsum" ) ) {
-            ptType = DrawingBrushPaths.POINT_CRYSTAL;
-            orientation = 180.0f;
-            has_orientation = true;
-          } else if ( type.equals( "crystal" ) ) {
-            ptType = DrawingBrushPaths.POINT_CRYSTAL;
-           has_orientation = false;
-          } else {
-            for ( ptType = 0; ptType < DrawingBrushPaths.POINT_MAX; ++ptType ) {
-              if ( type.equals( DrawingBrushPaths.pointThName[ ptType ] ) ) break;
+          // overloaded point types
+          // if ( type.equals( "stalagmite" ) ) {
+          //   ptType = DrawingBrushPaths.POINT_STAL;
+          //   orientation = 180.0f;
+          //   has_orientation = true;
+          // } else if ( type.equals( "stalactite" ) ) {
+          //   ptType = DrawingBrushPaths.POINT_STAL;
+          //   has_orientation = false;
+          // } else if ( type.equals( "narrow-end" ) ) {
+          //   ptType = DrawingBrushPaths.POINT_END;
+          //   has_orientation = false;
+          // } else if ( type.equals( "low-end" ) ) {
+          //   ptType = DrawingBrushPaths.POINT_END;
+          //   orientation = 90.0f;
+          //   has_orientation = true;
+          // } else if ( type.equals( "spring" ) ) {
+          //   ptType = DrawingBrushPaths.POINT_SINK;
+          //   orientation = 180.0f;
+          //   has_orientation = true;
+          // } else if ( type.equals( "sink" ) ) {
+          //   ptType = DrawingBrushPaths.POINT_SINK;
+          //   has_orientation = false;
+          // } else if ( type.equals( "ice" ) ) {
+          //   ptType = DrawingBrushPaths.POINT_SNOW;
+          //   orientation = 180.0f;
+          //   has_orientation = true;
+          // } else if ( type.equals( "snow" ) ) {
+          //   ptType = DrawingBrushPaths.POINT_SNOW;
+          //   has_orientation = false;
+          // } else if ( type.equals( "moonmilk" ) ) {
+          //   ptType = DrawingBrushPaths.POINT_FLOWSTONE;
+          //   orientation = 180.0f;
+          //   has_orientation = true;
+          // } else if ( type.equals( "flowstone" ) ) {
+          //   ptType = DrawingBrushPaths.POINT_FLOWSTONE;
+          //   has_orientation = false;
+          // } else if ( type.equals( "breakdown-choke" ) ) {
+          //   ptType = DrawingBrushPaths.POINT_DIG;
+          //   orientation = 180.0f;
+          //   has_orientation = true;
+          // } else if ( type.equals( "dig" ) ) {
+          //   ptType = DrawingBrushPaths.POINT_DIG;
+          //   has_orientation = false;
+          // } else if ( type.equals( "gypsum" ) ) {
+          //   ptType = DrawingBrushPaths.POINT_CRYSTAL;
+          //   orientation = 180.0f;
+          //   has_orientation = true;
+          // } else if ( type.equals( "crystal" ) ) {
+          //   ptType = DrawingBrushPaths.POINT_CRYSTAL;
+          //   has_orientation = false;
+          // } else {
+
+          for ( ptType = 0; ptType < DrawingBrushPaths.mPointLib.mPointNr; ++ptType ) {
+            if ( DrawingBrushPaths.canFlip(ptType) ) {
+              if ( type.equals( DrawingBrushPaths.getPointThName( ptType, true ) ) ) {
+                DrawingBrushPaths.setFlip( ptType, true );
+                // orientation = ( ptType == DrawingBrushPaths.POINT_END ) ?  90.0f : 180.0f;
+                // has_orientation = true;
+                break;
+              } else if ( type.equals( DrawingBrushPaths.getPointThName( ptType, false ) ) ) {
+                DrawingBrushPaths.setFlip( ptType, false );
+                break;
+              }
+            } else if ( type.equals( DrawingBrushPaths.getPointThName( ptType, false ) ) ) {
+              // DrawingBrushPaths.setFlip( ptType, false );
+              break;
             }
           }
-          if ( ptType == DrawingBrushPaths.POINT_MAX ) continue;
+          if ( ptType == DrawingBrushPaths.mPointLib.mPointNr ) continue;
 
-          if ( has_orientation ) {
+          if ( has_orientation && DrawingBrushPaths.canRotate(ptType) ) {
             // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "[2] point " + ptType + " has orientation " + orientation );
             DrawingBrushPaths.rotateGrad( ptType, orientation );
             DrawingPointPath path = new DrawingPointPath( ptType, x, y, scale, options );
             addDrawingPath( path );
             DrawingBrushPaths.rotateGrad( ptType, -orientation );
           } else {
-            if ( ptType != DrawingBrushPaths.POINT_LABEL ) {
+            if ( ptType != DrawingBrushPaths.mPointLib.mPointLabelIndex ) {
               DrawingPointPath path = new DrawingPointPath( ptType, x, y, scale, options );
               addDrawingPath( path );
             } else {
               if ( label_text.equals( "!" ) ) {    // "danger" point
-                DrawingPointPath path = new DrawingPointPath( DrawingBrushPaths.POINT_DANGER, x, y, scale, options );
+                DrawingPointPath path = new DrawingPointPath( DrawingBrushPaths.mPointLib.mPointDangerIndex, x, y, scale, options );
                 addDrawingPath( path );
               } else {                             // regular label
                 DrawingLabelPath path = new DrawingLabelPath( label_text, x, y, scale, options );
@@ -443,7 +457,7 @@ public class DrawingSurface extends SurfaceView
           // ********* THERION LINES ************************************************************
           if ( vals.length == 6 && vals[1].equals( "border" ) && vals[2].equals( "-id" ) ) { // THERION AREAS
             // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "area id " + vals[3] );
-            int arType = DrawingBrushPaths.AREA_MAX;
+            int arType = DrawingBrushPaths.mAreaLib.mAreaNr;
             DrawingAreaPath path = new DrawingAreaPath( arType, vals[3] );
 
             // TODO insert new area-path
@@ -457,8 +471,8 @@ public class DrawingSurface extends SurfaceView
                 if ( line.equals( "endline" ) ) {
                   line = readLine( br ); // area statement
                   String[] vals2 = line.split( " " );
-                  for ( arType=0; arType < DrawingBrushPaths.AREA_MAX; ++arType ) {
-                    if ( vals2[1].equals( DrawingBrushPaths.areaThName[ arType ] ) ) break;
+                  for ( arType=0; arType < DrawingBrushPaths.mAreaLib.mAreaNr; ++arType ) {
+                    if ( vals2[1].equals( DrawingBrushPaths.getAreaThName( arType ) ) ) break;
                   }
                   // TopoDroidApp.Log(TopoDroidApp.LOG_PLOT, "set area type " + arType );
                   path.setAreaType( arType );
@@ -522,15 +536,16 @@ public class DrawingSurface extends SurfaceView
               } 
             }
             
-            int lnType = DrawingBrushPaths.LINE_MAX;
+            int lnTypeMax = DrawingBrushPaths.mLineLib.mLineNr;
+            int lnType = lnTypeMax;
             DrawingLinePath path = null;
-            for ( lnType=0; lnType < DrawingBrushPaths.LINE_MAX; ++lnType ) {
-              if ( type.equals( DrawingBrushPaths.lineThName[ lnType ] ) ) break;
+            for ( lnType=0; lnType < lnTypeMax; ++lnType ) {
+              if ( type.equals( DrawingBrushPaths.getLineThName( lnType ) ) ) break;
             }
             // TODO insert new line-path
             line = readLine( br );
             if ( ! line.equals( "endline" ) ) { 
-              if ( lnType < DrawingBrushPaths.LINE_MAX ) {
+              if ( lnType < lnTypeMax ) {
                 path = new DrawingLinePath( lnType );
                 if ( closed ) path.mClosed = true;
                 if ( reversed ) path.mReversed = true;

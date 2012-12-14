@@ -32,6 +32,7 @@ public class DrawingLinePickerDialog extends Dialog
 
     private int mIndex;
     // private TextView mText;
+    private int mIndexMax;
 
     private Context mContext;
     private DrawingActivity mActivity;
@@ -41,8 +42,9 @@ public class DrawingLinePickerDialog extends Dialog
       super(context);
       mContext  = context;
       mActivity = activity;
-      mBtnLine = new Button[ DrawingBrushPaths.LINE_MAX ];
-      for (int k=0; k<DrawingBrushPaths.LINE_MAX; ++k ) {
+      mIndexMax = DrawingBrushPaths.mLineLib.mLineNr;
+      mBtnLine = new Button[ mIndexMax ];
+      for (int k=0; k<mIndexMax; ++k ) {
         mBtnLine[k] = new Button( context );
       }
       mIndex = index;
@@ -59,14 +61,14 @@ public class DrawingLinePickerDialog extends Dialog
 
         int k0 = 0;
         TableRow row = null;
-        for (int k=0; k<DrawingBrushPaths.LINE_MAX; ++k ) {
+        for (int k=0; k<mIndexMax; ++k ) {
           k0 = k0 % 3;
           if ( k0 == 0 ) {
             row = new TableRow( mContext );
             layout.addView( row );
           }
           ++ k0; 
-          mBtnLine[k].setText( DrawingBrushPaths.lineLocalName[k] );
+          mBtnLine[k].setText( DrawingBrushPaths.getLineName(k) );
           mBtnLine[k].setOnClickListener( this );
           row.addView( mBtnLine[k] );
         }
@@ -77,7 +79,7 @@ public class DrawingLinePickerDialog extends Dialog
         mBtnCancel.setOnClickListener( this );
 
         setTitle( String.format( mContext.getResources().getString( R.string.title_draw_line ),
-                                 DrawingBrushPaths.lineLocalName[ mIndex ] ) );
+                                 DrawingBrushPaths.getLineName( mIndex ) ) );
     }
 
     public void onClick(View view)
@@ -93,11 +95,11 @@ public class DrawingLinePickerDialog extends Dialog
           break;
         default:
           Button btn = (Button)view;
-          for (int k=0; k<DrawingBrushPaths.LINE_MAX; ++k ) {
+          for (int k=0; k<mIndexMax; ++k ) {
             if ( btn == mBtnLine[k] ) {
               mIndex = k;
-              setTitle("LINE " + DrawingBrushPaths.lineLocalName[ mIndex ] );
-              // mText.setText( DrawingBrushPaths.lineLocalName[ mIndex ] );
+              setTitle("LINE " + DrawingBrushPaths.getLineName( mIndex ) );
+              // mText.setText( DrawingBrushPaths.getLineName( mIndex ) );
               break;
             }
           }

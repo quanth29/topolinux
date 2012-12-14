@@ -11,6 +11,7 @@
  * ----------------------------------------------------------
  * CHANGES
  * 20120606 created (adapted from Cave3D to handle single file, only shots)
+ * 20121212 units (m,cm,ft,y) (deg, grad)
  */
 package com.android.DistoX;
 
@@ -123,6 +124,7 @@ public class TherionParser
     int[] survey_pos = new int[50]; // current survey pos in the pathname FIXME max 50 levels
     int ks = 0;                     // survey index
     boolean in_centerline = false;
+    boolean in_data = false;
     boolean in_survey = false;
     boolean in_map = false;
     boolean use_centerline_declination = false;
@@ -139,6 +141,7 @@ public class TherionParser
     int jClino   = 4;
     String prefix = "";
     String suffix = "";
+   
 
     try {
       String dirname = "./";
@@ -185,7 +188,8 @@ public class TherionParser
                 in_map = false;
               }
             } else if ( in_centerline ) {
-              if ( cmd.equals("endcenterline") ) {
+              if ( cmd.equals("endcenterline") || cmd.equals("endcentreline") ) {
+                in_data = false;
                 in_centerline = false;
                 use_centerline_declination = false;
                 centerline_declination = 0.0f;
@@ -200,7 +204,40 @@ public class TherionParser
               // } else if ( cmd.equals("explo-team") ) {
               // } else if ( cmd.equals("instrument") ) {
               // } else if ( cmd.equals("calibrate") ) {
-              // } else if ( cmd.equals("units") ) { // TODO parse "units" command
+              } else if ( cmd.equals("units") ) { // parse "units" command: TODO factor and more
+                boolean ulen = false;
+                boolean uber = false;
+                boolean ucln = false;
+                for ( int k=1; k<vals_len - 1; ++k ) {
+                  if ( vals[k].equals("length") || vals[k].equals("tape") ) ulen = true;
+                  if ( vals[k].equals("compass") || vals[k].equals("bearing") ) uber = true;
+                  if ( vals[k].equals("clino") || vals[k].equals("gradient") ) ucln = true;
+                }
+                if ( ulen ) {
+                  if ( vals[vals_len-1].startsWith("m") ) {
+                    units_len = 1.0f;
+                  } else if ( vals[vals_len-1].startsWith("c") ) { // centimeters
+                    units_len = 0.01f;
+                  } else if ( vals[vals_len-1].startsWith("f") ) { // feet
+                    units_len = (float)TopoDroidApp.FT2M;
+                  } else if ( vals[vals_len-1].startsWith("y") ) { // yard
+                    units_len = 3 * (float)TopoDroidApp.FT2M;
+                  }
+                } 
+                if ( uber ) {
+                  if ( vals[vals_len-1].startsWith("d") ) { // degrees
+                    units_ber = 1.0f;
+                  } else if ( vals[vals_len-1].startsWith("g") ) { // grads
+                    units_ber = (float)TopoDroidApp.GRAD2DEG;
+                  }
+                }
+                if ( ucln ) {
+                  if ( vals[vals_len-1].startsWith("d") ) {
+                    units_cln = 1.0f;
+                  } else if ( vals[vals_len-1].startsWith("g") ) {
+                    units_cln = (float)TopoDroidApp.GRAD2DEG;
+                  }
+                }
               // } else if ( cmd.equals("sd") ) {
               // } else if ( cmd.equals("grade") ) {
               } else if ( cmd.equals("declination") ) { 
@@ -291,6 +328,7 @@ public class TherionParser
               } else if ( cmd.equals("data") ) {
                 // data normal from to length compass clino ...
                 if ( vals[1].equals("normal") ) {
+                  jFrom = jTo = jLength = jCompass = jClino = -1;
                   int j0 = 0;
                   for ( int j=2; j < vals_len; ++j ) {
                     if ( vals[j].equals("from") ) {
@@ -307,6 +345,7 @@ public class TherionParser
                       ++j0;
                     }
                   }
+                  in_data = (jFrom >= 0) && (jTo >= 0) && (jLength >= 0) && (jCompass >= 0) && (jClino >= 0);
                 // TODO other style syntax
                 // } else if ( vals[1].equals("topofil") ) {
                 // } else if ( vals[1].equals("diving") ) {
@@ -315,7 +354,7 @@ public class TherionParser
                 // } else if ( vals[1].equals("dimensions") ) {
                 // } else if ( vals[1].equals("nosurvey") ) {
                 }
-              } else if ( vals_len >= 5 ) {
+              } else if ( in_data && vals_len >= 5 ) {
                 // FIXME
                 String from = vals[jFrom];
                 String to   = vals[jTo];
@@ -353,7 +392,7 @@ public class TherionParser
               //     break;
               //   }
               // }
-            } else if ( cmd.equals("centerline") ) {
+            } else if ( cmd.equals("centerline") || cmd.equals("centreline") ) {
               in_centerline = true;
             } else if ( cmd.equals("map") ) {
               in_map = true;
@@ -370,6 +409,7 @@ public class TherionParser
       // TODO
       throw new ParserException();
     }
+    TopoDroidApp.Log( TopoDroidApp.LOG_THERION, "TherionParser "+ shots.size() +" "+ splays.size() +" "+  fixes.size() );
   }
 
 }

@@ -13,6 +13,7 @@
  * 20120522 rename FixedInfo
  * 20120531 added toString 
  * 20120603 added toLocString
+ * 20121205 location units
  */
 package com.android.DistoX;
 
@@ -53,12 +54,16 @@ class FixedInfo
 
   public String toLocString()
   {
-    return double2ddmmss( lng ) + " " + double2ddmmss( lat ) + " " + Integer.toString( (int)(alt) );
+    return ( TopoDroidApp.mUnitLocation == TopoDroidApp.DDMMSS ) ?
+      double2ddmmss( lng ) + " " + double2ddmmss( lat ) + " " + Integer.toString( (int)(alt) ) :
+      double2degree( lng ) + " " + double2degree( lat ) + " " + Integer.toString( (int)(alt) ) ;
   }
 
   public String toString()
   {
-    return name + " " + double2ddmmss( lng ) + " " + double2ddmmss( lat ) + " " + Integer.toString( (int)(alt) );
+    return ( TopoDroidApp.mUnitLocation == TopoDroidApp.DDMMSS ) ?
+           name + " " + double2ddmmss( lng ) + " " + double2ddmmss( lat ) + " " + Integer.toString( (int)(alt) ) :
+           name + " " + double2degree( lng ) + " " + double2degree( lat ) + " " + Integer.toString( (int)(alt) ) ;
   }
 
   static String double2ddmmss( double x )
@@ -75,4 +80,11 @@ class FixedInfo
     return swp.getBuffer().toString();
   }
 
+  static String double2degree( double x )
+  {
+    StringWriter swp = new StringWriter();
+    PrintWriter pwp = new PrintWriter( swp );
+    pwp.format( "%.6f", x );
+    return swp.getBuffer().toString();
+  }
 }

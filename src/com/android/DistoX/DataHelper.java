@@ -20,6 +20,8 @@
  * 20121001 restored updateShotExtend
  * 20121114 getLastShotId
  * 20121114 allowed multiple locations for a station (commented check at insertFixed)
+ * 20121215 InsertHelper for bulk insert (survey insertShots)
+ * 20121215 bulk splay shot name+extend update:  updateShotNameAndExtend
  */
 package com.android.DistoX;
 
@@ -36,10 +38,12 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.DataSetObservable;
+import android.database.DatabaseUtils.InsertHelper;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.database.sqlite.SQLiteException;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +76,7 @@ public class DataHelper extends DataSetObservable
    private SQLiteStatement updateShotStmt;
    private SQLiteStatement updateShotStmtFull;
    private SQLiteStatement updateShotNameStmt;
+   private SQLiteStatement updateShotNameAndExtendStmt;
    private SQLiteStatement updateShotExtendStmt;
    // private SQLiteStatement updateShotFlagStmt;
    // private SQLiteStatement updateShotCommentStmt;
@@ -118,6 +123,8 @@ public class DataHelper extends DataSetObservable
         updateGMErrorStmt  = myDB.compileStatement( "UPDATE gms SET error=? WHERE calibId=? AND id=?" );
         updateShotNameStmt = myDB.compileStatement(
                              "UPDATE shots SET fStation=?, tStation=? WHERE surveyId=? AND id=?" );
+        updateShotNameAndExtendStmt = myDB.compileStatement(
+                             "UPDATE shots SET fStation=?, tStation=?, extend=? WHERE surveyId=? AND id=?" );
         updateShotStmt     = myDB.compileStatement( 
                              "UPDATE shots SET fStation=?, tStation=?, extend=?, flag=? WHERE surveyId=? AND id=?" );
         updateShotStmtFull = myDB.compileStatement(
@@ -166,7 +173,7 @@ public class DataHelper extends DataSetObservable
   public SurveyStat getSurveyStat( long sid )
   {
     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "getSurveyStat sid " + sid );
-    HashMap< String, Integer > map = new HashMap();
+    HashMap< String, Integer > map = new HashMap< String, Integer >();
     int n0 = 0;
     int nc = 0;
     int ne = 0;
@@ -381,7 +388,75 @@ public class DataHelper extends DataSetObservable
      undeletePlotStmt.bindLong( 2, plot_id );
      undeletePlotStmt.execute();
    }
+   
+   public void updateShotNameAndExtend( long sid, ArrayList< DistoXDBlock > updatelist )
+   {
+     try {
+       myDB.execSQL("PRAGMA synchronous=OFF");
+       myDB.setLockingEnabled( false );
+       myDB.beginTransaction();
+       for ( DistoXDBlock b : updatelist ) {
+         updateShotNameAndExtendStmt.bindString( 1, b.mFrom );
+         updateShotNameAndExtendStmt.bindString( 2, b.mTo );
+         updateShotNameAndExtendStmt.bindLong(   3, b.mExtend );
+         updateShotNameAndExtendStmt.bindLong(   4, sid );
+         updateShotNameAndExtendStmt.bindLong(   5, b.mId );
+         updateShotNameAndExtendStmt.execute();
+       }
+     } finally {
+       myDB.endTransaction();
+       myDB.setLockingEnabled( true );
+       myDB.execSQL("PRAGMA synchronous=NORMAL");
+     }
+   }
 
+   public long insertShots( long sid, long id, ArrayList< TherionParser.Shot > shots )
+   {
+     TopoDroidApp.Log( TopoDroidApp.LOG_DB, "insertShots list size " + shots.size() );
+     if ( myDB == null ) return -1;
+     InsertHelper ih = new InsertHelper( myDB, SHOT_TABLE );
+     final int surveyIdCol = ih.getColumnIndex( "surveyId" );
+     final int idCol       = ih.getColumnIndex( "id" );
+     final int fStationCol = ih.getColumnIndex( "fStation" );
+     final int tStationCol = ih.getColumnIndex( "tStation" );
+     final int distanceCol = ih.getColumnIndex( "distance" );
+     final int bearingCol  = ih.getColumnIndex( "bearing" );
+     final int clinoCol    = ih.getColumnIndex( "clino" );
+     final int rollCol     = ih.getColumnIndex( "roll" );
+     final int extendCol   = ih.getColumnIndex( "extend" );
+     final int flagCol     = ih.getColumnIndex( "flag" );
+     final int statusCol   = ih.getColumnIndex( "status" );
+     final int commentCol  = ih.getColumnIndex( "comment" );
+     try {
+       myDB.execSQL("PRAGMA synchronous=OFF");
+       myDB.setLockingEnabled( false );
+       myDB.beginTransaction();
+       for ( TherionParser.Shot s : shots ) {
+         ih.prepareForInsert();
+         ih.bind( surveyIdCol, sid );
+         ih.bind( idCol, id );
+         ih.bind( fStationCol, s.from );
+         ih.bind( tStationCol, s.to);
+         ih.bind( distanceCol, s.len );
+         ih.bind( bearingCol, s.ber );
+         ih.bind( clinoCol, s.cln );
+         ih.bind( rollCol, 0.0);
+         ih.bind( extendCol, s.extend );
+         ih.bind( flagCol, s.duplicate ? DistoXDBlock.BLOCK_DUPLICATE : 0 );
+         ih.bind( statusCol, 0 );
+         ih.bind( commentCol, "" );
+         ih.execute();
+         ++id;
+       }
+     } finally {
+       ih.close();
+       myDB.endTransaction();
+       myDB.setLockingEnabled( true );
+       myDB.execSQL("PRAGMA synchronous=NORMAL");
+     }
+     return id;
+   }
+   
    public long insertShot( long sid, long id, double d, double b, double c, double r )
    {
      return insertShot( sid, id, "", "",  d, b, c, r, ( b < 180.0 )? 1L : -1L, DistoXDBlock.BLOCK_SURVEY, 0L, "" );

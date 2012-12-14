@@ -61,22 +61,25 @@ public class DrawingPointPath extends DrawingPath
     mScale   = SCALE_NONE;
     mOrientation = 0.0;
     if ( DrawingBrushPaths.canRotate( type ) ) {
-      // TopoDroidApp.Log(TopoDroidApp.LOG_PATH, "new point type " + type + " setOrientation to " + DrawingBrushPaths.orientation(type) );
-      setOrientation( DrawingBrushPaths.orientation(type) );
+      setOrientation( DrawingBrushPaths.getPointOrientation(type) );
     }
-    setPaint( DrawingBrushPaths.pointPaint[ mPointType ] );
-    if ( mPointType != DrawingBrushPaths.POINT_LABEL ) {
+    if ( DrawingBrushPaths.canFlip( type ) ) {
+      mFlip = DrawingBrushPaths.getFlip( type );
+    }
+    setPaint( DrawingBrushPaths.getPointPaint( mPointType, mFlip ) );
+    if ( ! DrawingBrushPaths.pointHasText( mPointType ) ) {
       setScale( scale );
     } else {
       mScale = SCALE_M;
     }
+    // Log.v( TAG, "Point cstr " + type + " orientation " + mOrientation + " flip " + mFlip );
   }
 
   void setScale( int scale )
   {
     if ( scale != mScale ) {
       mScale = scale;
-      if ( mPointType != DrawingBrushPaths.POINT_LABEL ) {
+      if ( ! DrawingBrushPaths.pointHasText( mPointType ) ) {
         float f = 1.0f;
         switch ( mScale ) {
           case SCALE_XS: f = 0.60f;
@@ -86,7 +89,7 @@ public class DrawingPointPath extends DrawingPath
         }
         Matrix m = new Matrix();
         m.postScale(f,f);
-        path = new Path( DrawingBrushPaths.get( mPointType ) );
+        path = new Path( DrawingBrushPaths.getPointPath( mPointType, mFlip ) );
         path.transform( m );
         path.offset( mXpos, mYpos );
       }
@@ -114,6 +117,7 @@ public class DrawingPointPath extends DrawingPath
   public void setOrientation( double angle ) 
   { 
     // TopoDroidApp.Log( TopoDroidApp.LOG_PATH, "Point " + mPointType + " setOrientation " + angle );
+    // Log.v( TAG, "Point::setOrientation " + angle );
     mOrientation = angle; 
     while ( mOrientation >= 360.0 ) mOrientation -= 360.0;
     while ( mOrientation < 0.0 ) mOrientation += 360.0;
@@ -124,27 +128,17 @@ public class DrawingPointPath extends DrawingPath
   {
     StringWriter sw = new StringWriter();
     PrintWriter pw  = new PrintWriter(sw);
-    if ( mPointType == DrawingBrushPaths.POINT_STAL ) {
-      if ( mOrientation > 90 && mOrientation < 270 ) {
-        pw.format(Locale.ENGLISH, "point %.2f %.2f stalagmite", mXpos*toTherion, -mYpos*toTherion );
-      } else {
-        pw.format(Locale.ENGLISH, "point %.2f %.2f stalactite", mXpos*toTherion, -mYpos*toTherion );
-      }
-    } else if ( mPointType == DrawingBrushPaths.POINT_END ) {
-      if ( ( mOrientation > 45 && mOrientation < 135 ) || 
-           ( mOrientation > 225 && mOrientation < 305 ) ) {
-        pw.format(Locale.ENGLISH, "point %.2f %.2f low-end", mXpos*toTherion, -mYpos*toTherion );
-      } else {
-        pw.format(Locale.ENGLISH, "point %.2f %.2f narrow-end", mXpos*toTherion, -mYpos*toTherion );
-      }
-      
-    } else if ( mPointType == DrawingBrushPaths.POINT_DANGER ) {
-      pw.format(Locale.ENGLISH, "point %.2f %.2f label -text \"!\"", 
-         mXpos*toTherion, -mYpos*toTherion );
+
+    // Log.v( "DistoX", "toTherion() Point " + mPointType + " orientation " + mOrientation + " flip " +
+    //                  mFlip + " flippable " +
+    //                  DrawingBrushPaths.canFlip( mPointType ) );
+
+    if ( DrawingBrushPaths.canFlip(mPointType) ) {
+      pw.format(Locale.ENGLISH, "point %.2f %.2f %s", mXpos*toTherion, -mYpos*toTherion, 
+         DrawingBrushPaths.getPointThName( mPointType, mFlip ) );
     } else {
-      pw.format(Locale.ENGLISH, "point %.2f %.2f %s", 
-         mXpos*toTherion, -mYpos*toTherion, 
-         DrawingBrushPaths.pointThName[mPointType] );
+      pw.format(Locale.ENGLISH, "point %.2f %.2f %s", mXpos*toTherion, -mYpos*toTherion, 
+                                DrawingBrushPaths.getPointThName(mPointType, mFlip) );
       if ( mOrientation != 0.0 ) {
         // TopoDroidApp.Log( TopoDroidApp.LOG_PATH, "point.toTherion type " + mPointType + " orientation " + mOrientation );
         pw.format(Locale.ENGLISH, " -orientation %.2f", mOrientation);
