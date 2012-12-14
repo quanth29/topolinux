@@ -48,6 +48,16 @@
                   android:label="@string/app_name">
         </activity>
 
+        <activity android:name=".SensorActivity"
+                  android:theme="@style/Theme.FullScreen"
+                  android:label="@string/app_name">
+        </activity>
+
+        <activity android:name=".ExternalActivity"
+                  android:theme="@style/Theme.FullScreen"
+                  android:label="@string/app_name">
+        </activity>
+
         <activity android:name=".CalibDialog"
                   android:theme="@style/Theme.FullScreen"
                   android:label="@string/app_name_calib">
@@ -83,6 +93,11 @@
         </activity>
 
         <activity android:name=".PhotoActivity"
+                  android:theme="@style/Theme.FullScreen"
+                  android:label="@string/app_name">
+        </activity>
+
+        <activity android:name=".SensorListActivity"
                   android:theme="@style/Theme.FullScreen"
                   android:label="@string/app_name">
         </activity>

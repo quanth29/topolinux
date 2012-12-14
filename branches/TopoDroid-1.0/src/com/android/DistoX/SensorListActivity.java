@@ -126,6 +126,7 @@ public class SensorListActivity extends Activity
   @Override 
   public void onItemClick(AdapterView<?> parent, View view, int position, long id)
   {
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "SensorListActivity onItemClick id " + id);
     startSensorDialog( (TextView)view, position );
   }
 

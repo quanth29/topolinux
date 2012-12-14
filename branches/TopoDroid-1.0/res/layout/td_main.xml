@@ -30,9 +30,10 @@
    <ListView android:id="@+id/td_list"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          android:stackFromBottom="true"
+          android:stackFromBottom="false"
           android:transcriptMode="alwaysScroll"
           android:layout_weight="1"
+          android:paddingTop="25dp"
           android:textSize="12sp"
     />  
   </LinearLayout>

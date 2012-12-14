@@ -92,6 +92,8 @@ public class ImportDialog extends Dialog
   public void onItemClick(AdapterView<?> parent, View view, int position, long id)
   {
     String item = ((TextView) view).getText().toString();
+    // TopoDroidApp.Log(  TopoDroidApp.LOG_INPUT, "ImportDialog onItemClick() " + item.toString() );
+
     mParent.importFile( item );
     dismiss();
   }

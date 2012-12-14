@@ -54,6 +54,7 @@ import android.location.LocationManager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
 import android.widget.TextView;
 import android.widget.ArrayAdapter;
@@ -108,6 +109,7 @@ public class TopoDroidActivity extends Activity
   // private MenuItem mMIopen;
   private SubMenu  mSMmore;
   private MenuItem mMIoptions;
+  private MenuItem mMIlogs;
   private MenuItem mMIhelp;
   private MenuItem mMIabout;
 
@@ -180,6 +182,7 @@ public class TopoDroidActivity extends Activity
 
     public void onClick(View view)
     { 
+      // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "TopoDroidActivity onClick() " + view.toString() );
       int status = mStatus;
       switch (view.getId()){
         case R.id.btn_surveys:
@@ -216,6 +219,7 @@ public class TopoDroidActivity extends Activity
   public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
   {
     CharSequence item = ((TextView) view).getText();
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "TopoDroidActivity onItemLongClick() " + item.toString() );
     switch ( mStatus ) {
       case STATUS_SURVEY:
         startSurvey( item.toString(), 1 );
@@ -231,6 +235,7 @@ public class TopoDroidActivity extends Activity
   public void onItemClick(AdapterView<?> parent, View view, int position, long id)
   {
     CharSequence item = ((TextView) view).getText();
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "TopoDroidActivity onItemClick() " + item.toString() );
     switch ( mStatus ) {
       case STATUS_SURVEY:
         startSurvey( item.toString(), 0 );
@@ -259,6 +264,7 @@ public class TopoDroidActivity extends Activity
     mMIimport  = menu.add( R.string.menu_import );
     mSMmore    = menu.addSubMenu( R.string.menu_more );
       mMIoptions = mSMmore.add( R.string.menu_options );
+      mMIlogs    = mSMmore.add( R.string.menu_logs );
       mMIhelp    = mSMmore.add( R.string.menu_help  );
       mMIabout   = mSMmore.add( R.string.menu_about );
 
@@ -269,6 +275,7 @@ public class TopoDroidActivity extends Activity
     // mMIopen.setIcon( R.drawable.open );
     mSMmore.setIcon( R.drawable.more );
     // mMIoptions.setIcon( R.drawable.prefs );
+    // mMIlogs.setIcon( R.drawable.prefs );
     // mMIhelp.setIcon( R.drawable.help );
     // mMIabout.setIcon( R.drawable.info );
 
@@ -279,16 +286,22 @@ public class TopoDroidActivity extends Activity
   @Override
   public boolean onOptionsItemSelected(MenuItem item) 
   {
-    // TopoDroidApp.Log( TopoDroidApp.LOG_MAIN, "onOptionsItemSelected() " + StatusName() );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "TopoDroidActivity onOptionsItemSelected() " + item.toString() );
     // Handle item selection
     if ( item == mMIoptions ) { // OPTIONS DIALOG
       Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
       optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_ALL );
       startActivity( optionsIntent );
+    } else if ( item == mMIlogs ) { // LOG OPTIONS DIALOG
+      Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
+      optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_LOG );
+      startActivity( optionsIntent );
     } else if ( item == mMIabout ) { // ABOUT DIALOG
       TopoDroidAbout.show( this );
     } else if ( item == mMIhelp  ) { // HELP DIALOG
-      TopoDroidHelp.show( this, R.string.help_topodroid );
+      // TopoDroidHelp.show( this, R.string.help_topodroid );
+      Intent pdf = new Intent( Intent.ACTION_VIEW, Uri.parse( TopoDroidApp.mManual ) );
+      startActivity( pdf );
     } else if ( item == mMInew ) { // NEW SURVEY/CALIB
       if ( mStatus == STATUS_SURVEY ) {
         startSurvey( null, 0 );

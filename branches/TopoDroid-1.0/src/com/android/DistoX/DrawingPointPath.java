@@ -10,12 +10,14 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120706 Therion "scale" option
+ * 20121113 sink/spring points toTherion
+ * 20121122 overloaded points snow/ice flowstone/moonmilk dig/choke crystal/gypsum
  */
 
 package com.android.DistoX;
 
 import android.graphics.Canvas;
-import android.graphics.Paint;
+// import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Matrix;
 
@@ -23,10 +25,13 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Locale;
 
+// import android.util.Log;
+
 /**
  */
 public class DrawingPointPath extends DrawingPath
 {
+  // static final String TAG = "DistoX";
   private static float toTherion = TopoDroidApp.TO_THERION;
 
   static final int SCALE_NONE = -3; // used to force scaling
@@ -42,6 +47,7 @@ public class DrawingPointPath extends DrawingPath
   protected int mScale;       //! symbol scale
   String mOptions;
   double mOrientation;
+  boolean mFlip;
 
 
   public DrawingPointPath( int type, float x, float y, int scale, String options )

@@ -11,6 +11,8 @@
  * CHANGES
  * 20120623 handle line attributes in loadTherion
  * 20120705 hadle point attributes in loadTherion
+ * 20121113 sink/spring points from Therion
+ * 20121122 overloaded point snow/ice, flowstone/moonmilk dig/choke crystal/gypsum
  */
 package com.android.DistoX;
 
@@ -33,11 +35,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.EOFException;
 
+// import android.util.Log;
+
 /**
  */
 public class DrawingSurface extends SurfaceView
                             implements SurfaceHolder.Callback
 {
+  // static final String TAG = "DistoX";
+
     private Boolean _run;
     protected DrawThread thread;
     private Bitmap mBitmap;
@@ -370,6 +376,41 @@ public class DrawingSurface extends SurfaceView
             ptType = DrawingBrushPaths.POINT_END;
             orientation = 90.0f;
             has_orientation = true;
+          } else if ( type.equals( "spring" ) ) {
+            ptType = DrawingBrushPaths.POINT_SINK;
+            orientation = 180.0f;
+            has_orientation = true;
+          } else if ( type.equals( "sink" ) ) {
+            ptType = DrawingBrushPaths.POINT_SINK;
+            has_orientation = false;
+          } else if ( type.equals( "ice" ) ) {
+            ptType = DrawingBrushPaths.POINT_SNOW;
+            orientation = 180.0f;
+            has_orientation = true;
+          } else if ( type.equals( "snow" ) ) {
+            ptType = DrawingBrushPaths.POINT_SNOW;
+            has_orientation = false;
+          } else if ( type.equals( "moonmilk" ) ) {
+            ptType = DrawingBrushPaths.POINT_FLOWSTONE;
+            orientation = 180.0f;
+            has_orientation = true;
+          } else if ( type.equals( "flowstone" ) ) {
+            ptType = DrawingBrushPaths.POINT_FLOWSTONE;
+            has_orientation = false;
+          } else if ( type.equals( "breakdown-choke" ) ) {
+            ptType = DrawingBrushPaths.POINT_DIG;
+            orientation = 180.0f;
+            has_orientation = true;
+          } else if ( type.equals( "dig" ) ) {
+            ptType = DrawingBrushPaths.POINT_DIG;
+            has_orientation = false;
+          } else if ( type.equals( "gypsum" ) ) {
+            ptType = DrawingBrushPaths.POINT_CRYSTAL;
+            orientation = 180.0f;
+            has_orientation = true;
+          } else if ( type.equals( "crystal" ) ) {
+            ptType = DrawingBrushPaths.POINT_CRYSTAL;
+           has_orientation = false;
           } else {
             for ( ptType = 0; ptType < DrawingBrushPaths.POINT_MAX; ++ptType ) {
               if ( type.equals( DrawingBrushPaths.pointThName[ ptType ] ) ) break;

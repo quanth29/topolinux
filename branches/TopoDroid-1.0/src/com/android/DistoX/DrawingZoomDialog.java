@@ -62,7 +62,8 @@ public class DrawingZoomDialog extends Dialog
 
     public void onClick(View view)
     {
-      // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "ZoomDialog onClick()" );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "ZoomDialog onClick()" );
+
       switch (view.getId()){
         case R.id.button_zoom_plus:
           mActivity.zoomIn();

@@ -54,6 +54,7 @@ public class DistoXUndelete extends Dialog
 
   public void onClick(View v) 
   {
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "UndeleteDialog onClick()" );
     dismiss();
   }
 
@@ -61,6 +62,8 @@ public class DistoXUndelete extends Dialog
   public void onItemClick(AdapterView<?> parent, View view, int position, long id)
   {
     CharSequence item = ((TextView) view).getText();
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "UndeleteDialog onItemClick() " + item.toString() );
+
     String[] value = item.toString().split( " " );
     
     if ( value.length >= 2 ) {

@@ -11,6 +11,7 @@
  * CHANGES
  * 20120520 created
  * 20120726 TopoDroid log
+ * 20121118 method isLessOrEqual to compare station names
  */
 package com.android.DistoX;
 
@@ -26,6 +27,22 @@ public class DistoXStationName
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
     'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' 
   };
+
+  public static boolean isLessOrEqual( String lhs, String rhs )
+  {
+    int l1 = lhs.length();
+    int l2 = rhs.length();
+    int len = ( l1 < l2 )? l1 : l2;
+    char[] ch1 = lhs.toCharArray();
+    char[] ch2 = rhs.toCharArray();
+    int k = 0;
+    for (; k<len; ++k ) {
+      if ( ch1[k] > ch2[k] ) {
+        return false;
+      }
+    }
+    return ( l1 <= l2 );
+  }
 
   public static String increment( String name )
   {

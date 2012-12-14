@@ -12,6 +12,10 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" 
         android:hint="@string/station"
+        android:singleLine="true"
+        android:imeActionId="6"
+        android:imeActionLabel="OK"
+        android:imeOptions="actionDone"
         />
     <LinearLayout
         android:layout_marginTop="2dp"
@@ -26,7 +30,7 @@
                 android:singleLine="true"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
-        android:text="@string/button_start"
+        android:text="@string/button_gps_start"
         />
 
       <Button android:id="@+id/button_add"
@@ -42,10 +46,21 @@
       <Button android:id="@+id/status"
         android:layout_width="40dp" 
         android:layout_height="40dp"
-        android:layout_gravity="right"
+        android:layout_gravity="left"
         android:text=" 0 "
         android:layout_margin="2dp"
         />
+
+      <Button android:id="@+id/button_manual"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="right"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+        android:text="@string/button_manual"
+        />
+
     </LinearLayout>
 
     <TextView android:id="@+id/longitude"

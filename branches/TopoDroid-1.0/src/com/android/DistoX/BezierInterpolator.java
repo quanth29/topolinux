@@ -19,6 +19,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120725 TopoDroidApp log
+ * 20121109 enforced alpha_left + alpha_right < 2/3 * distance( point_left, point_right )
  */
 package com.android.DistoX;
 
@@ -142,10 +143,11 @@ public class BezierInterpolator
       }
     }
   
-    /*  If alpha negative, use the Wu/Barsky heuristic (see text) */
-    /* (if alpha is 0, you get coincident control points that lead to
-      * divide by zero in any subsequent NewtonRaphsonRootFind() call. */
-    if ( alpha_l < 0.0001f || alpha_r < 0.0001f ) {
+    /* If alpha negative, use the Wu/Barsky heuristic (see text) 
+     * (if alpha is 0, you get coincident control points that lead to
+     * divide by zero in any subsequent NewtonRaphsonRootFind() call.
+     */
+    if ( alpha_l < 0.01f || alpha_r < 0.01f ) {
       float dist = d.get(last).distance( d.get(first) ) / 3.0f;
       return new BezierCurve( bf,
                               bf.add( tHat1.times(dist) ),
@@ -153,10 +155,23 @@ public class BezierInterpolator
                               bl );
     }
   
-    /*  First and last control points of the Bezier curve are */
-    /*  positioned exactly at the first and last data points */
-    /*  Control points 1 and 2 are positioned an alpha distance out */
-    /*  on the tangent vectors, left and right, respectively */
+    /*  First and last control points of the Bezier curve are 
+     *  positioned exactly at the first and last data points 
+     *  Control points 1 and 2 are positioned an alpha distance out 
+     *  on the tangent vectors, left and right, respectively 
+     */
+
+    /* Heuristic to avoid spikes:
+     * if the sum of the length of the two control vectors is more that 2/3 of the distance 
+     * between the base points, reduce the length of the control vectors 
+     */
+    float dfl = bf.distance( bl ) * 0.66f;
+    float alr = alpha_l + alpha_r;
+    if ( alr > dfl ) {
+      dfl /= alr;
+      alpha_l *= dfl;
+      alpha_r *= dfl;
+    }
     return new BezierCurve( bf,
                             bf.add( tHat1.times( alpha_l ) ),
                             bl.add( tHat2.times( alpha_r ) ),

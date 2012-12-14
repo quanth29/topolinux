@@ -69,6 +69,8 @@ public class PhotoCommentDialog extends Dialog
   public void onClick(View v) 
   {
     Button b = (Button) v;
+    // TopoDroidApp.Log(  TopoDroidApp.LOG_INPUT, "PhotoCommentDialog onClick() " + b.getText().toString() );
+
     if ( b == mButtonOK && mETcomment.getText() != null ) {
       // TopoDroidApp.Log( TopoDroidApp.LOG_PHOTO, "set photo comment " + mETcomment.getText().toString() );
       mParent.insertPhoto( mETcomment.getText().toString() );

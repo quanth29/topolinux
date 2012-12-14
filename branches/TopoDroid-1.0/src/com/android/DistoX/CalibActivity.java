@@ -13,6 +13,7 @@
  * 20120524 added device in CalibInfo
  * 20120531 activated doDelete with askDelete first
  * 20120725 TopoDroidApp log
+ * 20121124 calibration-device consistency check
  */
 package com.android.DistoX;
 
@@ -178,11 +179,16 @@ public class CalibActivity extends Activity
   @Override
   public void onClick(View view)
   {
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "onClick(View) " + view.toString() );
     switch (view.getId()){
       case R.id.calibSave:
         doSave();
         break;
       case R.id.calibOpen:
+        if ( ! app.checkCalibrationDeviceMatch() ) {
+          // FIXME use alert dialog
+          Toast.makeText( this, R.string.calib_device_mismatch, Toast.LENGTH_LONG ).show();
+        }
         doOpen();
         break;
       // case R.id.calibExport:
@@ -204,6 +210,7 @@ public class CalibActivity extends Activity
       new DialogInterface.OnClickListener() {
         @Override
         public void onClick( DialogInterface dialog, int btn ) {
+          // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "calib delite" );
           doDelete();
         }
     } );

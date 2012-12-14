@@ -11,6 +11,16 @@
      <item name="continuous">1</item>
   </string-array -->
 
+
+  <string-array name="sockType">
+     <item name="default">Default</item>
+     <item name="Insecure">Insecure</item>
+  </string-array>
+  <string-array name="sockTypeValue">
+     <item name="default">0</item>
+     <item name="Insecure">1</item>
+  </string-array>
+
   <string-array name="exportType">
      <item name="th">Therion</item>
      <item name="dat">Compass</item>
@@ -66,6 +76,15 @@
   <string-array name="unitAngleValue">
      <item name="degrees">degrees</item>
      <item name="grads">grads</item>
+  </string-array>
+
+  <string-array name="unitLocation">
+     <item name="degrees">decimal degrees</item>
+     <item name="ddmmss">degree, minute, seconds</item>
+  </string-array>
+  <string-array name="unitLocationValue">
+     <item name="degrees">degrees</item>
+     <item name="ddmmss">ddmmss</item>
   </string-array>
 
 </resources>

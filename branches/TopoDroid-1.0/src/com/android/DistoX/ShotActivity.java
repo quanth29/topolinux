@@ -14,6 +14,10 @@
  * 20120531 shot-numbering bugfix
  * 20120606 3D: implied therion export before 3D
  * 20120715 per-category preferences
+ * 20121001 auto-extend splay shots
+ * 20121113 mLastExtend to limit auto-extend of splays to new ones only
+ * 20121129 included extend guess for splays in number assignment (only blank splay are "extend"-ed)
+ * 20121129 commented MenuItem mMIextend
  */
 package com.android.DistoX;
 
@@ -96,6 +100,8 @@ public class ShotActivity extends Activity
   // private int mListTop = 0;
   private DistoXDBlockAdapter   mDataAdapter;
 
+  private long mLastExtend; // id of the last-extend-ed splay 
+
   private long mSIDid = -1;    // id of the "current" shot (for the photo)
   // private String mSaveData = "";
   // private TextView mSaveTextView = null;
@@ -114,6 +120,7 @@ public class ShotActivity extends Activity
   private MenuItem mMIleg;
   private MenuItem mMIblank;
   private MenuItem mMInumber;
+  // private MenuItem mMIextend;
   private MenuItem mMIplotnew;
   private MenuItem mMIshotnew;
   private MenuItem mMIundelete;
@@ -127,11 +134,56 @@ public class ShotActivity extends Activity
   private MenuItem mMIrefresh;
   private MenuItem mMIdownload = null;
   private MenuItem mMIoptions;
-  private MenuItem mMIhelp;
+  // private MenuItem mMIhelp;
 
   ConnHandler mHandler;
 
   // -------------------------------------------------------------------
+
+  private void tryExtendSplay( DistoXDBlock item, float bearing, long extend, boolean flip )
+  {
+    if ( extend == 0 ) return;
+    double db = Math.cos( (bearing - item.mBearing)*Math.PI/180 );
+    long ext = ( db > TopoDroidApp.mExtendThr )? extend : ( db < -TopoDroidApp.mExtendThr )? -extend : 0;
+    if ( flip ) ext = -ext;
+    app.mData.updateShotExtend( item.mId, app.mSID, ext );
+  }
+
+  // private boolean extendSplays()
+  // { 
+  //   long sid = app.mSID;
+  //   if ( sid < 0 ) {
+  //     Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
+  //     return false;
+  //   } else {
+  //     List<DistoXDBlock> list = app.mData.selectShotsAfterId( sid, mLastExtend, TopoDroidApp.STATUS_NORMAL );
+  //     int size = list.size();
+  //     String from = ""; // shot "from" station
+  //     String to   = ""; // shot "to" station
+  //     float bearing = 0.0f;    // shot bearing
+  //     long extend   = 0L;
+  //     int k;
+  //     DistoXDBlock prev = null;
+  //     for ( k=size - 1; k>=0; --k ) {
+  //       DistoXDBlock item = list.get( k );
+  //       int t = item.type();
+  //       // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "shot " + k + " type " + t + " <" + item.mFrom + "> <" + item.mTo + ">" );
+  //       if ( t == DistoXDBlock.BLOCK_CENTERLINE ) {
+  //         from    = item.mFrom;
+  //         to      = item.mTo;  
+  //         bearing = item.mBearing;
+  //         extend  = item.mExtend;
+  //       } else if ( t == DistoXDBlock.BLOCK_SPLAY ) {
+  //         if ( from.equals( item.mFrom ) || to.equals( item.mFrom ) ) {
+  //           tryExtendSplay( item, bearing, extend, to.equals( item.mFrom ) );
+  //         }
+  //       }
+  //     }
+  //     mLastExtend = app.mData.getLastShotId( sid );
+  //   }
+  //   return true;
+  // }
+       
 
   private boolean numberSplays()
   { 
@@ -159,10 +211,13 @@ public class ShotActivity extends Activity
             String name = item.mFrom;
             if ( name != null ) {
               // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "update splays from " + from + " to " + k + " with name: <" + name + ">" );
+              // set the index of the last splay to extend at the smallest from 
               for ( ; from < k; ++from ) {
-                DistoXDBlock cur = list.get( from );
-                cur.setName( name, "" );
-                app.mData.updateShotName( cur.mId, sid, name, "" );
+                DistoXDBlock splay = list.get( from );
+                splay.setName( name, "" );
+                app.mData.updateShotName( splay.mId, sid, name, "" );
+                tryExtendSplay( splay, item.mBearing, item.mExtend, false );
+                mLastExtend = item.mId;
               }
             }
           }
@@ -259,6 +314,7 @@ public class ShotActivity extends Activity
   @Override 
   public boolean onItemLongClick(AdapterView<?> parent, View view, int pos, long id)
   {
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "ShotActivity onItemLongClick id " + id);
     DistoXDBlock blk = mDataAdapter.get(pos);
     mSIDid = blk.mId;
     (new PhotoSensorsDialog(this, this) ).show();
@@ -268,10 +324,10 @@ public class ShotActivity extends Activity
   @Override 
   public void onItemClick(AdapterView<?> parent, View view, int pos, long id)
   {
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "ShotActivity onItemClick id " + id);
+    DistoXDBlock blk = mDataAdapter.get(pos);
 
-     DistoXDBlock blk = mDataAdapter.get(pos);
-
-     mShotPos = pos;
+    mShotPos = pos;
      // TextView tv = (TextView)view;
      // mSaveTextView = tv;
      // String msg = tv.getText().toString();
@@ -315,6 +371,7 @@ public class ShotActivity extends Activity
         mMIblank.setCheckable( true );
         mMIblank.setChecked( mBlank );
       mMInumber  = mSMsurvey.add( R.string.menu_number );
+      // mMIextend  = mSMsurvey.add( R.string.menu_extend );
       mMIrefresh = mSMsurvey.add( R.string.menu_refresh );
 
     mMIplot     = menu.add( R.string.menu_plot );
@@ -330,7 +387,7 @@ public class ShotActivity extends Activity
       mMIsensor   = mSMmore.add( R.string.menu_sensor );
       mMI3d       = mSMmore.add( R.string.menu_3d );
       mMIoptions  = mSMmore.add( R.string.menu_options );
-      mMIhelp     = mSMmore.add( R.string.menu_help  );
+      // mMIhelp     = mSMmore.add( R.string.menu_help  );
 
     // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "menu size " + menu.size() );
     // menu has size 7
@@ -354,7 +411,7 @@ public class ShotActivity extends Activity
   @Override
   public boolean onOptionsItemSelected(MenuItem item) 
   {
-    // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "onOptionsItemSelected() " + StatusName() );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "onOptionsItemSelected() " + item.toString() );
     // Handle item selection
     if ( item == mMIrefresh ) {
       updateDisplay( );
@@ -379,8 +436,8 @@ public class ShotActivity extends Activity
       Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
       optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_SURVEY );
       startActivity( optionsIntent );
-    } else if ( item == mMIhelp ) { // HELP DIALOG
-      TopoDroidHelp.show( this, R.string.help_shot );
+    // } else if ( item == mMIhelp ) { // HELP DIALOG
+    //   TopoDroidHelp.show( this, R.string.help_shot );
     } else if ( item == mMIundelete ) { // UNDELETE SURVEY ITEM
       if ( app.mData != null && app.mSID >= 0 ) {
         (new DistoXUndelete(this, this, app.mData, app.mSID ) ).show();
@@ -424,6 +481,10 @@ public class ShotActivity extends Activity
       if ( numberSplays() ) {
         updateDisplay( );
       }
+    // } else if ( item == mMIextend ) { // extend splays according to next shot
+    //   if ( extendSplays() ) {
+    //     updateDisplay( );
+    //   }
     // // ---------------------- DEVICES
     } else if ( item == mMIdevice ) {
       if ( app.mBTAdapter.isEnabled() ) {
@@ -548,6 +609,8 @@ public class ShotActivity extends Activity
     mList.setDividerHeight( 2 );
 
     restoreInstanceFromData();
+
+    mLastExtend = app.mData.getLastShotId( app.mSID );
     updateDisplay( );
   }
 

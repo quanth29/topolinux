@@ -20,6 +20,8 @@ import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.graphics.PorterDuff;
 import android.graphics.PointF;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.os.Handler;
 
 import java.util.Iterator;
@@ -267,6 +269,35 @@ public class DrawingCommandManager
         while ( i.hasNext() ){
           final DrawingPath drawingPath = (DrawingPath) i.next();
           drawingPath.draw( canvas, mMatrix );
+
+          // FIXME DEBUG area contour points
+          // if ( drawingPath.mType == DrawingPath.DRAWING_PATH_AREA ) {
+          //   ArrayList< LinePoint > pts = ((DrawingAreaPath)drawingPath).getPoints();
+          //   for ( LinePoint pt : pts ) {
+          //     // public float mX;
+          //     // public float mY;
+          //     Path p = new Path( DrawingBrushPaths.crossPath );
+          //     p.offset( pt.mX, pt.mY );
+          //     p.transform( mMatrix );
+          //     canvas.drawPath( p, DrawingBrushPaths.debugRed );
+          //     if ( pt.has_cp ) {
+          //       // float mX1; // first control point
+          //       // float mY1;
+          //       p = new Path( DrawingBrushPaths.crossPath );
+          //       p.offset( pt.mX1, pt.mY1 );
+          //       p.transform( mMatrix );
+          //       canvas.drawPath( p, DrawingBrushPaths.debugGreen );
+          //       // float mX2; // second control point
+          //       // float mY2;
+          //       p = new Path( DrawingBrushPaths.crossPath );
+          //       p.offset( pt.mX2, pt.mY2 );
+          //       p.transform( mMatrix );
+          //       canvas.drawPath( p, DrawingBrushPaths.debugBlue );
+          //     }
+          //   }
+          // }
+          // end DEBUG
+
           //doneHandler.sendEmptyMessage(1);
         }
       }

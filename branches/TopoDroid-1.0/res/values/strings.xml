@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="topodroid_man">http://topolinux.googlecode.com/files/TopoDroid-20121130.pdf</string>
+
     <string name="app_name">TopoDroid</string>
     <string name="app_name_calib">TopoDroid - Calibration info</string>
     <string name="app_name_device">TopoDroid - DistoX device</string>
@@ -13,8 +15,18 @@
     <string name="thp_clay">clay</string>
     <string name="thp_continuation">continuation</string>
     <string name="thp_danger">danger</string>
+    <string name="thp_anchor">anchor</string>
+    <string name="thp_blocks">blocks</string>
+    <string name="thp_clay">clay</string>
+    <string name="thp_choke">choke</string>
+    <string name="thp_continuation">continuation</string>
+    <string name="thp_crystal">crystal</string>
     <string name="thp_debris">debris</string>
+    <string name="thp_dig">dig</string>
+    <string name="thp_gypsum">gypsum</string>
+    <string name="thp_guano">guano</string>
     <string name="thp_end">end</string>
+    <string name="thp_low_end">low-end</string>
     <string name="thp_entrance">entrance</string>
     <string name="thp_flowstone">flowstone</string>
     <string name="thp_gradient">gradient</string>
@@ -25,7 +37,10 @@
     <string name="thp_pillar">pillar</string>
     <string name="thp_popcorn">popcorn</string>
     <string name="thp_sand">sand</string>
+    <string name="thp_sink">sink</string>
     <string name="thp_snow">snow</string>
+    <string name="thp_sodastraw">soda-straw</string>
+    <string name="thp_spring">spring</string>
     <string name="thp_stal">stal</string>
     <string name="thp_water">water</string>
     <string name="thp_water_flow">water-flow</string>
@@ -52,6 +67,7 @@
     <string name="back_to_survey">Back to survey</string>
     <string name="calib_exists">Calibration already exists</string>
     <string name="calib_delete">Delete calibration </string>
+    <string name="calib_device_mismatch">WARNING: Calibration-Device mismatch</string>
     <!-- string name="calib_deleted">Calibration deleted</string -->
     <!-- string name="calib_info">Enter calibration info</string -->
     <!-- string name="calib_not_written">Failed to write calibration</string -->
@@ -80,6 +96,7 @@
     <string name="extend_left">Left</string>
     <string name="extend_right">Right</string>
     <string name="extend_vert">Vert</string>
+    <string name="external_prompt">Enter measurement</string>
     <string name="few_data">Too few data</string>
     <string name="file_chooser_title">Select the file to import</string>
     <string name="file_parse_already">Survey already imported</string>
@@ -116,6 +133,7 @@
     <string name="no_photos">Survey has no photo</string>
     <string name="no_plots">Survey has no scraps\nUse menu to make some</string>
     <!-- string name="no_service">No BT service</string -->
+    <string name="no_sensors">Survey has no measurement</string>
     <string name="no_shots">Survey has no shots.\nUse Download menu to get some</string>
     <string name="no_survey">No survey selected.\nUse menus to select one</string>
     <string name="no_undelete">No item to undelete</string>
@@ -125,7 +143,13 @@
     <string name="not_enabled">BT not enabled</string>
     <string name="not_implemented">Not implemented yet</string>
     <string name="null_bitmap">null bitmap</string>
+    <string name="photo">photo</string>
+    <string name="photo_comment_prompt">Enter the photo comment</string>
     <string name="photo_name">station/name</string>
+    <string name="photo_photo">photo</string>
+    <string name="photo_sensor">sensor</string>
+    <string name="photo_external">measurement</string>
+    <string name="photo_sensor_prompt">Select photo or sensor</string>
     <string name="picture_no_station">Need a station/name for the photo</string>
     <string name="plot_name">Plot name</string>
     <string name="plot_not_found">Scrap not found</string>
@@ -142,6 +166,22 @@
     <string name="saving_">Saving </string>
     <string name="saving_file_failed">Failed to save file</string>
     <string name="scrap_name">scrap name</string>
+
+    <string name="sensor">sensor</string>
+    <string name="sensor_accelerometer">accelerometer</string>
+    <string name="sensor_gravity">gravity</string>
+    <string name="sensor_humidity">humidity</string>
+    <string name="sensor_light">light</string>
+    <string name="sensor_magnetic_field">magnetic field</string>
+    <string name="sensor_orientation">orientation</string>
+    <string name="sensor_pressure">pressure</string>
+    <string name="sensor_proximity">proximity</string>
+    <string name="sensor_temperature">temperature</string>
+    <string name="sensor_extern">extern</string>
+    <string name="sensor_type">type</string>
+    <string name="sensor_value">value</string>
+    <string name="sensor_comment">comment</string>
+
     <string name="shot_clino">clino</string>
     <string name="shot_compass">compass</string>
     <string name="shot_from">from</string>
@@ -201,11 +241,13 @@
     <string name="menu_display">Display mode</string>
     <string name="menu_download">Download</string>
     <string name="menu_export">Export</string>
+    <string name="menu_extend">Extend splays</string>
     <!-- string name="menu_ext">Extended</string -->
     <string name="menu_group">Guess groups</string>
     <string name="menu_help">Help</string>
     <string name="menu_import">Import</string>
     <string name="menu_location">Location</string>
+    <string name="menu_logs">Logs</string>
     <string name="menu_more">More</string>
     <string name="menu_new">New</string>
     <string name="menu_notes">Notes</string>
@@ -213,7 +255,7 @@
     <string name="menu_open">Open</string>
     <string name="menu_options">Options</string>
     <string name="menu_paired">Paired</string>    <!-- list paired distox -->
-    <string name="menu_photo">Photo</string>
+    <string name="menu_photo">Photos</string>
     <!-- string name="menu_plan">Plan</string -->
     <string name="menu_plot">Scraps</string>
     <!-- string name="menu_plot_list">List scraps</string -->
@@ -226,6 +268,7 @@
     <string name="menu_save_th2">Save th2</string>
     <string name="menu_save_png">Export png</string>
     <string name="menu_scan">Scan</string>       <!-- scan for distox -->
+    <string name="menu_sensor">Measurements</string> 
     <string name="menu_shot_new">Append shot</string>
     <string name="menu_splay">Hide splay shots</string>
     <string name="menu_stats">Stats</string>
@@ -263,7 +306,7 @@
     <string name="button_drop"      >Delete    </string>
     <string name="button_eval"      >Eval      </string>
     <string name="button_eval_cal"  >Eval w. calib.</string>
-    <string name="button_toggle"    >Toggle CAL mode  </string>
+    <string name="button_manual"    >Manual</string>
     <string name="button_head_tail" >Read Head/Tail   </string>
     <string name="button_next"      >Next      </string>
     <string name="button_ok"        >O.K.      </string>
@@ -272,8 +315,9 @@
     <!-- string name="button_reconnect" >Reconnect </string -->
     <string name="button_save"      >Save      </string>
     <string name="button_select"    >Select    </string>
-    <string name="button_start"     >Start     </string>
-    <string name="button_stop"      >Stop      </string>
+    <string name="button_gps_start" >GPS       </string>
+    <string name="button_gps_stop"  >Stop      </string>
+    <string name="button_toggle"    >Toggle CAL mode  </string>
     <string name="button_write"     >Write calibration</string>
 
     <string name="mode_leg">Legs</string>
@@ -303,7 +347,8 @@
     <string name="title_location_gps">LOCATION *</string>
     <string name="title_mode">DISPLAY MODE</string>
     <string name="title_move">MOVING</string>
-    <string name="title_photo">Photo</string>
+    <string name="title_photo">Photo/Measurements</string>
+    <string name="title_photo_comment">Photo comment</string>
     <string name="title_scraps">%1$s scraps</string>
     <string name="title_stats">Statistics</string>
     <string name="title_survey">Survey Info</string>
@@ -313,9 +358,16 @@
   <string name="pref_cat_drawing">Drawing options</string>
   <string name="pref_cat_calib">Calibration options</string>
   <string name="pref_cat_device">DistoX options</string>
+  <string name="pref_cat_log">Log options</string>
 
   <!-- string name="pref_conn_mode_title">Connection mode</string -->
   <!-- string name="pref_conn_mode_summary">DistoX connection mode</string -->
+  <string name="pref_sock_type_title">Socket</string>
+  <string name="pref_sock_type_summary">Socket create</string>
+  <string name="pref_comm_retry_title">Comm. retry</string>
+  <string name="pref_comm_retry_summary">Communication retries number</string>
+  <string name="pref_comm_retry_dialogtitle">Communication retries number</string>
+  <string name="pref_comm_retry_message">Communication retries number</string>
   <string name="pref_base_path_title">Parent directory</string>
   <string name="pref_base_path_summary">TopoDroid parent directory</string>
   <string name="pref_base_path_message">Enter TopoDroid parent directory</string>
@@ -326,6 +378,9 @@
   <string name="pref_leg_title">Leg tolerance</string>
   <string name="pref_leg_summary">Tolerance among the shots of a leg</string>
   <string name="pref_leg_message">Tolerance among the shots of a leg</string>
+  <string name="pref_ethr_title">Extend threshold</string>
+  <string name="pref_ethr_summary">Splay shot extend threshold</string>
+  <string name="pref_ethr_message">Threshold to compute splay shot extend</string>
   <string name="pref_vthr_title">Shot vthreshold</string>
   <string name="pref_vthr_summary">Leg vertical threshold for LRUD</string>
   <string name="pref_vthr_message">Leg vertical threshold for LRUD</string>
@@ -364,69 +419,86 @@
   <string name="pref_checkAttached_title">Centerline check</string>
   <string name="pref_checkAttached_summary">Check if stations are attached</string>
 
-  <string name="pref_unit_length_title">Lengths units</string>
-  <string name="pref_unit_length_summary">Distances unit length</string>
-  <string name="pref_unit_length_message">Distances unit length</string>
+  <string name="pref_unit_length_title">Length units</string>
+  <string name="pref_unit_length_summary">Display units for lengths</string>
+  <!-- string name="pref_unit_length_message">Display units for lengths</string -->
   <string name="pref_unit_angle_title">Angle units</string>
-  <string name="pref_unit_angle_summary">Angles unit value</string>
-  <string name="pref_unit_angle_message">Angles unit value</string>
+  <string name="pref_unit_angle_summary">Display units for angles</string>
+  <!-- string name="pref_unit_angle_message">Display units for angles</string -->
 
+  <string name="pref_log_bt">Bluetooth</string>
+  <string name="pref_log_calib">Calibration</string>
+  <string name="pref_log_comm">Communication</string>
+  <string name="pref_log_data">Data</string>
+  <string name="pref_log_db">Database</string>
+  <string name="pref_log_debug">Debug</string>
+  <string name="pref_log_device">Device window</string>
+  <string name="pref_log_distox">DistoX</string>
+  <string name="pref_log_err">Error</string>
+  <string name="pref_log_fixed">Fixed points</string>
+  <string name="pref_log_loc">Location</string>
+  <string name="pref_log_photo">Photo</string>
+  <string name="pref_log_proto">Protocol</string>
+  <string name="pref_log_sensor">Sensors</string>
+  <string name="pref_log_input">User input</string>
 
     <string name="welcome_title">Welcome to TopoDroid 1.0</string>
     <string name="welcome_text">
-\nTopoDroid is an Open Source app for Android devices to make cave surveys with the DistoX.
+\nTopoDroid is an Open Source Android app for surveying caves with the DistoX.
 \n\nNo warranty: by using it you agree that the authors are not responsible for any loss of data you might incur or damage whatsoever.
 \n\nVisit http://code.google.com/p/topolinux for documentation.
 \nSend comments, bug reports, feature requests, to marco.corvi@gmail.com
     </string>
 
-    <string name="help_title">TopoDroid 1.0 - Help</string>
-  <string name="help_topodroid">
+
+  <!-- string name="help_title">TopoDroid 1.0 - Help</string -->
+  <!-- string name="help_topodroid">
 <b>Surveys/Calibrations list</b>\n
-To toggle between the lists tap on the buttons on top.
+To toggle between the lists tap on the buttons on the top.
 Tap on a list item to open the survey/calibration window.
-There are menus to create a new survey or calibration and to import one.\n
-  </string>
+Use menu to create a new survey/calibration or import one.\n
+  </string -->
   <!-- string name="help_survey">
 <b>Survey info</b>\n
 You can edit them, however the name will not be modified once it is set.
 Through the menus you can save the info, open the survey, delete it and all its
 associated data, write to the survey annotation, and export the survey.\n
   </string -->
-  <string name="help_shot">
+  <!-- string name="help_shot">
 <b>Survey shots</b>\n
-Shots are distiguished as: leg (two stations, white), 
-splay (one station, blue), and blank (no station assigned, red). 
-Splay, and/or blank shots can be hidden.
-Groups of two or more shots with similar values are considered as a centreline leg, and it can be shown only the first shot or all of them.
+Shots are distinguished as: leg (two stations, white), 
+splay (one station, blue), and blank (no station, red). 
+Splay and blank shots can be hidden.
+Two or more consecutive shots with similar values are a centreline leg; only the first can be shown, or all of them.
 Tap on a data to set its stations (for blank shots TopoDroid guesses the next station).
 The menu Survey|Number assigns the \"from\" station of the following leg to splay shots.
-There are menus to download the data from the DistoX, open the annotation dialog, and much more.\n
-  </string>
-  <string name="help_drawing">
+Use menu to download the data from the DistoX, open the annotation dialog, go to the drawing window, and other actions.\n
+  </string -->
+  <!-- string name="help_drawing">
 <b>Sketch drawing</b>\n
-Draw the sketch putting in symbols (points), and tracing lines, and areas.
+Draw the sketch putting symbols (points) in, tracing lines, and areas.
 Stations, shots (legs and splay), and a grid can be displayed to help drawing.
 The left button toggle between moving the canvas and drawing on it.
 The next one zooms in and out. The third erases the last item drawn.
-The other three buttons open dialog to choose point symbols, line types and area types. The sketch is saved in Therion format. It can be exported also as PNG image.
-  </string>
+The other three buttons open a dialog to choose point symbols, line types and area types. 
+  </string -->
   <!-- string name="help_calib">
 <b>Calibration info</b>\n
 Name (title), date, device and description.
 There are buttons to save, open, and delete the calibration.
   </string -->
-<string name="help_gm">
+  <!-- string name="help_gm">
 <b>Calibration data</b>\n
-For each data, the group number, the azimuth, inclination and roll angles, and the computation error are shown.
-Data that differ only by the roll angle forms a group.  Group number assignment is necesasary before computing the calibration.  This can be done manually, editing each data, or assisted by the program.  Data with group number 0 (zero) are excluded from the calibration.
-The computation reports the overall error and the error on each data.
-The Write menu uploads the calibration coefficients onto the DistoX.
-  </string>
-<string name="help_device">
+For each data, the group number, the azimuth, inclination and roll angles, and the error in the calibration are shown. 
+A group is made of data that differ only by the roll. You must assign the group numbers before computing the calibration.  You can do it manually, editing each data, or assisted by the program.  Data with group number 0 (zero) are excluded from the calibration.
+The computation reports the overall calibration error.
+Use the Download menu to get data from the DistoX, and the Write menu to upload the calibration coefficients to it.
+  </string -->
+  <!-- string name="help_device">
 <b>DistoX devices</b>\n
-TopoDroid exchanges data with one DistoX at a time. Use the menus to select the DistoX among the paired devices or to scan for an unpaired one.
-The data transfer can be on-demand (batch-mode: initiated and terminated by TopoDroid) or with a continuous connection to the DistoX.  In continuous mode TopoDroid does not toggle the DistoX CAL mode, nor read/write the calibration coefficients.  Batch-mode data transfer is started with the Download menu of the data windows.
-  </string>
+TopoDroid exchanges data with one DistoX at a time. Select it from the list of paired devices or scan for a new DistoX.
+To transfer the data from the DistoX use the Download menu of the data windows.
+TopoDroid can toggle the DistoX in CAL mode, and read/write the calibration coefficients. 
+  </string -->
 
 </resources>

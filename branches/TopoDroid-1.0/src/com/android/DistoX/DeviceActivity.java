@@ -13,6 +13,7 @@
  * 20120525 using app.mConnectionMode
  * 20120715 per-category preferences
  * 20120726 TopoDroid log
+ * 20121121 bug-fix check that device is "DistoX" to put it on the list
  */
 package com.android.DistoX;
 
@@ -74,9 +75,9 @@ public class DeviceActivity extends Activity
   // private MenuItem mMIpaired;
   private MenuItem mMIscan;
   private MenuItem mMIreset;
-  private SubMenu  mSMmore;
+  // private SubMenu  mSMmore;
   private MenuItem mMIoption;
-  private MenuItem mMIhelp;
+  // private MenuItem mMIhelp;
 
 // -------------------------------------------------------------------
   private void setState()
@@ -186,7 +187,9 @@ public class DeviceActivity extends Activity
       } else {
         setTitle( R.string.title_device );
         for ( BluetoothDevice device : device_set ) {
-          mArrayAdapter.add( "DistoX " + device.getAddress() );
+          if ( device.getName().equals("DistoX") ) {
+            mArrayAdapter.add( "DistoX " + device.getAddress() );
+          }
         }
       }
     }
@@ -211,6 +214,7 @@ public class DeviceActivity extends Activity
   public void onItemClick(AdapterView<?> parent, View view, int position, long id)
   {
     CharSequence item = ((TextView) view).getText();
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "DeviceActivity onItemClick() " + item.toString() );
     String value = item.toString();
     if ( value.startsWith( "DistoX", 0 ) ) {
       StringBuffer buf = new StringBuffer( item );
@@ -231,6 +235,7 @@ public class DeviceActivity extends Activity
   public void onClick(View v) 
   {
     Button b = (Button) v;
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "DeviceActivity onClick() button " + b.getText().toString() ); 
     DistoXComm comm = app.mComm;
     if ( comm == null ) {
       Toast.makeText(getApplicationContext(), R.string.connect_failed, Toast.LENGTH_LONG).show();
@@ -350,19 +355,19 @@ public class DeviceActivity extends Activity
     // mMIpaired = menu.add( R.string.menu_paired );
     mMIscan   = menu.add( R.string.menu_scan );
     mMIreset  = menu.add( R.string.menu_reset );
-    mSMmore   = menu.addSubMenu(  R.string.menu_more );
-      mMIoption = mSMmore.add( R.string.menu_options );
-      mMIhelp   = mSMmore.add( R.string.menu_help );
+    // mSMmore   = menu.addSubMenu(  R.string.menu_more );
+      // mMIoption = mSMmore.add( R.string.menu_options );
+      // mMIhelp   = mSMmore.add( R.string.menu_help );
+    mMIoption = menu.add( R.string.menu_options );
 
     // mMIpaired.setIcon( R.drawable.paired );
     mMIscan.setIcon( R.drawable.scan );
     mMIreset.setIcon( R.drawable.bluetooth );
-    mSMmore.setIcon( R.drawable.more );
-    // mMIoption.setIcon( R.drawable.prefs );
+    // mSMmore.setIcon( R.drawable.more );
+    mMIoption.setIcon( R.drawable.prefs );
     // mMIpaired.setIcon( android.R.drawable.ic_menu_directions );
     // mMIscan.setIcon( android.R.drawable.ic_menu_share );
     // mMIreset.setIcon( android.R.drawable.ic_menu_close_clear_cancel );
-    // mMIoption.setIcon( android.R.drawable.ic_menu_preferences );
 
     return true;
   }
@@ -370,6 +375,8 @@ public class DeviceActivity extends Activity
   @Override
   public boolean onOptionsItemSelected(MenuItem item) 
   {
+    // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "DeviceActivity onOptionsItemSelected " + item.toString() );
+
     // if ( item == mMIpaired ) {
     //   Intent pairIntent = new Intent( Intent.ACTION_EDIT ).setClass( this, DeviceList.class );
     //   pairIntent.putExtra( TopoDroidApp.TOPODROID_DEVICE_ACTION, DeviceList.DEVICE_PAIR );
@@ -387,8 +394,8 @@ public class DeviceActivity extends Activity
       Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
       optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_DEVICE );
       startActivity( optionsIntent );
-    } else if ( item == mMIhelp ) { // HELP
-      TopoDroidHelp.show( this, R.string.help_device );
+    // } else if ( item == mMIhelp ) { // HELP
+    //   TopoDroidHelp.show( this, R.string.help_device );
     }
     return true;
   }

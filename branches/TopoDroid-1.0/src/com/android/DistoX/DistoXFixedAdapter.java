@@ -23,8 +23,12 @@ import android.view.LayoutInflater;
 
 import java.util.List;
 
+// import android.util.Log;
+
 class DistoXFixedAdapter extends ArrayAdapter< FixedInfo >
 {
+  // static final String TAG = "DistoX";
+
   private List< FixedInfo > items;
   private Context context;
 
@@ -50,6 +54,7 @@ class DistoXFixedAdapter extends ArrayAdapter< FixedInfo >
     if ( b != null ) {
       TextView tw = (TextView) v.findViewById( R.id.row_text );
       tw.setText( b.toString() );
+      // Log.v( TAG, "FixedInfo " + b.toString() );
       // tw.setTextColor( b.color() );
     }
     return v;

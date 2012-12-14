@@ -19,19 +19,12 @@
         android:scaleType="fitCenter"
         />
    					  
-    <EditText android:id="@+id/photo_title" 
-        android:layout_marginTop="2dp"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" 
-        android:singleLine="true"
-        android:scrollHorizontally="true" />
-   		
     <EditText android:id="@+id/photo_comment" 
         android:layout_marginTop="2dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" 
         android:singleLine="true"
-        android:hint="@string/description"
+        android:hint="@string/comment"
         android:scrollHorizontally="true" />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 

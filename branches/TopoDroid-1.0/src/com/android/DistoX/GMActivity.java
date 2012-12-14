@@ -11,6 +11,7 @@
  * CHANGES
  * 20120517 angle units
  * 20120715 per-category preferences
+ * 20121124 check device-calibration consistency before download and write
  */
 package com.android.DistoX;
 
@@ -76,7 +77,7 @@ public class GMActivity extends Activity
   private MenuItem mMIread   = null;
   private MenuItem mMIrefresh;
   private MenuItem mMIoptions;
-  private MenuItem mMIhelp;
+  // private MenuItem mMIhelp;
 
   private ConnHandler mHandler;
 
@@ -223,6 +224,8 @@ public class GMActivity extends Activity
   {
     CharSequence item = ((TextView) view).getText();
     String value = item.toString();
+    // TopoDroidApp.Log(  TopoDroidApp.LOG_INPUT, "GMActivity onItemClick() " + item.toString() );
+
     // if ( value.equals( getResources().getString( R.string.back_to_calib ) ) ) {
     //   setStatus( STATUS_CALIB );
     //   updateDisplay( true );
@@ -272,7 +275,7 @@ public class GMActivity extends Activity
     mMIwrite    = mSMmore.add( R.string.menu_write );
     mMIrefresh  = mSMmore.add( R.string.menu_refresh );
     mMIoptions  = mSMmore.add( R.string.menu_options );
-    mMIhelp     = mSMmore.add( R.string.menu_help );
+    // mMIhelp     = mSMmore.add( R.string.menu_help );
 
     mMIdevice.setIcon( R.drawable.distox ); 
     mMIgroup.setIcon( R.drawable.group );
@@ -293,13 +296,17 @@ public class GMActivity extends Activity
   @Override
   public boolean onOptionsItemSelected(MenuItem item) 
   {
-    // TopoDroidApp.Log(  TopoDroidApp.LOG_CALIB, "onOptionsItemSelected() " + StatusName() );
+    // TopoDroidApp.Log(  TopoDroidApp.LOG_INPUT, "GMActivity onOptionsItemSelected() " + item.toString() );
     // Handle item selection
     if ( item == mMIrefresh ) {
       updateDisplay( );
     } else if ( item == mMIdownload ) {
-      setTitleColor( TopoDroidApp.COLOR_CONNECTED );
-      new DistoXRefresh( app, this ).execute();
+      if ( ! app.checkCalibrationDeviceMatch() ) {
+        Toast.makeText( this, R.string.calib_device_mismatch, Toast.LENGTH_LONG ).show();
+      } else {
+        setTitleColor( TopoDroidApp.COLOR_CONNECTED );
+        new DistoXRefresh( app, this ).execute();
+      }
     } else if ( item == mMIgroup ) {  // CALIB GROUPS
       if ( app.mCID >= 0 ) {
         computeGroups();
@@ -339,12 +346,16 @@ public class GMActivity extends Activity
         if ( coeff == null ) {
           Toast.makeText(getApplicationContext(), R.string.no_calibration, Toast.LENGTH_LONG).show();
         } else {
-          if ( app.mComm == null || ! app.mComm.writeCoeff( app.mDevice, coeff ) ) {
-            Toast.makeText(getApplicationContext(), R.string.write_failed, Toast.LENGTH_LONG).show();
+          if ( ! app.checkCalibrationDeviceMatch() ) {
+            Toast.makeText( this, R.string.calib_device_mismatch, Toast.LENGTH_LONG ).show();
           } else {
-            Toast.makeText(getApplicationContext(), R.string.write_ok, Toast.LENGTH_SHORT).show();
+            if ( app.mComm == null || ! app.mComm.writeCoeff( app.mDevice, coeff ) ) {
+              Toast.makeText(getApplicationContext(), R.string.write_failed, Toast.LENGTH_LONG).show();
+            } else {
+              Toast.makeText(getApplicationContext(), R.string.write_ok, Toast.LENGTH_SHORT).show();
+            }
           }
-        }
+      }
       }
     } else if ( item == mMItoggle ) {
       if ( app.mComm == null || ! app.mComm.toggleCalibMode( app.mDevice ) ) {
@@ -360,8 +371,8 @@ public class GMActivity extends Activity
       Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
       optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_CALIB );
       startActivity( optionsIntent );
-    } else if ( item == mMIhelp ) {
-      TopoDroidHelp.show( this, R.string.help_gm );
+    // } else if ( item == mMIhelp ) {
+    //   TopoDroidHelp.show( this, R.string.help_gm );
     } else if ( item == mMIcover ) {
       Calibration calib = app.mCalibration;
       if ( calib != null ) {

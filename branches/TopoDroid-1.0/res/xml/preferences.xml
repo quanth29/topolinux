@@ -58,6 +58,15 @@
        android:defaultValue="0.1" />
 
      <com.android.DistoX.MyEditPreference
+       android:key="DISTOX_EXTEND_THR"
+       android:title="@string/pref_ethr_title"
+       android:summary="@string/pref_ethr_summary"
+       android:dialogTitle="@string/pref_ethr_title"
+       android:dialogMessage="@string/pref_ethr_message"
+       android:inputType="numberDecimal"
+       android:defaultValue="0.2" />
+
+     <com.android.DistoX.MyEditPreference
        android:key="DISTOX_VTHRESHOLD"
        android:title="@string/pref_vthr_title"
        android:summary="@string/pref_vthr_summary"
@@ -203,6 +212,25 @@
        android:entries="@array/connMode"
        android:entryValues="@array/connModeValue"
      / -->
+
+
+     <com.android.DistoX.MyListPreference
+       android:key="DISTOX_SOCK_TYPE"
+       android:summary="@string/pref_sock_type_summary"
+       android:title="@string/pref_sock_type_title"
+       android:defaultValue="0"
+       android:entries="@array/sockType"
+       android:entryValues="@array/sockTypeValue"
+     />
+
+     <com.android.DistoX.MyEditPreference
+       android:key="DISTOX_COMM_RETRY"
+       android:title="@string/pref_comm_retry_title"
+       android:summary="@string/pref_comm_retry_summary"
+       android:dialogTitle="@string/pref_comm_retry_dialogtitle"
+       android:dialogMessage="@string/pref_comm_retry_message"
+       android:inputType="number"
+       android:defaultValue="1" />
 
   </PreferenceCategory>
 

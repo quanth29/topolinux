@@ -92,6 +92,8 @@ public class PhotoEditDialog extends Dialog
   public void onClick(View v) 
   {
     Button b = (Button) v;
+    // TopoDroidApp.Log(  TopoDroidApp.LOG_INPUT, "PhotoEditDialog onClick() " + b.getText().toString() );
+
     if ( b == mButtonOK ) {
       if ( mETcomment.getText() == null ) {
         mParent.updatePhoto( mPhoto, "" );
