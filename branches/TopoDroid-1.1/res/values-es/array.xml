@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="iso-8859-1"?>
 
 <resources>
 
@@ -13,8 +13,8 @@
 
 
   <string-array name="sockType">
-     <item name="default">Defecto</item>
-     <item name="Insecure">No seguro</item>
+     <item name="default">Por defecto</item>
+     <item name="Insecure">Inseguro</item>
   </string-array>
   <string-array name="sockTypeValue">
      <item name="default">0</item>
@@ -26,14 +26,14 @@
      <item name="dat">Compass</item>
      <item name="svx">Survex</item>
      <item name="tro">VisualTopo</item>
-     <item name="tlx">TopoLinux</item>
+     <!-- item name="tlx">TopoLinux</item -->
   </string-array>
   <string-array name="exportTypeValue">
      <item name="th">th</item>
      <item name="dat">dat</item>
      <item name="svx">svx</item>
      <item name="tro">tro</item>
-     <item name="tlx">tlx</item>
+     <!-- item name="tlx">tlx</item -->
   </string-array>
 
   <string-array name="lineStyle">
@@ -43,10 +43,10 @@
      <item name="two">Grueso</item>
   </string-array>
   <string-array name="lineStyleValue">
-     <item name="bezier">bezier</item>
-     <item name="none">ninguno</item>
-     <item name="two">dos</item>
-     <item name="three">tres</item>
+     <item name="none">1</item>
+     <item name="two">2</item>
+     <item name="three">3</item>
+     <item name="bezier">0</item>
   </string-array>
 
   <string-array name="groupBy">
@@ -65,8 +65,8 @@
      <item name="feet">Pies</item>
   </string-array>
   <string-array name="unitLengthValue">
-     <item name="meters">metros</item>
-     <item name="feet">pies</item>
+     <item name="meters">meters</item>
+     <item name="feet">feet</item>
   </string-array>
 
   <string-array name="unitAngle">
@@ -74,8 +74,17 @@
      <item name="grads">grados centesimal(400)</item>
   </string-array>
   <string-array name="unitAngleValue">
-     <item name="degrees">sexagesimal</item>
-     <item name="grads">centesimal</item>
+     <item name="degrees">degrees</item>
+     <item name="grads">grads</item>
+  </string-array>
+
+  <string-array name="unitLocation">
+     <item name="degrees">Grados</item>
+     <item name="ddmmss">Grados, minutos, segundos</item>
+  </string-array>
+  <string-array name="unitLocationValue">
+     <item name="degrees">degrees</item>
+     <item name="ddmmss">ddmmss</item>
   </string-array>
 
 </resources>

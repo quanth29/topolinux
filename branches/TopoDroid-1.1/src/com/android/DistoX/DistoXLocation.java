@@ -29,7 +29,7 @@ import java.util.List;
 import android.app.Dialog;
 import android.os.Bundle;
 
-// import android.util.Log;
+import android.util.Log;
 
 import android.content.Context;
 
@@ -316,6 +316,7 @@ public class DistoXLocation extends Dialog
         if ( sat.usedInFix() ) ++nr;
       }
       // TopoDroidApp.Log(TopoDroidApp.LOG_LOC, "onGpsStatusChanged nr satellites used in fix " + nr );
+      Log.v(TopoDroidApp.TAG, "onGpsStatusChanged nr satellites used in fix " + nr );
       mBtnStatus.setText( Integer.toString( nr ) );
       switch ( nr ) {
         case 0: mBtnStatus.setBackgroundColor( 0x80ff0000 );

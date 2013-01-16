@@ -11,6 +11,7 @@
  * CHANGES 
  * 20120725 TopoDroidApp log
  * 20121210 symbol area lib
+ * 20121225 added "visible" border attribute
  */
 package com.android.DistoX;
 
@@ -41,14 +42,15 @@ public class DrawingAreaPath extends DrawingPath
     return ret;
   }
 
-  private int mAreaType;
-  private int mAreaCnt;
+  int mAreaType;
+  int mAreaCnt;
   private float alpha0, alpha1;  // temporary
   private BezierPoint c1, c2;
+  boolean mVisible; // visible border
 
   private ArrayList< LinePoint > points; 
 
-  public DrawingAreaPath( int type, String id )
+  public DrawingAreaPath( int type, String id, boolean visible )
   {
     super( DrawingPath.DRAWING_PATH_AREA );
     // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "new DrawingAreaPath type " + type + " id " + id );
@@ -65,6 +67,7 @@ public class DrawingAreaPath extends DrawingPath
     if ( mAreaType < DrawingBrushPaths.mAreaLib.mAreaNr ) {
       setPaint( DrawingBrushPaths.getAreaPaint( mAreaType ) );
     }
+    mVisible = visible;
   }
 
   public void addStartPoint( float x, float y ) 
@@ -88,6 +91,16 @@ public class DrawingAreaPath extends DrawingPath
     // Log.v(TAG, "area cubic " + x1 + " " + y1 + " " + x2 + " " + y2 + " " + x + " " + y );
   }
 
+  float distance( float x, float y )
+  {
+    float dist = 1000f; // FIXME
+    for ( LinePoint pt : points ) {
+      float d = Math.abs( pt.mX - x ) + Math.abs( pt.mY - y );
+      if ( d < dist ) dist = d;
+    }
+    return dist;
+  }
+
   public void close() 
   {
     path.close();
@@ -101,6 +114,7 @@ public class DrawingAreaPath extends DrawingPath
       setPaint( DrawingBrushPaths.getAreaPaint( mAreaType ) );
     }
   }
+
   public int areaType() { return mAreaType; }
 
   public ArrayList< LinePoint > getPoints() { return points; }
@@ -112,7 +126,9 @@ public class DrawingAreaPath extends DrawingPath
   {
     StringWriter sw = new StringWriter();
     PrintWriter pw  = new PrintWriter(sw);
-    pw.format("line border -id a%d -close on \n", mAreaCnt );
+    pw.format("line border -id a%d -close on ", mAreaCnt );
+    if ( ! mVisible ) pw.format("-visibility off ");
+    pw.format("\n");
     for ( LinePoint pt : points ) {
       pt.toTherion( pw );
     }

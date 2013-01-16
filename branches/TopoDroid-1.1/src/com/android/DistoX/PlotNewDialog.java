@@ -1,4 +1,4 @@
-/* @file DistoXPlotDialog.java
+/* @file PlotNewDialog.java
  *
  * @author marco corvi
  * @date nov 2011
@@ -27,7 +27,7 @@ import android.view.View;
 
 import android.widget.Toast;
 
-public class DistoXPlotDialog extends Dialog
+public class PlotNewDialog extends Dialog
                               implements View.OnClickListener
 {
   private Context mContext;
@@ -47,7 +47,7 @@ public class DistoXPlotDialog extends Dialog
   // private Button   mBtnBack;
   private Button   mBtnCancel;
 
-  public DistoXPlotDialog( Context context, INewPlot maker )
+  public PlotNewDialog( Context context, INewPlot maker )
   {
     super( context );
     mContext = context;

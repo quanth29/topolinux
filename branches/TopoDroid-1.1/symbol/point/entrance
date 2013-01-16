@@ -1,0 +1,15 @@
+symbol point
+name entrance
+name-es entrada
+name-pt entrada
+name-it ingresso
+th_name entrance
+orientation yes
+color 0xccffcc
+path
+  moveTo 0 -6
+  lineTo -3 3
+  lineTo 3 3
+  lineTo 0 -6
+endpath
+endsymbol

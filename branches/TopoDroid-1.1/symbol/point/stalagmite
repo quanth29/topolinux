@@ -1,0 +1,16 @@
+symbol point
+name stalagmite
+name-es estalagmita
+name-pt estalagmite
+name-it stalammite
+th_name stalagmite
+orientation no
+color 0xccff66
+path
+  moveTo -4 4
+  lineTo 0 0
+  lineTo 4 4
+  moveTo 0 0
+  lineTo 0 -6
+endpath
+endsymbol

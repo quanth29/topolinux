@@ -1,0 +1,16 @@
+symbol point
+name danger
+name-es peligro
+name-pt perigo
+name-it pericolo
+th_name danger
+orientation no
+color 0xff0000
+path
+  moveTo 0 0
+  lineTo 2 -8
+  lineTo -2 -8
+  lineTo 0 0
+  addCircle 0 4 2
+endpath
+endsymbol

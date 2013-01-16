@@ -67,7 +67,7 @@
        android:defaultValue="0.1" />
 
      <com.android.DistoX.MyEditPreference
-       android:key="DISTOX_EXTEND_THR"
+       android:key="DISTOX_EXTEND_THR2"
        android:title="@string/pref_ethr_title"
        android:summary="@string/pref_ethr_summary"
        android:dialogTitle="@string/pref_ethr_title"
@@ -83,6 +83,13 @@
        android:dialogMessage="@string/pref_vthr_message"
        android:inputType="numberDecimal"
        android:defaultValue="80.0" />
+
+     <CheckBoxPreference
+       android:key="DISTOX_LOOP_CLOSURE"
+       android:summary="@string/pref_loopClosure_summary"
+       android:title="@string/pref_loopClosure_title"
+       android:defaultValue="false"
+     />
 
      <CheckBoxPreference
        android:key="DISTOX_LIST_REFRESH"
@@ -107,6 +114,15 @@
        android:defaultValue="1.2" />
 
      <com.android.DistoX.MyEditPreference
+       android:key="DISTOX_CLOSENESS"
+       android:title="@string/pref_closeness_title"
+       android:summary="@string/pref_closeness_summary"
+       android:dialogTitle="@string/pref_closeness_title"
+       android:dialogMessage="@string/pref_closeness_message"
+       android:inputType="number"
+       android:defaultValue="16" />
+
+     <com.android.DistoX.MyEditPreference
        android:key="DISTOX_LINE_SEGMENT"
        android:title="@string/pref_segment_title"
        android:summary="@string/pref_segment_summary"
@@ -114,6 +130,15 @@
        android:dialogMessage="@string/pref_segment_message"
        android:inputType="number"
        android:defaultValue="3" />
+
+     <com.android.DistoX.MyListPreference
+       android:key="DISTOX_LINE_STYLE"
+       android:summary="@string/pref_linestyle_summary"
+       android:title="@string/pref_linestyle_title"
+       android:defaultValue="2"
+       android:entries="@array/lineStyle"
+       android:entryValues="@array/lineStyleValue"
+     />
 
      <com.android.DistoX.MyEditPreference
        android:key="DISTOX_LINE_ACCURACY"
@@ -123,15 +148,6 @@
        android:dialogMessage="@string/pref_lineacc_message"
        android:inputType="numberDecimal"
        android:defaultValue="1.0" />
-
-     <com.android.DistoX.MyListPreference
-       android:key="DISTOX_LINE_STYLE"
-       android:summary="@string/pref_linestyle_summary"
-       android:title="@string/pref_linestyle_title"
-       android:defaultValue="bezier"
-       android:entries="@array/lineStyle"
-       android:entryValues="@array/lineStyleValue"
-     />
 
      <com.android.DistoX.MyEditPreference
        android:key="DISTOX_LINE_CORNER"
@@ -146,6 +162,13 @@
        android:key="DISTOX_CHECK_ATTACHED"
        android:summary="@string/pref_checkAttached_summary"
        android:title="@string/pref_checkAttached_title"
+       android:defaultValue="false"
+     />
+
+     <CheckBoxPreference
+       android:key="DISTOX_AUTO_STATIONS"
+       android:summary="@string/pref_autoStations_summary"
+       android:title="@string/pref_autoStations_title"
        android:defaultValue="false"
      />
 

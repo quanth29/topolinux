@@ -19,6 +19,9 @@
  * 20121129 included extend guess for splays in number assignment (only blank splay are "extend"-ed)
  * 20121129 commented MenuItem mMIextend
  * 20121215 merged update splays name+extend in a single db call (updateShotNameAndExtend)
+ * 20130109 bug-fix missing block LEG in numberSplays
+ * 20130110 menus: Survey -> Display; Distox under More; Number in its place
+ * 20130111 photo date
  */
 package com.android.DistoX;
 
@@ -76,6 +79,8 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.net.Uri;
 
+import android.util.Log;
+
 public class ShotActivity extends Activity
                           implements OnItemClickListener
                         , OnItemLongClickListener
@@ -91,9 +96,9 @@ public class ShotActivity extends Activity
   // private static final int REQUEST_DEVICE    = 1;
   private static final int REQUEST_ENABLE_BT = 2;
 
-  private boolean mSplay = true; //!< whether to show splay shots
-  private boolean mLeg   = true; //!< whether to hide leg extra shots
-  private boolean mBlank = false; //!< whether to hide blank shots
+  boolean mSplay = true; //!< whether to show splay shots
+  boolean mLeg   = true; //!< whether to hide leg extra shots
+  boolean mBlank = false; //!< whether to hide blank shots
   // private Bundle mSavedState = null;
 
   private ListView mList;
@@ -101,7 +106,7 @@ public class ShotActivity extends Activity
   // private int mListTop = 0;
   private DistoXDBlockAdapter   mDataAdapter;
 
-  private long mLastExtend; // id of the last-extend-ed splay 
+  // private long mLastExtend; // id of the last-extend-ed splay 
 
   private long mSIDid = -1;    // id of the "current" shot (for the photo)
   // private String mSaveData = "";
@@ -116,13 +121,16 @@ public class ShotActivity extends Activity
   long   mPhotoId;
 
   private MenuItem mMIdevice = null;
-  private SubMenu  mSMsurvey;
-  private MenuItem mMIsplay;
-  private MenuItem mMIleg;
-  private MenuItem mMIblank;
+
+  // private SubMenu  mSMsurvey;
+  // private MenuItem mMIsplay;
+  // private MenuItem mMIleg;
+  // private MenuItem mMIblank;
+  private MenuItem mMIdisplay;
+
   private MenuItem mMInumber;
   // private MenuItem mMIextend;
-  private MenuItem mMIplotnew;
+  // private MenuItem mMIplotnew;
   private MenuItem mMIshotnew;
   private MenuItem mMIundelete;
   // private MenuItem mMIlocation;
@@ -134,6 +142,7 @@ public class ShotActivity extends Activity
   private SubMenu  mSMmore;
   private MenuItem mMIrefresh;
   private MenuItem mMIdownload = null;
+  private MenuItem mMIsymbol;
   private MenuItem mMIoptions;
   // private MenuItem mMIhelp;
 
@@ -144,10 +153,14 @@ public class ShotActivity extends Activity
   private void tryExtendSplay( DistoXDBlock item, float bearing, long extend, boolean flip )
   {
     if ( extend == 0 ) return;
-    double db = Math.cos( (bearing - item.mBearing)*Math.PI/180 );
-    long ext = ( db > TopoDroidApp.mExtendThr )? extend : ( db < -TopoDroidApp.mExtendThr )? -extend : 0;
+    // double db = Math.cos( (bearing - item.mBearing)*Math.PI/180 );
+    // long ext = ( db > TopoDroidApp.mExtendThr )? extend : ( db < -TopoDroidApp.mExtendThr )? -extend : 0;
+    double db = bearing - item.mBearing;
+    while ( db < -180 ) db += 360;
+    while ( db > 180 ) db -= 360;
+    db = Math.abs( db );
+    long ext = ( db < 90-TopoDroidApp.mExtendThr )? extend : ( db > 90+TopoDroidApp.mExtendThr )? -extend : 0;
     if ( flip ) ext = -ext;
-    // app.mData.updateShotExtend( item.mId, app.mSID, ext ); // NOTE done by the caller
   }
 
   // private boolean extendSplays()
@@ -189,6 +202,7 @@ public class ShotActivity extends Activity
 
   private boolean numberSplays()
   { 
+    // Log.v( TopoDroidApp.TAG, "numberSplays() ");
     long sid = app.mSID;
     if ( sid < 0 ) {
       Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
@@ -204,9 +218,10 @@ public class ShotActivity extends Activity
         DistoXDBlock item = list.get( k );
         int t = item.type();
         // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "shot " + k + " type " + t + " <" + item.mFrom + "> <" + item.mTo + ">" );
+        // Log.v( TopoDroidApp.TAG, "shot " + k + " type " + t + " <" + item.mFrom + "> <" + item.mTo + ">" );
         if ( from == k && t == DistoXDBlock.BLOCK_CENTERLINE ) {
-          from = k + 1;
-        } else if ( t == DistoXDBlock.BLOCK_SPLAY ) {
+          from = k+1;
+        } else if ( t == DistoXDBlock.BLOCK_SPLAY || t == DistoXDBlock.BLOCK_LEG ) {
           from = k+1;
         } else if ( t == DistoXDBlock.BLOCK_CENTERLINE ) {
           prev = item;
@@ -214,24 +229,27 @@ public class ShotActivity extends Activity
             String name = item.mFrom;
             if ( name != null ) {
               // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "update splays from " + from + " to " + k + " with name: <" + name + ">" );
+              // Log.v( TopoDroidApp.TAG, "update splays from " + from + " to " + k + " with name: <" + name + ">" );
               // set the index of the last splay to extend at the smallest from 
               for ( ; from < k; ++from ) {
                 DistoXDBlock splay = list.get( from );
                 splay.setName( name, "" );
                 tryExtendSplay( splay, item.mBearing, item.mExtend, false );
-                // app.mData.updateShotName( splay.mId, sid, name, "" );
-                // app.mData.updateShotExtend( item.mId, app.mSID, ext ); // NOTE done by the caller
                 updatelist.add( splay ); 
-                mLastExtend = item.mId;
+                // mLastExtend = item.mId;
               }
             }
           }
         } else if ( t == DistoXDBlock.BLOCK_BLANK ) {
           if ( item.relativeDistance( prev ) < app.mCloseDistance ) {
+            item.mType = DistoXDBlock.BLOCK_LEG;
+            updatelist.add( item ); 
             from = k+1;
           }
         }
       }
+
+      // Log.v( TopoDroidApp.TAG, "numberSplays() updatelist size " + updatelist.size() );
       if ( updatelist.size() > 0 ) {
         app.mData.updateShotNameAndExtend( sid, updatelist );
       }
@@ -367,42 +385,49 @@ public class ShotActivity extends Activity
     // MenuInflater inflater = getMenuInflater();
     // inflater.inflate(R.menu.option_menu_none, menu);
 
-    mMIdevice   = menu.add( R.string.menu_device );
-    mSMsurvey = menu.addSubMenu( R.string.menu_survey );
-      mMIsplay  = mSMsurvey.add( R.string.menu_splay );
-        mMIsplay.setCheckable( true );
-        mMIsplay.setChecked( mSplay );
-      mMIleg = mSMsurvey.add( R.string.menu_leg );
-        mMIleg.setCheckable( true );
-        mMIleg.setChecked( mLeg );
-      mMIblank = mSMsurvey.add( R.string.menu_blank );
-        mMIblank.setCheckable( true );
-        mMIblank.setChecked( mBlank );
-      mMInumber  = mSMsurvey.add( R.string.menu_number );
-      // mMIextend  = mSMsurvey.add( R.string.menu_extend );
-      mMIrefresh = mSMsurvey.add( R.string.menu_refresh );
+    // mMIdevice   = menu.add( R.string.menu_device );
+    mMInumber  = menu.add( R.string.menu_number );
+    mMIdisplay = menu.add( R.string.menu_survey );
+
+    // mSMsurvey = menu.addSubMenu( R.string.menu_survey );
+    //  mMIsplay  = mSMsurvey.add( R.string.menu_splay );
+    //    mMIsplay.setCheckable( true );
+    //    mMIsplay.setChecked( mSplay );
+    //  mMIleg = mSMsurvey.add( R.string.menu_leg );
+    //    mMIleg.setCheckable( true );
+    //    mMIleg.setChecked( mLeg );
+    //  mMIblank = mSMsurvey.add( R.string.menu_blank );
+    //    mMIblank.setCheckable( true );
+    //    mMIblank.setChecked( mBlank );
+    //  // mMInumber  = mSMsurvey.add( R.string.menu_number );
+    //  // mMIextend  = mSMsurvey.add( R.string.menu_extend );
+    //  mMIrefresh = mSMsurvey.add( R.string.menu_refresh );
 
     mMIplot     = menu.add( R.string.menu_plot );
     mMIdownload = menu.add( R.string.menu_download );
     mMInotes    = menu.add( R.string.menu_notes );
 
     mSMmore = menu.addSubMenu( R.string.menu_more );
-      mMIplotnew  = mSMmore.add( R.string.menu_plot_new );
-      mMIshotnew  = mSMmore.add( R.string.menu_shot_new );
+      // mMIplotnew  = mSMmore.add( R.string.menu_plot_new );
       mMIundelete = mSMmore.add( R.string.menu_undelete );
       // mMIlocation = mSMmore.add( R.string.menu_location );
+      mMI3d       = mSMmore.add( R.string.menu_3d );
       mMIphoto    = mSMmore.add( R.string.menu_photo );
       mMIsensor   = mSMmore.add( R.string.menu_sensor );
-      mMI3d       = mSMmore.add( R.string.menu_3d );
+      mMIshotnew  = mSMmore.add( R.string.menu_shot_new );
+      mMIdevice   = mSMmore.add( R.string.menu_device );
+      mMIsymbol   = mSMmore.add( R.string.menu_symbol );
       mMIoptions  = mSMmore.add( R.string.menu_options );
       // mMIhelp     = mSMmore.add( R.string.menu_help  );
 
     // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "menu size " + menu.size() );
     // menu has size 7
 
-    mMIdevice.setIcon( R.drawable.distox ); 
+    // mMIdevice.setIcon( R.drawable.distox ); 
+    mMInumber.setIcon( R.drawable.group ); 
     mMIdownload.setIcon( R.drawable.download );
-    mSMsurvey.setIcon( R.drawable.survey );
+    // mSMsurvey.setIcon( R.drawable.survey );
+    mMIdisplay.setIcon( R.drawable.survey );
     mMInotes.setIcon( R.drawable.compose );
 
     mMIplot.setIcon( R.drawable.display );
@@ -421,8 +446,10 @@ public class ShotActivity extends Activity
   {
     // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "onOptionsItemSelected() " + item.toString() );
     // Handle item selection
-    if ( item == mMIrefresh ) {
-      updateDisplay( );
+    // if ( item == mMIrefresh ) {
+    //   updateDisplay( );
+    if ( item == mMIdisplay ) {
+      new ShotDisplayDialog( this, this ).show();
     } else if ( item == mMIdownload ) {
       if ( app.mDevice != null && app.mDevice.length() > 0 ) {
         setTitleColor( TopoDroidApp.COLOR_CONNECTED );
@@ -439,6 +466,14 @@ public class ShotActivity extends Activity
         startActivity( notesIntent );
       } else {
         Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
+      }
+    } else if ( item == mMIsymbol ) {
+      DrawingBrushPaths.mReloadSymbols = true;
+      Intent intent = new Intent( "TdSymbol.intent.action.Launch" );
+      try {
+        startActivity( intent );
+      } catch ( ActivityNotFoundException e ) {
+        Toast.makeText( this, R.string.no_tdsymbol, Toast.LENGTH_LONG ).show();
       }
     } else if ( item == mMIoptions ) { // OPTIONS DIALOG
       Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
@@ -472,18 +507,20 @@ public class ShotActivity extends Activity
     //   LocationManager lm = (LocationManager) getSystemService( LOCATION_SERVICE );
     //   DistoXLocation loc = new DistoXLocation( this, this, lm );
     //   loc.show();
-    } else if ( item == mMIsplay ) {     // toggle splay shots
-      mSplay = ! mMIsplay.isChecked();
-      mMIsplay.setChecked( mSplay );
-      updateDisplay( );
-    } else if ( item == mMIleg ) { // toggle leg extra shots
-      mLeg =  ! mMIleg.isChecked();
-      mMIleg.setChecked( mLeg );
-      updateDisplay( );
-    } else if ( item == mMIblank ) {     // toggle blank shots
-      mBlank = ! mMIblank.isChecked();
-      mMIblank.setChecked( mBlank );
-      updateDisplay( );
+
+    // } else if ( item == mMIsplay ) {     // toggle splay shots
+    //   mSplay = ! mMIsplay.isChecked();
+    //   mMIsplay.setChecked( mSplay );
+    //   updateDisplay( );
+    // } else if ( item == mMIleg ) { // toggle leg extra shots
+    //   mLeg =  ! mMIleg.isChecked();
+    //   mMIleg.setChecked( mLeg );
+    //   updateDisplay( );
+    // } else if ( item == mMIblank ) {     // toggle blank shots
+    //   mBlank = ! mMIblank.isChecked();
+    //   mMIblank.setChecked( mBlank );
+    //   updateDisplay( );
+
     } else if ( item == mMInumber ) {    // autonumber splays
       // TODO number splay shots
       if ( numberSplays() ) {
@@ -508,19 +545,19 @@ public class ShotActivity extends Activity
         updateDisplay( );
       }
     // ---------------------- PLOTS
-    } else if ( item == mMIplotnew ) {
-      if ( app.mSID < 0 ) {
-        Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
-      } else {
-        (new DistoXPlotDialog( this, this )).show();
-        // FIXME start Drawing activity
-        // updateDisplay( );
-      }
+    // } else if ( item == mMIplotnew ) {
+    //   if ( app.mSID < 0 ) {
+    //     Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
+    //   } else {
+    //     new PlotNewDialog( this, this ).show();
+    //     // FIXME start Drawing activity
+    //     // updateDisplay( );
+    //   }
     } else if ( item == mMIplot ) {
       if ( app.mSID < 0 ) {
         Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
       } else {
-        new PlotDialog( this, this, app ).show();
+        new PlotListDialog( this, this, app ).show();
       }
     } else {
       return super.onOptionsItemSelected(item);
@@ -565,7 +602,8 @@ public class ShotActivity extends Activity
   void insertPhoto( String comment )
   {
     // long shotid = 0;
-    app.mData.insertPhoto( app.mSID, mPhotoId, mSIDid, "", comment ); // FIXME TITLE 
+    SimpleDateFormat sdf = new SimpleDateFormat( "yyyy.MM.dd", Locale.US );
+    app.mData.insertPhoto( app.mSID, mPhotoId, mSIDid, "", sdf.format( new Date() ), comment ); // FIXME TITLE has to go
   }
 
   @Override
@@ -618,7 +656,7 @@ public class ShotActivity extends Activity
 
     restoreInstanceFromData();
 
-    mLastExtend = app.mData.getLastShotId( app.mSID );
+    // mLastExtend = app.mData.getLastShotId( app.mSID );
     updateDisplay( );
   }
 
@@ -678,62 +716,48 @@ public class ShotActivity extends Activity
   public void makeNewPlot( String name, long type, String start, String view )
   {
     // plot-id -1, status 0
-    long mPID = app.mData.insertPlot( app.mSID, -1L, name, type, 0L, start, view );
+    long mPID = app.mData.insertPlot( app.mSID, -1L, name, type, 0L, start, view, 0, 0, TopoDroidApp.mScaleFactor );
     // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "insertPlot " + mPID + " " + name + " start " + start + " view " + view );
     if ( mPID >= 0 ) {
-      startDrawingActivity( start, name, type, view );
+      startDrawingActivity( start, name, type, view, 0, 0, TopoDroidApp.mScaleFactor );
     }
-    updateDisplay( );
+    // updateDisplay( );
   }
 
-  public void startPlot( String plot_name, String type )
+  public void startExistingPlot( String plot_name )
   {
-    DataHelper data = app.mData;
-    // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "startPlot \"" + plot_name + "\" sid " + app.getSurveyId() );
-    long mPID = data.getPlotId( app.getSurveyId(), plot_name );
-    if ( mPID >= 0 ) {
-      long id = app.mSID;
-      // long plot_type = data.getPlotFieldAsLongType( id, mPID, "type" );
-      String plot_start = data.getPlotFieldAsString( id, mPID, "start" );
-      String plot_view  = null;
-      long plot_type = TopoDroidApp.PLOT_PLAN;
-      if ( type.equals("V-SECTION") ) { 
-        plot_type = TopoDroidApp.PLOT_V_SECTION;
-        plot_view = data.getPlotFieldAsString( id, mPID, "view" );
-      } else if ( type.equals("PLAN") ) {
-        plot_type = TopoDroidApp.PLOT_PLAN;
-      } else if ( type.equals("EXTENDED") ) {
-        plot_type = TopoDroidApp.PLOT_EXTENDED;
-      } else if ( type.equals("H-SECTION") ) {
-        plot_type = TopoDroidApp.PLOT_H_SECTION;
-        plot_view = data.getPlotFieldAsString( id, mPID, "view" );
-      }
-      startDrawingActivity( plot_start, plot_name, plot_type, plot_view );
-      updateDisplay( );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "startExistingPlot \"" + plot_name + "\" sid " + app.getSurveyId() );
+    PlotInfo plot =  app.mData.getPlotInfo( app.getSurveyId(), plot_name );
+    if ( plot != null ) {
+      // plot.dump();
+      startDrawingActivity( plot.start, plot.name, plot.type, plot.view, plot.xoffset, plot.yoffset, plot.zoom );
+      // updateDisplay( );
     } else {
       Toast.makeText(getApplicationContext(), R.string.plot_not_found, Toast.LENGTH_LONG).show();
     }
   }
 
-  private void startDrawingActivity( String start, String plot_name, long plot_type, String viewed )
+  private void startDrawingActivity( String start, String plot_name, long plot_type, String viewed,
+                                     float xoffset, float yoffset, float zoom )
   {
     if ( app.mSID < 0 ) {
       Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
       return;
     }
+    // Toast.makeText( this, R.string.loading_wait, Toast.LENGTH_LONG ).show();
     // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "startDrawingActivity start " + start + " viewed " + viewed );
     // FIXME what if plot_name already exists ? 
-    long mPID = app.mData.getPlotId( app.mSID, plot_name );
-    String filename   = app.getSurvey() + "-" + plot_name;
-    Intent drawIntent = new Intent( Intent.ACTION_VIEW ).setClass( this, DrawingActivity.class );
-    drawIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY_ID, app.getSurveyId() );
-    drawIntent.putExtra( TopoDroidApp.TOPODROID_PLOT_ID,   mPID );
-    drawIntent.putExtra( TopoDroidApp.TOPODROID_PLOT_STRT, start );
-    drawIntent.putExtra( TopoDroidApp.TOPODROID_PLOT_VIEW, viewed );
-    drawIntent.putExtra( TopoDroidApp.TOPODROID_PLOT_TYPE, plot_type );
-    drawIntent.putExtra( TopoDroidApp.TOPODROID_PLOT_FILE, filename );
-    // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "startDrawing plot " + plot_name + " SID " + app.getSurveyId() + " PID " + mPID + " start at " + start );
-    startActivity( drawIntent );
+    // long mPID = app.mData.getPlotId( app.mSID, plot_name );
+    PlotInfo plot = app.mData.getPlotInfo( app.mSID, plot_name );
+    if ( plot != null ) {
+      // plot.dump();
+      Intent drawIntent = new Intent( Intent.ACTION_VIEW ).setClass( this, DrawingActivity.class );
+      drawIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY_ID, app.mSID );
+      drawIntent.putExtra( TopoDroidApp.TOPODROID_PLOT_NAME, plot.name );
+
+      // Log.v( "DistoX", "startDrawing plot " + plot.name + " " + plot.surveyId + "-" + plot.id + "type " + plot.type +" start " + start );
+      startActivity( drawIntent );
+    }
   }
 
   public void makeNewShot( String from, String to, float distance, float bearing, float clino, long extend,
@@ -867,10 +891,10 @@ public class ShotActivity extends Activity
     // return prevBlock;
   }
 
-  public void updateShot( String from, String to, long extend, long flag, String comment, DistoXDBlock blk )
+  public void updateShot( String from, String to, long extend, long flag, boolean leg, String comment, DistoXDBlock blk )
   {
     // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "updateShot From >" + from + "< To >" + to + "< comment " + comment );
-    int ret = app.mData.updateShot( blk.mId, app.mSID, from, to, extend, flag, comment );
+    int ret = app.mData.updateShot( blk.mId, app.mSID, from, to, extend, flag, leg?1:0, comment );
     if ( ret == -1 ) {
       Toast.makeText( this, R.string.no_db, Toast.LENGTH_LONG ).show();
     // } else if ( ret == -2 ) {

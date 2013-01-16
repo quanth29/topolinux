@@ -1,0 +1,16 @@
+symbol line
+  name slope
+  name-es desnivel
+  name-pt declive
+  name-it declivio
+  th_name slope
+  color 0xffcc00 0xff
+  width 1
+  dash 1 15
+  effect
+    moveTo 0 0
+    lineTo 0 -8
+    lineTo 1 -8
+    lineTo 1 0
+  endeffect
+endsymbol

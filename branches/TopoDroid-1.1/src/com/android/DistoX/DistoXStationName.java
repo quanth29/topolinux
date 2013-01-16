@@ -12,8 +12,11 @@
  * 20120520 created
  * 20120726 TopoDroid log
  * 20121118 method isLessOrEqual to compare station names
+ * 20121223 bug-fix comparison between 9 and 10
  */
 package com.android.DistoX;
+
+// import android.util.Log;
 
 public class DistoXStationName
 {
@@ -30,6 +33,13 @@ public class DistoXStationName
 
   public static boolean isLessOrEqual( String lhs, String rhs )
   {
+    try {
+      int nl = Integer.parseInt( lhs );
+      int nr = Integer.parseInt( rhs );
+      return nl <= nr;
+    } catch (NumberFormatException e ) {
+      // ok
+    }
     int l1 = lhs.length();
     int l2 = rhs.length();
     int len = ( l1 < l2 )? l1 : l2;
@@ -37,16 +47,31 @@ public class DistoXStationName
     char[] ch2 = rhs.toCharArray();
     int k = 0;
     for (; k<len; ++k ) {
+      if ( ch1[k] != ch2[k] ) { // try numbers again
+        try {
+          // Log.v("DistoX", lhs + " <= " + rhs + " : try " + lhs.substring(k) + " vs " + rhs.substring(k));
+          int nl = Integer.parseInt( lhs.substring(k) );
+          int nr = Integer.parseInt( rhs.substring(k) );
+          return nl <= nr;
+        } catch (NumberFormatException e ) {
+          // ok
+        }
+      }
       if ( ch1[k] > ch2[k] ) {
+        // Log.v("DistoX", lhs + " <= " + rhs + " : false ");
         return false;
       }
     }
+    // Log.v("DistoX", lhs + " <= " + rhs + " : " + (l1 <= l2) );
     return ( l1 <= l2 );
   }
+
 
   public static String increment( String name )
   {
     // if name is numeric
+    // Log.v("DistoX", "incrementing " + name );
+
     if ( name != null && name.length() > 0 ) {
       int len = name.length();
       if ( len > 0 ) {

@@ -1,0 +1,19 @@
+symbol point
+name pillar
+name-es pilar
+name-pt pilar
+name-it colonna
+th_name pillar
+orientation no
+color 0xccff66
+path
+  moveTo -3 -7
+  lineTo 0 -4
+  lineTo 0 4
+  lineTo -3 7
+  moveTo 0 4
+  lineTo 3 7
+  moveTo 0 -4
+  lineTo 3 -7
+endpath
+endsymbol

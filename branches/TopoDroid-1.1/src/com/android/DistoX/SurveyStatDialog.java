@@ -82,7 +82,7 @@ public class SurveyStatDialog extends Dialog
         mTextLoop.setText( String.format( res.getString(R.string.stat_loop), mStat.countLoop ) );
         mTextComponent.setText( String.format( res.getString(R.string.stat_component), mStat.countComponent ) );
 
-        setTitle( res.getString(R.string.stat_survey) );
+        setTitle( res.getString(R.string.survey_info) );
     }
 
     // @Override

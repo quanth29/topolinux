@@ -4,47 +4,53 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 >
-    <com.android.DistoX.DrawingSurface
+  <com.android.DistoX.DrawingSurface
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clickable="true"
             android:id="@+id/drawingSurface"
-    />
+  />
+  <!-- LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:weightSum="1.0"
+  -->
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
     >
-<!--
-                android:background="@drawable/move"
-                android:background="@drawable/zoom"
-                android:background="@drawable/undo"
-                android:background="@drawable/point"
-                android:background="@drawable/line"
-                android:background="@drawable/area"
-                android:textSize="12sp"
+<!-- button texts
+                android:background="@drawable/hand2"
+                android:text="@string/btn_zoom"
+                android:background="@drawable/undo2"
+                android:background="@drawable/refs2"
+                android:background="@drawable/point2"
+                android:background="@drawable/line2"
+                android:background="@drawable/area2"
 -->
         <Button
+                android:text="@string/btn_move"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:onClick="onClick"
                 android:id="@+id/modeBtn"
-                android:text="@string/btn_move"
                 android:textSize="12sp"
         />
-        <Button
+        <!-- Button
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:onClick="onClick"
                 android:id="@+id/zoomBtn"
-                android:text="@string/btn_zoom"
                 android:textSize="12sp"
-        />
+        / -->
         <Button
+                android:text="@string/btn_undo"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:onClick="onClick"
                 android:id="@+id/undoBtn"
-                android:text="@string/btn_undo"
                 android:textSize="12sp"
         />
         <!-- Button
@@ -55,29 +61,51 @@
                 android:text="@string/btn_redo"
                 android:textSize="12sp"
         / -->
-         <Button
+        <Button
+                android:text="@string/btn_mode"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:onClick="onClick"
+                android:id="@+id/displayBtn"
+                android:textSize="12sp"
+        />
+        <Button
+                android:text="@string/btn_point"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:onClick="onClick"
                 android:id="@+id/pointBtn"
-                android:text="@string/btn_point"
                 android:textSize="12sp"
          />
          <Button
+                android:text="@string/btn_line"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:onClick="onClick"
                 android:id="@+id/lineBtn"
-                android:text="@string/btn_line"
                 android:textSize="12sp"
          />
          <Button
+                android:text="@string/btn_area"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:onClick="onClick"
                 android:id="@+id/areaBtn"
-                android:text="@string/btn_area"
                 android:textSize="12sp"
          />
     </LinearLayout>
+    <!-- LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_weight="0.05"
+    -->
+      <View
+         android:id="@+id/zoomView"
+         android:layout_height="wrap_content"
+         android:layout_width="wrap_content"
+         android:layout_gravity="center"
+      />
+    <!-- /LinearLayout>
+  </LinearLayout -->
 </RelativeLayout>

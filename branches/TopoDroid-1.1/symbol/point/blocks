@@ -1,0 +1,18 @@
+symbol point
+name blocks
+name-es bloques
+name-pt blocos
+name-it blocchi
+th_name blocks
+orientation no
+color 0xffcc66
+path
+  moveTo 0 0
+  lineTo 10 2
+  lineTo 8 -8
+  lineTo -2 -6
+  lineTo 2 3
+  lineTo 4 -5
+  lineTo 0 0
+endpath
+endsymbol

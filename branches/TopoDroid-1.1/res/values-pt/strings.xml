@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <resources>
+	<!-- Translation PT-PT 07/01/2013 jnm -->
+    <string name="topodroid_man">http://topolinux.googlecode.com/files/TopoDroid-20121130.pdf</string>
+
     <string name="app_name">TopoDroid</string>
     <string name="app_name_calib">TopoDroid - Informação de Calibração</string>
     <string name="app_name_device">TopoDroid - Dispositivo DistoX</string>
@@ -7,60 +10,28 @@
     <string name="app_name_notes">TopoDroid - Anotações</string>
     <string name="app_name_options">TopoDroid - Opções</string>
 
-    <string name="thp_air_draught">passagem-ar</string>
-    <string name="thp_water_flow">fluxo-água</string>
+    <string name="td_symbol_text">Precisa instalar símbolos?\nPode fazê-lo mais tarde com a aplicação TdSymbol</string>
+    <string name="td_symbol_ask">Não perguntar novamente</string>
+
     <string name="thp_label">texto</string>
     <string name="thp_danger">perigo</string>
-<!--
-    <string name="thp_anchor">reunião</string>
-    <string name="thp_blocks">blocos</string>
-    <string name="thp_clay">barro</string>
-    <string name="thp_continuation">continuação</string>
-    <string name="thp_crystal">cristal</string>
-    <string name="thp_debris">cascalho</string>
-    <string name="thp_dig">escavação</string>
-    <string name="thp_end">fim</string>
-    <string name="thp_entrance">entrada</string>
-    <string name="thp_flowstone">manto</string>
-    <string name="thp_gradient">desnível</string>
-    <string name="thp_helictite">excêntricas</string>
-    <string name="thp_ice">gelo</string>
-    <string name="thp_pebbles">seixos</string>
-    <string name="thp_pillar">pilar</string>
-    <string name="thp_popcorn">couve-flor</string>
-    <string name="thp_sand">areia</string>
-    <string name="thp_sink">sifão</string>
-    <string name="thp_snow">neve</string>
-    <string name="thp_spring">fonte</string>
-    <string name="thp_stal">estalactite</string>
-    <string name="thp_water">água</string>
--->
-
-    <string name="thl_arrow">seta</string>
-    <string name="thl_border">borda</string>
-    <string name="thl_chimney">chaminé</string>
-    <string name="thl_contour">contorno</string>
-    <string name="thl_overhang">varanda</string>
-    <string name="thl_pit">poço</string>
-    <string name="thl_rock_border">rebordo rocha</string>
-    <string name="thl_slope">declive</string>
     <string name="thl_wall">muro</string>
-
     <string name="tha_water">água</string>
-<!--
-    <string name="tha_blocks">blocos</string>
-    <string name="tha_clay">barro</string>
-    <string name="tha_debris">cascalho</string>
-    <string name="tha_ice">gelo</string>
-    <string name="tha_pebbles">seixos</string>
-    <string name="tha_sand">areia</string>
-    <string name="tha_snow">neve</string>
--->
+
+    <string name="missing_title">SÍMBOLOS EM FALTA</string>
+    <string name="missing_warning">Os seguintes símbolos estão em falta:\n</string>
+    <string name="missing_point">PONTO</string>
+    <string name="missing_line">LINHA</string>
+    <string name="missing_area">ÁREA</string>
+    <string name="missing_hint">Por favor instale os símbolos com a aplicação TdSymbol</string>
+    <string name="missing_symbols">Existem símbolos em falta.\nGuardar na mesma ?</string>
+    <!-- string name="missing_save">O esquiço tem símbolos em falta.\nNão irá ser guardado.</string -->
 
     <string name="back_to_survey">Voltar ao projeto</string>
     <string name="calib_exists">Já existe calibração</string>
     <string name="calib_delete">Apagar calibração</string>
-    <!-- string name="calib_deleted">Calibração apagada</string -->
+    <string name="calib_device_mismatch">Aviso: Diferenças na calibração/dispositivo </string>
+	<!-- string name="calib_deleted">Calibração apagada</string -->
     <!-- string name="calib_info">Introduzir info de calibração</string -->
     <!-- string name="calib_not_written">Falha na escrita da calibração</string -->
     <!-- string name="calib_written">Calibração escrita no dispositivo</string -->
@@ -83,25 +54,29 @@
     <!-- string name="connection">Ligação</string -->
     <!-- string name="download_batch">Procedimento</string -->
     <!-- string name="download_continuous">Contínuo</string -->
-    <string name="duplicate">duplicar</string>
+    <string name="duplicate">duplicado</string>
+	<string name="regular">normal</string>
     <string name="surface">supercície</string>
+	<string name="extend_ignore">Nenhum</string>
     <string name="extend_left">Esq.</string>
     <string name="extend_right">Dir.</string>
     <string name="extend_vert">Vert.</string>
     <string name="external_prompt">Int. medida ext.</string>
     <string name="few_data">Dados insuf.</string>
     <string name="file_chooser_title">Seleccione o fich. a importar</string>
+	<string name="file_import">Importar o ficheiro pode demorar demasiado tempo.\nPor favor aguarde...</string>
     <string name="file_parse_already">Projecto já importado</string>
     <string name="file_parse_fail">Falha na importação do ficheiro</string>
     <string name="file_parse_none">Sem ficheiro para importar</string>
-    <!-- string name="file_parse_ok">Ficheiro importado</string -->
+    <string name="file_parse_ok">Ficheiro importado</string>
     <string name="head_tail">Fila de dados: </string>
     <string name="head_tail_failed">Falha na leitura da fila</string>
     <string name="label_text">Introduza o texto</string>
     <string name="altitude">Alt.  </string>
     <string name="latitude">Lat.  </string>
     <string name="longitude">Long. </string>
-    <string name="loop_closure_errors">Erros no fecho do laço</string>
+    <!-- string name="loading_wait">A carregar... aguarde...</string -->
+	<string name="loop_closure_errors">Erros no fecho do laço</string>
     <string name="loop_none">sem laço</string>
 
     <string name="scale">escala</string>
@@ -116,7 +91,9 @@
     <string name="no_calib">Sem calibração</string>
     <string name="no_calibration">Sem calibração seleccionada.\nUse o menu para seleccionar uma</string>
     <string name="no_cave3d">Cave3D não instalado</string>
-    <string name="no_db">Sem base de dados</string>
+    <string name="no_thmanager">ThManager não instalado</string>
+    <string name="no_tdsymbol">TdSymbol não instalado</string>
+	<string name="no_db">Sem base de dados</string>
     <string name="no_device_address">Endereço do dispositivo não seleccionado</string>
     <string name="no_device_found">Nenhum dispositivo encontrado</string>
     <string name="no_gms">A calibração não tem dados.\nUse a opção de menu Descarregar para obtê-los</string>
@@ -130,9 +107,9 @@
     <string name="no_survey">Sem projecto seleccionado.\nUse os menus para seleccionar um</string>
     <string name="no_undelete">Sem item para repor</string>
     <!-- string name="not_connect">Falha na ligação</string -->
-    <string name="not_available">BT não disponível</string>
+    <string name="not_available">Bluetooth não disponível</string>
     <string name="not_connected">Não ligado</string>
-    <string name="not_enabled">BT não habilitado</string>
+    <string name="not_enabled">Bluetooth não ligado</string>
     <string name="not_implemented">Não está ainda implementado</string>
     <string name="null_bitmap">null bitmap</string>
     <string name="photo">foto</string>
@@ -153,11 +130,11 @@
     <string name="read_fail_with_code">Erro leitura: cód. erro </string>
     <string name="read_failed">Falhou na leitura do DistoX</string>
     <string name="reading_file_failed">Falhou na leitura do ficheiro</string>
-    <!-- string name="save_on_destroy">Estado da gravação</string -->
     <string name="saved_file_">Ficheiro gravado </string>
     <string name="saving_">Gravando </string>
-    <string name="saving_file_failed">Falha na gravação do ficheiro</string>
-    <string name="scrap_name">nome do esquiço</string>
+	<string name="saving_file_failed">Falha na gravação do ficheiro</string>
+    
+	<string name="scrap_name">nome do esquiço</string>
 
     <string name="sensor">sensor</string>
     <string name="sensor_accelerometer">acelerómetro</string>
@@ -178,10 +155,12 @@
     <string name="shot_compass">bússula</string>
     <string name="shot_from">de</string>
     <string name="shot_info">Introduzir dados disparo</string>
+	<string name="shot_leg">disparo repetido de um troço</string>
     <string name="shot_length">comprimento</string>
     <string name="shot_note">nota</string>
     <string name="shot_to">para</string>
     <string name="station">estação</string>
+	<string name="station_ask">Insira estação ?</string>
     <string name="station_base">estação base</string>
     <string name="station_viewed">Estação em vista</string>
     <!-- string name="shot_tolerance">Tolerância do disparo</string -->
@@ -197,16 +176,18 @@
     <string name="toggle_failed">Falha na comutação do DistoX para o modo de calibração</string>
     <string name="toggle_ok">DistoX em modo de calibração</string>
     <string name="undelete_text">Prima o item para o repor</string>
+    <string name="visible_border">bolda visível</string>
     <string name="vthreshold">vthreshold</string>
     <string name="wait_scan">Procurando: aguarde...</string>
     <string name="write_failed">Falha na escrita para o DistoX</string>
     <string name="write_ok">calibração escrita no DistoX</string>
     <string name="zip_saved">Guardada </string>
     <string name="zip_failed">Falha no arquivamento do projeto</string>
-    <string name="unzip_fail">Falha no des-arquivamento do projeto</string>
+    <string name="unzip_fail">Falha no desarquivamento do projeto</string>
     <string name="zoom_in_out">Zoom in/out</string>
 
-    <string name="stat_survey">Estatísticas do projeto</string>
+	<string name="survey_info">Informação da Topo</string>
+    <!-- string name="stat_survey">Estatísticas do projeto</string> -->
     <string name="stat_component">Componentes %1$d</string>
     <string name="stat_depth">Profundidade %1$.1f +%2$.1f"m</string>
     <string name="stat_duplicate">Disparos duplicados %1$d %2$.1f</string>
@@ -216,15 +197,15 @@
     <string name="stat_shot">Disparos  %1$d,   Duplicados %2$d,   Supercície %3$d</string>
     <string name="stat_splay">Radiais %1$d</string>
     <string name="stat_station">Estações %1$d</string>
-    <string name="stat_surface">Disparos superfície %1$d %2$.1f</string>
+    <string name="stat_surface">Disparos de superfície %1$d %2$.1f</string>
+	<string name="stat_wens">W %1$.0f  E %2$.0f  N %3$.0f  S %4$.0f"</string>
+    
+	<string name="hide_blank">Esconder tiros não atribuídos</string>
+    <string name="hide_leg">Esconder disparos extra de troços</string>
+    <string name="hide_splay">Esconder disparos radiais</string>
 
     <string name="menu_3d">3D</string>
     <string name="menu_about">Sobre</string>
-    <string name="menu_blank">Esconder tiros não atribuídos</string>
-    <!-- string name="menu_calib">Calibração</string -->
-    <!-- string name="menu_calib_list">Listar calibrações</string -->
-    <!-- string name="menu_calib_new">Nova calibração</string -->
-    <string name="menu_leg">Esconder disparos extra de troços</string>
     <string name="menu_compute">Processar</string>
     <string name="menu_coverage">Cobertura</string>
     <string name="menu_cross">Seção transversal</string>
@@ -234,23 +215,23 @@
     <string name="menu_download">Descarregar</string>
     <string name="menu_export">Exportar</string>
     <string name="menu_extend">Estender radiais</string>
-    <!-- string name="menu_ext">Estendido</string -->
     <string name="menu_group">Agrupar por similaridade</string>
     <string name="menu_help">Ajuda</string>
     <string name="menu_import">Importar</string>
+	<string name="menu_info">Informação</string>
     <string name="menu_location">Localização</string>
+    <string name="menu_logs">Opções de registo</string>
     <string name="menu_more">Mais</string>
     <string name="menu_new">Novo</string>
     <string name="menu_notes">Notas</string>
     <string name="menu_number">Numerar disparos em branco</string>
+    <string name="menu_one">Zoom uma vez</string>
     <string name="menu_open">-      Abrir      -</string>
     <string name="menu_options">Opções</string>
     <string name="menu_paired">Emparelhado</string>    <!-- list paired distox -->
     <string name="menu_photo">Fotos</string>
-    <!-- string name="menu_plan">Planta</string -->
     <string name="menu_plot">Esquiços</string>
-    <!-- string name="menu_plot_list">Listar esquiços</string -->
-    <string name="menu_plot_new">Novo esquiço</string>
+    <string name="plot_new">Novo esquiço</string>
     <string name="menu_read">Ler do DistoX</string>
     <string name="menu_redo">Refazer</string>
     <string name="menu_refresh">Atualizar</string> <!-- refresh list -->
@@ -260,18 +241,15 @@
     <string name="menu_save_png">Exportar png</string>
     <string name="menu_scan">Procurar</string>       <!-- scan for distox -->
     <string name="menu_sensor">Medidas</string>       <!-- scan for distox -->
-    <string name="menu_shot_new">Retomar disparo</string>
-    <string name="menu_splay">Esconder disparos radiais</string>
+    <string name="menu_shot_new">Inserir disparo</string>
     <string name="menu_stats">Estatísticas</string>
     <string name="menu_survey">Projeto</string>
-    <!-- string name="menu_survey_edit">Editar informação de projeto</string -->
-    <!-- string name="menu_survey_list">Listar projetos</string -->
-    <!-- string name="menu_survey_new">Novo projeto</string -->
-    <string name="menu_toggle">Modo do DistoX</string>
+    <string name="menu_symbol">Gestor de Símbolos</string>
+    <string name="menu_thconfig">Gestor Thconfig</string>
+	<string name="menu_toggle">Modo do DistoX</string>
     <string name="menu_undelete">Recuperar</string>
     <string name="menu_write">Escrever para DistoX</string>
     <string name="menu_zip">Comprimir</string>
-
    
     <string name="surveys">PROJETOS</string>
     <string name="calibs">CALIBRAÇÕES</string>
@@ -281,55 +259,56 @@
     <string name="v_section">SECÇÃO VERTICAL </string>
     <string name="h_section">SECÇÃO HORIZONTAL</string>
 
-
     <string name="distox_err_ok">OK</string>
-    <string name="distox_err_headtail">Head-Tail - Erro de leitura</string>
-    <string name="distox_err_headtail_io">Head-Tail - Erro de entrada/saída</string>
-    <string name="distox_err_headtail_eof">Head-Tail - Erro fim do ficheiro</string>
-    <string name="distox_err_connected">Dispositivo já ligado</string>
+    <string name="distox_err_headtail">BT Head-Tail - Erro de leitura</string>
+    <string name="distox_err_headtail_io">BT Head-Tail - Erro de entrada/saída</string>
+    <string name="distox_err_headtail_eof">BT Head-Tail - Erro fim do ficheiro</string>
+    <string name="distox_err_connected">BT Dispositivo já ligado</string>
 
     <string name="button_add"       >Adicionar       </string>
     <string name="button_back"      >Voltar      </string>
     <string name="button_cancel"    >Cancelar    </string>
     <!-- string name="button_close"     >Fechar     </string -->
-    <!-- string name="button_connect"   >Ligar   </string -->
-    <!-- string name="button_disconnect">Desligar</string -->
-    <string name="button_drop"      >Apagar    </string>
+    <string name="button_drop"      >Perder   </string>
+    <string name="button_erase"     >Apagar    </string>
     <string name="button_eval"      >Avaliar      </string>
     <string name="button_eval_cal"  >Avaliar com calibração</string>
+    <string name="button_measure"   >Medir   </string>
     <string name="button_manual"    >Manual</string>
     <string name="button_head_tail" >Ler Head/Tail   </string>
     <string name="button_next"      >Próx.      </string>
+    <!-- string name="button_ok"        >OK      </string -->
     <string name="button_ok"        >Confirmar      </string>
     <string name="button_prev"      >Anterior  </string>
     <string name="button_read"      >Ler calibração </string>
-    <!-- string name="button_reconnect" >Re-ligar </string -->
+    <!-- string name="button_refresh">Atualizar</string -->
     <string name="button_save"      >Guardar      </string>
     <string name="button_select"    >Selecionar    </string>
     <string name="button_gps_start" >GPS       </string>
     <string name="button_gps_stop"  >Parar      </string>
     <string name="button_toggle"    >Comutar modo de calibração/modo normal  </string>
     <string name="button_write"     >Escrever calibração</string>
-
+	<string name="button_yes"       >Sim       </string>
+	
     <string name="mode_leg">Troços</string>
     <string name="mode_splay">Radiais</string>
     <string name="mode_station">Estações</string>
     <string name="mode_grid">Grelha</string>
 
-    <string name="btn_move">Em Deslocamento</string>
-    <string name="btn_draw">Em Desenho</string>
-    <string name="btn_zoom">Zoom</string>
-    <string name="btn_undo">Desfazer</string>
-    <!-- string name="btn_redo">Refazer</string -->
-    <string name="btn_point">Ponto</string>
-    <string name="btn_line">Linha</string>
     <string name="btn_area">Área</string>
+    <string name="btn_draw">Em Desenho</string>
+    <string name="btn_line">Linha</string>
+    <string name="btn_move">Em Deslocamento</string>
+    <string name="btn_mode">Modo</string>
+    <string name="btn_point">Ponto</string>
+    <!-- string name="btn_redo">Refazer</string -->
+    <string name="btn_undo">Desfazer</string>
+    <!-- string name="btn_zoom">Zoom</string -->
 
     <string name="title_calib">CALIBRAÇÕES</string>
     <string name="title_coverage">Distribuição de dados da calibração</string>
-    <!-- nstring name="title_connected"> - LIGADO</string -->
-    <!-- nstring name="title_not_connected"> - NÃO LIGADO</string -->
-    <string name="title_device">Dispositivos DistoX</string>
+    <string name="title_coeff">Coeficientes de Calibração</string>
+	<string name="title_device">Dispositivos DistoX</string>
     <string name="title_discover">Procurando por dispositivos DistoX... aguarde</string>
     <string name="title_draw_area">ÁREA %1$s</string>
     <string name="title_draw_line">LINHA %1$s</string>
@@ -349,12 +328,20 @@
   <string name="pref_cat_drawing">Opções do desenho</string>
   <string name="pref_cat_calib">Opções de calibração</string>
   <string name="pref_cat_device">Opções DistoX</string>
-
-  <!-- string name="pref_conn_mode_title">Modo de ligação</string -->
-  <!-- string name="pref_conn_mode_summary">Modo de ligação do DistoX</string -->
+  <string name="pref_cat_log">Opções de registo</string>
+  
+  <string name="pref_sock_type_title">Socket</string>
+  <string name="pref_sock_type_summary">Criar Socket</string>
+  <string name="pref_comm_retry_title">Tentativas de comunicação</string>
+  <string name="pref_comm_retry_summary">Número de tentativas</string>
+  <string name="pref_comm_retry_dialogtitle">Número de tentativas</string>
+  <string name="pref_comm_retry_message">Número de tentativas</string>
   <string name="pref_base_path_title">Pasta de nível superior</string>
   <string name="pref_base_path_summary">Pasta de nível superior do TopoDroid</string>
   <string name="pref_base_path_message">Introduza o nome da pasta de nível superior</string>
+  <string name="pref_closeness_title">Raio de seleção </string>
+  <string name="pref_closeness_summary">Raio de seleção de itens</string>
+  <string name="pref_closeness_message">Raio de seleção de itens</string>
   <string name="pref_export_title">Exportar</string>
   <string name="pref_export_summary">Selecione tipo da exportação</string>
   <string name="pref_list_refresh_title">Atualizar lista</string>
@@ -362,6 +349,9 @@
   <string name="pref_leg_title">Tolerância nos troços</string>
   <string name="pref_leg_summary">Tolerância nos disparos de um troço</string>
   <string name="pref_leg_message">Tolerância nos disparos de um troço</string>
+  <string name="pref_ethr_title">Threshold para vista estendida</string>
+  <string name="pref_ethr_summary">Threshold das radiais para a vista estendida</string>
+  <string name="pref_ethr_message">Threshold para processar radiais para a vista estendida</string>
   <string name="pref_vthr_title">Vthreshold dos disparos</string>
   <string name="pref_vthr_summary">Threshold vertical dos troços para LRUD</string>
   <string name="pref_vthr_message">Threshold vertical dos troços para LRUD</string>
@@ -371,14 +361,14 @@
   <string name="pref_segment_title">Tolerância das linhas</string>
   <string name="pref_segment_summary">Distância mínima entre dois pontos numa linha</string>
   <string name="pref_segment_message">Distância mínima entre dois pontos numa linha</string>
+  <string name="pref_linestyle_title">Estilo da linha</string>
+  <string name="pref_linestyle_summary">Estilo da linha a desenhar</string>
   <string name="pref_lineacc_title">Precisão da linha</string>
   <string name="pref_lineacc_summary">Precisão da interpolação cúbica das linhas</string>
   <string name="pref_lineacc_message">Precisão da interpolação cúbica das linhas</string>
   <string name="pref_linecorner_title">Cantos da linha</string>
   <string name="pref_linecorner_summary">Threshold dos cantos das linhas</string>
   <string name="pref_linecorner_message">Threshold de detecção dos cantos das linhas</string>
-  <string name="pref_linestyle_title">Estilo da linha</string>
-  <string name="pref_linestyle_summary">Estilo de desenho da linha</string>
   <string name="pref_group_by_title">Critério de agrupamento</string>
   <string name="pref_group_by_summary">Critério para agrupamento dos dados de calibração</string>
   <string name="pref_group_title">Tolerância no agrupamento</string>
@@ -399,72 +389,42 @@
   <string name="pref_checkBT_summary">Verificar Bluetooth no início</string>
   <string name="pref_checkAttached_title">Verificação da poligonal</string>
   <string name="pref_checkAttached_summary">Verificar se as estações estão ligadas</string>
-
+  <string name="pref_autoStations_title">Estações automáticas</string>
+  <string name="pref_autoStations_summary">Adicionar estações automaticamente</string>
+  <string name="pref_loopClosure_title">Feço de Laço</string>
+  <string name="pref_loopClosure_summary">Compensação de erro de fecho de Laço</string>
   <string name="pref_unit_length_title">Unidades de distância</string>
   <string name="pref_unit_length_summary">Unidades de distância</string>
-  <!-- string name="pref_unit_length_message">Unidades de distância</string -->
   <string name="pref_unit_angle_title">Unidades angulares</string>
   <string name="pref_unit_angle_summary">Unidades angulares</string>
-  <!-- string name="pref_unit_angle_message">Unidades angulares</string -->
-
-
-    <string name="welcome_title">Bem vindo ao TopoDroid 1.06!</string>
+  <string name="pref_unit_location_title">Formato para a localização</string>
+  <string name="pref_unit_location_summary">Formato para a localização</string>
+ 
+  <string name="pref_log_bt">Bluetooth</string>
+  <string name="pref_log_calib">Calibração</string>
+  <string name="pref_log_comm">Communicação</string>
+  <string name="pref_log_data">Dados</string>
+  <string name="pref_log_db">Base de dados</string>
+  <string name="pref_log_debug">Debug</string>
+  <string name="pref_log_device">Janela do dispositivo</string>
+  <string name="pref_log_distox">DistoX</string>
+  <string name="pref_log_err">Erro</string>
+  <string name="pref_log_fixed">Pontos fixos</string>
+  <string name="pref_log_loc">Localização</string>
+  <string name="pref_log_photo">Foto</string>
+  <string name="pref_log_proto">Protocolo</string>
+  <string name="pref_log_sensor">Sensores</string>
+  <string name="pref_log_input">Interação do utilizador</string>
+    
+	<string name="welcome_title">Bem vindo ao TopoDroid 1.1!</string>
     <string name="welcome_text">
 O TopoDroid é uma aplicação Open Source para realizar topografias de cavidades em dispositivos Android.
  É especialmente vocacionado para o uso do DistoX (um medidor laser da Leica adaptado com Bluetooth, Bússula e Clinómetro).
 \n\nNão tem garantia: ao usar este software aceita que os autores não são responsáveis por qualquer perda de dados ou danos causados.
 \n\nVisite http://code.google.com/p/topolinux para encontrar a documentação e ficheiros acessórios, assim como outras aplicações úteis.
-\n\nEnvie comentários, falhas que encontre, pedidos de funcionalidades, para marco.corvi@gmail.com
-\n\nAdaptação para português europeu por joao.moutinho@gmail.com. 
+\n\nEnvie comentários, falhas que encontre, pedidos de funcionalidades, para marco.corvi@gmail.com (o autor) ou em Português para joao.moutinho@gmail.com (colaborador).
+\n\nAdaptação para português europeu por João Moutinho (ARCM). 
     </string>
 
-  <!-- string name="help_title">TopoDroid 1.06 - Ajuda</string -->
-  <!-- string name="help_topodroid">
-<b>Lista de projetos/calibrações</b>\n
-Para comutar entre as listas, prima nos botões do topo do ecrã principal.
-Prima num item da lista para abrir a lista de um projeto ou de uma calibração.
-Existem também menus para criar ou importar novos projetos ou calibrações.\n
-  </string -->
-  <!-- string name="help_survey">
-<b>Informação de Projeto</b>\n
-Pode alterar as informações de projeto, no entanto o nome deixa de poder ser modificado logo na altura da sua criação.
-Nos menus pode guardar, abrir, apagar, escrever anotações ou introduzir informação útil ao projeto.\n
-  </string -->
-  <!-- string name="help_shot">
-<b>Disparos do projeto</b>\n
-Disparos podem ser: troços (duas estações, branco), radiais (a azul) ou não atribuídos (a vermelho).
-Os disparos podem ser escondidos nos seus vários tipos.
-Grupos de 2 ou mais disparos com valores semelhantes são considerados como troços e pode-se mostrar apenas o primeiro disparo ou todos.
-Toque nos dados para definir as estações e identificar os disparos (o TopoDroid adivinha a próxima estação não atribuída com um número sequencial.
-O menu Projeto|Número atribui o ponto de origem do troço seguinte para disparos de radiais.
-Existem menus para fazer a descarga dos dados a partir do DistoX, configurar, fazer anotações e muito mais.\n
-  </string -->
-  <!-- string name="help_drawing">
-<b>Desenho de esquiços</b>\n
-Desenhe os esquiços colocando símbolos (pontos), linhas ou áreas.
-As estações, disparos (troços e radiais) e uma grelha podem ser utilizados para ajudar no desenho do esquiço.
-O botão do topo à esquerda alterna entre mover o desenho ao longo do ecrã e o modo de desenho.
-O botão à direita do anterior permite fazer zoom in e zoom out (ampliando ou reduzindo a escala de visionamento).
-O botão seguinte permite desfazer a última ação (undo em terminologia informática).
-Os restantes três botões são os referidos anteriormente como para introduzir símbolos, linhas e áreas.
-O esquiço é guardado no formato Therion, mas também pode ser exportado como imagem PNG.
-  </string -->
-  <!-- string name="help_calib">
-<b>Informação de calibração</b>\n
-Nome (título), data, dispositivo e descrição.
-Existem botões para guardar, abrir e apagar a calibração.
-  </string -->
-  <!-- string name="help_gm">
-<b>Dados de calibração</b>\n
-Para cada conjunto de dados são mostrados: o número do agrupamento realizado, o azimute, inclinação, ângulo de rolamento e o erro de computação.
-Os dados que se distinguem apenas pelo ângulo de rolamento formam os grupos. O agrupamento é necessário para efectuar o calculo necessário à calibração que pode ser manual ou automaticamente realizada pelo programa.  Dados com o grupo zero (0) não são incluídos na calibração.
-O processamento do cálculo da calibração reporta o erro global e o erro em cada conjunto de dados.
-O menu Escrever faz upload dos coeficientes de calibração para o DistoX (em modo de calibração, previamente comutado).
-  </string -->
-  <!-- string name="help_device">
-<b>Dispositivos DistoX</b>\n
-O TopoDroid só troca dados com um DistoX de cada vez. Use os menus para seleccionar qual, de entre os dispositivos emparelhados com o seu Android, é que deseja descarregar dados.
-Os dados podem ser transmitidos sob pedido (efectuar descarga manualmente no menu com a ligação a fazer-se só para extrair os dados) ou numa ligação contínua com o DistoX (opção descontinuada de momento por dificuldades relaccionadas com a plataforma Android). Nesta última possibilidade, deixar-se-ia de ser possível efectuar-se a calibração enquanto este modo estiver ativo, por não se poder efetuar a comutação para o modo de calibração.
-  </string -->
 
 </resources>

@@ -12,6 +12,8 @@
  * 20120517 length and angle units
  * 20120711 added dataString
  * 20120726 TopoDroid log
+ * 20130104 EXTEND enum
+ * 20130108 extend :ignore"
  */
 package com.android.DistoX;
 
@@ -23,7 +25,13 @@ public class DistoXDBlock
 {
   private static final float grad2rad = TopoDroidApp.GRAD2RAD_FACTOR;
 
-  public static final char[] mExtendTag = { '<', '|', '>', '-' };
+  public static final char[] mExtendTag = { '<', '|', '>', 'o', '-', '.' };
+  public static final int EXTEND_LEFT = -1;
+  public static final int EXTEND_VERT =  0;
+  public static final int EXTEND_RIGHT = 1;
+  public static final int EXTEND_IGNORE = 2;
+  public static final int EXTEND_HIDE   = 3;
+  public static final int EXTEND_START  = 4;
 
   long   mId;
   long   mSurveyId;
@@ -37,13 +45,15 @@ public class DistoXDBlock
   String mComment;
   long   mExtend;
   long   mFlag;     
+  int    mType;    // shot type
 
   public static final int BLOCK_BLANK      = 0;
   public static final int BLOCK_CENTERLINE = 1;
   public static final int BLOCK_SPLAY      = 2;
+  public static final int BLOCK_LEG        = 3; // additional shot of a centerline leg
 
-  // block colors: blank, centerline, splay, ...
-  private static int[] colors = { 0xffffcccc, 0xffffffff, 0xffccccff, 0xffccffcc };
+  // block colors: blank, centerline, splay, leg, ...
+  private static int[] colors = { 0xffffcccc, 0xffffffff, 0xffccccff, 0xffcccccc, 0xffccffcc };
 
   public static final int BLOCK_SURVEY     = 0; // flags
   public static final int BLOCK_SURFACE    = 1;
@@ -65,8 +75,9 @@ public class DistoXDBlock
     mClino = 0.0f;
     mRoll = 0.0f;
     mComment = "";
-    mExtend = 0;
+    mExtend = EXTEND_RIGHT;
     mFlag   = BLOCK_SURVEY;
+    mType   = BLOCK_BLANK;
   }
 
   public void setId( long shot_id, long survey_id )
@@ -79,35 +90,49 @@ public class DistoXDBlock
   {
     mFrom = from.trim();
     mTo   = to.trim();
+    if ( mFrom.length() > 0 ) {
+      if ( mTo.length() > 0 ) {
+        mType = BLOCK_CENTERLINE;
+      } else {
+        mType = BLOCK_SPLAY;
+      }
+    } else {
+      if ( mTo.length() > 0 ) {
+        mType = BLOCK_SPLAY;
+      } else {
+        mType = BLOCK_BLANK;
+      }
+    }
   }
+
   public String Name() { return mFrom + "-" + mTo; }
   
   public void setBearing( float x ) {
     mBearing = x;
     if ( mBearing < 3.14 ) {  // east to the right, west to the left
-      mExtend = 1;
+      mExtend = EXTEND_RIGHT;
     } else {
-      mExtend = -1;
+      mExtend = EXTEND_LEFT;
     }
   }
 
-  public int type() 
-  {
-    if ( mFrom == null || mFrom.length() == 0 ) {
-      if ( mTo == null || mTo.length() == 0 ) {
-        return BLOCK_BLANK;
-      }
-      return BLOCK_SPLAY;
-    }
-    if ( mTo == null || mTo.length() == 0 ) {
-      return BLOCK_SPLAY;
-    }
-    return BLOCK_CENTERLINE;
-  }
+  public int type() { return mType; }
+  // {
+  //   if ( mFrom == null || mFrom.length() == 0 ) {
+  //     if ( mTo == null || mTo.length() == 0 ) {
+  //       return BLOCK_BLANK;
+  //     }
+  //     return BLOCK_SPLAY;
+  //   }
+  //   if ( mTo == null || mTo.length() == 0 ) {
+  //     return BLOCK_SPLAY;
+  //   }
+  //   return BLOCK_CENTERLINE;
+  // }
 
   public int color()
   {
-    return colors[ type() ];
+    return colors[ mType ];
   }
 
   public float relativeDistance( DistoXDBlock b )
@@ -147,7 +172,7 @@ public class DistoXDBlock
     }
     if ( mComment != null && mComment.length() > 0 ) {
       pw.format("N");
-    }
+    } 
     return sw.getBuffer().toString();
   }
 

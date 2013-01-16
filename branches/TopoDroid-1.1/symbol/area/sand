@@ -1,0 +1,8 @@
+symbol area
+name sand
+name-es arena
+name-pt areia
+name-it sabbia
+th_name sand
+color 0xffff66 0x66
+endsymbol

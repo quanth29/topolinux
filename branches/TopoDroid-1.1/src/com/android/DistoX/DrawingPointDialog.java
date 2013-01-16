@@ -3,10 +3,13 @@
  * @author marco corvi
  * @date june 2012
  *
- * @brief TopoDroid scrap point attributes editing dialog
+ * @brief TopoDroid sketch point attributes editing dialog
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20121225 implemented erase
  */
 package com.android.DistoX;
 
@@ -16,7 +19,7 @@ import java.io.PrintWriter;
 import android.app.Dialog;
 import android.os.Bundle;
 
-import android.content.Context;
+// import android.content.Context;
 
 import android.widget.TextView;
 import android.widget.EditText;
@@ -29,6 +32,7 @@ public class DrawingPointDialog extends Dialog
                                implements View.OnClickListener
 {
   private DrawingPointPath mPoint;
+  private DrawingActivity  mParent;
 
   private TextView mTVtype;
   private EditText mEToptions;
@@ -38,13 +42,14 @@ public class DrawingPointDialog extends Dialog
   private RadioButton mBtnScaleL;
   private RadioButton mBtnScaleXL;
  
-  private Button   mButtonOk;
-  private Button   mButtonCancel;
-  private Button   mButtonDelete;
+  private Button   mBtnOk;
+  private Button   mBtnCancel;
+  private Button   mBtnErase;
 
-  public DrawingPointDialog( Context context, DrawingPointPath point )
+  public DrawingPointDialog( DrawingActivity context, DrawingPointPath point )
   {
     super( context );
+    mParent = context;
     mPoint = point;
   }
 
@@ -76,14 +81,14 @@ public class DrawingPointDialog extends Dialog
       case DrawingPointPath.SCALE_XL: mBtnScaleXL.setChecked( true ); break;
     }
 
-    mButtonOk = (Button) findViewById( R.id.button_ok );
-    mButtonOk.setOnClickListener( this );
+    mBtnOk = (Button) findViewById( R.id.button_ok );
+    mBtnOk.setOnClickListener( this );
 
-    mButtonCancel = (Button) findViewById( R.id.button_cancel );
-    mButtonCancel.setOnClickListener( this );
+    mBtnCancel = (Button) findViewById( R.id.button_cancel );
+    mBtnCancel.setOnClickListener( this );
 
-    mButtonDelete = (Button) findViewById( R.id.button_delete );
-    mButtonDelete.setOnClickListener( this );
+    mBtnErase = (Button) findViewById( R.id.button_erase );
+    mBtnErase.setOnClickListener( this );
   }
 
   public void onClick(View v) 
@@ -91,7 +96,7 @@ public class DrawingPointDialog extends Dialog
     Button b = (Button)v;
     // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "DrawingPointDialog onClick() " + b.getText().toString() );
 
-    if ( b == mButtonOk ) {
+    if ( b == mBtnOk ) {
       if ( mEToptions.getText() != null ) {
         String options = mEToptions.getText().toString().trim();
         if ( options.length() > 0 ) mPoint.mOptions = options;
@@ -102,8 +107,8 @@ public class DrawingPointDialog extends Dialog
       else if ( mBtnScaleL.isChecked() )  mPoint.setScale( DrawingPointPath.SCALE_L  );
       else if ( mBtnScaleXL.isChecked() ) mPoint.setScale( DrawingPointPath.SCALE_XL );
 
-    } else if ( b == mButtonDelete ) {
-      // TODO
+    } else if ( b == mBtnErase ) {
+      mParent.deletePoint( mPoint );
     }
     dismiss();
   }

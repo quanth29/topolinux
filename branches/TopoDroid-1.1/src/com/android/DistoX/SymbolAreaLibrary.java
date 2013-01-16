@@ -46,12 +46,25 @@ class SymbolAreaLibrary
     return mArea.get( k );
   }
 
-  SymbolArea getArea( String th_name ) 
+  boolean hasArea( String th_name ) 
   {
     for ( SymbolArea a : mArea ) {
-      if ( th_name.equals( a.mThName ) ) return a;
+      if ( th_name.equals( a.mThName ) ) {
+        return true;
+      }
     }
-    return null;
+    return false;
+  }
+
+  boolean removeArea( String th_name ) 
+  {
+    for ( SymbolArea a : mArea ) {
+      if ( th_name.equals( a.mThName ) ) {
+        mArea.remove( a );
+        return true;
+      }
+    }
+    return false;
   }
 
   String getAreaName( int k )
@@ -81,7 +94,7 @@ class SymbolAreaLibrary
     mAreaNr = mArea.size();
   }
 
-  private void loadUserAreas()
+  void loadUserAreas()
   {
     String locale = "name-" + Locale.getDefault().toString().substring(0,2);
 
@@ -90,7 +103,7 @@ class SymbolAreaLibrary
       File[] files = dir.listFiles();
       for ( File file : files ) {
         SymbolArea symbol = new SymbolArea( file.getPath(), locale );
-        if ( getArea( symbol.mThName ) == null ) {
+        if ( ! hasArea( symbol.mThName ) ) {
           mArea.add( symbol );
         }
       }

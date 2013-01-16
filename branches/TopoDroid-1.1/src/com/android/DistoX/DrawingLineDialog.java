@@ -3,10 +3,13 @@
  * @author marco corvi
  * @date june 2012
  *
- * @brief TopoDroid scrap line attributes editing dialog
+ * @brief TopoDroid sketch line attributes editing dialog
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20121225 implemented erase
  */
 package com.android.DistoX;
 
@@ -30,9 +33,9 @@ public class DrawingLineDialog extends Dialog
                                implements View.OnClickListener
 {
   private DrawingLinePath mLine;
-  private DrawingActivity mActivity;
+  private DrawingActivity mParent;
 
-  private TextView mTVtype;
+  // private TextView mTVtype;
   private EditText mEToptions;
  
   private RadioButton mBtnOutlineOut;
@@ -41,14 +44,14 @@ public class DrawingLineDialog extends Dialog
 
   private CheckBox mReversed;
 
-  private Button   mButtonOk;
-  private Button   mButtonCancel;
-  private Button   mButtonDelete;
+  private Button   mBtnOk;
+  private Button   mBtnCancel;
+  private Button   mBtnErase;
 
   public DrawingLineDialog( DrawingActivity context, DrawingLinePath line )
   {
     super( context );
-    mActivity = context;
+    mParent = context;
     mLine = line;
   }
 
@@ -59,10 +62,13 @@ public class DrawingLineDialog extends Dialog
     super.onCreate(savedInstanceState);
     setContentView(R.layout.drawing_line_dialog);
 
-    mTVtype = (TextView) findViewById( R.id.line_type );
+    setTitle( String.format( mParent.getResources().getString( R.string.title_draw_line ),
+              DrawingBrushPaths.getLineThName( mLine.mLineType ) ) );
+
+    // mTVtype = (TextView) findViewById( R.id.line_type );
     mEToptions = (EditText) findViewById( R.id.line_options );
 
-    mTVtype.setText( DrawingBrushPaths.getLineThName( mLine.mLineType ) );
+    // mTVtype.setText( DrawingBrushPaths.getLineThName( mLine.mLineType ) );
     if ( mLine.mOptions != null ) {
       mEToptions.setText( mLine.mOptions );
     }
@@ -82,14 +88,14 @@ public class DrawingLineDialog extends Dialog
     mReversed = (CheckBox) findViewById( R.id.line_reversed );
     mReversed.setChecked( mLine.mReversed );
 
-    mButtonOk = (Button) findViewById( R.id.button_ok );
-    mButtonOk.setOnClickListener( this );
+    mBtnOk = (Button) findViewById( R.id.button_ok );
+    mBtnOk.setOnClickListener( this );
 
-    mButtonCancel = (Button) findViewById( R.id.button_cancel );
-    mButtonCancel.setOnClickListener( this );
+    mBtnCancel = (Button) findViewById( R.id.button_cancel );
+    mBtnCancel.setOnClickListener( this );
 
-    mButtonDelete = (Button) findViewById( R.id.button_delete );
-    mButtonDelete.setOnClickListener( this );
+    mBtnErase = (Button) findViewById( R.id.button_erase );
+    mBtnErase.setOnClickListener( this );
   }
 
   public void onClick(View v) 
@@ -97,7 +103,7 @@ public class DrawingLineDialog extends Dialog
     Button b = (Button)v;
     // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "DrawingLineDialog onClick() " + b.getText().toString() );
 
-    if ( b == mButtonOk ) {
+    if ( b == mBtnOk ) {
       if ( mEToptions.getText() != null ) {
         String options = mEToptions.getText().toString().trim();
         if ( options.length() > 0 ) mLine.mOptions = options;
@@ -107,8 +113,8 @@ public class DrawingLineDialog extends Dialog
       else if ( mBtnOutlineNone.isChecked() ) mLine.mOutline = DrawingLinePath.OUTLINE_NONE;
 
       mLine.setReversed( mReversed.isChecked() );
-    } else if ( b == mButtonDelete ) {
-      // TODO
+    } else if ( b == mBtnErase ) {
+      mParent.deleteLine( mLine );
     }
     dismiss();
   }

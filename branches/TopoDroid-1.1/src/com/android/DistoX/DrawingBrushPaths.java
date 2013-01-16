@@ -19,6 +19,8 @@
  * 20121122 new points: moonmilk (overloaded to flowstone), choke (overloaded to dig)
  * 20121201 using SymbolPoint class
  * 20121212 clearPaths()
+ * 20121220 reload symbols (to add new symbols)
+ * 20120108 station symbol (a red dot)
  */
 package com.android.DistoX;
 
@@ -49,6 +51,8 @@ public class DrawingBrushPaths
   static SymbolPointLibrary mPointLib = null;
   static SymbolLineLibrary  mLineLib = null;
   static SymbolAreaLibrary  mAreaLib = null;
+  static SymbolPointBasic mStationSymbol = null;
+  static boolean mReloadSymbols = false; // whether to reload symbols
 
   public static String getPointName( int idx, boolean flip )
   {
@@ -99,79 +103,6 @@ public class DrawingBrushPaths
 
   public static final int highlightColor = 0xffff9999;
 
-  // public static final int LINE_ARROW    = 0;
-  // public static final int LINE_BORDER   = 1;
-  // public static final int LINE_CHIMNEY  = 2;
-  // public static final int LINE_CONTOUR  = 3;
-  // public static final int LINE_OVERHANG = 4;
-  // public static final int LINE_PIT      = 5;
-  // public static final int LINE_ROCK     = 6;
-  // public static final int LINE_SLOPE    = 7;
-  // public static final int LINE_WALL     = 8;
-  // public static final int LINE_MAX      = 9;
-
-  // // NOTE if these change change also thl_XXX strings
-  // public static final String[] lineThName = {
-  //   "arrow",
-  //   "border",
-  //   "chimney",
-  //   "contour",
-  //   "overhang",
-  //   "pit",
-  //   "rock-border",
-  //   "slope",
-  //   "wall",
-  //   "undef"
-  // };
-
-  // public static final int[] lineTick = { // 0: none, 1: one, -1: all
-  //   1, // arrow
-  //   0, // border
-  //  -1, // chimney
-  //   1, // contour
-  //  -1, // overhang
-  //  -1, // pit
-  //   0, // rock-border
-  //  -1, // slope
-  //   0, // wall
-  //   0
-  // };
-
-  // public static String[] lineLocalName;
-
-  // public static final int[] lineColor = {
-  //   0xffcccccc, // arrow
-  //   0xff00cc00, // border
-  //   0xffcc00cc, // chimney
-  //   0xff33cc66, // contour
-  //   0xff9900ff, // overhang
-  //   0xffff00ff, // pit
-  //   0xff66ffcc, // rock-border
-  //   0xffffcc00, // slope
-  //   0xffff0000, // wall
-  //   0xffffffff
-  // };
-
-  // public static Paint[] linePaint  = null;
-
-  // private static void makeLinePaints()
-  // {
-  //   linePaint  = new Paint[ LINE_MAX ];
-  //   for (int k=0; k< LINE_MAX; ++k ) {
-  //     linePaint[k] = new Paint();
-  //     linePaint[k].setDither(true);
-  //     linePaint[k].setColor( lineColor[k] );
-  //     linePaint[k].setStyle(Paint.Style.STROKE);
-  //     linePaint[k].setStrokeJoin(Paint.Join.ROUND);
-  //     linePaint[k].setStrokeCap(Paint.Cap.ROUND);
-  //     linePaint[k].setStrokeWidth( (k == LINE_WALL)? 2 *STROKE_WIDTH_CURRENT 
-  //                                                    : STROKE_WIDTH_CURRENT );
-  //     if ( k == LINE_CHIMNEY || k == LINE_OVERHANG ) {
-  //       linePaint[k].setPathEffect(new DashPathEffect(new float[] {15,5}, 0));
-  //     }
-  //   }
-  // }
-
   public static String getLineName( int idx )
   {
     return mLineLib.getLineName( idx );
@@ -213,6 +144,7 @@ public class DrawingBrushPaths
   public static Paint fixedSplayPaint = null;
   public static Paint fixedGridPaint  = null;
   public static Paint fixedStationPaint  = null;
+  public static Paint duplicateStationPaint = null;
 
   // ===========================================================================
 
@@ -226,36 +158,28 @@ public class DrawingBrushPaths
     return mPointLib.getPointPath( i ); 
   }
 
-  // public static void doMakeThNames( Resources res )
-  // {
-  //   lineLocalName = new String[LINE_MAX];
-  //   lineLocalName[LINE_ARROW]   = res.getString( R.string.thl_arrow );
-  //   lineLocalName[LINE_BORDER]  = res.getString( R.string.thl_border );
-  //   lineLocalName[LINE_CHIMNEY] = res.getString( R.string.thl_chimney );
-  //   lineLocalName[LINE_CONTOUR] = res.getString( R.string.thl_contour );
-  //   lineLocalName[LINE_OVERHANG]= res.getString( R.string.thl_overhang );
-  //   lineLocalName[LINE_PIT]     = res.getString( R.string.thl_pit );
-  //   lineLocalName[LINE_ROCK]    = res.getString( R.string.thl_rock_border );
-  //   lineLocalName[LINE_SLOPE]   = res.getString( R.string.thl_slope );
-  //   lineLocalName[LINE_WALL]    = res.getString( R.string.thl_wall );
-  // }
-
   public static void makePaths( Resources res )
   {
+    if ( mStationSymbol == null ) {
+      // mStationSymbol = new SymbolPointBasic( "station", "station", 0xffff6633, "addCircle 0 0 3.5" );
+      mStationSymbol = new SymbolPointBasic( "station", "station", 0xffff6633, 
+        "addCircle 0 0 0.4 moveTo -3.0 1.73 lineTo 3.0 1.73 lineTo 0.0 -3.46 lineTo -3.0 1.73" );
+      // mStationSymbol.mPaint.setStyle( Paint.Style.FILL );
+    }
     if ( mPointLib == null ) mPointLib = new SymbolPointLibrary( res );
     if ( mLineLib == null ) mLineLib = new SymbolLineLibrary( res );
     if ( mAreaLib == null ) mAreaLib = new SymbolAreaLibrary( res );
-  }
 
-  public static void clearPaths( )
-  {
-    mPointLib = null;
-    mLineLib = null;
-    mAreaLib = null;
+    if ( mReloadSymbols ) {
+      mPointLib.loadUserPoints();
+      mLineLib.loadUserLines();
+      mAreaLib.loadUserAreas();
+    }
   }
 
   public static void doMakePaths()
   {
+
     highlightPaint = new Paint();
     highlightPaint.setDither(true);
     highlightPaint.setColor( highlightColor );
@@ -295,6 +219,14 @@ public class DrawingBrushPaths
     fixedStationPaint.setStrokeCap(Paint.Cap.ROUND);
     fixedStationPaint.setStrokeWidth( STROKE_WIDTH_FIXED );
     fixedStationPaint.setColor(0xFFFF3333); // very dark red
+
+    duplicateStationPaint = new Paint();
+    duplicateStationPaint.setDither(true);
+    duplicateStationPaint.setStyle(Paint.Style.STROKE);
+    duplicateStationPaint.setStrokeJoin(Paint.Join.ROUND);
+    duplicateStationPaint.setStrokeCap(Paint.Cap.ROUND);
+    duplicateStationPaint.setStrokeWidth( STROKE_WIDTH_FIXED );
+    duplicateStationPaint.setColor(0xFF3333FF); // very dark blue
 
     // DEBUG
     

@@ -12,6 +12,7 @@
  * CHANGES
  * 20120606 created (adapted from Cave3D to handle single file, only shots)
  * 20121212 units (m,cm,ft,y) (deg, grad)
+ * 20130103 improved support for therion syntax
  */
 package com.android.DistoX;
 
@@ -22,17 +23,37 @@ import java.io.BufferedReader;
 // import java.io.StringWriter;
 // import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Stack;
+import java.util.regex.Pattern;
+
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
+
+import android.util.Log;
 
 public class TherionParser
 {
   private static final String TAG = "DistoX";
 
+  public String mName = null;  // survey name
   public String mDate = null;  // survey date
   public String mTeam = "";
   public String mTitle = "";
+ 
+  Stack< TherionParserState > mStates; // states stack (LIFO)
 
-  private int extend = 1;
-  private boolean duplicate = false;
+  void pushState( TherionParserState state )
+  {
+    mStates.push( state );
+  }
+
+  TherionParserState popState() 
+  {
+    return mStates.pop();
+  }
+
 
   /** fix station:
    * fix stations are supposed to be referred to the same coord system
@@ -59,8 +80,9 @@ public class TherionParser
     float len, ber, cln;
     int extend;
     boolean duplicate;
+    boolean surface;
 
-    public Shot( String f, String t, float l, float b, float c, int e, boolean d )
+    public Shot( String f, String t, float l, float b, float c, int e, boolean d, boolean s )
     {
       from = f;
       to   = t;
@@ -69,6 +91,7 @@ public class TherionParser
       cln = c;
       extend = e;
       duplicate = d;
+      surface = s;
     }
   }
 
@@ -88,7 +111,9 @@ public class TherionParser
     fixes  = new ArrayList< Fix >();
     shots  = new ArrayList< Shot >();
     splays = new ArrayList< Shot >();
-    readFile( filename, "", false, 0.0f, 1.0f, 1.0f, 1.0f );
+    mStates = new Stack< TherionParserState >();
+    TherionParserState state = new TherionParserState();
+    readFile( filename, "", state );
   }
 
   private String nextLine( BufferedReader br ) throws IOException
@@ -115,33 +140,20 @@ public class TherionParser
    * @param ub units of bearing (as multiple of 1 degree)
    * @param uc units of clino
    */
-  private void readFile( String filename, String basepath,
-                         boolean usd, float sd,
-                         float ul, float ub, float uc )
+  private void readFile( String filename, String basepath, TherionParserState state )
                        throws ParserException
   {
     String path = basepath;   // survey pathname(s)
     int[] survey_pos = new int[50]; // current survey pos in the pathname FIXME max 50 levels
     int ks = 0;                     // survey index
-    boolean in_centerline = false;
-    boolean in_data = false;
-    boolean in_survey = false;
-    boolean in_map = false;
-    boolean use_centerline_declination = false;
-    boolean use_survey_declination = usd;
-    float centerline_declination = 0.0f;
-    float survey_declination = sd;
-    float units_len = ul;
-    float units_ber = ub;
-    float units_cln = uc;
+
     int jFrom    = 0;
     int jTo      = 1;
     int jLength  = 2;
     int jCompass = 3;
     int jClino   = 4;
-    String prefix = "";
-    String suffix = "";
-   
+
+    Pattern pattern = Pattern.compile( "\\s+" );
 
     try {
       String dirname = "./";
@@ -155,44 +167,130 @@ public class TherionParser
       String line = nextLine( br );
       while ( line != null ) {
         // TopoDroidApp.Log( TopoDroidApp.LOG_THERION, "TH " + line );
+        // Log.v( "DistoX", "TH " + state.in_survey + " " + state.in_centerline + " " + state.in_data + " : " + line );
         line = line.trim();
         int pos = line.indexOf( '#' );
         if ( pos >= 0 ) {
           line = line.substring( 0, pos );
         }
         if ( line.length() > 0 ) {
-          String[] vals = line.split( " " );
-          int vals_len = 0;
-          for ( int k=0; k<vals.length; ++k ) {
-            vals[vals_len] = vals[k];
-            if ( vals[vals_len].length() > 0 ) {
-              ++ vals_len;
-            }
-          }
+          String[] vals = pattern.split(line); // line.split( "\\s+" );
+          // int vals_len = 0;
+          // for ( int k=0; k<vals.length; ++k ) {
+          //   vals[vals_len] = vals[k];
+          //   if ( vals[vals_len].length() > 0 ) {
+          //     ++ vals_len;
+          //   }
+          // }
+          // Log.v("DistoX", "vals " + vals.length + " " + vals_len );
+          int vals_len = vals.length;
           if ( vals_len > 0 ) {
             String cmd = vals[0];
-            if ( cmd.equals("survey") ) {
+            
+            if ( cmd.equals("encoding" ) ) { 
+              // ignore
+            } else if ( cmd.equals("import") ) {
+              // ignore
+            } else if ( ! state.in_centerline && cmd.equals("grade") ) {
+              // ignore
+            } else if ( cmd.equals("revise") ) {
+              // ignore
+            } else if ( cmd.equals("join") ) {
+              // ignore
+            } else if ( cmd.equals("input") ) { // ignore
+              // int j = 1;
+              // while ( vals[j] != null ) {
+              //   if ( vals[j].length() > 0 ) {
+              //     filename = vals[j];
+              //     if ( filename.endsWith( ".th" ) ) {
+              //       readFile( dirname + '/' + filename, 
+              //           path,
+              //           use_survey_declination, survey_declination,
+              //           units_len, units_ber, units_cln );
+              //     }
+              //     break;
+              //   }
+              // }
+            } else if ( cmd.equals("surface") ) {
+              // TODO check not already in_surface
+              state.in_surface = true;
+            } else if ( cmd.equals("map") ) {
+              // TODO check not already in_map
+              state.in_map = true;
+            } else if ( cmd.equals("scrap") ) {
+              // TODO check not already in_scrap
+              state.in_scrap = true;
+            } else if ( state.in_scrap && cmd.equals("line") ) {
+              // TODO check not already in_line
+              state.in_line = true;
+            } else if ( state.in_scrap && cmd.equals("area") ) {
+              // TODO check not already in_area
+              state.in_area = true;
+
+            } else if ( state.in_line && cmd.equals("endline") ) { 
+              state.in_line = false;
+            } else if ( state.in_area && cmd.equals("endarea" ) ) {
+              state.in_area = false;
+            } else if ( state.in_scrap && cmd.equals("endscrap" ) ) {
+              state.in_scrap = false;
+            } else if ( state.in_map && cmd.equals("endmap" ) ) {
+              state.in_map = false;
+            } else if ( state.in_surface && cmd.equals("endsurface" ) ) {
+              state.in_surface = false;
+            } else if ( state.in_map || state.in_surface || state.in_scrap || state.in_line || state.in_area ) {
+              // ignore
+
+            } else if ( cmd.equals("survey") ) {
               survey_pos[ks] = path.length(); // set current survey pos in pathname
               path = path + "." + vals[1];    // add survey name to path
               ++ks;
-              in_survey = true;
+              pushState( state );
+              state = new TherionParserState( state );
+              state.mSurveyLevel ++;
+              state.in_survey= true;
+
+              // parse survey id
+              if ( mName == null ) {
+                mName = vals[1];
+              }
+
+              // parse survey options
               for ( int j=2; j<vals_len; ++j ) {
-                if ( vals[j].equals("-declination") ) {
-                  use_survey_declination = true;
-                  survey_declination = Float.parseFloat( vals[j+1] );
-                } else if ( vals[j].equals("-title") ) {
+                if ( vals[j].equals("-declination") && j+1 < vals_len ) {
+                  state.mDeclination = Float.parseFloat( vals[j+1] );
+                  ++j;
+                  if ( j+1 < vals_len ) { // check for units
+                    state.mDeclination *= parseAngleUnit( vals[j+1] );
+                    ++j;
+                  }
+                } else if ( vals[j].equals("-title") && j+1 < vals_len ) {
+                  for ( ++j; j<vals_len; ++j ) {
+                    if ( vals[j].length() == 0 ) continue;
+                    if ( vals[j].startsWith("\"") ) {
+                      mTitle = vals[j].substring(1);
+                      for ( ++j; j<vals_len; ++j ) {
+                        if ( vals[j].length() == 0 ) continue;
+                        if ( vals[j].endsWith( "\"" ) ) {
+                          mTitle += " " + vals[j].substring(0, vals[j].length()-1);
+                          break;
+                        } else {
+                          mTitle += " " + vals[j];
+                        }
+                      }
+                    } else {
+                      mTitle = vals[j];
+                    }
+                    break;
+                  }
                 }
               }
-            } else if ( in_map ) {
-              if ( cmd.equals("endmap") ) {
-                in_map = false;
-              }
-            } else if ( in_centerline ) {
+
+            } else if ( state.in_centerline ) {
               if ( cmd.equals("endcenterline") || cmd.equals("endcentreline") ) {
-                in_data = false;
-                in_centerline = false;
-                use_centerline_declination = false;
-                centerline_declination = 0.0f;
+                // state.in_data = false;
+                // state.in_centerline = false;
+                state = popState();
+
               } else if ( cmd.equals("date") ) {
                 String date = vals[1];
                 if ( mDate == null ) mDate = date; // save centerline date
@@ -203,8 +301,36 @@ public class TherionParser
               // } else if ( cmd.equals("explo-date") ) {
               // } else if ( cmd.equals("explo-team") ) {
               // } else if ( cmd.equals("instrument") ) {
-              // } else if ( cmd.equals("calibrate") ) {
-              } else if ( cmd.equals("units") ) { // parse "units" command: TODO factor and more
+              } else if ( cmd.equals("calibrate") ) {
+                boolean clen = false;
+                boolean cber = false;
+                boolean ccln = false;
+                for ( int k=1; k<vals_len - 1; ++k ) {
+                  if ( vals[k].equals("length") || vals[k].equals("tape") ) clen = true;
+                  if ( vals[k].equals("compass") || vals[k].equals("bearing") ) cber = true;
+                  if ( vals[k].equals("clino") || vals[k].equals("gradient") ) ccln = true;
+                }
+                float zero = 0.0f;
+                float scale = Float.parseFloat( vals[vals_len-1] );
+                try {
+                  zero = Float.parseFloat( vals[vals_len-2] );
+                } catch ( NumberFormatException e ) {
+                  zero  = scale;
+                  scale = 1.0f;
+                }
+                if ( clen ) {
+                  state.mZeroLen = zero;
+                  state.mScaleLen = scale;
+                }
+                if ( cber ) {
+                  state.mZeroBer = zero;
+                  state.mScaleBer = scale;
+                }
+                if ( ccln ) {
+                  state.mZeroCln = zero;
+                  state.mScaleCln = scale;
+                }
+              } else if ( cmd.equals("units") ) { // units quantity_list [factor] unit
                 boolean ulen = false;
                 boolean uber = false;
                 boolean ucln = false;
@@ -213,56 +339,58 @@ public class TherionParser
                   if ( vals[k].equals("compass") || vals[k].equals("bearing") ) uber = true;
                   if ( vals[k].equals("clino") || vals[k].equals("gradient") ) ucln = true;
                 }
+                float factor = 1.0f;
+                try {
+                  factor = Float.parseFloat( vals[vals_len-2] );
+                } catch ( NumberFormatException e ) {
+                  factor = 1.0f;
+                }
                 if ( ulen ) {
-                  if ( vals[vals_len-1].startsWith("m") ) {
-                    units_len = 1.0f;
-                  } else if ( vals[vals_len-1].startsWith("c") ) { // centimeters
-                    units_len = 0.01f;
-                  } else if ( vals[vals_len-1].startsWith("f") ) { // feet
-                    units_len = (float)TopoDroidApp.FT2M;
-                  } else if ( vals[vals_len-1].startsWith("y") ) { // yard
-                    units_len = 3 * (float)TopoDroidApp.FT2M;
-                  }
+                  state.mUnitLen = factor * parseLengthUnit( vals[vals_len-1] );
                 } 
                 if ( uber ) {
-                  if ( vals[vals_len-1].startsWith("d") ) { // degrees
-                    units_ber = 1.0f;
-                  } else if ( vals[vals_len-1].startsWith("g") ) { // grads
-                    units_ber = (float)TopoDroidApp.GRAD2DEG;
-                  }
+                  state.mUnitBer = factor * parseAngleUnit( vals[vals_len-1] );
                 }
                 if ( ucln ) {
-                  if ( vals[vals_len-1].startsWith("d") ) {
-                    units_cln = 1.0f;
-                  } else if ( vals[vals_len-1].startsWith("g") ) {
-                    units_cln = (float)TopoDroidApp.GRAD2DEG;
-                  }
+                  state.mUnitCln = factor * parseAngleUnit( vals[vals_len-1] );
                 }
-              // } else if ( cmd.equals("sd") ) {
-              // } else if ( cmd.equals("grade") ) {
+              } else if ( cmd.equals("sd") ) {
+                // ignore
+              } else if ( cmd.equals("grade") ) {
+                // ignore
               } else if ( cmd.equals("declination") ) { 
-                int j = 1;
-                while ( vals[j] != null ) {
-                  if ( vals[j].length() > 0 ) {
-                    use_centerline_declination = true;
-                    centerline_declination = Float.parseFloat( vals[j] );
-                    break;
+                if ( 1 < vals_len ) {
+                  float declination = Float.parseFloat( vals[1] );
+                  if ( 2 < vals_len ) {
+                    declination *= parseAngleUnit( vals[2] );
                   }
+                  state.mDeclination = declination;
                 }
-              // } else if ( cmd.equals("infer") ) {
-              // } else if ( cmd.equals("mark") ) {
+              } else if ( cmd.equals("infer") ) {
+                // ignore
+              } else if ( cmd.equals("instrument") ) {
+                // ignore
+              } else if ( cmd.equals("mark") ) {
+                // ignore
               } else if ( cmd.equals("flags") ) {
-                if ( vals[1].equals("not") && vals[2].substring(0,3).equals("dup") ) {
-                  duplicate = false;
-                } else if ( vals[1].substring(0,3).equals("dup") ) {
-                  duplicate = true;
+                if ( vals_len >= 2 ) {
+                  if ( vals[1].startsWith("dup") || vals[1].startsWith("splay") ) {
+                    state.mDuplicate = true;
+                  } else if ( vals[1].startsWith("surf") ) {
+                    state.mSurface = true;
+                  } else if ( vals[1].equals("not") && vals_len >= 3 ) {
+                    if ( vals[2].startsWith("dup") || vals[2].startsWith("splay") ) {
+                      state.mDuplicate = false;
+                    } else if ( vals[2].startsWith("surf") ) {
+                      state.mSurface = false;
+                    }
+                  }
                 }
               } else if ( cmd.equals("station") ) {
-                // station <station> <comment>
+                // ignore: station <station> <comment>
               } else if ( cmd.equals("cs") ) { 
                 // TODO cs
-              } else if ( cmd.equals("fix") ) {
-                // ***** fix station east north Z units
+              } else if ( cmd.equals("fix") ) { // ***** fix station east north Z (ignored std-dev's)
                 if ( vals_len > 4 ) {
                   String name;
                   int idx = vals[1].indexOf('@');
@@ -292,36 +420,46 @@ public class TherionParser
                     } else {
                       to = vals[j]; // + "@" + path;
                     }
-                    shots.add( new Shot( from, to, 0.0f, 0.0f, 0.0f, extend, duplicate ) );
+                    shots.add( new Shot( state.mPrefix + from + state.mSuffix, state.mPrefix + to + state.mSuffix,
+                                         0.0f, 0.0f, 0.0f, 0, true, false ) );
                   }
                 }
-              // } else if ( cmd.equals("break") ) {
-              // } else if ( cmd.equals("group") ) {
-              // } else if ( cmd.equals("endgroup") ) {
-              // } else if ( cmd.equals("walls") ) {
-              // } else if ( cmd.equals("vthreshold") ) {
+              } else if ( cmd.startsWith("explo") ) { // explo-date explo-team
+                // ignore
+              } else if ( cmd.equals("break") ) {
+                // ignore
+              } else if ( cmd.equals("infer") ) {
+                // ignore
+
+              } else if ( cmd.equals("group") ) {
+                pushState( state );
+                state = new TherionParserState( state );
+              } else if ( cmd.equals("endgroup") ) {
+                state = popState();
+
+              } else if ( cmd.equals("walls") ) {
+                // ignore
+              } else if ( cmd.equals("vthreshold") ) {
+                // ignore
               } else if ( cmd.equals("extend") ) { 
-                if ( vals[1].equals("left") ) {
-                  extend = -1;
-                } else if ( vals[1].equals("right") ) {
-                  extend = 1;
-                } else if ( vals[1].substring(0,4).equals("vert") ) {
-                  extend = 0;
+                if ( vals_len == 2 ) {
+                  state.mExtend = parseExtend( vals[1], state.mExtend );
+                } else { // not implemented "extend value station [station]
                 }
               } else if ( cmd.equals("station_names") ) {
-                prefix = "";
-                suffix = "";
+                state.mPrefix = "";
+                state.mSuffix = "";
                 if ( vals_len > 1 ) {
                   int off = vals[1].indexOf( '"' );
                   if ( off >= 0 ) {
                     int end = vals[1].lastIndexOf( '"' );
-                    prefix = vals[1].substring(off+1, end );
+                    state.mPrefix = vals[1].substring(off+1, end );
                   }
                   if ( vals_len > 2 ) {
                     off = vals[2].indexOf( '"' );
                     if ( off >= 0 ) {
                       int end = vals[2].lastIndexOf( '"' );
-                      suffix = vals[2].substring(off+1, end );
+                      state.mSuffix = vals[2].substring(off+1, end );
                     }
                   }
                 }
@@ -345,7 +483,7 @@ public class TherionParser
                       ++j0;
                     }
                   }
-                  in_data = (jFrom >= 0) && (jTo >= 0) && (jLength >= 0) && (jCompass >= 0) && (jClino >= 0);
+                  state.in_data = (jFrom >= 0) && (jTo >= 0) && (jLength >= 0) && (jCompass >= 0) && (jClino >= 0);
                 // TODO other style syntax
                 // } else if ( vals[1].equals("topofil") ) {
                 // } else if ( vals[1].equals("diving") ) {
@@ -354,52 +492,41 @@ public class TherionParser
                 // } else if ( vals[1].equals("dimensions") ) {
                 // } else if ( vals[1].equals("nosurvey") ) {
                 }
-              } else if ( in_data && vals_len >= 5 ) {
+              } else if ( state.in_data && vals_len >= 5 ) {
                 // FIXME
                 String from = vals[jFrom];
                 String to   = vals[jTo];
-                float len  = Float.parseFloat( vals[jLength] ) * units_len;
-                float ber  = Float.parseFloat( vals[jCompass] ) * units_ber;
-                float cln  = Float.parseFloat( vals[jClino] ) * units_cln;
-                if ( use_centerline_declination ) {
-                  ber += centerline_declination;
-                } else if ( use_survey_declination ) {
-                  ber += survey_declination;
-                }
+                float len  = Float.parseFloat( vals[jLength] );
+                float ber  = Float.parseFloat( vals[jCompass] );
+                float cln  = Float.parseFloat( vals[jClino] );
+
+                len = state.mZeroLen + (len*state.mUnitLen) / state.mScaleLen;
+                ber = state.mZeroBer + (ber*state.mUnitBer + state.mDeclination) / state.mScaleBer;
+                cln = state.mZeroCln + (cln*state.mUnitCln) / state.mScaleCln;
+
                 // TODO add shot
-                if ( to.equals("-") || to.equals(".") ) {
-                  // TODO splay shot
+                if ( to.equals("-") || to.equals(".") ) { // splay shot
                   // from = from + "@" + path;
-                  to = null;
-                  splays.add( new Shot( from, to, len, ber, cln, extend, duplicate ) );
+                  splays.add( new Shot( state.mPrefix + from + state.mSuffix, null,
+                                        len, ber, cln, state.mExtend, state.mDuplicate, state.mSurface ) );
                 } else {
                   // from = from + "@" + path;
                   // to   = to + "@" + path;
-                  shots.add( new Shot( from, to, len, ber, cln, extend, duplicate ) );
+                  // Log.v( "DistoX", "add shot " + from + " -- " + to);
+                  shots.add( new Shot( state.mPrefix + from + state.mSuffix, state.mPrefix + to + state.mSuffix,
+                                       len, ber, cln, state.mExtend, state.mDuplicate, state.mSurface ) );
                 }
               }            
-            } else if ( cmd.equals("input") ) {
-              // int j = 1;
-              // while ( vals[j] != null ) {
-              //   if ( vals[j].length() > 0 ) {
-              //     filename = vals[j];
-              //     if ( filename.endsWith( ".th" ) ) {
-              //       readFile( dirname + '/' + filename, 
-              //           path,
-              //           use_survey_declination, survey_declination,
-              //           units_len, units_ber, units_cln );
-              //     }
-              //     break;
-              //   }
-              // }
             } else if ( cmd.equals("centerline") || cmd.equals("centreline") ) {
-              in_centerline = true;
-            } else if ( cmd.equals("map") ) {
-              in_map = true;
+              pushState( state );
+              state = new TherionParserState( state );
+              state.in_centerline = true;
+              state.in_data = false;
             } else if ( cmd.equals("endsurvey") ) {
+              state = popState();
               --ks;
               path = path.substring(survey_pos[ks]); // return to previous survey_pos in path
-              in_survey = ( ks > 0 );
+              state.in_survey = ( ks > 0 );
             }
           }
         }
@@ -409,7 +536,53 @@ public class TherionParser
       // TODO
       throw new ParserException();
     }
-    TopoDroidApp.Log( TopoDroidApp.LOG_THERION, "TherionParser "+ shots.size() +" "+ splays.size() +" "+  fixes.size() );
+    if ( mDate == null ) {
+      SimpleDateFormat sdf = new SimpleDateFormat( "yyyy.MM.dd", Locale.US );
+      mDate = sdf.format( new Date() );
+    }
+    TopoDroidApp.Log( TopoDroidApp.LOG_THERION, "TherionParser shots "+ shots.size() +" splays "+ splays.size() +" fixes "+  fixes.size() );
+    // Log.v( "DistoX", "TherionParser shots "+ shots.size() + " splays "+ splays.size() +" fixes "+  fixes.size() );
   }
 
+  float parseAngleUnit( String unit ) 
+  {
+    // not handled "percent"
+    if ( unit.startsWith("min") ) return 1/60.0f;
+    if ( unit.startsWith("grad") ) return (float)TopoDroidApp.GRAD2DEG;
+    if ( unit.startsWith("mil") ) return (float)TopoDroidApp.GRAD2DEG;
+    // if ( unit.startsWith("deg") ) return 1.0f;
+    return 1.0f;
+  }
+
+  float parseLengthUnit( String unit ) 
+  {
+    if ( unit.startsWith("c") ) return 0.01f; // cm centimeter
+    if ( unit.startsWith("f") ) return (float)TopoDroidApp.FT2M; // ft feet
+    if ( unit.startsWith("i") ) return (float)TopoDroidApp.IN2M; // in inch
+    if ( unit.startsWith("milli") || unit.equals("mm") ) return 0.001f; // mm millimeter
+    if ( unit.startsWith("y") ) return (float)TopoDroidApp.YD2M; // yd yard
+    // if ( unit.startsWith("m") ) return 1.0f;
+    return 1.0f;
+  }
+
+  int parseExtend( String extend, int old_extend )
+  {
+    // skip: hide, start
+    if ( extend.equals("hide") || extend.equals("start") ) {
+      return old_extend;
+    }
+    if ( extend.equals("left") || extend.equals("reverse") ) {
+      return DistoXDBlock.EXTEND_LEFT;
+    } 
+    if ( extend.startsWith("vert") ) {
+      return DistoXDBlock.EXTEND_VERT;
+    }
+    if ( extend.startsWith("ignore") ) {
+      return DistoXDBlock.EXTEND_IGNORE;
+    }
+    // if ( extend.equals("right") || extend.equals("normal") ) {
+    //   return DistoXDBlock.EXTEND_RIGHT;
+    // } 
+    return DistoXDBlock.EXTEND_RIGHT;
+  }
 }

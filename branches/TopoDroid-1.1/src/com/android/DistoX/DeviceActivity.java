@@ -98,7 +98,7 @@ public class DeviceActivity extends Activity
       mTvAddress.setText( R.string.no_device_address );
     }
 
-    if ( app.mConnectionMode == TopoDroidApp.CONN_MODE_BATCH ) {
+    // if ( app.mConnectionMode == TopoDroidApp.CONN_MODE_BATCH ) {
       // TopoDroidApp.Log( TopoDroidApp.LOG_DEVICE, "setState batch checked. connected: " + app.isConnected() );
       mBtnToggle     .setEnabled( ! cntd );
       mBtnHeadTail   .setEnabled( ! cntd );
@@ -116,7 +116,7 @@ public class DeviceActivity extends Activity
     //   // mBtnConnect    .setEnabled( ! cntd );
     //   // // mBtnReconnect  .setEnabled( true );
     //   // mBtnDisconnect .setEnabled( cntd );
-    }
+    // }
     // mBtnBack       .setEnabled( );
 
     updateList();

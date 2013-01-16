@@ -1,4 +1,4 @@
-/** @file PlotDialog.java
+/** @file PlotListDialog.java
  *
  * @author marco corvi
  * @date nov 2011
@@ -24,8 +24,11 @@ import android.app.Dialog;
 import android.content.Context;
 
 import android.view.View;
+import android.view.View.OnClickListener;
+
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Button;
 
 import android.widget.TextView;
 import android.widget.AdapterView;
@@ -33,17 +36,19 @@ import android.widget.AdapterView.OnItemClickListener;
 
 import android.widget.Toast;
 
-public class PlotDialog extends Dialog
+public class PlotListDialog extends Dialog
                         implements OnItemClickListener
+                                , View.OnClickListener
 {
   private Context mContext;
   private ShotActivity mParent;
   private TopoDroidApp app;
   private ArrayAdapter<String> mArrayAdapter;
+  private Button mBtnPlotNew;
 
   private ListView mList;
 
-  public PlotDialog( Context context, ShotActivity parent, TopoDroidApp _app )
+  public PlotListDialog( Context context, ShotActivity parent, TopoDroidApp _app )
   {
     super( context );
     mContext = context;
@@ -55,13 +60,17 @@ public class PlotDialog extends Dialog
   protected void onCreate(Bundle savedInstanceState) 
   {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.main);
+    setContentView(R.layout.plot_list );
     mArrayAdapter = new ArrayAdapter<String>( mContext, R.layout.message );
+
+    mBtnPlotNew = (Button) findViewById(R.id.plot_new);
 
     mList = (ListView) findViewById(R.id.list);
     mList.setAdapter( mArrayAdapter );
     mList.setOnItemClickListener( this );
     mList.setDividerHeight( 2 );
+
+    mBtnPlotNew.setOnClickListener( this );
 
     updateList();
   }
@@ -96,7 +105,12 @@ public class PlotDialog extends Dialog
   // @Override
   public void onClick(View v) 
   {
-    // TopoDroidApp.Log(  TopoDroidApp.LOG_INPUT, "PlotDialog onClick() " );
+    // TopoDroidApp.Log(  TopoDroidApp.LOG_INPUT, "PlotListDialog onClick() " );
+    Button b = (Button) v;
+    if ( b == mBtnPlotNew ) {
+      hide();
+      new PlotNewDialog( mParent, mParent ).show();
+    }
     dismiss();
   }
 
@@ -108,15 +122,15 @@ public class PlotDialog extends Dialog
   {
     CharSequence item = ((TextView) view).getText();
     String value = item.toString();
-    // TopoDroidApp.Log(  TopoDroidApp.LOG_INPUT, "PlotDialog onItemClick() " + value );
+    // TopoDroidApp.Log(  TopoDroidApp.LOG_INPUT, "PlotListDialog onItemClick() " + value );
 
-    String[] st = value.split( " ", 3 );
+    // String[] st = value.split( " ", 3 );
     int from = value.indexOf('<');
     int to = value.lastIndexOf('>');
     String plot_name = value.substring( from+1, to );
     // int end = st[1].length() - 1;
     // String plot_name = st[1].substring( 1, end );
-    mParent.startPlot( plot_name, st[2] );
+    mParent.startExistingPlot( plot_name ); // context of current SID
     dismiss();
   }
 

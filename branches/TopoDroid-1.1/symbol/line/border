@@ -1,0 +1,9 @@
+symbol line
+  name border
+  name-es borde
+  name-pt borda
+  name-it bordo
+  th_name border
+  color 0x00cc00 0xff
+  width 1
+endsymbol

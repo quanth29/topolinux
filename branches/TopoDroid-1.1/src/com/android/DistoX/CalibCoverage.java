@@ -88,6 +88,8 @@ public class CalibCoverage extends Dialog
     super.onCreate( bundle );
     setContentView(R.layout.distox_coverage);
 
+    setTitle( mContext.getResources().getString( R.string.title_coverage ) );
+
     mText  = (TextView) findViewById( R.id.coverage_value );
     mImage = (ImageView) findViewById( R.id.coverage_image );
     mBtnEval = (Button) findViewById( R.id.coverage_eval );
