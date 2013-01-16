@@ -22,6 +22,8 @@
  * 20121114 allowed multiple locations for a station (commented check at insertFixed)
  * 20121215 InsertHelper for bulk insert (survey insertShots)
  * 20121215 bulk splay shot name+extend update:  updateShotNameAndExtend
+ * 20121224 added field xoffset yoffset zoom to table plots
+ * 20130111 photo date
  */
 package com.android.DistoX;
 
@@ -44,6 +46,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.database.sqlite.SQLiteException;
 
+// import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,9 +55,9 @@ import java.util.HashMap;
 
 public class DataHelper extends DataSetObservable
 {
-   private static String DATABASE_NAME = TopoDroidApp.getDirFile( "distox7.db" );
-   static final int DATABASE_VERSION = 7;
-   static final String DB_VERSION = "7";
+   private static String DATABASE_NAME = TopoDroidApp.getDirFile( "distox8.db" );
+   static final int DATABASE_VERSION = 8;
+   static final String DB_VERSION = "8";
 
    private static final String CONFIG_TABLE = "configs";
    private static final String SURVEY_TABLE = "surveys";
@@ -86,6 +89,7 @@ public class DataHelper extends DataSetObservable
    private SQLiteStatement updateCalibStmt;
    private SQLiteStatement deleteShotStmt;
    private SQLiteStatement undeleteShotStmt;
+   private SQLiteStatement updatePlotStmt;
    private SQLiteStatement deletePlotStmt;
    private SQLiteStatement undeletePlotStmt;
    private SQLiteStatement deletePhotoStmt;
@@ -124,11 +128,11 @@ public class DataHelper extends DataSetObservable
         updateShotNameStmt = myDB.compileStatement(
                              "UPDATE shots SET fStation=?, tStation=? WHERE surveyId=? AND id=?" );
         updateShotNameAndExtendStmt = myDB.compileStatement(
-                             "UPDATE shots SET fStation=?, tStation=?, extend=? WHERE surveyId=? AND id=?" );
+                             "UPDATE shots SET fStation=?, tStation=?, extend=?, leg=? WHERE surveyId=? AND id=?" );
         updateShotStmt     = myDB.compileStatement( 
-                             "UPDATE shots SET fStation=?, tStation=?, extend=?, flag=? WHERE surveyId=? AND id=?" );
+                             "UPDATE shots SET fStation=?, tStation=?, extend=?, flag=?, leg=? WHERE surveyId=? AND id=?" );
         updateShotStmtFull = myDB.compileStatement(
-                             "UPDATE shots SET fStation=?, tStation=?, extend=?, flag=?, comment=? WHERE surveyId=? AND id=?" );
+                             "UPDATE shots SET fStation=?, tStation=?, extend=?, flag=?, leg=?, comment=? WHERE surveyId=? AND id=?" );
 
         updateShotExtendStmt  = myDB.compileStatement( "UPDATE shots SET extend=? WHERE surveyId=? AND id=?" );
         // updateShotFlagStmt    = myDB.compileStatement( "UPDATE shots SET flag=? WHERE surveyId=? AND id=?" );
@@ -140,6 +144,7 @@ public class DataHelper extends DataSetObservable
 
         deleteShotStmt   = myDB.compileStatement( "UPDATE shots set status=1 WHERE surveyId=? AND id=?" );
         undeleteShotStmt = myDB.compileStatement( "UPDATE shots set status=0 WHERE surveyId=? AND id=?" );
+        updatePlotStmt   = myDB.compileStatement( "UPDATE plots set xoffset=?, yoffset=?, zoom=? WHERE surveyId=? AND id=?" );
         deletePlotStmt   = myDB.compileStatement( "UPDATE plots set status=1 WHERE surveyId=? AND id=?" );
         undeletePlotStmt = myDB.compileStatement( "UPDATE plots set status=0 WHERE surveyId=? AND id=?" );
 
@@ -276,7 +281,7 @@ public class DataHelper extends DataSetObservable
     return stat;
   }
 
-   public int updateShot( long id, long sid, String fStation, String tStation, long extend, long flag, String comment )
+   public int updateShot( long id, long sid, String fStation, String tStation, long extend, long flag, long leg, String comment )
    {
      // TopoDroidApp.Log(  TopoDroidApp.LOG_DB, "updateShot " + fStation + "-" + tStation + " " + extend + " " + flag + " <" + comment + ">");
      if ( myDB == null ) return -1;
@@ -287,17 +292,19 @@ public class DataHelper extends DataSetObservable
        updateShotStmtFull.bindString( 2, tStation );
        updateShotStmtFull.bindLong(   3, extend );
        updateShotStmtFull.bindLong(   4, flag );
-       updateShotStmtFull.bindString( 5, comment );
-       updateShotStmtFull.bindLong(   6, sid );     // WHERE
-       updateShotStmtFull.bindLong(   7, id );
+       updateShotStmtFull.bindLong(   5, leg );
+       updateShotStmtFull.bindString( 6, comment );
+       updateShotStmtFull.bindLong(   7, sid );     // WHERE
+       updateShotStmtFull.bindLong(   8, id );
        updateShotStmtFull.execute();
      } else {
        updateShotStmt.bindString( 1, fStation );
        updateShotStmt.bindString( 2, tStation );
        updateShotStmt.bindLong(   3, extend );
        updateShotStmt.bindLong(   4, flag );
-       updateShotStmt.bindLong(   5, sid );
-       updateShotStmt.bindLong(   6, id );
+       updateShotStmt.bindLong(   5, leg );
+       updateShotStmt.bindLong(   6, sid );
+       updateShotStmt.bindLong(   7, id );
        updateShotStmt.execute();
      }
      return 0;
@@ -370,6 +377,18 @@ public class DataHelper extends DataSetObservable
      undeleteShotStmt.bindLong( 2, shot_id );
      undeleteShotStmt.execute();
    }
+
+   public void updatePlot( long plot_id, long survey_id, double xoff, double yoff, double zoom )
+   {
+     if ( myDB == null ) return;
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "updatePlot: " + plot_id + "/" + survey_id + " x " + xoff + " y " + yoff + " zoom " + zooom);
+     updatePlotStmt.bindDouble( 1, xoff );
+     updatePlotStmt.bindDouble( 2, yoff );
+     updatePlotStmt.bindDouble( 3, zoom );
+     updatePlotStmt.bindLong( 4, survey_id );
+     updatePlotStmt.bindLong( 5, plot_id );
+     updatePlotStmt.execute();
+   }
    
    public void deletePlot( long plot_id, long survey_id )
    {
@@ -392,21 +411,24 @@ public class DataHelper extends DataSetObservable
    public void updateShotNameAndExtend( long sid, ArrayList< DistoXDBlock > updatelist )
    {
      try {
-       myDB.execSQL("PRAGMA synchronous=OFF");
+       // myDB.execSQL("PRAGMA synchronous=OFF");
        myDB.setLockingEnabled( false );
        myDB.beginTransaction();
        for ( DistoXDBlock b : updatelist ) {
+         // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "updateShotNameAndExtend <" + b.mFrom + "-" + b.mTo + "> " + b.mExtend );
          updateShotNameAndExtendStmt.bindString( 1, b.mFrom );
          updateShotNameAndExtendStmt.bindString( 2, b.mTo );
          updateShotNameAndExtendStmt.bindLong(   3, b.mExtend );
-         updateShotNameAndExtendStmt.bindLong(   4, sid );
-         updateShotNameAndExtendStmt.bindLong(   5, b.mId );
+         updateShotNameAndExtendStmt.bindLong(   4, (b.mType == DistoXDBlock.BLOCK_LEG)? 1 : 0 );
+         updateShotNameAndExtendStmt.bindLong(   5, sid );
+         updateShotNameAndExtendStmt.bindLong(   6, b.mId );
          updateShotNameAndExtendStmt.execute();
        }
+       myDB.setTransactionSuccessful();
      } finally {
        myDB.endTransaction();
        myDB.setLockingEnabled( true );
-       myDB.execSQL("PRAGMA synchronous=NORMAL");
+       // myDB.execSQL("PRAGMA synchronous=NORMAL");
      }
    }
 
@@ -425,10 +447,11 @@ public class DataHelper extends DataSetObservable
      final int rollCol     = ih.getColumnIndex( "roll" );
      final int extendCol   = ih.getColumnIndex( "extend" );
      final int flagCol     = ih.getColumnIndex( "flag" );
+     final int legCol      = ih.getColumnIndex( "leg" );
      final int statusCol   = ih.getColumnIndex( "status" );
      final int commentCol  = ih.getColumnIndex( "comment" );
      try {
-       myDB.execSQL("PRAGMA synchronous=OFF");
+       // myDB.execSQL("PRAGMA synchronous=OFF");
        myDB.setLockingEnabled( false );
        myDB.beginTransaction();
        for ( TherionParser.Shot s : shots ) {
@@ -442,29 +465,31 @@ public class DataHelper extends DataSetObservable
          ih.bind( clinoCol, s.cln );
          ih.bind( rollCol, 0.0);
          ih.bind( extendCol, s.extend );
-         ih.bind( flagCol, s.duplicate ? DistoXDBlock.BLOCK_DUPLICATE : 0 );
+         ih.bind( flagCol, s.duplicate ? DistoXDBlock.BLOCK_DUPLICATE : s.surface ? DistoXDBlock.BLOCK_SURFACE : 0 );
+         ih.bind( legCol, 0 );
          ih.bind( statusCol, 0 );
          ih.bind( commentCol, "" );
          ih.execute();
          ++id;
        }
+       myDB.setTransactionSuccessful();
      } finally {
        ih.close();
        myDB.endTransaction();
        myDB.setLockingEnabled( true );
-       myDB.execSQL("PRAGMA synchronous=NORMAL");
+       // myDB.execSQL("PRAGMA synchronous=NORMAL");
      }
      return id;
    }
    
    public long insertShot( long sid, long id, double d, double b, double c, double r )
    {
-     return insertShot( sid, id, "", "",  d, b, c, r, ( b < 180.0 )? 1L : -1L, DistoXDBlock.BLOCK_SURVEY, 0L, "" );
+     return insertShot( sid, id, "", "",  d, b, c, r, ( b < 180.0 )? 1L : -1L, DistoXDBlock.BLOCK_SURVEY, 0L, 0L, "" );
    }
 
    public long insertShot( long sid, long id, String from, String to, 
                            double d, double b, double c, double r, 
-                           long extend, long flag, long status, String comment )
+                           long extend, long flag, long leg, long status, String comment )
    {
      if ( myDB == null ) return -1;
      if ( id == -1L ) {
@@ -484,6 +509,7 @@ public class DataHelper extends DataSetObservable
      cv.put( "roll",     r );
      cv.put( "extend",   extend );
      cv.put( "flag",     flag );
+     cv.put( "leg",      leg );
      cv.put( "status",   status );
      cv.put( "comment",  comment );
      myDB.insert( SHOT_TABLE, null, cv );
@@ -605,7 +631,7 @@ public class DataHelper extends DataSetObservable
    {
      List< PhotoInfo > list = new ArrayList< PhotoInfo >();
      Cursor cursor = myDB.query( PHOTO_TABLE,
-			         new String[] { "id", "shotId", "title", "comment" }, // columns
+			         new String[] { "id", "shotId", "title", "date", "comment" }, // columns
                                  "surveyId=? AND status=?", 
                                  new String[] { Long.toString(sid), Long.toString(status) },
                                  null,  // groupBy
@@ -617,15 +643,16 @@ public class DataHelper extends DataSetObservable
                                   cursor.getLong(0), // id
                                   cursor.getLong(1),
                                   cursor.getString(2),
-                                  null,
-                                  cursor.getString(3) ) );
+                                  null,              // shot name
+                                  cursor.getString(3),
+                                  cursor.getString(4) ) );
        } while (cursor.moveToNext());
      }
      // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "selectAllPhotos list size " + list.size() );
      if (cursor != null && !cursor.isClosed()) {
        cursor.close();
      }
-     for ( PhotoInfo pi : list ) {
+     for ( PhotoInfo pi : list ) { // fill in the shot-name of the photos
        cursor = myDB.query( SHOT_TABLE, 
                             new String[] { "fStation", "tStation" },
                             "surveyId=? and id=?",
@@ -653,7 +680,7 @@ public class DataHelper extends DataSetObservable
        String shot_name = cursor.getString(0) + "-" + cursor.getString(1);
        if (cursor != null && !cursor.isClosed()) cursor.close();
        cursor = myDB.query( PHOTO_TABLE,
-			    new String[] { "id", "title", "comment" }, // columns
+			    new String[] { "id", "title", "date", "comment" }, // columns
                             "surveyId=? and shotId=?",  // selection = WHERE clause (without "WHERE")
                             new String[] { Long.toString(sid), Long.toString(shotid) },     // selectionArgs
                             null,  // groupBy
@@ -665,7 +692,9 @@ public class DataHelper extends DataSetObservable
                                     cursor.getLong(0),
                                     shotid,
                                     cursor.getString(1),
-                                    cursor.getString(2) ) );
+                                    null,
+                                    cursor.getString(2),
+                                    cursor.getString(3) ) );
          } while (cursor.moveToNext());
        }
      }
@@ -707,7 +736,7 @@ public class DataHelper extends DataSetObservable
    {
      List<  PlotInfo  > list = new ArrayList<  PlotInfo  >();
      Cursor cursor = myDB.query(PLOT_TABLE,
-			        new String[] { "id", "name", "type" }, // columns
+			        new String[] { "id", "name", "type", "xoffset", "yoffset", "zoom" }, // columns
                                 "surveyId=? and status=?", 
                                 new String[] { Long.toString(sid), Long.toString(status) }, 
                                 null,  // groupBy
@@ -719,6 +748,9 @@ public class DataHelper extends DataSetObservable
          plot.setId( cursor.getLong(0), sid );
          plot.name = cursor.getString(1);
          plot.type = cursor.getInt(2);
+         plot.xoffset = (float)(cursor.getDouble(3));
+         plot.yoffset = (float)(cursor.getDouble(4));
+         plot.zoom    = (float)(cursor.getDouble(5));
          list.add( plot );
        } while (cursor.moveToNext());
      }
@@ -733,7 +765,7 @@ public class DataHelper extends DataSetObservable
    {
      // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "selectShot " + shot_id + "/" + survey_id );
      Cursor cursor = myDB.query(SHOT_TABLE,
-       new String[] { "fStation", "tStation", "distance", "bearing", "clino", "extend", "flag", "comment" }, // columns
+       new String[] { "fStation", "tStation", "distance", "bearing", "clino", "extend", "flag", "leg", "comment" }, // columns
        "surveyId=? and id=?", 
        new String[] { Long.toString(survey_id), Long.toString(shot_id) },
        null,  // groupBy
@@ -749,7 +781,10 @@ public class DataHelper extends DataSetObservable
        block.mClino   = (float)( cursor.getDouble(4) );
        block.mExtend  = cursor.getLong(5);
        block.mFlag    = cursor.getLong(6);
-       block.mComment = cursor.getString(7);
+       if ( cursor.getLong(7) == 1 ) {
+         block.mType = DistoXDBlock.BLOCK_LEG; 
+       }
+       block.mComment = cursor.getString(8);
      }
      if (cursor != null && !cursor.isClosed()) {
        cursor.close();
@@ -888,7 +923,7 @@ public class DataHelper extends DataSetObservable
    {
      List< DistoXDBlock > list = new ArrayList< DistoXDBlock >();
      Cursor cursor = myDB.query(SHOT_TABLE,
-       new String[] { "id", "fStation", "tStation", "distance", "bearing", "clino", "extend", "flag" }, // columns
+       new String[] { "id", "fStation", "tStation", "distance", "bearing", "clino", "extend", "flag", "leg" }, // columns
        "surveyId=? and status=? and fStation=?", 
        new String[] { Long.toString(sid), Long.toString(TopoDroidApp.STATUS_NORMAL), station },
        null,  // groupBy
@@ -896,18 +931,20 @@ public class DataHelper extends DataSetObservable
        "id" ); // order by
      if (cursor.moveToFirst()) {
        do {
-         String fStation = cursor.getString(1);
-         String tStation = cursor.getString(2);
-         DistoXDBlock block = new DistoXDBlock();
-         block.setId( cursor.getLong(0), sid );
-         block.setName( fStation, tStation );
-         block.mLength = (float)( cursor.getDouble(3) );
-         block.setBearing(  (float)( cursor.getDouble(4) ) );
-         block.mClino  =  (float)( cursor.getDouble(5) );
-         block.mExtend =  cursor.getLong(6);
-         block.mFlag   =  cursor.getLong(7);
-         // block.setComment = cursor.getLong(8) );
-         list.add( block );
+         if ( cursor.getLong(8) == 0 ) { // skip leg-blocks
+           String fStation = cursor.getString(1);
+           String tStation = cursor.getString(2);
+           DistoXDBlock block = new DistoXDBlock();
+           block.setId( cursor.getLong(0), sid );
+           block.setName( fStation, tStation );
+           block.mLength = (float)( cursor.getDouble(3) );
+           block.setBearing(  (float)( cursor.getDouble(4) ) );
+           block.mClino  =  (float)( cursor.getDouble(5) );
+           block.mExtend =  cursor.getLong(6);
+           block.mFlag   =  cursor.getLong(7);
+           // block.setComment = cursor.getLong(9) );
+           list.add( block );
+         }
        } while (cursor.moveToNext());
      }
      // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "selectAllShotsAtStation list size " + list.size() );
@@ -988,7 +1025,7 @@ public class DataHelper extends DataSetObservable
    {
      List< DistoXDBlock > list = new ArrayList< DistoXDBlock >();
      Cursor cursor = myDB.query(SHOT_TABLE,
-       new String[] { "id", "fStation", "tStation", "distance", "bearing", "clino", "extend", "flag", "comment" }, // columns
+       new String[] { "id", "fStation", "tStation", "distance", "bearing", "clino", "extend", "flag", "leg", "comment" }, // columns
        "surveyId=? and status=?",
        new String[] { Long.toString(sid), Long.toString(status) },
        null,  // groupBy
@@ -1001,13 +1038,14 @@ public class DataHelper extends DataSetObservable
          String fStation = cursor.getString(1);
          String tStation = cursor.getString(2);
          // block.setName( cursor.getString(1) );
-         block.setName(    fStation, tStation );
+         block.setName( fStation, tStation );
          block.mLength = (float)( cursor.getDouble(3) );
          block.setBearing( (float)( cursor.getDouble(4) ) );
          block.mClino  = (float)( cursor.getDouble(5) );
          block.mExtend = cursor.getLong(6);
          block.mFlag   = cursor.getLong(7);
-         block.mComment = cursor.getString(8);
+         if ( cursor.getLong(8) == 1 ) block.mType = DistoXDBlock.BLOCK_LEG;
+         block.mComment = cursor.getString(9);
          list.add( block );
        } while (cursor.moveToNext());
      }
@@ -1271,8 +1309,34 @@ public class DataHelper extends DataSetObservable
      }
      return ret;
    }
+ 
+   public PlotInfo getPlotInfo( long sid, String name )
+   {
+     PlotInfo plot = null;
+     if ( name != null ) {
+       Cursor cursor = myDB.query( PLOT_TABLE, 
+                 new String[] { "id", "type", "start", "view", "xoffset", "yoffset", "zoom" },
+                 "surveyId=? and name=?", 
+                 new String[] { Long.toString(sid), name },
+                 null, null, null );
+       if (cursor.moveToFirst() ) {
+         plot = new PlotInfo();
+         plot.surveyId = sid;
+         plot.id    = cursor.getLong(0);
+         plot.type  = cursor.getInt(1);
+         plot.name  = name;
+         plot.start = cursor.getString(2);
+         plot.view  = cursor.getString(3);
+         plot.xoffset = (float)( cursor.getDouble(4) );
+         plot.yoffset = (float)( cursor.getDouble(5) );
+         plot.zoom    = (float)( cursor.getDouble(6) );
+       }
+       if (cursor != null && !cursor.isClosed()) { cursor.close(); }
+     }
+     return plot;
+   }
 
-   public long getPlotId( long sid, String name )
+   private long getPlotId( long sid, String name )
    {
      long ret = -1;
      if ( name != null ) {
@@ -1288,23 +1352,23 @@ public class DataHelper extends DataSetObservable
      return ret;
    }
 
-   public String getPlotFieldAsString( long sid, long pid, String field )
-   {
-     String ret = null;
-     Cursor cursor = myDB.query( PLOT_TABLE, new String[] { field },
-                          "surveyId=? and id=?", 
-                          new String[] { Long.toString(sid), Long.toString(pid) },
-                          null, null, null );
-     if (cursor.moveToFirst() ) {
-       if ( field.equals("type") ) {
-         ret = Long.toString( cursor.getLong(0) );
-       } else {
-         ret = cursor.getString(0);
-       }
-     }
-     if (cursor != null && !cursor.isClosed()) { cursor.close(); }
-     return ret;
-   }
+   // public String getPlotFieldAsString( long sid, long pid, String field )
+   // {
+   //   String ret = null;
+   //   Cursor cursor = myDB.query( PLOT_TABLE, new String[] { field },
+   //                        "surveyId=? and id=?", 
+   //                        new String[] { Long.toString(sid), Long.toString(pid) },
+   //                        null, null, null );
+   //   if (cursor.moveToFirst() ) {
+   //     if ( field.equals("type") ) {
+   //       ret = Long.toString( cursor.getLong(0) );
+   //     } else {
+   //       ret = cursor.getString(0);
+   //     }
+   //   }
+   //   if (cursor != null && !cursor.isClosed()) { cursor.close(); }
+   //   return ret;
+   // }
 
    /**
     * @param sid       survey id
@@ -1313,7 +1377,7 @@ public class DataHelper extends DataSetObservable
     * @param title     photo title
     * @param comment
     */
-   public long insertPhoto( long sid, long id, long shotid, String title, String comment )
+   public long insertPhoto( long sid, long id, long shotid, String title, String date, String comment )
    {
      if ( id == -1L ) id = maxId( PHOTO_TABLE, sid );
      ContentValues cv = new ContentValues();
@@ -1322,6 +1386,7 @@ public class DataHelper extends DataSetObservable
      cv.put( "shotId",    shotid );
      cv.put( "status",    TopoDroidApp.STATUS_NORMAL );
      cv.put( "title",     title );
+     cv.put( "date",      date );
      cv.put( "comment",   (comment == null)? "" : comment );
      myDB.insert( PHOTO_TABLE, null, cv );
      return id;
@@ -1423,7 +1488,8 @@ public class DataHelper extends DataSetObservable
      return id;
    }
 
-   public long insertPlot( long sid, long id, String name, long type, long status, String start, String view )
+   public long insertPlot( long sid, long id, String name, long type, long status, String start, String view,
+                           double xoffset, double yoffset, double zoom )
    {
      long ret = getPlotId( sid, name );
      if ( ret >= 0 ) return -1;
@@ -1436,6 +1502,9 @@ public class DataHelper extends DataSetObservable
      cv.put( "status",   status );
      cv.put( "start",    start );
      cv.put( "view",     (view == null)? "" : view );
+     cv.put( "xoffset",  xoffset );
+     cv.put( "yoffset",  yoffset );
+     cv.put( "zoom",     zoom );
      myDB.insert( PLOT_TABLE, null, cv );
      return id;
    }
@@ -1627,7 +1696,7 @@ public class DataHelper extends DataSetObservable
        }
 
        cursor = myDB.query( PHOTO_TABLE, // SELECT ALL PHOTO RECORD
-  			           new String[] { "id", "shotId", "status", "title", "comment" },
+  			           new String[] { "id", "shotId", "status", "title", "date", "comment" },
                                    "surveyId=?", new String[] { Long.toString(sid) },
                                    null, null, null );
        if (cursor.moveToFirst()) {
@@ -1636,24 +1705,25 @@ public class DataHelper extends DataSetObservable
                      "INSERT into %s values( %d, %d, %d, %d, \"%s\", \"%s\" );\n",
                      PHOTO_TABLE,
                      sid,
-                     cursor.getLong(0), // id
-                     cursor.getLong(1), // shotid
-                     cursor.getLong(2), // status
-                     cursor.getString(3),
-                     cursor.getString(4) );
+                     cursor.getLong(0),   // id
+                     cursor.getLong(1),   // shotid
+                     cursor.getLong(2),   // status
+                     cursor.getString(3), // title
+                     cursor.getString(4), // date
+                     cursor.getString(5) );
          } while (cursor.moveToNext());
        }
        if (cursor != null && !cursor.isClosed()) {
          cursor.close();
        }
        cursor = myDB.query( PLOT_TABLE, 
-                            new String[] { "id", "name", "type", "status", "start", "view" },
+                            new String[] { "id", "name", "type", "status", "start", "view", "xoffset", "yoffset", "zoom" },
                             "surveyId=?", new String[] { Long.toString( sid ) },
                             null, null, null );
        if (cursor.moveToFirst()) {
          do {
            pw.format(Locale.ENGLISH,
-                     "INSERT into %s values( %d, %d, \"%s\", %d, %d, \"%s\", \"%s\" );\n",
+                     "INSERT into %s values( %d, %d, \"%s\", %d, %d, \"%s\", \"%s\", %.2f %.2f %.2f );\n",
                      PLOT_TABLE,
                      sid,
                      cursor.getLong(0),
@@ -1661,7 +1731,11 @@ public class DataHelper extends DataSetObservable
                      cursor.getLong(2),
                      cursor.getLong(3),
                      cursor.getString(4),
-                     cursor.getString(5) );
+                     cursor.getString(5),
+                     cursor.getDouble(6),
+                     cursor.getDouble(7),
+                     cursor.getDouble(8)
+                    );
          } while (cursor.moveToNext());
        }
        if (cursor != null && !cursor.isClosed()) {
@@ -1669,13 +1743,13 @@ public class DataHelper extends DataSetObservable
        }
        cursor = myDB.query( SHOT_TABLE, 
                             new String[] { "id", "fStation", "tStation", "distance", "bearing", "clino", "roll",
-                                           "extend", "flag", "status", "comment" },
+                                           "extend", "flag", "leg", "status", "comment" },
                             "surveyId=?", new String[] { Long.toString( sid ) },
                             null, null, null );
        if (cursor.moveToFirst()) {
          do {
            pw.format(Locale.ENGLISH,
-                     "INSERT into %s values( %d, %d, \"%s\", \"%s\", %.2f, %.2f, %.2f, %.2f, %d, %d, %d, \"%s\" );\n",
+                     "INSERT into %s values( %d, %d, \"%s\", \"%s\", %.2f, %.2f, %.2f, %.2f, %d, %d, %d, %d, \"%s\" );\n",
                      SHOT_TABLE,
                      sid,
                      cursor.getLong(0),
@@ -1685,10 +1759,12 @@ public class DataHelper extends DataSetObservable
                      cursor.getDouble(4),
                      cursor.getDouble(5),
                      cursor.getDouble(6),
-                     cursor.getLong(7),
-                     cursor.getLong(8),
-                     cursor.getLong(9),
-                     cursor.getString(10) );
+                     cursor.getLong(7),    // extend
+                     cursor.getLong(8),    // flag
+                     cursor.getLong(9),    // leg
+                     cursor.getLong(10),   // status
+                     cursor.getString(11)  // comment
+           );
          } while (cursor.moveToNext());
        }
        if (cursor != null && !cursor.isClosed()) {
@@ -1795,7 +1871,7 @@ public class DataHelper extends DataSetObservable
    {
      long sid = -1;
      long id, status, shotid;
-     String station, title, name, comment;
+     String station, title, date, name, comment;
      String line;
      try {
        FileReader fr = new FileReader( filename );
@@ -1833,9 +1909,10 @@ public class DataHelper extends DataSetObservable
              // FIXME PHOTO
              shotid  = longValue( v );
              title   = stringValue( v );
+             date    = stringValue( v );
              comment = stringValue( v );
              if ( shotid >= 0 ) {
-               insertPhoto( sid, id, shotid, title, comment );
+               insertPhoto( sid, id, shotid, title, date, comment );
                // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "loadFromFile photo " + sid + " " + id + " " + title + " " + name );
              }
            } else if ( table.equals(PLOT_TABLE) ) {
@@ -1844,7 +1921,10 @@ public class DataHelper extends DataSetObservable
              status       = longValue( v );
              String start = stringValue( v );
              String view  = stringValue( v );
-             insertPlot( sid, id, name, type, status, start, view );
+             double xoff  = doubleValue( v );
+             double yoff  = doubleValue( v );
+             double zoom  = doubleValue( v );
+             insertPlot( sid, id, name, type, status, start, view, xoff, yoff, zoom );
              // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "loadFromFile plot " + sid + " " + id + " " + start + " " + name );
            } else if ( table.equals(SHOT_TABLE) ) {
              String from = stringValue( v );
@@ -1855,9 +1935,10 @@ public class DataHelper extends DataSetObservable
              double r    = doubleValue( v );
              long extend = longValue( v );
              long flag   = longValue( v );
+             long leg    = longValue( v );
              status      = longValue( v );
              comment     = stringValue( v );
-             insertShot( sid, id, from, to, d, b, c, r, extend, flag, status, comment );
+             insertShot( sid, id, from, to, d, b, c, r, extend, flag, leg, status, comment );
              // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "insertShot " + sid + " " + id + " " + from + " " + to );
            } else if ( table.equals(FIXED_TABLE) ) {
              station    = stringValue( v );
@@ -1932,6 +2013,7 @@ public class DataHelper extends DataSetObservable
              +   " roll DOUBLE, "
              +   " extend INTEGER, "
              +   " flag INTEGER, "
+             +   " leg INTEGER, "
              +   " status INTEGER, "
              +   " comment TEXT "
              // +   " surveyId REFERENCES " + SURVEY_TABLE + "(id)"
@@ -1988,7 +2070,10 @@ public class DataHelper extends DataSetObservable
              +   " type INTEGER, "
              +   " status INTEGER, "
              +   " start TEXT, "
-             +   " view TEXT "
+             +   " view TEXT, "
+             +   " xoffset REAL, "
+             +   " yoffset REAL, "
+             +   " zoom REAL "
              // +   " surveyId REFERENCES " + SURVEY_TABLE + "(id)"
              // +   " ON DELETE CASCADE "
              +   ")"
@@ -2001,6 +2086,7 @@ public class DataHelper extends DataSetObservable
              +   " shotId INTEGER, "
              +   " status INTEGER, "
              +   " title TEXT, "
+             +   " date TEXT, "
              +   " comment TEXT "
              // +   " surveyId REFERENCES " + SURVEY_TABLE + "(id)"
              // +   " ON DELETE CASCADE "

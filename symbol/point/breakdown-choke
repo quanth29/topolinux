@@ -1,0 +1,15 @@
+symbol point
+name choke
+name-es ostruido
+name-pt estrangulamento
+name-it ostruzione
+th_name breakdown-choke
+orientation no
+color 0x33cc33
+path
+  moveTo -4 4
+  lineTo 4 -4
+  moveTo -4 -4
+  lineTo 4 4
+endpath
+endsymbol

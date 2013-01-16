@@ -13,6 +13,7 @@
  * 20120711 back-next buttons
  * 20120725 TopoDroidApp log
  * 20121118 compare stations of prev shot to increment the "bigger"
+ * 20130108 extend "ignore"
  */
 package com.android.DistoX;
 
@@ -33,6 +34,9 @@ import android.widget.EditText;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+
 import android.view.View.OnKeyListener;
 import android.view.KeyEvent;
 
@@ -55,12 +59,15 @@ public class ShotDialog extends Dialog
   private EditText mETcomment;
   // private CheckBox mRadioDup;
   // private CheckBox mRadioSurf;
+  private RadioButton mRadioReg;
   private RadioButton mRadioDup;
   private RadioButton mRadioSurf;
+  private CheckBox mCBleg;
 
-  private RadioButton mRadioLeft;
-  private RadioButton mRadioVert;
-  private RadioButton mRadioRight;
+  private RadioButton mRBleft;
+  private RadioButton mRBvert;
+  private RadioButton mRBright;
+  private RadioButton mRBignore;
   private Button   mButtonDrop;
   private Button   mButtonOK;
   private Button   mButtonSave;
@@ -70,6 +77,7 @@ public class ShotDialog extends Dialog
 
   String shot_from;
   String shot_to;
+  boolean shot_leg;
   String shot_data;
   long shot_extend;
   long shot_flag;
@@ -113,6 +121,7 @@ public class ShotDialog extends Dialog
     shot_data    = blk.dataString();
     shot_extend  = blk.mExtend;
     shot_flag    = blk.mFlag;
+    shot_leg     = blk.mType == DistoXDBlock.BLOCK_LEG;
     shot_comment = blk.mComment;
   }
 
@@ -131,12 +140,16 @@ public class ShotDialog extends Dialog
       mETcomment.setText( "" );
     }
    
-    mRadioDup.setChecked( shot_flag == DistoXDBlock.BLOCK_DUPLICATE );
-    mRadioSurf.setChecked( shot_flag == DistoXDBlock.BLOCK_SURFACE );
+    if ( shot_flag == DistoXDBlock.BLOCK_SURVEY ) { mRadioReg.setChecked( true ); }
+    else if ( shot_flag == DistoXDBlock.BLOCK_DUPLICATE ) { mRadioDup.setChecked( true ); }
+    else if ( shot_flag == DistoXDBlock.BLOCK_SURFACE ) { mRadioSurf.setChecked( true ); }
 
-    if ( shot_extend == -1 ) { mRadioLeft.setChecked( true ); }
-    else if ( shot_extend == 0 ) { mRadioVert.setChecked( true ); }
-    else { mRadioRight.setChecked( true ); }
+    mCBleg.setChecked( shot_leg );
+
+    if ( shot_extend == DistoXDBlock.EXTEND_LEFT ) { mRBleft.setChecked( true ); }
+    else if ( shot_extend == DistoXDBlock.EXTEND_VERT ) { mRBvert.setChecked( true ); }
+    else if ( shot_extend == DistoXDBlock.EXTEND_RIGHT ) { mRBright.setChecked( true ); }
+    else if ( shot_extend == DistoXDBlock.EXTEND_IGNORE ) { mRBignore.setChecked( true ); }
 
     mButtonNext.setEnabled( mNextBlk != null );
     mButtonPrev.setEnabled( mPrevBlk != null );
@@ -148,8 +161,12 @@ public class ShotDialog extends Dialog
   protected void onCreate(Bundle savedInstanceState) 
   {
     super.onCreate(savedInstanceState);
+    requestWindowFeature(Window.FEATURE_NO_TITLE);
+    // getWindow().setFlags( WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN );
+
     // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "ShotDialog::onCreate" );
     setContentView(R.layout.distox_shot_dialog);
+
     mTVdata    = (TextView) findViewById(R.id.shot_data );
     // mETname = (EditText) findViewById(R.id.shot_name );
     mETfrom    = (EditText) findViewById(R.id.shot_from );
@@ -157,20 +174,28 @@ public class ShotDialog extends Dialog
     mETcomment = (EditText) findViewById(R.id.shot_comment );
     // mRadioDup  = (CheckBox) findViewById( R.id.shot_dup );
     // mRadioSurf = (CheckBox) findViewById( R.id.shot_surf );
+    mRadioReg  = (RadioButton) findViewById( R.id.shot_reg );
     mRadioDup  = (RadioButton) findViewById( R.id.shot_dup );
     mRadioSurf = (RadioButton) findViewById( R.id.shot_surf );
+    mCBleg = (CheckBox)  findViewById(R.id.shot_leg );
 
-    mRadioLeft  = (RadioButton) findViewById(R.id.radio_left );
-    mRadioVert  = (RadioButton) findViewById(R.id.radio_vert );
-    mRadioRight = (RadioButton) findViewById(R.id.radio_right );
+    mRBleft   = (RadioButton) findViewById(R.id.left );
+    mRBvert   = (RadioButton) findViewById(R.id.vert );
+    mRBright  = (RadioButton) findViewById(R.id.right );
+    mRBignore = (RadioButton) findViewById(R.id.ignore );
 
-    mButtonDrop = (Button) findViewById(R.id.button_drop );
-    mButtonSave = (Button) findViewById(R.id.button_save );
-    mButtonOK   = (Button) findViewById(R.id.button_ok );
-    mButtonBack = (Button) findViewById(R.id.button_back );
+    if ( ! TopoDroidApp.mLoopClosure ) {
+      mRBignore.setClickable( false );
+      mRBignore.setTextColor( 0xff999999 );
+    }
 
-    mButtonPrev = (Button) findViewById(R.id.button_prev );
-    mButtonNext = (Button) findViewById(R.id.button_next );
+    mButtonDrop = (Button) findViewById(R.id.btn_drop );
+    mButtonSave = (Button) findViewById(R.id.btn_save );
+    mButtonOK   = (Button) findViewById(R.id.btn_ok );
+    mButtonBack = (Button) findViewById(R.id.btn_back );
+
+    mButtonPrev = (Button) findViewById(R.id.btn_prev );
+    mButtonNext = (Button) findViewById(R.id.btn_next );
 
     mETfrom.setRawInputType( InputType.TYPE_CLASS_NUMBER );
     // mETfrom.setKeyListener( NumberKeyListener );
@@ -184,38 +209,47 @@ public class ShotDialog extends Dialog
     mButtonPrev.setOnClickListener( this );
     mButtonNext.setOnClickListener( this );
 
+
     updateView();
   }
 
   private void saveDBlock()
   {
-    shot_from = mETfrom.getText().toString();
-    shot_from = TopoDroidApp.noSpaces( shot_from );
-    if ( shot_from == null ) {
+    if ( mCBleg.isChecked() ) {
       shot_from = "";
-    }
+      shot_to = "";
+      shot_leg = true;
+    } else {
+      shot_from = mETfrom.getText().toString();
+      shot_from = TopoDroidApp.noSpaces( shot_from );
+      // if ( shot_from == null ) { shot_from = ""; }
 
-    shot_to = mETto.getText().toString();
-    shot_to = TopoDroidApp.noSpaces( shot_to );
+      shot_to = mETto.getText().toString();
+      shot_to = TopoDroidApp.noSpaces( shot_to );
+      shot_leg = false;
+    }
 
     shot_flag = DistoXDBlock.BLOCK_SURVEY;
-    if ( mRadioDup.isChecked() ) {
-      shot_flag = DistoXDBlock.BLOCK_DUPLICATE;
-    } else if ( mRadioSurf.isChecked() ) {
-      shot_flag = DistoXDBlock.BLOCK_SURFACE;
+    if ( mRadioReg.isChecked() ) { shot_flag = DistoXDBlock.BLOCK_SURVEY;
+    } else if ( mRadioDup.isChecked() ) { shot_flag = DistoXDBlock.BLOCK_DUPLICATE;
+    } else if ( mRadioSurf.isChecked() ) { shot_flag = DistoXDBlock.BLOCK_SURFACE;
     }
 
-    shot_extend = 1;
-    if ( mRadioLeft.isChecked() ) { shot_extend = -1; }
-    else if ( mRadioVert.isChecked() ) { shot_extend = 0; }
+    shot_extend = mBlk.mExtend;
+    if ( mRBleft.isChecked() ) { shot_extend = DistoXDBlock.EXTEND_LEFT; }
+    else if ( mRBvert.isChecked() ) { shot_extend = DistoXDBlock.EXTEND_VERT; }
+    else if ( mRBright.isChecked() ) { shot_extend = DistoXDBlock.EXTEND_RIGHT; }
+    else if ( mRBignore.isChecked() ) { shot_extend = DistoXDBlock.EXTEND_IGNORE; }
 
     mBlk.setName( shot_from, shot_to );
     mBlk.mFlag = shot_flag;
     mBlk.mExtend = shot_extend;
+    if ( shot_leg ) mBlk.mType = DistoXDBlock.BLOCK_LEG;
+
     String comment = mETcomment.getText().toString();
     if ( comment != null ) mBlk.mComment = comment;
 
-    mParent.updateShot( shot_from, shot_to, shot_extend, shot_flag, comment, mBlk );
+    mParent.updateShot( shot_from, shot_to, shot_extend, shot_flag, shot_leg, comment, mBlk );
   }
 
   public void onClick(View v) 

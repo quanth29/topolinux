@@ -11,6 +11,8 @@
  * CHANGES
  * 20120621 item editoing: getPointAt getLineAt
  * 20120726 TopoDroidApp log
+ * 20121225 getAreaAt and deletePath
+ * 20130108 getStationAt getShotAt
  */
 package com.android.DistoX;
 
@@ -36,12 +38,16 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.EOFException;
 
+import android.util.Log;
+
 /**
  */
 public class DrawingCommandManager 
 {
   // private static final String TAG = "DistoX CM";
   private static final int BORDER = 20;
+
+  private static final float mCloseness = TopoDroidApp.mCloseness;
 
 
   static final int DISPLAY_NONE    = 0;
@@ -71,6 +77,19 @@ public class DrawingCommandManager
     // mHighlight    = Collections.synchronizedList(new ArrayList<DrawingPath>());
     mStations     = Collections.synchronizedList(new ArrayList<DrawingStation>());
     mMatrix = new Matrix(); // identity
+  }
+
+  void clearReferences()
+  {
+    synchronized( mGridStack ) {
+      mGridStack.clear();
+    }
+    synchronized( mFixedStack ) {
+      mFixedStack.clear();
+    }
+    synchronized( mStations ) {
+      mStations.clear();
+    }
   }
 
   // public void clearHighlight()
@@ -108,9 +127,16 @@ public class DrawingCommandManager
 
   public void setTransform( float dx, float dy, float s )
   {
-    mMatrix = new Matrix();
-    mMatrix.postTranslate( dx, dy );
-    mMatrix.postScale( s, s );
+    Matrix matrix = new Matrix();
+    matrix.postTranslate( dx, dy );
+    matrix.postScale( s, s );
+
+    mMatrix = matrix;
+  }
+
+  void deletePath( DrawingPath path )
+  {
+    mCurrentStack.remove( path );
   }
 
   public void setDisplayMode( int mode ) { mDisplayMode = mode; }
@@ -126,7 +152,6 @@ public class DrawingCommandManager
     mGridStack.add( path );
   }
 
-
   public void addStation( DrawingStation st )
   {
     mStations.add( st );
@@ -134,6 +159,7 @@ public class DrawingCommandManager
 
   public void addCommand( DrawingPath path )
   {
+    Log.v( "DistoX", "addCommand stack size  " + mCurrentStack.size() );
     // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "addCommand stack size  " + mCurrentStack.size() );
     // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "addCommand path " + path.toString() );
     mRedoStack.clear();
@@ -232,43 +258,47 @@ public class DrawingCommandManager
     boolean splays = (mDisplayMode & DISPLAY_SPLAY ) != 0;
     boolean stations = (mDisplayMode & DISPLAY_STATION ) != 0;
 
-    if( mGridStack != null && ( (mDisplayMode & DISPLAY_GRID) != 0 ) ) {
-      synchronized( mGridStack ) {
+    Matrix matrix = mMatrix;
+
+    synchronized( mGridStack ) {
+      if( mGridStack != null && ( (mDisplayMode & DISPLAY_GRID) != 0 ) ) {
         final Iterator i = mGridStack.iterator();
         while ( i.hasNext() ){
           final DrawingPath drawingPath = (DrawingPath) i.next();
-          drawingPath.draw( canvas, mMatrix );
+          drawingPath.draw( canvas, matrix );
           //doneHandler.sendEmptyMessage(1);
         }
       }
     }
 
-    if ( mFixedStack != null && (legs || splays) ) {
-      synchronized( mFixedStack ) {
+    synchronized( mFixedStack ) {
+      if ( mFixedStack != null && (legs || splays) ) {
         final Iterator i = mFixedStack.iterator();
         while ( i.hasNext() ){
           final DrawingPath drawingPath = (DrawingPath) i.next();
           if ( ( legs && drawingPath.mType == DrawingPath.DRAWING_PATH_FIXED ) 
             || ( splays && drawingPath.mType == DrawingPath.DRAWING_PATH_SPLAY ) ) {
-            drawingPath.draw( canvas, mMatrix );
+            drawingPath.draw( canvas, matrix );
           }
           //doneHandler.sendEmptyMessage(1);
         }
       }
     }
  
-    if ( mStations != null && stations ) {  
-      for ( DrawingStation st : mStations ) {
-        st.draw( canvas, mMatrix );
+    synchronized( mStations ) {
+      if ( mStations != null && stations ) {  
+        for ( DrawingStation st : mStations ) {
+          st.draw( canvas, matrix );
+        }
       }
     }
 
-    if ( mCurrentStack != null ){
-      synchronized( mCurrentStack ) {
+    synchronized( mCurrentStack ) {
+      if ( mCurrentStack != null ){
         final Iterator i = mCurrentStack.iterator();
         while ( i.hasNext() ){
           final DrawingPath drawingPath = (DrawingPath) i.next();
-          drawingPath.draw( canvas, mMatrix );
+          drawingPath.draw( canvas, matrix );
 
           // FIXME DEBUG area contour points
           // if ( drawingPath.mType == DrawingPath.DRAWING_PATH_AREA ) {
@@ -278,20 +308,20 @@ public class DrawingCommandManager
           //     // public float mY;
           //     Path p = new Path( DrawingBrushPaths.crossPath );
           //     p.offset( pt.mX, pt.mY );
-          //     p.transform( mMatrix );
+          //     p.transform( matrix );
           //     canvas.drawPath( p, DrawingBrushPaths.debugRed );
           //     if ( pt.has_cp ) {
           //       // float mX1; // first control point
           //       // float mY1;
           //       p = new Path( DrawingBrushPaths.crossPath );
           //       p.offset( pt.mX1, pt.mY1 );
-          //       p.transform( mMatrix );
+          //       p.transform( matrix );
           //       canvas.drawPath( p, DrawingBrushPaths.debugGreen );
           //       // float mX2; // second control point
           //       // float mY2;
           //       p = new Path( DrawingBrushPaths.crossPath );
           //       p.offset( pt.mX2, pt.mY2 );
-          //       p.transform( mMatrix );
+          //       p.transform( matrix );
           //       canvas.drawPath( p, DrawingBrushPaths.debugBlue );
           //     }
           //   }
@@ -302,6 +332,17 @@ public class DrawingCommandManager
         }
       }
     }
+  }
+
+  boolean hasStationName( String name )
+  {
+    for ( DrawingPath p : mCurrentStack ) {
+      if ( p.mType == DrawingPath.DRAWING_PATH_STATION ) {
+        DrawingStationPath sp = (DrawingStationPath)p;
+        if ( sp.mName.equals( name ) ) return true;
+      }
+    }
+    return false;
   }
 
   public boolean hasMoreRedo()
@@ -326,16 +367,51 @@ public class DrawingCommandManager
 
   public DrawingPointPath getPointAt( float x, float y )
   {
-    DrawingPointPath ret = null;
     float min_dist = 1000.0f;
+    DrawingPointPath ret = null;
     for ( DrawingPath p : mCurrentStack ) {
       if ( p.mType == DrawingPath.DRAWING_PATH_POINT ) {
         DrawingPointPath pp = (DrawingPointPath)p;
         float d = Math.abs( pp.mXpos - x ) + Math.abs( pp.mYpos - y );
-        if ( d < 16f && d < min_dist ) {
+        if ( d < mCloseness && d < min_dist ) {
           min_dist = d;
           ret = pp;
         }
+      }
+    }
+    return ret;
+  }
+
+  // get station is different it checks drawing-stations
+  public DrawingStation getStationAt( float x, float y )
+  {
+    float min_dist = 1000.0f;
+    DrawingStation ret = null;
+    for ( DrawingStation st : mStations ) {
+      float d = st.distance( x, y );
+      // Log.v( "DistoX", " check station " + st.mName + " at " + st.mX + " " + st.mY + " dist " + d );
+      if ( d < mCloseness && d < min_dist ) {
+        min_dist = d;
+        ret = st;
+      }
+    }
+    return ret;
+  }
+
+  public DrawingPath getShotAt( float x, float y )
+  {
+    float min_dist = 1000.0f;
+    DrawingPath ret = null;
+    boolean legs   = (mDisplayMode & DISPLAY_LEG) != 0;
+    boolean splays = (mDisplayMode & DISPLAY_SPLAY) != 0;
+    for ( DrawingPath p : mFixedStack ) {
+      if (    ( legs && p.mType == DrawingPath.DRAWING_PATH_FIXED )
+           || ( splays && p.mType == DrawingPath.DRAWING_PATH_SPLAY ) ) {
+       float d = p.distance( x, y );
+       if ( d < mCloseness && d < min_dist ) { 
+         min_dist = d;
+         ret = p;
+       }
       }
     }
     return ret;
@@ -348,17 +424,33 @@ public class DrawingCommandManager
     for ( DrawingPath p : mCurrentStack ) {
       if ( p.mType == DrawingPath.DRAWING_PATH_LINE ) {
         DrawingLinePath pp = (DrawingLinePath)p;
-        for ( LinePoint pt : pp.points ) {
-          float d = Math.abs( pt.mX - x ) + Math.abs( pt.mY - y );
-          if ( d < 16f && d < min_dist ) {
-            min_dist = d;
-            ret = pp;
-          }
+        float d = pp.distance( x, y );
+        if ( d < mCloseness && d < min_dist ) {
+          min_dist = d;
+          ret = pp;
         }
       }
     }
     return ret;
   }
+
+  public DrawingAreaPath getAreaAt( float x, float y )
+  { 
+    DrawingAreaPath ret = null;
+    float min_dist = 1000.0f;
+    for ( DrawingPath p : mCurrentStack ) {
+      if ( p.mType == DrawingPath.DRAWING_PATH_AREA ) {
+        DrawingAreaPath pp = (DrawingAreaPath)p;
+        float d = pp.distance( x, y );
+        if ( d < mCloseness && d < min_dist ) {
+          min_dist = d;
+          ret = pp;
+        }
+      }
+    }
+    return ret;
+  }
+
 
   public void exportTherion( BufferedWriter out, String scrap_name, String proj_name )
   {
@@ -386,6 +478,13 @@ public class DrawingCommandManager
           DrawingPointPath pp = (DrawingPointPath)p;
           out.write( pp.toTherion() );
           out.newLine();
+        } else if ( p.mType == DrawingPath.DRAWING_PATH_STATION ) {
+          if ( ! TopoDroidApp.mAutoStations ) {
+            DrawingStationPath st = (DrawingStationPath)p;
+            // Log.v("DistoX", "save station to Therion " + st.mName );
+            out.write( st.toTherion() );
+            out.newLine();
+          }
         } else if ( p.mType == DrawingPath.DRAWING_PATH_LINE ) {
           DrawingLinePath lp = (DrawingLinePath)p;
           // TopoDroidApp.Log(  TopoDroidApp.LOG_PLOT, "exportTherion line " + lp.lineType() );
@@ -414,19 +513,23 @@ public class DrawingCommandManager
         }
       }
       out.newLine();
-      for ( DrawingStation st : mStations ) {
-        // FIXME if station is in the convex hull of the lines
-        if ( xmin > st.mX || xmax < st.mX ) continue;
-        if ( ymin > st.mY || ymax < st.mY ) continue;
-        float u = st.mX + st.mY;
-        float v = st.mX - st.mY;
-        if ( umin > u || umax < u ) continue;
-        if ( vmin > v || vmax < v ) continue;
-        out.write( st.toTherion() );
+
+      if ( TopoDroidApp.mAutoStations ) {
+        for ( DrawingStation st : mStations ) {
+          // FIXME if station is in the convex hull of the lines
+          if ( xmin > st.mX || xmax < st.mX ) continue;
+          if ( ymin > st.mY || ymax < st.mY ) continue;
+          float u = st.mX + st.mY;
+          float v = st.mX - st.mY;
+          if ( umin > u || umax < u ) continue;
+          if ( vmin > v || vmax < v ) continue;
+          out.write( st.toTherion() );
+          out.newLine();
+        }
+        out.newLine();
         out.newLine();
       }
-      out.newLine();
-      out.newLine();
+
       out.write("endscrap");
       out.newLine();
     } catch ( IOException e ) {

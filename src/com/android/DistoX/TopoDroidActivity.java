@@ -59,6 +59,9 @@ import android.location.LocationManager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnDismissListener;
 import android.net.Uri;
 
 import android.widget.TextView;
@@ -87,6 +90,8 @@ public class TopoDroidActivity extends Activity
                                implements OnItemClickListener
                                , OnItemLongClickListener
                                , View.OnClickListener
+                               , OnCancelListener
+                               , OnDismissListener
 {
   private TopoDroidApp app;
 
@@ -113,7 +118,7 @@ public class TopoDroidActivity extends Activity
   private MenuItem mMIimport;
   // private MenuItem mMIopen;
   private SubMenu  mSMmore;
-  private MenuItem mMIsymbol;
+  // private MenuItem mMIsymbol;
   private MenuItem mMIthconfig;
   private MenuItem mMIoptions;
   private MenuItem mMIlogs;
@@ -271,7 +276,7 @@ public class TopoDroidActivity extends Activity
     mMIimport  = menu.add( R.string.menu_import );
     mSMmore    = menu.addSubMenu( R.string.menu_more );
       mMIthconfig = mSMmore.add( R.string.menu_thconfig );
-      mMIsymbol   = mSMmore.add( R.string.menu_symbol );
+      // mMIsymbol   = mSMmore.add( R.string.menu_symbol );
       mMIoptions = mSMmore.add( R.string.menu_options );
       mMIlogs    = mSMmore.add( R.string.menu_logs );
       mMIhelp    = mSMmore.add( R.string.menu_help  );
@@ -307,14 +312,14 @@ public class TopoDroidActivity extends Activity
       } catch ( ActivityNotFoundException e ) {
         Toast.makeText( this, R.string.no_thmanager, Toast.LENGTH_LONG ).show();
       }
-    } else if ( item == mMIsymbol ) { 
-      Intent intent = new Intent( "TdSymbol.intent.action.Launch" );
-      try {
-        startActivity( intent );
-        DrawingBrushPaths.clearPaths(); // force reloading paths
-      } catch ( ActivityNotFoundException e ) {
-        Toast.makeText( this, R.string.no_tdsymbol, Toast.LENGTH_LONG ).show();
-      }
+    // } else if ( item == mMIsymbol ) { 
+    //   Intent intent = new Intent( "TdSymbol.intent.action.Launch" );
+    //   try {
+    //     startActivity( intent );
+    //     DrawingBrushPaths.reloadSymbols(); // force reloading paths
+    //   } catch ( ActivityNotFoundException e ) {
+    //     Toast.makeText( this, R.string.no_tdsymbol, Toast.LENGTH_LONG ).show();
+    //   }
     } else if ( item == mMIoptions ) { // OPTIONS DIALOG
       Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
       optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_ALL );
@@ -324,7 +329,7 @@ public class TopoDroidActivity extends Activity
       optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_LOG );
       startActivity( optionsIntent );
     } else if ( item == mMIabout ) { // ABOUT DIALOG
-      TopoDroidAbout.show( this );
+      (new TopoDroidAbout( this )).show();
     } else if ( item == mMIhelp  ) { // HELP DIALOG
       // TopoDroidHelp.show( this, R.string.help_topodroid );
       Intent pdf = new Intent( Intent.ACTION_VIEW, Uri.parse( TopoDroidApp.mManual ) );
@@ -371,7 +376,8 @@ public class TopoDroidActivity extends Activity
 
         sid = app.setSurveyFromName( str[1] );
         String date = parser.mDate;
-        app.mData.updateSurveyDayAndComment( sid, date, "" );
+        String title = parser.mTitle;
+        app.mData.updateSurveyDayAndComment( sid, date, title );
         long id = app.mData.insertShots( sid, 1, shots ); // start id = 1
       } catch ( ParserException e ) {
         // Toast.makeText(this, R.string.file_parse_fail, Toast.LENGTH_SHORT).show();
@@ -425,6 +431,9 @@ public class TopoDroidActivity extends Activity
   }
   
   // ---------------------------------------------------------------
+
+  TopoDroidAbout mTopoDroidAbout = null;
+  TdSymbolDialog mTdSymbolDialog = null;
   
   @Override
   public void onCreate(Bundle savedInstanceState)
@@ -456,10 +465,56 @@ public class TopoDroidActivity extends Activity
     // restoreInstanceFromFile();
     restoreInstanceFromData();
     if ( app.mWelcomeScreen ) {
-      app.setWelcomeScreen( false );
-      TopoDroidAbout.show( this );
+      app.setBooleanPreference( "DISTOX_WELCOME_SCREEN", false );
+      app.mWelcomeScreen = false;
+      mTopoDroidAbout = new TopoDroidAbout( this );
+      mTopoDroidAbout.setOnCancelListener( this );
+      mTopoDroidAbout.setOnDismissListener( this );
+      mTopoDroidAbout.show();
+    } else if ( app.mTdSymbol ) {
+      startTdSymbolDialog();
+    } else {
     }
+    DrawingBrushPaths.doMakePaths( );
+
     // setTitleColor( 0x006d6df6 );
+  }
+
+  @Override
+  public void onDismiss( DialogInterface d )
+  { 
+    if ( d == (Dialog)mTdSymbolDialog ) {
+      if ( app.mStartTdSymbol ) {
+        Intent intent = new Intent( "TdSymbol.intent.action.Launch" );
+        try {
+          startActivity( intent );
+          // DrawingBrushPaths.reloadSymbols(); // force reloading paths
+        } catch ( ActivityNotFoundException e ) {
+          Toast.makeText( this, R.string.no_tdsymbol, Toast.LENGTH_LONG ).show();
+        }
+      }
+      mTdSymbolDialog = null;
+    } else if ( d == (Dialog)mTopoDroidAbout ) {
+      startTdSymbolDialog();
+      mTopoDroidAbout = null;
+    }
+  }
+
+  @Override
+  public void onCancel( DialogInterface d )
+  {
+    if ( d == (Dialog)mTopoDroidAbout ) {
+      startTdSymbolDialog();
+      mTopoDroidAbout = null;
+    }
+  }
+
+  private void startTdSymbolDialog()
+  {
+    mTdSymbolDialog = new TdSymbolDialog( this, app );
+    // mTdSymbolDialog.setOnCancelListener( this );
+    mTdSymbolDialog.setOnDismissListener( this );
+    mTdSymbolDialog.show();
   }
 
   // private void restoreInstanceState(Bundle map )

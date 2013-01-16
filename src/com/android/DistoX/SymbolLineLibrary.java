@@ -50,12 +50,25 @@ class SymbolLineLibrary
     return mLine.get( k );
   }
 
-  SymbolLine getLine( String th_name ) 
+  boolean hasLine( String th_name ) 
   {
     for ( SymbolLine l : mLine ) {
-      if ( th_name.equals( l.mThName ) ) return l;
+      if ( th_name.equals( l.mThName ) ) {
+        return true;
+      }
     }
-    return null;
+    return false;
+  }
+
+  boolean removeLine( String th_name ) 
+  {
+    for ( SymbolLine l : mLine ) {
+      if ( th_name.equals( l.mThName ) ) {
+        mLine.remove( l );
+        return true;
+      }
+    }
+    return false;
   }
 
   String getLineName( int k )
@@ -86,7 +99,7 @@ class SymbolLineLibrary
     mLineNr = mLine.size();
   }
 
-  private void loadUserLines()
+  void loadUserLines()
   {
     String locale = "name-" + Locale.getDefault().toString().substring(0,2);
 
@@ -95,7 +108,7 @@ class SymbolLineLibrary
       File[] files = dir.listFiles();
       for ( File file : files ) {
         SymbolLine symbol = new SymbolLine( file.getPath(), locale );
-        if ( getLine( symbol.mThName ) == null ) {
+        if ( ! hasLine( symbol.mThName ) ) {
           // if ( symbol.mThName.equals("wall") )  mLineWallIndex = mLine.size();
           if ( symbol.mThName.equals("slope") ) mLineSlopeIndex = mLine.size();
           mLine.add( symbol );

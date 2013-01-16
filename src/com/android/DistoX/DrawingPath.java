@@ -15,6 +15,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Matrix;
 
+import android.util.Log;
+
 /**
  */
 public class DrawingPath implements DrawingICanvasCommand
@@ -33,7 +35,8 @@ public class DrawingPath implements DrawingICanvasCommand
   public int mType;
   // private float x1, y1, x2, y2; // endpoint scene coords 
   // private int dir; // 0 x1 < x2, 1 y1 < y2, 2 x2 < x1, 3 y2 < y1
-  private float cx, cy;
+
+  private float cx, cy; // midpoint scene coords
                  
   public DistoXDBlock mBlock;
 
@@ -59,6 +62,8 @@ public class DrawingPath implements DrawingICanvasCommand
 
   public void setPaint( Paint paint ) { mPaint = paint; }
 
+  // x10, y10 first endpoint scene coords
+  // x20, y20 second endpoint
   public void setEndPoints( float x10, float y10, float x20, float y20 )
   {
     // x1 = x10;
@@ -72,11 +77,12 @@ public class DrawingPath implements DrawingICanvasCommand
     cy = (y20+y10)/2;
   }
 
-  public boolean isCloseTo( float x, float y )
+  float distance( float x, float y )
   {
-    if ( mBlock == null ) return false;
-    // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "isCloseTo " + x + " " + y + " " + cx + " " + cy );
-    return ( Math.abs( x - cx ) < 4.0 && Math.abs( y - cy ) < 4.0 ); // FIXME 
+    if ( mBlock == null ) return 0.0f;
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "distance to " + x + " " + y + " " + cx + " " + cy );
+    Log.v( TopoDroidApp.TAG, "path distance from " + x + " " + y + " center " + cx + " " + cy );
+    return (float)( Math.abs( x - cx ) + Math.abs( y - cy ) );
   }
 
   // public int type() { return mType; }

@@ -1,0 +1,21 @@
+TopoDroid symbols
+
+To install a point that is not already included in TopoDroid copy the point file to the directory
+TopoDroid/symbol/point on your Android.
+
+You can put together two points that have no orientation. To do this, paste the two point files
+together (eg, "cat ice snow > ice+snow") and copy the file with both points in the 
+directory on Android.
+
+You can edit the symbols as you please, as well as write new symbols.
+Notes:
+  the directive "symbol" is closed by "endsymbol".
+  "name" and "th_name" must be single words: only the first word after the directive is used.
+  "th_name" must be a valid therion name. TopoDroid does not check this, but Therion will complain.
+  "color" is an hex number of the form 0xRRGGBB (alpha is set to 0xff by TopoDroid).
+  "orientation" can have values "yes" or "no", depending whether the point has an orientation or not.
+  "path" is a list of drawing directives (one per line). Supported commands are moveTo, lineTo, cubicTo,
+       and addCircle (see the files for examples).
+       The directive "path" is closed by "endpath".
+ 
+

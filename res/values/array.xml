@@ -26,27 +26,27 @@
      <item name="dat">Compass</item>
      <item name="svx">Survex</item>
      <item name="tro">VisualTopo</item>
-     <item name="tlx">TopoLinux</item>
+     <!-- item name="tlx">TopoLinux</item -->
   </string-array>
   <string-array name="exportTypeValue">
      <item name="th">th</item>
      <item name="dat">dat</item>
      <item name="svx">svx</item>
      <item name="tro">tro</item>
-     <item name="tlx">tlx</item>
+     <!-- item name="tlx">tlx</item -->
   </string-array>
 
   <string-array name="lineStyle">
-     <item name="bezier">Bezier</item>
      <item name="none">Fine</item>
      <item name="two">Normal</item>
      <item name="two">Coarse</item>
+     <item name="bezier">Bezier</item>
   </string-array>
   <string-array name="lineStyleValue">
-     <item name="bezier">bezier</item>
-     <item name="none">none</item>
-     <item name="two">two</item>
-     <item name="three">three</item>
+     <item name="none">1</item>
+     <item name="two">2</item>
+     <item name="three">3</item>
+     <item name="bezier">0</item>
   </string-array>
 
   <string-array name="groupBy">

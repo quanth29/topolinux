@@ -10,3 +10,24 @@ CHANGES
 20120516 survey edit dialog
 20120517 undelete cstr signature
 20120520 started on branch TopoDroid 1.0 (workflow nr. 3)
+
+20130116 V. 1.1.0
+automatic "extend" assignment to splay shots
+drawing symbol external libraries (allow user-made symbols)
+Therion config manager
+improved therion import (and syntax support)
+zoom button-controls
+area symbol attribute(s)
+point/line/area delete
+auto-stations vs manual station points
+shot "extend" editing from the Sketch window
+lopp closure-error compensation
+
+several bug fixes
+new preferences
+improved dialogs and words
+
+languages: 
+- english
+- spanish (M. Guerrero)
+- portuguese (J, Moutinho)

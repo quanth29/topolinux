@@ -1,0 +1,9 @@
+symbol line
+  name rock-border
+  name-es borde_roca
+  name-pt rebordo_rocha
+  name-it masso
+  th_name rock-border
+  color 0x66ffcc 0xff
+  width 1
+endsymbol

@@ -1,0 +1,9 @@
+symbol line
+  name contour
+  name-es contono
+  name-pt contorno
+  name-it contorno
+  th_name contour
+  color 0x33cc66 0xff
+  width 1
+endsymbol

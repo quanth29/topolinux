@@ -53,12 +53,25 @@ class SymbolPointLibrary
     return mPoint.get(k).mHasText;
   }
 
-  SymbolPoint getPoint( String th_name ) 
+  boolean hasPoint( String th_name )
   {
     for ( SymbolPoint p : mPoint ) {
-      if ( p.hasThName( th_name ) ) return p;
+      if ( p.hasThName( th_name ) ) {
+        return true;
+      }
     }
-    return null;
+    return false;
+  }
+
+  boolean removePoint( String th_name ) 
+  {
+    for ( SymbolPoint p : mPoint ) {
+      if ( p.hasThName( th_name ) ) {
+        mPoint.remove( p );
+        return true;
+      }
+    }
+    return false;
   }
 
   SymbolPoint getPoint( int k ) 
@@ -244,7 +257,7 @@ class SymbolPointLibrary
     mPointNr = mPoint.size();
   }
 
-  private void loadUserPoints()
+  void loadUserPoints()
   {
     String locale = "name-" + Locale.getDefault().toString().substring(0,2);
 
@@ -253,7 +266,7 @@ class SymbolPointLibrary
       File[] files = dir.listFiles();
       for ( File file : files ) {
         SymbolPoint symbol = new SymbolPoint( file.getPath(), locale );
-        if ( getPoint( symbol.getThName() ) == null ) { // NOTE avoid points with same therion_name ?
+        if ( ! hasPoint( symbol.getThName() ) ) {
           // if ( symbol.getThName().equals("label") ) mPointLabelIndex = mPoint.size();
           if ( symbol.getThName().equals("danger" ) ) mPointDangerIndex = mPoint.size();
           mPoint.add( symbol );

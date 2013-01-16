@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
-    android:layout_width="wrap_content" 
+    android:layout_width="fill_parent" 
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingLeft="6dp"
@@ -18,7 +18,7 @@
         android:textSize="14sp"
         android:text="@string/leg"
         / -->
-      <Button android:id="@+id/button_prev"
+      <Button android:id="@+id/btn_prev"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="left"
@@ -27,7 +27,7 @@
                 android:paddingRight="15dp"
         android:text="@string/button_prev"
         />
-      <Button android:id="@+id/button_next"
+      <Button android:id="@+id/btn_next"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="right"
@@ -56,7 +56,7 @@
         android:layout_width="wrap_content"
         android:width="100dp"
         android:layout_height="wrap_content" 
-        android:hint="@string/shot_from"
+        android:text="0"
         android:nextFocusDown="@+id/shot_to"
         />
       <EditText android:id="@+id/shot_to" 
@@ -65,7 +65,7 @@
         android:layout_width="wrap_content"
         android:width="100dp"
         android:layout_height="wrap_content" 
-        android:hint="@string/shot_to"
+        android:text="1"
         />
     </LinearLayout>				  
 
@@ -81,26 +81,38 @@
         android:hint="@string/shot_note"
         />
 
+    <CheckBox
+       android:id="@+id/shot_leg"
+       android:layout_width="fill_parent"
+       android:layout_height="wrap_content"
+       android:text="@string/shot_leg"
+       />
+
     <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android" 
       android:layout_width="wrap_content" 
       android:layout_height="wrap_content"
       android:orientation="horizontal" 
       >
       <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/radio_left"
+        android:id="@+id/left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/extend_left" />
       <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/radio_vert"
+        android:id="@+id/vert"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/extend_vert" />
       <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/radio_right"
+        android:id="@+id/right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/extend_right" />
+      <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/ignore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/extend_ignore" />
     </RadioGroup>
 
     <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android" 
@@ -108,6 +120,13 @@
       android:layout_height="wrap_content"
       android:orientation="horizontal" 
       >
+      <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/shot_reg"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content"
+        android:text="@string/regular"
+        />
+
       <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/shot_dup"
         android:layout_width="wrap_content" 
@@ -128,7 +147,7 @@
       android:layout_height="wrap_content"
       android:orientation="horizontal" 
       >
-      <Button android:id="@+id/button_ok"
+      <Button android:id="@+id/btn_ok"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="left"
@@ -137,7 +156,7 @@
                 android:paddingRight="15dp"
         android:text="@string/button_ok"
         />
-      <Button android:id="@+id/button_save"
+      <Button android:id="@+id/btn_save"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="left"
@@ -146,7 +165,7 @@
                 android:paddingRight="15dp"
         android:text="@string/button_save"
         />
-      <Button android:id="@+id/button_back"
+      <Button android:id="@+id/btn_back"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="left"
@@ -161,7 +180,7 @@
         android:orientation="horizontal"
         android:gravity="right"
         >
-      <Button android:id="@+id/button_drop"
+      <Button android:id="@+id/btn_drop"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
                 android:singleLine="true"

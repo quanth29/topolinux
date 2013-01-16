@@ -61,7 +61,7 @@
                 android:singleLine="true"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
-        android:text="@string/button_ok"
+        android:text="@string/button_measure"
         />
    		
       <Button android:id="@+id/sensor_cancel"

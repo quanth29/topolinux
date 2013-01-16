@@ -11,7 +11,7 @@
  * CHANGES
  * 20120706 Therion "scale" option
  * 20121113 sink/spring points toTherion
- * 20121122 overloaded points snow/ice flowstone/moonmilk dig/choke crystal/gypsum
+ * 20121122 points snow/ice flowstone/moonmilk dig/choke crystal/gypsum
  */
 
 package com.android.DistoX;

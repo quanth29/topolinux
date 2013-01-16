@@ -129,6 +129,17 @@ public class DrawingLinePath extends DrawingPath
     }
   }
 
+  @Override
+  float distance( float x, float y )
+  {
+    float dist = 1000f; // FIXME
+    for ( LinePoint pt : points ) {
+      float d = Math.abs( pt.mX - x ) + Math.abs( pt.mY - y );
+      if ( d < dist ) dist = d;
+    }
+    return dist;
+  }
+
   void setReversed( boolean reversed )
   {
     if ( reversed != mReversed ) {

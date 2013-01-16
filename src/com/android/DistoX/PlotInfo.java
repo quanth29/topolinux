@@ -3,7 +3,7 @@
  * @author marco corvi
  * @date nov 2011
  *
- * @brief TopoDroid plot (scrap) metadata
+ * @brief TopoDroid sketch metadata
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
@@ -12,6 +12,8 @@
  * 20120522 renamed PlotInfo
  */
 package com.android.DistoX;
+
+// import android.util.Log;
 
 class PlotInfo
 {
@@ -23,9 +25,19 @@ class PlotInfo
   };
 
   public long surveyId; // survey id
-  public long id;       // start station id
+  public long id;       // plot id
   public String name;   // name of the plot
   public int type;      // type of the plot
+  public String start;  // base station
+  public String view;   // viewed station
+  public float xoffset; // display X-offset
+  public float yoffset; // display Y-offset
+  public float zoom;    // display zoom
+
+  // void dump()
+  // {
+  //   Log.v("DistoX", surveyId + "-" + id + " " + name + " type " + type + " start " + start );
+  // }
 
   public void setId( long i, long sid )
   {

@@ -68,6 +68,7 @@ public class ImportDialog extends Dialog
     mList.setDividerHeight( 2 );
 
     // setTitleColor( 0x006d6df6 );
+    setTitle( R.string.file_chooser_title );
 
     files = TopoDroidApp.getImportFiles();
     ArrayList<String> names = new ArrayList<String>();

@@ -25,6 +25,8 @@ import android.view.View;
 public class CalibCoeffDialog extends Dialog
                               // implements View.OnClickListener
 {
+  private Context mContext;
+
   private TextView mTextBG;
   private TextView mTextAGx;
   private TextView mTextAGy;
@@ -55,6 +57,8 @@ public class CalibCoeffDialog extends Dialog
                            float delta, float error, long iter )
   {
     super( context );
+    mContext = context;
+
     StringWriter sw1 = new StringWriter();
     PrintWriter  pw1 = new PrintWriter( sw1 );
     pw1.format("bG   %8.4f %8.4f %8.4f", bg.x, bg.y, bg.z );
@@ -108,6 +112,8 @@ public class CalibCoeffDialog extends Dialog
   protected void onCreate(Bundle savedInstanceState) 
   {
     super.onCreate(savedInstanceState);
+
+    setTitle( mContext.getResources().getString( R.string.title_coeff ) );
 
     setContentView(R.layout.distox_coeff_dialog);
     mTextBG  = (TextView) findViewById(R.id.coeff_bg);

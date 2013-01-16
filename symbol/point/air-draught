@@ -1,0 +1,19 @@
+symbol point
+name air-draught
+name-es corriente_de_aire
+name-pt corrente_de_ar
+name-it Corrente_d'aria
+th_name air-draught
+orientation yes
+color 0x00ccff
+path
+  moveTo -4 7
+  lineTo 0 3
+  lineTo 0 -10
+  lineTo 4 -6
+  moveTo 0 -10
+  lineTo -4 -6
+  moveTo -4 4
+  lineTo 0 0
+endpath
+endsymbol

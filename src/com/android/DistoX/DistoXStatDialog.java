@@ -34,12 +34,15 @@ import android.widget.TextView;
 import android.widget.Button;
 import android.widget.ListView;
 
+import android.widget.ArrayAdapter;
+
 public class DistoXStatDialog extends Dialog 
                               // implements View.OnClickListener
 {
     private Context mContext;
 
     private TextView mTextLength;
+    private TextView mTextWENS;
     private TextView mTextZminmax;
     private TextView mTextStations;
     private TextView mTextShots;
@@ -62,23 +65,19 @@ public class DistoXStatDialog extends Dialog
         setContentView(R.layout.distox_stat_dialog);
 
         mTextLength   = (TextView) findViewById(R.id.text_stat_length);
+        mTextWENS     = (TextView) findViewById(R.id.text_stat_wens);
         mTextZminmax  = (TextView) findViewById(R.id.text_stat_zminmax);
         mTextStations = (TextView) findViewById(R.id.text_stat_stations);
         mTextShots    = (TextView) findViewById(R.id.text_stat_shots);
         mTextSplays   = (TextView) findViewById(R.id.text_stat_splays);
 
         // mList.setOnItemClickListener( this );
-        List< DistoXNum.Closure > cls = mNum.getClosures();
+        List< String > cls = mNum.getClosures();
         if ( cls.size() == 0 ) {
           ((TextView)findViewById( R.id.text_stat_loops )).setText( R.string.loop_none );
         } else {
           mList = (ListView) findViewById(R.id.list);
-          DistoXClosureAdapter adapter = 
-            new DistoXClosureAdapter( mContext, R.layout.row, new ArrayList< DistoXNum.Closure >() );
-          mList.setAdapter( adapter );
-          for ( DistoXNum.Closure cl : cls ) {
-            adapter.add( cl );
-          }
+          mList.setAdapter( new ArrayAdapter<String>( mContext, R.layout.row, cls ) );
         }
 
         // mBtnOk = (Button) findViewById(R.id.button_stat_ok);
@@ -88,6 +87,12 @@ public class DistoXStatDialog extends Dialog
 
         mTextLength.setText( String.format( res.getString(R.string.stat_length),
                                             mNum.surveyLength() ) );
+        mTextWENS.setText( String.format( res.getString(R.string.stat_wens),
+                                          mNum.surveyWest(),
+                                          mNum.surveyEast(),
+                                          mNum.surveyNorth(),
+                                          mNum.surveySouth()
+                          ) );
         mTextZminmax.setText( String.format( res.getString(R.string.stat_depth),
                                              mNum.surveyTop(),
                                              mNum.surveyBottom() ) );

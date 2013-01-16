@@ -179,7 +179,7 @@ class SymbolPoint
    */
   void readFile( String filename, String locale )
   {
-    // Log.v( TAG, "SymbolPoint::readFile " + filename );
+    // Log.v( TAG, "SymbolPoint::readFile " + filename + " locale " + locale );
  
     String name    = null;
     String th_name = null;

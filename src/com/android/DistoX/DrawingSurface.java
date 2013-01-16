@@ -13,6 +13,7 @@
  * 20120705 hadle point attributes in loadTherion
  * 20121113 sink/spring points from Therion
  * 20121122 overloaded point snow/ice, flowstone/moonmilk dig/choke crystal/gypsum
+ * 20121206 symbol libraries
  */
 package com.android.DistoX;
 
@@ -26,6 +27,7 @@ import android.view.SurfaceView;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -60,6 +62,10 @@ public class DrawingSurface extends SurfaceView
     public int width()  { return mWidth; }
     public int height() { return mHeight; }
 
+    TreeSet< String > mMissingPoint;
+    TreeSet< String > mMissingLine;
+    TreeSet< String > mMissingArea;
+
     public DrawingSurface(Context context, AttributeSet attrs) 
     {
       super(context, attrs);
@@ -72,6 +78,10 @@ public class DrawingSurface extends SurfaceView
       mHolder = getHolder();
       mHolder.addCallback(this);
       commandManager = new DrawingCommandManager();
+
+      mMissingPoint = new TreeSet< String >();
+      mMissingLine  = new TreeSet< String >();
+      mMissingArea  = new TreeSet< String >();
     }
 
     // public void clearHighlight()
@@ -91,6 +101,16 @@ public class DrawingSurface extends SurfaceView
     public void setTransform( float dx, float dy, float s )
     {
       commandManager.setTransform( dx, dy, s );
+    }
+
+    void deletePath( DrawingPath path )
+    {
+      commandManager.deletePath( path );
+    }
+    
+    void clearReferences() 
+    {
+      commandManager.clearReferences();
     }
 
     void refresh()
@@ -174,10 +194,10 @@ public class DrawingSurface extends SurfaceView
       }
     }
 
-    public void addStation( String name, float x, float y )
+    public void addStation( String name, float x, float y, boolean duplicate )
     {
       // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "addStation " + name + " " + x + " " + y );
-      DrawingStation st = new DrawingStation(name, x, y );
+      DrawingStation st = new DrawingStation(name, x, y, duplicate );
       st.setPaint( DrawingBrushPaths.fixedStationPaint );
       commandManager.addStation( st );
     }
@@ -234,6 +254,26 @@ public class DrawingSurface extends SurfaceView
       return commandManager.getLineAt( x, y );
     }
 
+    public DrawingAreaPath getAreaAt( float x, float y )
+    {
+      return commandManager.getAreaAt( x, y );
+    }
+
+    public boolean hasStationName( String name )
+    {
+      return commandManager.hasStationName( name );
+    }
+
+    public DrawingStation  getStationAt( float x, float y )
+    {
+      return commandManager.getStationAt( x, y );
+    }
+
+    public DrawingPath getShotAt( float x, float y )
+    {
+      return commandManager.getShotAt( x, y );
+    }
+
 
     public void surfaceChanged(SurfaceHolder mHolder, int format, int width,  int height) 
     {
@@ -271,9 +311,9 @@ public class DrawingSurface extends SurfaceView
       thread = null;
     }
 
-    public void exportTherion( BufferedWriter out, String scrap_name, String plot_name )
+    public void exportTherion( BufferedWriter out, String sketch_name, String plot_name )
     {
-      commandManager.exportTherion( out, scrap_name, plot_name );
+      commandManager.exportTherion( out, sketch_name, plot_name );
     }
 
   private String readLine( BufferedReader br )
@@ -292,9 +332,12 @@ public class DrawingSurface extends SurfaceView
     return line;
   } 
 
-  public void loadTherion( String filename )
+  public boolean loadTherion( String filename )
   {
     float x, y, x1, y1, x2, y2;
+    mMissingPoint.clear();
+    mMissingLine.clear();
+    mMissingArea.clear();
     // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "loadTherion file " + filename );
     // DrawingBrushPaths.makePaths( );
     DrawingBrushPaths.resetPointOrientations();
@@ -330,8 +373,17 @@ public class DrawingSurface extends SurfaceView
           y = - Float.parseFloat( vals[2] ) / TopoDroidApp.TO_THERION;
           String type = vals[3];
           String label_text = null;
-          if ( type.equals( "station" ) ) continue;
           int k = 4;
+          if ( type.equals( "station" ) ) {
+            if ( ! TopoDroidApp.mAutoStations ) {
+              if ( vals.length > k+1 && vals[k].equals( "-name" ) ) {
+                String name = vals[k+1];
+                DrawingStationPath station_path = new DrawingStationPath( name, x, y, scale );
+                addDrawingPath( station_path );
+              }
+            }
+            continue;
+          }
           while ( vals.length > k ) { 
             if ( vals[k].equals( "-orientation" ) ) {
               has_orientation = true;
@@ -430,7 +482,11 @@ public class DrawingSurface extends SurfaceView
               break;
             }
           }
-          if ( ptType == DrawingBrushPaths.mPointLib.mPointNr ) continue;
+          if ( ptType == DrawingBrushPaths.mPointLib.mPointNr ) {
+            // Log.v("DistoX", "missing point " + type );
+            mMissingPoint.add( type );
+            continue;
+          }
 
           if ( has_orientation && DrawingBrushPaths.canRotate(ptType) ) {
             // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "[2] point " + ptType + " has orientation " + orientation );
@@ -455,10 +511,14 @@ public class DrawingSurface extends SurfaceView
 
         } else if ( vals[0].equals( "line" ) ) {
           // ********* THERION LINES ************************************************************
-          if ( vals.length == 6 && vals[1].equals( "border" ) && vals[2].equals( "-id" ) ) { // THERION AREAS
+          if ( vals.length >= 6 && vals[1].equals( "border" ) && vals[2].equals( "-id" ) ) { // THERION AREAS
+            boolean visible = true;
             // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "area id " + vals[3] );
+            if ( vals.length >= 8 && vals[6].equals("-visibility") && vals[7].equals("off") ) {
+              visible = false;
+            }
             int arType = DrawingBrushPaths.mAreaLib.mAreaNr;
-            DrawingAreaPath path = new DrawingAreaPath( arType, vals[3] );
+            DrawingAreaPath path = new DrawingAreaPath( arType, vals[3], visible );
 
             // TODO insert new area-path
             line = readLine( br );
@@ -475,8 +535,12 @@ public class DrawingSurface extends SurfaceView
                     if ( vals2[1].equals( DrawingBrushPaths.getAreaThName( arType ) ) ) break;
                   }
                   // TopoDroidApp.Log(TopoDroidApp.LOG_PLOT, "set area type " + arType );
-                  path.setAreaType( arType );
-                  addDrawingPath( path );
+                  if ( arType < DrawingBrushPaths.mAreaLib.mAreaNr ) {
+                    path.setAreaType( arType );
+                    addDrawingPath( path );
+                  } else {
+                    mMissingArea.add( vals2[1] );
+                  }
                   line = readLine( br ); // skip two lines
                   line = readLine( br );
                   break;
@@ -557,6 +621,8 @@ public class DrawingSurface extends SurfaceView
                 x =   Float.parseFloat( pt[0] ) / TopoDroidApp.TO_THERION;
                 y = - Float.parseFloat( pt[1] ) / TopoDroidApp.TO_THERION;
                 path.addStartPoint( x, y );
+              } else {
+                mMissingLine.add( type );
               }
               while ( (line = readLine( br )) != null ) {
                 if ( line.indexOf( "l-size" ) >= 0 ) continue;
@@ -591,6 +657,9 @@ public class DrawingSurface extends SurfaceView
     } catch ( IOException e ) {
       e.printStackTrace();
     }
+    // remove repeated names
+    // Log.v("DistoX", "missing " + mMissingPoint.size() + " points " );
+    return mMissingPoint.size() == 0 && mMissingLine.size() == 0 && mMissingArea.size() == 0;
   }
 
 }

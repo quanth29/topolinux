@@ -1,0 +1,8 @@
+symbol area
+name pebbles
+name-es canto_rodado
+name-pt seixos
+name-it ciotoli
+th_name pebbles
+color 0xff9900 0x66
+endsymbol

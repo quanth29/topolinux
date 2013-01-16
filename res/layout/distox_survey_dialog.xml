@@ -137,8 +137,8 @@
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
                 android:onClick="onClick"
-                android:id="@+id/surveyStat"
-                android:text="@string/menu_stats"
+                android:id="@+id/surveyInfo"
+                android:text="@string/menu_info"
                 android:textSize="12sp"
         />
         <Button

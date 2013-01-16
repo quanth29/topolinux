@@ -20,20 +20,24 @@ import android.widget.Button;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-public class TopoDroidAbout
+public class TopoDroidAbout extends Dialog
+                            implements OnClickListener
 {
-  static public void show( Context context )
-  {
-    final Dialog dial = new Dialog( context );
-    dial.setContentView(R.layout.welcome);
-    dial.setTitle(R.string.welcome_title);
+  Button mBTok;
 
-    Button _btOK = (Button)dial.findViewById(R.id.OK);
-    _btOK.setOnClickListener(new OnClickListener() {
-        public void onClick(View v) {
-          // dial.hide();
-          dial.dismiss();
-    } } );
-    dial.show();
+  TopoDroidAbout( Context context )
+  {
+    super( context );
+    setContentView(R.layout.welcome);
+    setTitle(R.string.welcome_title);
+
+    mBTok = (Button)findViewById(R.id.OK);
+    mBTok.setOnClickListener( this );
+  }
+  
+  @Override
+  public void onClick(View v) 
+  {
+    dismiss();
   }
 }

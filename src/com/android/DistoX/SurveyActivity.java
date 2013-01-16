@@ -21,9 +21,9 @@
 package com.android.DistoX;
 
 import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.List;
-import java.text.SimpleDateFormat;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,7 +84,7 @@ public class SurveyActivity extends Activity
   private Button mBTNnotes;
   private Button mBTNlocation;
   private Button mBTNarchive;
-  private Button mBTNstat;
+  private Button mBTNinfo;
   private Button mBTNphoto;
 
   private TopoDroidApp app;
@@ -163,7 +163,7 @@ public class SurveyActivity extends Activity
     mBTNnotes    = (Button) findViewById( R.id.surveyNotes );
     mBTNlocation = (Button) findViewById( R.id.surveyLocation );
     mBTNarchive  = (Button) findViewById( R.id.surveyArchive );
-    mBTNstat     = (Button) findViewById( R.id.surveyStat );
+    mBTNinfo     = (Button) findViewById( R.id.surveyInfo );
     mBTNphoto    = (Button) findViewById( R.id.surveyPhoto );
 
     setButtons();
@@ -240,7 +240,7 @@ public class SurveyActivity extends Activity
     mBTNnotes.setEnabled( isSaved );
     mBTNlocation.setEnabled( isSaved );
     mBTNarchive.setEnabled( isSaved );
-    mBTNstat.setEnabled( isSaved );
+    mBTNinfo.setEnabled( isSaved );
     mBTNphoto.setEnabled( isSaved );
   }
 
@@ -283,7 +283,7 @@ public class SurveyActivity extends Activity
       case R.id.surveyArchive:
         doArchive();
         break;
-      case R.id.surveyStat:
+      case R.id.surveyInfo:
         (new SurveyStatDialog( this, app.mData.getSurveyStat( app.mSID ) )).show();
         break;
       case R.id.surveyPhoto:
@@ -475,9 +475,9 @@ public class SurveyActivity extends Activity
     } else {
       String filename = null;
       switch ( app.mExportType ) {
-        case TopoDroidApp.DISTOX_EXPORT_TLX:
-          filename = app.exportSurveyAsTlx();
-          break;
+        // case TopoDroidApp.DISTOX_EXPORT_TLX:
+        //   filename = app.exportSurveyAsTlx();
+        //   break;
         case TopoDroidApp.DISTOX_EXPORT_TH:
           filename = app.exportSurveyAsTh();
           break;
@@ -514,8 +514,8 @@ public class SurveyActivity extends Activity
     File t = new File( TopoDroidApp.getSurveyNoteFile( app.mySurvey ) );
     if ( t.exists() ) t.delete();
     
-    t = new File( app.getSurveyTlxFile() );
-    if ( t.exists() ) t.delete();
+    // t = new File( app.getSurveyTlxFile() );
+    // if ( t.exists() ) t.delete();
     
     t = new File( app.getSurveyThFile() );
     if ( t.exists() ) t.delete();

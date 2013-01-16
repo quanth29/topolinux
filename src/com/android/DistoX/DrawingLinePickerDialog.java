@@ -98,7 +98,8 @@ public class DrawingLinePickerDialog extends Dialog
           for (int k=0; k<mIndexMax; ++k ) {
             if ( btn == mBtnLine[k] ) {
               mIndex = k;
-              setTitle("LINE " + DrawingBrushPaths.getLineName( mIndex ) );
+              setTitle( String.format( mContext.getResources().getString( R.string.title_draw_line ),
+                                 DrawingBrushPaths.getLineName( mIndex ) ) );
               // mText.setText( DrawingBrushPaths.getLineName( mIndex ) );
               break;
             }
