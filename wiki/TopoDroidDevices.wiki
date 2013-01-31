@@ -14,31 +14,32 @@ Include the device model, the Android version, the TopoDroid version, and
 any comment that might be useful to others. 
 
 || *Device* || *Android* || *TopoDroid* || *Status* || *Comment* ||
-|| Archos 32 (minitablet) || 2.2.1 || 1.0.6 || <font color="green">Mostly working || ||
-|| Asus EEPAD Transformer TF101 10"|| 4.0.3 || 0.7.1 || <font color="green">Mostly working || calibration untested ||
-|| Huawei Vodaphone 858 Smart || 2.2 || 1.1.0 || <font color="green">Fully working || ||
-|| HTC Desire Senser || 2.3.5 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
-|| HTC EVO 3D || 2.3 || 0.7.1 || <font color="green">Mostly working || calibration untested ||
-|| HTC Wilfire || 2.3 || 0.7.1 - 1.0.6 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
-|| HTC Wilfire S || 2.3.5 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
-|| HTC Sense || 2.3.3 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
-|| HTC Sense || 3.2.1 || 1.0.3 || <font color="red">Bluetooth fails || unable to communicate with DistoX ||
-|| Motorola Defy || 2.2.2 || 0.7.1 || Calib & Surveying working || drawing not really tested ||
+|| Archos 32 (minitablet) || 2.2.1 || 1.0.6 || <font color="green">Mostly working</font> || ||
+|| Asus EEPAD Transformer TF101 10"|| 4.0.3 || 0.7.1 || <font color="green">Mostly working</font> || calibration untested ||
+|| Huawei Vodaphone 858 Smart || 2.2 || 1.1.0 || <font color="green">Fully working</font> || ||
+|| HTC Desire Senser || 2.3.5 || 0.7.1 || <font color="red">Bluetooth fails</font> || unable to pair with DistoX ||
+|| HTC EVO 3D || 2.3 || 0.7.1 || <font color="green">Mostly working</font> || calibration untested ||
+|| HTC Wilfire || 2.3 || 0.7.1 - 1.0.6 || <font color="red">Bluetooth fails</font> || unable to pair with DistoX ||
+|| HTC Wilfire S || 2.3.5 || 0.7.1 || <font color="red">Bluetooth fails</font> || unable to pair with DistoX ||
+|| HTC Sense || 2.3.3 || 0.7.1 || <font color="red">Bluetooth fails</font> || unable to pair with DistoX ||
+|| HTC Sense || 3.2.1 || 1.0.3 || <font color="red">Bluetooth fails</font> || unable to communicate with DistoX ||
+|| Motorola Defy || 2.2.2 || 0.7.1 || <font color="green">Working</font> || drawing not really tested ||
 || Nexus 7 || 4.2.1 || 1.1.0 || <font color="green">Working</font> || ||
-|| Samsung Galaxy S Captivate SGH-i897 || 2.1-update1 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX from Android "Settings" ||
-|| Samsung Galaxy S Captivate SGH-i897 || 2.2 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX from Android "Settings" ||
-|| Samsung Galaxy S Captivate SGH-i897 || 2.3.5 || 0.7.1 || <font color="green">Mostly working || calibration untested ||
-|| Samsung Galaxy Mini S5570 || 2.2 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
-|| Samsung Galaxy Mini S5570 || 2.3.6 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy Ace S5830 || 2.2 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
-|| Samsung Galaxy Ace GTS5830 || 2.3.4 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
-|| Samsung Galaxy S Plus I9001 || 2.3.6 || 1.0.5 || <font color="green">Fully working || ||
-|| Samsung Galaxy Tab P1000 7" || 2.2 || ? || <font color="red">Bluetooth fails || ||
-|| Samsung Galaxy Tab P1000 7" || 4.0.3 || 1.0.6 || <font color="green">Fully working || ||
+|| Samsung Galaxy Ace GTS5830 || 2.3.4 || 0.7.1 || <font color="red">Bluetooth fails</font> || unable to pair with DistoX ||
+|| Samsung Galaxy Mini S5570 || 2.2 || 0.7.1 || <font color="red">Bluetooth fails</font> || unable to pair with DistoX ||
+|| Samsung Galaxy Mini S5570 || 2.3.6 || 0.7.1 || <font color="red">Bluetooth fails</font> || unable to pair with DistoX ||
+|| Samsung Galaxy S Captivate SGH-i897 || 2.1-update1 || 0.7.1 || <font color="red">Bluetooth fails</font> || unable to pair with DistoX from Android "Settings" ||
+|| Samsung Galaxy S Captivate SGH-i897 || 2.2 || 0.7.1 || <font color="red">Bluetooth fails</font> || unable to pair with DistoX from Android "Settings" ||
+|| Samsung Galaxy S Captivate SGH-i897 || 2.3.5 || 0.7.1 || <font color="green">Mostly working</font> || calibration untested ||
 || Samsung Galaxy S II (16 GB) || 4.0 || 0.7.1 || <font color="green">Mostly working || ||
-|| Samsung Galaxy S II || 4.0.4 || 1.0.6 || <font color="green">Mostly working || Input keyboard problems ||
-|| Samsung Galaxy Xcover GT S569 || 2.3.6 || 1.0.5 || <font color="green">Mostly working || ||
-|| Samsung Note GT-N7000 || 2.3.6 || 0.7.1 - 1.0.3 || <font color="green">Working || ||
-|| Sony Ericson Xperia Neo MT15i || 2.3.3 || 0.7.1 || <font color="green">Mostly working || calibration untested ||
-|| Sony Ericson Xperia ARC LT15i || 2.3.3 || 0.7.1 || <font color="green">Mostly working || calibration untested ||
-|| Sony Xperia ST21i || 4.0.4 || 0.7.1 || <font color="green">Mostly working || calibration untested ||
+|| Samsung Galaxy S II || 4.0.4 || 1.0.6 || <font color="green">Mostly working</font> || Input keyboard problems ||
+|| Samsung Galaxy S Plus I9001 || 2.3.6 || 1.0.5 || <font color="green">Fully working</font> || ||
+|| Samsung Galaxy Tab P1000 7" || 2.2 || ? || <font color="red">Bluetooth fails</font> || ||
+|| Samsung Galaxy Tab P1000 7" || 4.0.3 || 1.0.6 || <font color="green">Fully working</font> || ||
+|| Samsung Galaxy YP G70 5" || 2.3.7 || 1.1.2 || <font color="green">Fully working</font> || ||
+|| Samsung Galaxy Xcover GT S569 || 2.3.6 || 1.0.5 || <font color="green">Mostly working</font> || ||
+|| Samsung Note GT-N7000 || 2.3.6 || 0.7.1 - 1.0.3 || <font color="green">Working</font> || ||
+|| Sony Ericson Xperia Neo MT15i || 2.3.3 || 0.7.1 || <font color="green">Mostly working</font> || calibration untested ||
+|| Sony Ericson Xperia ARC LT15i || 2.3.3 || 0.7.1 || <font color="green">Mostly working</font> || calibration untested ||
+|| Sony Ericson Xperia ST21i || 4.0.4 || 0.7.1 || <font color="green">Mostly working</font> || calibration untested ||
