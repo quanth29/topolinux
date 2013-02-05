@@ -4,13 +4,16 @@
 
 === I cannot install TopoDroid ===
 
-Make sure that you have selected the following settings on your device:
-  * Applications -> Unknown sources
-  * Applications -> Development -> USB debugging (if you are using adb)
+TopoDroid is build with minimum Android version 8 (ie, Froyo, 2.2).
+If your device has an older version of Android it will refuse to 
+install it.
 
-Next copy the apk to your device, or if you use adb do "adb install TopoDroid.apk".
+This does not mean that TopoDroid cannot run on your device.
+Rather I cannot test TopoDroid for older version of Android.
+You can download the sources and build TopoDroid for your version of
+Android, or you can ask me a special build with a lower minimum version.
 
-=== Where did the drawing symbols (points, lines and areas) go (v. 1.1) ?
+=== Where did the drawing symbols (points, lines and areas) go (v. 1.1) ? ===
 
 Since v. 1.1 TopoDroid has only very few predefined drawing symbols. The
 other symbols must be loaded from file. TopoDroid looks for symbol files in the
@@ -25,17 +28,22 @@ Mainly because Therion is my primary tool to put together the maps of
 cave surveys. The real answer is that the Therion language provides
 the syntax to specify a cave drawing properly.
 
+Survey data can be exported also in other formats: Compass, Survex and VisualTopo.
+
 
 === Why loops do not close in the plots ? ===
 
-TopoDroid does non implement loop closure.
-Working with the DistoX loop usually close rather well and I could do
-without loop closure.
-As a matter of fact loop closure is not allowed in TopoDroid.
-I use similar names for the closure station, eg, "14" and "14a".
-This way I can see the misclosures in the scraps.
-Then when I complete the work with Therion, I close
-the loops with "equate" commands.
+TopoDroid does not do loop closure by deafult.
+Working with the DistoX loop usually close rather well and it is
+good to visually check the loop closure error by assigning dfferent names
+to the closing stations.
+
+If you enable loop closure, TopoDroid can compute the
+closure errors and display them in the stats.
+However, it is likely that you need to specify which shot of the
+loop must not be used in the extended profile sketches.
+As this is an "advanced" task
+
 
 === Why are areas only single-line bordered ? ===
 
@@ -49,12 +57,6 @@ Note that TopoDroid needs the first point repeated at the end and may
 display a "strange" error dialog.
 The repeated point is not required by the therion language, but if it
 is missing xtherion complains.
-
-
-=== Does TopoDroid save data in other formats (Survex, Compass, VisualTopo, ...) ? ===
-
-Compass, Survex and VisualTopo export are now (2012.11) available.
-Data export in other formats may be added, if needed.
 
 
 === How can I erase the TopoDroid data ? ===
