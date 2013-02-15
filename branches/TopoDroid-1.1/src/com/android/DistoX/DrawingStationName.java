@@ -1,9 +1,9 @@
-/* @file DrawingStation.java
+/* @file DrawingStationName.java
  *
  * @author marco corvi
  * @date nov 2011
  *
- * @brief TopoDroid drawing: station point
+ * @brief TopoDroid drawing station name (this is not a station point)
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
@@ -23,7 +23,7 @@ import android.util.Log;
 
 /**
  */
-public class DrawingStation extends DrawingPointPath
+public class DrawingStationName extends DrawingPointPath
 {
   private static float toTherion = TopoDroidApp.TO_THERION;
 
@@ -32,13 +32,15 @@ public class DrawingStation extends DrawingPointPath
   float mY;
   boolean mDuplicate; // whether this is a duplicated station
 
-  public DrawingStation( String n, float x, float y, boolean duplicate )
+  public DrawingStationName( String n, float x, float y, boolean duplicate )
   {
     super( DrawingBrushPaths.mPointLib.mPointLabelIndex,
            x, // scene coordinate
            y, 
            DrawingPointPath.SCALE_M, null );
-    // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "DrawingStation cstr " + n + " " + x + " " + y );
+    mType = DRAWING_PATH_NAME; // override DrawingPath.mType
+
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "DrawingStationName cstr " + n + " " + x + " " + y );
     if ( duplicate ) mPaint = DrawingBrushPaths.duplicateStationPaint;
     mName = n;
     mX = x; // scene coordinate
@@ -53,21 +55,21 @@ public class DrawingStation extends DrawingPointPath
 
   float distance( float x, float y )
   { 
-    Log.v( TopoDroidApp.TAG, " Station distance from " + x + " " + y + " at " + mX + " " + mY );
+    // Log.v( TopoDroidApp.TAG, " Station distance from " + x + " " + y + " at " + mX + " " + mY );
     return (float)( Math.abs(x-mX) + Math.abs(y-mY) );
   }
 
   @Override
   public void draw( Canvas canvas )
   {
-    // TopoDroidApp.Log( TopoDroidApp.LOG_PATH, "DrawingStation::draw LABEL " + mName );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PATH, "DrawingStationName::draw LABEL " + mName );
     canvas.drawTextOnPath( mName, path, 0f, 0f, mPaint );
   }
 
   @Override
   public void draw( Canvas canvas, Matrix matrix )
   {
-    // TopoDroidApp.Log( TopoDroidApp.LOG_PATH, "DrawingStation::draw[matrix] LABEL " + mName );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PATH, "DrawingStationName::draw[matrix] LABEL " + mName );
     mTransformedPath = new Path( path );
     mTransformedPath.transform( matrix );
     canvas.drawTextOnPath( mName, mTransformedPath, 0f, 0f, mPaint );

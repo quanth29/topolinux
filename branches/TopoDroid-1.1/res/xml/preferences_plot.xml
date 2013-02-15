@@ -63,6 +63,20 @@
        android:inputType="numberDecimal"
        android:defaultValue="20.0" />
 
+     <!-- CheckBoxPreference
+       android:key="DISTOX_ZOOM_MULTITOUCH"
+       android:summary="@string/pref_zoom_multitouch_summary"
+       android:title="@string/pref_zoom_multitouch_title"
+       android:defaultValue="false"
+     / -->
+
+     <!-- CheckBoxPreference
+       android:key="DISTOX_ZOOM_COLTROLS"
+       android:summary="@string/pref_zoom_controls_summary"
+       android:title="@string/pref_zoom_controls_title"
+       android:defaultValue="false"
+     / -->
+
      <CheckBoxPreference
        android:key="DISTOX_CHECK_ATTACHED"
        android:summary="@string/pref_checkAttached_summary"

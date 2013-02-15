@@ -69,6 +69,12 @@ public class CalibActivity extends Activity
   private CalibInfo info;
   private boolean isSaved;
 
+  private void setButtons( )
+  {
+    mBTNopen.setEnabled( isSaved ); 
+    mBTNdelete.setEnabled( isSaved );
+  }
+
 // -------------------------------------------------------------------
   @Override
   protected void onCreate(Bundle savedInstanceState) 
@@ -111,6 +117,8 @@ public class CalibActivity extends Activity
       mEditDevice.setText( app.mDevice );
       mEditComment.setHint( R.string.description );
     }
+
+    setButtons();
   }
 
   // --------- menus ----------
@@ -252,8 +260,11 @@ public class CalibActivity extends Activity
           isSaved = true;
           setNameNotEditable();
         }
+      } else {
+        Toast.makeText( this, R.string.calib_no_name, Toast.LENGTH_LONG ).show();
       }
     }
+    setButtons();
   }
   
   private void setNameNotEditable()

@@ -36,14 +36,14 @@
        android:entryValues="@array/unitLocationValue"
      />
 
-     <com.android.DistoX.MyListPreference
+     <!-- com.android.DistoX.MyListPreference
        android:key="DISTOX_EXPORT_TYPE"
        android:summary="@string/pref_export_summary"
        android:title="@string/pref_export_title"
        android:defaultValue="th"
        android:entries="@array/exportType"
        android:entryValues="@array/exportTypeValue"
-     />
+     / -->
      <com.android.DistoX.MyEditPreference
        android:key="DISTOX_CLOSE_DISTANCE"
        android:title="@string/pref_leg_title"

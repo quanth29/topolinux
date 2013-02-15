@@ -46,7 +46,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.database.sqlite.SQLiteException;
 
-// import android.util.Log;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,9 +55,9 @@ import java.util.HashMap;
 
 public class DataHelper extends DataSetObservable
 {
-   private static String DATABASE_NAME = TopoDroidApp.getDirFile( "distox8.db" );
-   static final int DATABASE_VERSION = 8;
-   static final String DB_VERSION = "8";
+   private static String DATABASE_NAME = TopoDroidApp.getDirFile( "distox9.db" );
+   static final int DATABASE_VERSION = 9;
+   static final String DB_VERSION = "9";
 
    private static final String CONFIG_TABLE = "configs";
    private static final String SURVEY_TABLE = "surveys";
@@ -68,6 +68,7 @@ public class DataHelper extends DataSetObservable
    private static final String PLOT_TABLE   = "plots";
    private static final String PHOTO_TABLE  = "photos";
    private static final String SENSOR_TABLE = "sensors";
+   private static final String DEVICE_TABLE = "devices";
 
    private SQLiteDatabase myDB = null;
    private long           myNextId;   // id of next shot
@@ -108,6 +109,7 @@ public class DataHelper extends DataSetObservable
    private SQLiteStatement doDeleteShotStmt;
    private SQLiteStatement doDeleteSurveyStmt;
 
+   private SQLiteStatement updateDeviceHeadTailStmt;
 
    // ----------------------------------------------------------------------
    // DATABASE
@@ -165,6 +167,8 @@ public class DataHelper extends DataSetObservable
         doDeleteFixedStmt  = myDB.compileStatement( "DELETE FROM fixeds where surveyId=?" );
         doDeleteShotStmt   = myDB.compileStatement( "DELETE FROM shots where surveyId=?" );
         doDeleteSurveyStmt = myDB.compileStatement( "DELETE FROM surveys where id=?" );
+
+        updateDeviceHeadTailStmt = myDB.compileStatement( "UPDATE devices set head=?, tail=? WHERE address=?" );
 
       } catch ( SQLiteException e ) {
         myDB = null;
@@ -1527,6 +1531,66 @@ public class DataHelper extends DataSetObservable
     return maxId( SHOT_TABLE, sid );
   }
 
+  public int getDeviceTail( String address )
+  { 
+    int ret = 0;
+    Cursor cursor = myDB.query( DEVICE_TABLE, new String[] { "tail" },
+                         "address=?", 
+                         new String[] { address },
+                         null, null, null );
+    if (cursor.moveToFirst() ) {
+      ret = (int)( cursor.getLong(0) );
+    }
+    if (cursor != null && !cursor.isClosed()) { cursor.close(); }
+    return ret;
+  }
+
+  public boolean getDeviceHeadTail( String address, int[] head_tail )
+  {
+    boolean ret = false;
+    Cursor cursor = myDB.query( DEVICE_TABLE, new String[] { "head", "tail" },
+                         "address=?", 
+                         new String[] { address },
+                         null, null, null );
+    if (cursor.moveToFirst() ) {
+      head_tail[0] = (int)( cursor.getLong(0) );
+      head_tail[1] = (int)( cursor.getLong(1) );
+      ret = true;
+    }
+    if (cursor != null && !cursor.isClosed()) { cursor.close(); }
+    return ret;
+  }
+
+  private void insertDeviceHeadTail( String address, int[] head_tail )
+  {
+    ContentValues cv = new ContentValues();
+    cv.put( "address", address );
+    cv.put( "head",    head_tail[0] );
+    cv.put( "tail",    head_tail[1] );
+    myDB.insert( DEVICE_TABLE, null, cv );
+  }
+
+  public void updateDeviceHeadTail( String address, int[] head_tail )
+  {
+    if ( myDB == null ) return;
+    Cursor cursor = myDB.query( DEVICE_TABLE, new String[] { "head" },
+                         "address=?", 
+                         new String[] { address },
+                         null, null, null );
+    if (cursor.moveToFirst() ) {
+      Log.v("DistoX", "update Head Tail " + address + " " + head_tail[0] + " " + head_tail[1] );
+      long head = head_tail[0];
+      long tail = head_tail[1];
+      updateDeviceHeadTailStmt.bindLong( 1, head );
+      updateDeviceHeadTailStmt.bindLong( 2, tail );
+      updateDeviceHeadTailStmt.bindString( 3, address );
+      updateDeviceHeadTailStmt.execute();
+    } else {
+      insertDeviceHeadTail( address, head_tail );
+    }
+    if (cursor != null && !cursor.isClosed()) { cursor.close(); }
+  }
+
    public boolean updateFixedStation( long id, long sid, String station )
    {
      updateFixedStationStmt.bindString( 1, station );
@@ -2106,6 +2170,14 @@ public class DataHelper extends DataSetObservable
              +   " value TEXT "
              // +   " surveyId REFERENCES " + SURVEY_TABLE + "(id)"
              // +   " ON DELETE CASCADE "
+             +   ")"
+           );
+
+           db.execSQL(
+               create_table + DEVICE_TABLE
+             + " ( address TEXT, "
+             +   " head INTEGER, "
+             +   " tail INTEGER  "
              +   ")"
            );
 

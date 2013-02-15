@@ -39,6 +39,8 @@
  * 20121218 pref whether to show TdSymbol 
  * 20130108 therion export surface flags (TODO better flags management)
  * 20130108 auto_stations option
+ * 20130130 bug fix: export shot-type check for BLOCK_LEG
+ * 20130204 disable lock
  */
 package com.android.DistoX;
 
@@ -63,6 +65,10 @@ import android.os.Messenger;
 import android.os.RemoteException;
 
 import android.app.Application;
+import android.app.KeyguardManager;
+import android.app.KeyguardManager.KeyguardLock;
+import android.app.Activity;
+
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -70,6 +76,9 @@ import android.content.SharedPreferences.Editor;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ActivityNotFoundException;
+
+import android.provider.Settings.System;
+import android.provider.Settings.SettingNotFoundException;
 
 import android.view.WindowManager;
 import android.view.Display;
@@ -116,6 +125,8 @@ public class TopoDroidApp extends Application
   static final boolean LOG_THERION= true;
   static final boolean LOG_ZIP    = false;   // archive
 
+  static int mScreenTimeout = 60000; // 60 secs
+
   static void Log( boolean flag, String msg )
   {
     if ( flag ) {
@@ -157,7 +168,7 @@ public class TopoDroidApp extends Application
   String  mBasePath = Environment.getExternalStorageDirectory().getAbsolutePath(); // app base path
 
   float mCloseDistance;
-  int   mExportType;
+  // int   mExportType;
   float mGroupDistance;
   float mCalibEps;
   int   mCalibMaxIt;
@@ -335,7 +346,7 @@ public class TopoDroidApp extends Application
 
   public static final String[] key = { // prefs keys
     "DISTOX_CLOSE_DISTANCE",  // 0
-    "DISTOX_EXPORT_TYPE",
+    "DISTOX_EXPORT_TYPE",     // 1 NOT USED
     "DISTOX_GROUP_DISTANCE",
     "DISTOX_CALIB_EPS",
     "DISTOX_CALIB_MAX_IT",
@@ -404,7 +415,7 @@ public class TopoDroidApp extends Application
   public static final  String LINE_STYLE     = "2";     // LINE_STYLE_TWO
   public static final  String DRAWING_UNIT   = "1.2f";  // UNIT
   public static final  String CLOSENESS      = "16";    // drawing closeness threshold
-  public static final  String EXPORT_TYPE    = "th";    // DISTOX_EXPORT_TH
+  // public static final  String EXPORT_TYPE    = "th";    // DISTOX_EXPORT_TH
   public static final  String GROUP_DISTANCE = "40.0f";
   public static final  String CALIB_EPS      = "0.0000001f";
   public static final  String CALIB_MAX_ITER = "200";
@@ -516,21 +527,21 @@ public class TopoDroidApp extends Application
     // Log.v(TAG, "onTerminate app");
   }
 
-  private void setExportType( String type )
-  {
-    mExportType = DISTOX_EXPORT_TH;
-    if ( type.equals("th") ) {
-      mExportType = DISTOX_EXPORT_TH;
-    // } else if ( type.equals("tlx") ) { 
-    //   mExportType = DISTOX_EXPORT_TLX;
-    } else if ( type.equals("dat") ) { 
-      mExportType = DISTOX_EXPORT_DAT;
-    } else if ( type.equals("svx") ) { 
-      mExportType = DISTOX_EXPORT_SVX;
-    } else if ( type.equals("tro") ) { 
-      mExportType = DISTOX_EXPORT_TRO;
-    }
-  }
+  // private void setExportType( String type )
+  // {
+  //   mExportType = DISTOX_EXPORT_TH;
+  //   if ( type.equals("th") ) {
+  //     mExportType = DISTOX_EXPORT_TH;
+  //   // } else if ( type.equals("tlx") ) { 
+  //   //   mExportType = DISTOX_EXPORT_TLX;
+  //   } else if ( type.equals("dat") ) { 
+  //     mExportType = DISTOX_EXPORT_DAT;
+  //   } else if ( type.equals("svx") ) { 
+  //     mExportType = DISTOX_EXPORT_SVX;
+  //   } else if ( type.equals("tro") ) { 
+  //     mExportType = DISTOX_EXPORT_TRO;
+  //   }
+  // }
 
 
   private void setCommRetry( SharedPreferences sp )
@@ -551,6 +562,17 @@ public class TopoDroidApp extends Application
   public void onCreate()
   {
     super.onCreate();
+
+    // disable lock
+    KeyguardManager keyguardManager = (KeyguardManager)getSystemService(Activity.KEYGUARD_SERVICE);
+    KeyguardLock lock = keyguardManager.newKeyguardLock(KEYGUARD_SERVICE);
+    lock.disableKeyguard();
+
+    try {
+      mScreenTimeout = System.getInt(getContentResolver(), System.SCREEN_OFF_TIMEOUT );
+    } catch ( SettingNotFoundException e ) {
+    }
+
     // Log.v(TAG, "onCreate app");
     this.prefs = PreferenceManager.getDefaultSharedPreferences( this );
     this.prefs.registerOnSharedPreferenceChangeListener( this );
@@ -565,7 +587,7 @@ public class TopoDroidApp extends Application
     // ------------------- SURVEY PREFERENCES
     mCloseDistance = Float.parseFloat( prefs.getString( key[0], CLOSE_DISTANCE ) );
     mVThreshold    = Float.parseFloat( prefs.getString( key[8], V_THRESHOLD ) ); // DISTOX_VTHRESHOLD
-    setExportType( prefs.getString( key[1], EXPORT_TYPE ) );
+    // setExportType( prefs.getString( key[1], EXPORT_TYPE ) );
     mLoopClosure   = prefs.getBoolean( key[25], LOOP_CLOSURE );
 
     // -------------------  DRAWING PREFERENCES
@@ -926,9 +948,8 @@ public class TopoDroidApp extends Application
   {
     if ( k.equals( key[0] ) ) {
       mCloseDistance = Float.parseFloat( sp.getString( k, CLOSE_DISTANCE ) );
-    } else if ( k.equals( key[1] ) ) {
-      setExportType( sp.getString( key[1], EXPORT_TYPE ) );
-      // Log.v( TAG, "exportType " +  mExportType + " type " + type);
+    // } else if ( k.equals( key[1] ) ) {
+    //   setExportType( sp.getString( key[1], EXPORT_TYPE ) );
     } else if ( k.equals( key[2] ) ) {
       mGroupDistance = Float.parseFloat( sp.getString( k, GROUP_DISTANCE ) );
     } else if ( k.equals( key[3] ) ) {
@@ -1099,7 +1120,7 @@ public class TopoDroidApp extends Application
         String to   = item.mTo;
         if ( from == null || from.length() == 0 ) {
           if ( to == null || to.length() == 0 ) { // no station: not exported
-            if ( item.relativeDistance( ref_item ) < mCloseDistance ) {
+            if ( item.mType == DistoXDBlock.BLOCK_LEG || item.relativeDistance( ref_item ) < mCloseDistance ) {
               float bb = around( item.mBearing, b0 );
               l += item.mLength;
               b += bb;
@@ -1280,7 +1301,7 @@ public class TopoDroidApp extends Application
         String to   = item.mTo;
         if ( from == null || from.length() == 0 ) {
           if ( to == null || to.length() == 0 ) { // no station: not exported
-            if ( item.relativeDistance( ref_item ) < mCloseDistance ) {
+            if ( item.mType == DistoXDBlock.BLOCK_LEG || item.relativeDistance( ref_item ) < mCloseDistance ) {
               float bb = around( item.mBearing, b0 );
               l += item.mLength;
               b += bb;
@@ -1472,7 +1493,7 @@ public class TopoDroidApp extends Application
   //             item.mLength, item.mBearing, item.mClino, item.mRoll, item.mExtend, item.mFlag );
   //         } else {
   //           // not exported
-  //           if ( item.relativeDistance( ref_item ) < mCloseDistance ) {
+  //           if ( item.mType == DistoXDBlock.BLOCK_LEG || item.relativeDistance( ref_item ) < mCloseDistance ) {
   //             float bb = around( item.mBearing, b0[0] );
   //             l += item.mLength;
   //             b += bb;
@@ -1648,7 +1669,7 @@ public class TopoDroidApp extends Application
         String to   = item.mTo;
         if ( from == null || from.length() == 0 ) {
           if ( to == null || to.length() == 0 ) { // no station: not exported
-            if ( item.relativeDistance( ref_item ) < mCloseDistance ) {
+            if ( item.mType == DistoXDBlock.BLOCK_LEG || item.relativeDistance( ref_item ) < mCloseDistance ) {
               float bb = around( item.mBearing, b0 );
               l += item.mLength;
               b += bb;
@@ -1778,7 +1799,7 @@ public class TopoDroidApp extends Application
         String to   = item.mTo;
         if ( from == null || from.length() == 0 ) {
           if ( to == null || to.length() == 0 ) { // no station: not exported
-            if ( item.relativeDistance( ref_item ) < mCloseDistance ) {
+            if ( item.mType == DistoXDBlock.BLOCK_LEG || item.relativeDistance( ref_item ) < mCloseDistance ) {
               float bb = around( item.mBearing, b0 );
               l += item.mLength;
               b += bb;

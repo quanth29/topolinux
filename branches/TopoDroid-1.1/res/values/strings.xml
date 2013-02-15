@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="topodroid_man">http://topolinux.googlecode.com/files/TopoDroid-20121130.pdf</string>
+    <string name="topodroid_man">http://topolinux.googlecode.com/files/TopoDroid-1.1.0.pdf</string>
 
     <string name="app_name">TopoDroid</string>
     <string name="app_name_calib">TopoDroid - Calibration info</string>
@@ -30,6 +30,7 @@
     <string name="calib_exists">Calibration already exists</string>
     <string name="calib_delete">Delete calibration </string>
     <string name="calib_device_mismatch">WARNING: Calibration-Device mismatch</string>
+    <string name="calib_no_name">You must write the calibration name</string>
     <!-- string name="calib_deleted">Calibration deleted</string -->
     <!-- string name="calib_info">Enter calibration info</string -->
     <!-- string name="calib_not_written">Failed to write calibration</string -->
@@ -45,8 +46,10 @@
     <!-- string name="device_busy">device busy</string -->
     <!-- string name="device_comm_thread">Continuous data download</string -->
     <!-- string name="device_action_thread">On-demand download and read/write</string -->
+    <string name="device_illegal_addr">Illegal memory address</string>
     <string name="device_off">DistoX off</string>
     <string name="device_none">No DistoX selected</string>
+    <string name="device_reset">Reset DistoX memory</string>
 
     <!-- string name="disto_bad_type">DistoX bad data type</string -->
     <string name="comment">comment</string>
@@ -236,11 +239,12 @@
     <string name="menu_refresh">Refresh</string> <!-- refresh list -->
     <string name="menu_reset">Reset</string>     <!-- reset connection -->
     <string name="menu_save">Save</string>
-    <string name="menu_save_th2">Save th2</string>
+    <string name="menu_save_th2">Save</string>
     <string name="menu_save_png">Export png</string>
     <string name="menu_scan">Scan</string>       <!-- scan for distox -->
     <string name="menu_sensor">Measurements</string> 
     <string name="menu_shot_new">Append shot</string>
+    <string name="menu_sleep">Sleep</string> 
     <string name="menu_stats">Stats</string>
     <string name="menu_survey">Display</string>
     <string name="menu_symbol">Symbol manager</string>
@@ -248,7 +252,7 @@
     <string name="menu_toggle">DistoX mode</string>
     <string name="menu_undelete">Undelete</string>
     <string name="menu_write">Write to DistoX</string>
-    <string name="menu_zip">Zip</string>
+    <!-- string name="menu_zip">Zip</string -->
     <string name="menu_zoom">Zoom</string>
 
     <string name="surveys">SURVEYS</string>
@@ -268,22 +272,27 @@
     <string name="button_add"       >Add       </string>
     <string name="button_back"      >Back      </string>
     <string name="button_cancel"    >Cancel    </string>
-    <!-- string name="button_close"     >Close     </string -->
+    <string name="button_close"     >Close     </string>
+    <string name="button_convert"   >Convert   </string>
     <string name="button_drop"      >Delete    </string>
     <string name="button_erase"     >Erase     </string>
     <string name="button_eval"      >Eval      </string>
     <string name="button_eval_cal"  >Eval w. calib.</string>
+    <string name="button_load"      >Load      </string>
     <string name="button_measure"   >Measure   </string>
     <string name="button_manual"    >Manual    </string>
-    <string name="button_head_tail" >Read Head/Tail   </string>
+    <string name="button_head_tail" >DistoX Memory</string>
     <string name="button_next"      >Next      </string>
     <string name="button_ok"        >O.K.      </string>
     <string name="button_no"        >No        </string>
     <string name="button_prev"      >Previous  </string>
-    <string name="button_read"      >Read calibration </string>
+    <string name="button_read"      >Read      </string>
+    <string name="button_read_cal"  >Read calibration </string>
     <!-- string name="button_refresh"   >Refresh   </string -->
+    <string name="button_reset"     >Reset     </string>
     <string name="button_save"      >Save      </string>
     <string name="button_select"    >Select    </string>
+    <string name="button_store"     >Store     </string>
     <string name="button_gps_start" >GPS       </string>
     <string name="button_gps_stop"  >Stop      </string>
     <string name="button_toggle"    >Toggle CAL mode  </string>
@@ -296,13 +305,21 @@
     <string name="mode_grid">Grid</string>
 
     <string name="btn_area">Area</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_compass">Compass</string>
     <string name="btn_draw">Draw</string>
+    <string name="btn_edit">Edit</string>
     <string name="btn_line">Line</string>
     <string name="btn_move">Move</string>
     <string name="btn_mode">Mode</string>
+    <string name="btn_png">PNG</string>
     <string name="btn_point">Point</string>
     <!-- string name="btn_redo">Redo</string -->
+    <string name="btn_survex">Survex</string>
+    <string name="btn_therion">Therion</string>
     <string name="btn_undo">Undo</string>
+    <string name="btn_vtopo">VisualTopo</string>
+    <string name="btn_zip">Zip</string>
     <!-- string name="btn_zoom">Zoom</string -->
 
     <string name="title_calib">Calibrations</string>
@@ -319,9 +336,11 @@
     <string name="title_move">Moving</string>
     <string name="title_photo">Photo/Measurements</string>
     <string name="title_photo_comment">Photo comment</string>
+    <string name="title_plot_save">Save sketch as</string>
     <string name="title_scraps">%1$s sketches</string>
     <string name="title_stats">Statistics</string>
     <string name="title_survey">Survey Info</string>
+    <string name="title_survey_export">Export survey as</string>
     <string name="title_zoom">Zoom</string>
 
   <string name="pref_cat_survey">Survey options</string>
@@ -342,8 +361,8 @@
   <string name="pref_closeness_title">Selection radius</string>
   <string name="pref_closeness_summary">Sketch item selection radius</string>
   <string name="pref_closeness_message">Sketch item selection radius</string>
-  <string name="pref_export_title">Export</string>
-  <string name="pref_export_summary">Select type of export</string>
+  <!-- string name="pref_export_title">Export</string -->
+  <!-- string name="pref_export_summary">Select type of export</string -->
   <string name="pref_list_refresh_title">List refresh</string>
   <string name="pref_list_refresh_summary">Force list refresh</string>
   <string name="pref_leg_title">Leg tolerance</string>

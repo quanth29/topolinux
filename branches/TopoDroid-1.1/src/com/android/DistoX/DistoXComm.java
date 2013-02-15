@@ -48,6 +48,7 @@ import android.content.BroadcastReceiver;
 import android.database.DataSetObserver;
 
 // import android.widget.Toast;
+import android.util.Log;
 
 public class DistoXComm
 {
@@ -389,10 +390,15 @@ public class DistoXComm
     mProtocol = null;
   }
 
+  private boolean checkRfcommThreadNull( String msg )
+  {
+    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, msg );
+    return ( mRfcommThread == null );
+  }
+
   public boolean toggleCalibMode( String address )
   {
-    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "toggleCalibMode address " + address );
-    if ( mRfcommThread != null ) {
+    if ( ! checkRfcommThreadNull( "toggleCalibMode address " + address ) ) {
       return false;
     }
     boolean ret = false;
@@ -416,9 +422,7 @@ public class DistoXComm
 
   public boolean writeCoeff( String address, byte[] coeff )
   {
-    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "writeCoeff address " + address );
-    if ( mRfcommThread != null ) {
-      // Toast.makeText(getApplicationContext(), R,string.device_busy, Toast.LENGTH_LONG).show();
+    if ( ! checkRfcommThreadNull( "writeCoeff address " + address ) ) {
       return false;
     }
     boolean ret = false;
@@ -435,9 +439,7 @@ public class DistoXComm
 
   public boolean readCoeff( String address, byte[] coeff )
   {
-    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "readCoeff address " + address );
-    if ( mRfcommThread != null ) {
-      // Toast.makeText(getApplicationContext(), R,string.device_busy, Toast.LENGTH_LONG).show();
+    if ( ! checkRfcommThreadNull( "readCoeff address " + address ) ) {
       return false;
     }
     boolean ret = false;
@@ -459,24 +461,52 @@ public class DistoXComm
     return ret;
   }
 
-  public String readHeadTail( String address )
+  public String readHeadTail( String address, int[] head_tail )
   {
-    TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "readHeadTail address " + address );
-    if ( mRfcommThread != null ) {
+    if ( ! checkRfcommThreadNull( "readHeadTail address " + address ) ) {
       TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "readHeadTail() Rfcomm thread not null");
-      // Toast.makeText(getApplicationContext(), R.string.device_busy, Toast.LENGTH_LONG).show();
       return null;
     }
     {
       // createSocket( address );
       if ( connectSocket( address ) ) {
-        String result = mProtocol.readHeadTail();
+        String result = mProtocol.readHeadTail( head_tail );
         destroySocket( true );
         TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "readHeadTail() result " + result );
         return result; 
       }
     }
     return null;
+  }
+
+  public int swapHotBit( String address, int from, int to )
+  {
+    if ( ! checkRfcommThreadNull( "swapHotBit address " + address ) ) {
+      return -1;
+    }
+
+    from &= 0x7ff8;
+    to   &= 0x7ff8;
+    if ( from >= 0x8000 ) from = 0;
+    if ( to >= 0x8000 ) to &= 0x7fff;
+
+
+    int n = 0;
+    if ( from != to && connectSocket( address ) ) {
+      do {
+        if ( to == 0 ) {
+          to = 0x8000 - 8;
+        } else {
+          to -= 8;
+        }
+        // Log.v( "DistoX", "comm swap hot bit at addr " + to/8 );
+        if ( ! mProtocol.swapHotBit( to ) ) break;
+        ++ n;
+      } while ( to != from );
+      destroySocket( true );
+      TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "swapHotBit swapped " + n + "data" );
+    }
+    return n;
   }
 
 

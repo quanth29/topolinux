@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120726 TopoDroid log
+ * 20130205 swapHotBit
  */
 package com.android.DistoX;
 
@@ -27,6 +28,7 @@ import java.nio.channels.ClosedByInterruptException;
 // import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 
+import android.util.Log;
 
 import android.widget.Toast;
 
@@ -120,6 +122,22 @@ public class DistoXProtocol
     }
   }
 
+  private int toInt( byte b ) 
+  {
+    int ret = (int)(b & 0xff);
+    if ( ret < 0 ) ret += 256;
+    return ret;
+  }
+
+  private int toInt( byte bh, byte bl )
+  {
+    int h = (int)(bh & 0xff);   // high
+    if ( h < 0 ) h += 256;
+    int l = (int)(bl & 0xff);   // low
+    if ( l < 0 ) l += 256;
+    return (h * 256 + l);
+  }
+
   public int handlePacket( ) 
   {
     // StringWriter sw = new StringWriter();
@@ -133,20 +151,23 @@ public class DistoXProtocol
     switch ( type ) {
       case 0x01: // data
         int dhh = (int)( mBuffer[0] & 0x40 );
-        int d1  = (int)(mBuffer[1] & 0xff); if ( d1 < 0 ) d1 += 256;
-        int d2  = (int)(mBuffer[2] & 0xff); if ( d2 < 0 ) d2 += 256;
-        // double d =  (((int)mBuffer[0]) & 0x40) * 1024.0 + (mBuffer[1] & 0xff) * 1.0 + (mBuffer[2] & 0xff) * 256.0;
-        double d =  dhh * 1024.0 + d1 * 1.0 + d2 * 256.0;
+        // int d1  = (int)(mBuffer[1] & 0xff); if ( d1 < 0 ) d1 += 256;
+        // int d2  = (int)(mBuffer[2] & 0xff); if ( d2 < 0 ) d2 += 256;
+        // // double d =  (((int)mBuffer[0]) & 0x40) * 1024.0 + (mBuffer[1] & 0xff) * 1.0 + (mBuffer[2] & 0xff) * 256.0;
+        // double d =  dhh * 1024.0 + d1 * 1.0 + d2 * 256.0;
+        double d =  dhh * 1024.0 + toInt( mBuffer[2], mBuffer[1] );
 
-        int b3 = (int)(mBuffer[3] & 0xff); if ( b3 < 0 ) b3 += 256;
-        int b4 = (int)(mBuffer[4] & 0xff); if ( b4 < 0 ) b4 += 256;
-        // double b = (mBuffer[3] & 0xff) + (mBuffer[4] & 0xff) * 256.0;
-        double b = b3 + b4 * 256.0;
+        // int b3 = (int)(mBuffer[3] & 0xff); if ( b3 < 0 ) b3 += 256;
+        // int b4 = (int)(mBuffer[4] & 0xff); if ( b4 < 0 ) b4 += 256;
+        // // double b = (mBuffer[3] & 0xff) + (mBuffer[4] & 0xff) * 256.0;
+        // double b = b3 + b4 * 256.0;
+        double b = toInt( mBuffer[4], mBuffer[3] );
 
-        int c5 = (int)(mBuffer[5] & 0xff); if ( c5 < 0 ) c5 += 256;
-        int c6 = (int)(mBuffer[6] & 0xff); if ( c6 < 0 ) c6 += 256;
-        // double c = (mBuffer[5] & 0xff) + (mBuffer[6] & 0xff) * 256.0;
-        double c = c5 + c6 * 256.0;
+        // int c5 = (int)(mBuffer[5] & 0xff); if ( c5 < 0 ) c5 += 256;
+        // int c6 = (int)(mBuffer[6] & 0xff); if ( c6 < 0 ) c6 += 256;
+        // // double c = (mBuffer[5] & 0xff) + (mBuffer[6] & 0xff) * 256.0;
+        // double c = c5 + c6 * 256.0;
+        double c = toInt( mBuffer[6], mBuffer[5] );
 
         int r7 = (int)(mBuffer[7] & 0xff); if ( r7 < 0 ) r7 += 256;
         // double r = (mBuffer[7] & 0xff);
@@ -161,20 +182,20 @@ public class DistoXProtocol
         // Log.v( TopoDroidApp.LOG_PROTO, "handlePacket " + sw.getBuffer().toString() );
         return DISTOX_PACKET_DATA;
       case 0x02: // g
-        low  = (int)(mBuffer[1]&0xff); if ( low  < 0 ) low  += 256;
-        high = (int)(mBuffer[2]&0xff); if ( high < 0 ) high += 256;
-        mGX = low + high * 256;
-        // mGX = (mBuffer[1]&0xff) + ((int)((mBuffer[2])&0xff) * 256 );
+        // low  = (int)(mBuffer[1]&0xff); if ( low  < 0 ) low  += 256;
+        // high = (int)(mBuffer[2]&0xff); if ( high < 0 ) high += 256;
+        // mGX = low + high * 256;
+        mGX = toInt( mBuffer[2], mBuffer[1] );
 
-        low  = (int)(mBuffer[3]&0xff); if ( low  < 0 ) low  += 256;
-        high = (int)(mBuffer[4]&0xff); if ( high < 0 ) high += 256;
-        mGY = low + high * 256;
-        // mGY = (mBuffer[3]&0xff) + ((int)((mBuffer[4])&0xff) * 256 );
+        // low  = (int)(mBuffer[3]&0xff); if ( low  < 0 ) low  += 256;
+        // high = (int)(mBuffer[4]&0xff); if ( high < 0 ) high += 256;
+        // mGY = low + high * 256;
+        mGY = toInt( mBuffer[4], mBuffer[3] );
 
-        low  = (int)(mBuffer[5]&0xff); if ( low  < 0 ) low  += 256;
-        high = (int)(mBuffer[6]&0xff); if ( high < 0 ) high += 256;
-        mGZ = low + high * 256;
-        // mGZ = (mBuffer[5]&0xff) + ((int)((mBuffer[6])&0xff) * 256 );
+        // low  = (int)(mBuffer[5]&0xff); if ( low  < 0 ) low  += 256;
+        // high = (int)(mBuffer[6]&0xff); if ( high < 0 ) high += 256;
+        // mGZ = low + high * 256;
+        mGZ = toInt( mBuffer[6], mBuffer[5] );
 
         if ( mGX > TopoDroidApp.ZERO ) mGX = mGX - TopoDroidApp.NEG;
         if ( mGY > TopoDroidApp.ZERO ) mGY = mGY - TopoDroidApp.NEG;
@@ -183,20 +204,20 @@ public class DistoXProtocol
         // Log.v( TopoDroidApp.LOG_PROTO, "handlePacket " + sw.getBuffer().toString() );
         return DISTOX_PACKET_G;
       case 0x03: // m
-        low  = (int)(mBuffer[1]&0xff); if ( low  < 0 ) low  += 256;
-        high = (int)(mBuffer[2]&0xff); if ( high < 0 ) high += 256;
-        mMX = low + high * 256;
-        // mMX = (mBuffer[1]&0xff) + ((int)((mBuffer[2])&0xff) * 256 );
+        // low  = (int)(mBuffer[1]&0xff); if ( low  < 0 ) low  += 256;
+        // high = (int)(mBuffer[2]&0xff); if ( high < 0 ) high += 256;
+        // mMX = low + high * 256;
+        mMX = toInt( mBuffer[2], mBuffer[1] );
 
-        low  = (int)(mBuffer[3]&0xff); if ( low  < 0 ) low  += 256;
-        high = (int)(mBuffer[4]&0xff); if ( high < 0 ) high += 256;
-        mMY = low + high * 256;
-        // mMY = (mBuffer[3]&0xff) + ((int)((mBuffer[4])&0xff) * 256 );
+        // low  = (int)(mBuffer[3]&0xff); if ( low  < 0 ) low  += 256;
+        // high = (int)(mBuffer[4]&0xff); if ( high < 0 ) high += 256;
+        // mMY = low + high * 256;
+        mMY = toInt( mBuffer[4], mBuffer[3] );
 
-        low  = (int)(mBuffer[5]&0xff); if ( low  < 0 ) low  += 256;
-        high = (int)(mBuffer[6]&0xff); if ( high < 0 ) high += 256;
-        mMZ = low + high * 256;
-        // mMZ = (mBuffer[5]&0xff) + ((int)((mBuffer[6])&0xff) * 256 );
+        // low  = (int)(mBuffer[5]&0xff); if ( low  < 0 ) low  += 256;
+        // high = (int)(mBuffer[6]&0xff); if ( high < 0 ) high += 256;
+        // mMZ = low + high * 256;
+        mMZ = toInt( mBuffer[6], mBuffer[5] );
 
         if ( mMX > TopoDroidApp.ZERO ) mMX = mMX - TopoDroidApp.NEG;
         if ( mMY > TopoDroidApp.ZERO ) mMY = mMY - TopoDroidApp.NEG;
@@ -267,16 +288,19 @@ public class DistoXProtocol
       if ( mBuffer[0] != (byte)( 0x38 ) ) { return DISTOX_ERR_HEADTAIL; }
       if ( mBuffer[1] != m_head_tail[1] ) { return DISTOX_ERR_HEADTAIL; }
       if ( mBuffer[2] != m_head_tail[2] ) { return DISTOX_ERR_HEADTAIL; }
-      int hlow = (int)(mBuffer[3]);
-      int tlow = (int)(mBuffer[5]);
-      if ( hlow < 0 ) { hlow += 256; }
-      if ( tlow < 0 ) { tlow += 256; }
-      int hhgh = (int)(mBuffer[4]);
-      int thgh = (int)(mBuffer[6]);
-      if ( hhgh < 0 ) { hhgh += 256; }
-      if ( thgh < 0 ) { thgh += 256; }
-      int head = hhgh * 256 + hlow;
-      int tail = thgh * 256 + tlow;
+      // int hlow = (int)(mBuffer[3]);
+      // int tlow = (int)(mBuffer[5]);
+      // if ( hlow < 0 ) { hlow += 256; }
+      // if ( tlow < 0 ) { tlow += 256; }
+
+      // int hhgh = (int)(mBuffer[4]);
+      // int thgh = (int)(mBuffer[6]);
+      // if ( hhgh < 0 ) { hhgh += 256; }
+      // if ( thgh < 0 ) { thgh += 256; }
+      // int head = hhgh * 256 + hlow;
+      // int tail = thgh * 256 + tlow;
+      int head = toInt( mBuffer[4], mBuffer[3] );
+      int tail = toInt( mBuffer[6], mBuffer[5] );
       int ret = ( head >= tail )? (head-tail)/8 : ((0x8000 - tail) + head)/8; 
 
       // DEBUG
@@ -295,7 +319,57 @@ public class DistoXProtocol
     }
   }
 
-  public String readHeadTail()
+  boolean swapHotBit( int addr )
+  {
+    try {
+      mBuffer[0] = (byte) 0x38;
+      mBuffer[1] = (byte)( addr & 0xff );
+      mBuffer[2] = (byte)( (addr>>8) & 0xff );
+      mOut.write( mBuffer, 0, 3 );
+      mIn.readFully( mBuffer, 0, 8 );
+      if ( mBuffer[0] != (byte)0x38 ) { 
+        TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "swapHotBit-38 wrong reply packet addr " + addr );
+        return false;
+      }
+
+      int reply_addr = toInt( mBuffer[2], mBuffer[1] );
+      // Log.v("DistoX", "proto read ... addr " + addr + " reply addr " + reply_addr );
+      if ( reply_addr != addr ) {
+        TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "swapHotBit-38 wrong reply addr " + reply_addr + " addr " + addr );
+        return false;
+      }
+      mBuffer[0] = (byte)0x39;
+      // mBuffer[1] = (byte)( addr & 0xff );
+      // mBuffer[2] = (byte)( (addr>>8) & 0xff );
+      if ( mBuffer[3] == 0x00 ) {
+        TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "swapHotBit refusing to swap addr " + addr );
+        return false;
+      }  
+
+      mBuffer[3] |= (byte)0x80; // RESET HOT BIT
+      mOut.write( mBuffer, 0, 7 );
+      mIn.readFully( mBuffer, 0, 8 );
+      if ( mBuffer[0] != (byte)0x38 ) {
+        TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "swapHotBit-39 wrong reply packet addr " + addr );
+        return false;
+      }
+      reply_addr = toInt( mBuffer[2], mBuffer[1] );
+      // Log.v("DistoX", "proto reset ... addr " + addr + " reply addr " + reply_addr );
+      if ( reply_addr != addr ) {
+        TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "swapHotBit-39 wrong reply addr " + reply_addr + " addr " + addr );
+        return false;
+      }
+    } catch ( EOFException e ) {
+      TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "swapHotBit EOF failed addr " + addr );
+      return false;
+    } catch (IOException e ) {
+      TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "swapHotBit IO failed addr " + addr );
+      return false;
+    }
+    return true;
+  }
+
+  public String readHeadTail( int[] head_tail )
   {
     try {
       mOut.write( m_head_tail, 0, 3 );
@@ -307,13 +381,16 @@ public class DistoXProtocol
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter( sw );
       pw.format("%02x%02x-%02x%02x", mBuffer[4], mBuffer[3], mBuffer[6], mBuffer[5] );
+      head_tail[0] = toInt( mBuffer[4], mBuffer[3] );
+      head_tail[1] = toInt( mBuffer[6], mBuffer[5] );
+
       // TopoDroidApp.Log( TopoDroidApp.LOG_PROTO, "readHeadTail " + sw.getBuffer().toString() );
       return sw.getBuffer().toString();
     } catch ( EOFException e ) {
-      TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "readHeadTail read() failed" );
+      TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "readHeadTail read() EOF failed" );
       return null;
     } catch (IOException e ) {
-      TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "readHeadTail read() failed" );
+      TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "readHeadTail read() IO failed" );
       return null;
     }
   }

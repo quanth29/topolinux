@@ -7,6 +7,7 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * 20130204 type DRAWING_PATH_NAME
  */
 package com.android.DistoX;
 
@@ -15,35 +16,39 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Matrix;
 
+// import android.util.FloatMath;
 import android.util.Log;
 
 /**
  */
 public class DrawingPath implements DrawingICanvasCommand
 {
-  public static final int DRAWING_PATH_FIXED   = 0;
-  public static final int DRAWING_PATH_SPLAY   = 1;
-  public static final int DRAWING_PATH_GRID    = 2;
-  public static final int DRAWING_PATH_STATION = 3;
-  public static final int DRAWING_PATH_POINT   = 4;
+  public static final int DRAWING_PATH_FIXED   = 0; // leg
+  public static final int DRAWING_PATH_SPLAY   = 1; // splay
+  public static final int DRAWING_PATH_GRID    = 2; // grid
+  public static final int DRAWING_PATH_STATION = 3; // station point
+  public static final int DRAWING_PATH_POINT   = 4; // drawing point
   public static final int DRAWING_PATH_LINE    = 5;
   public static final int DRAWING_PATH_AREA    = 6;
+  public static final int DRAWING_PATH_NAME    = 7; // station name
 
-  public Path path;
-  public Path mTransformedPath;
-  public Paint mPaint;
-  public int mType;
+  Path path;
+  Path mTransformedPath;
+  Paint mPaint;
+  int mType;
   // private float x1, y1, x2, y2; // endpoint scene coords 
   // private int dir; // 0 x1 < x2, 1 y1 < y2, 2 x2 < x1, 3 y2 < y1
 
-  private float cx, cy; // midpoint scene coords
+  float cx, cy; // midpoint scene coords
                  
-  public DistoXDBlock mBlock;
+  DistoXDBlock mBlock;
+  //SEL SelectionPoint mSelectionPoint;
 
   DrawingPath( int type )
   {
     mType = type;
     mBlock = null;
+    //SEL mSelectionPoint = null;
     // dir = 4;
     // x1 = y1 = 0.0f;
     // x2 = y2 = 1.0f;
@@ -54,6 +59,7 @@ public class DrawingPath implements DrawingICanvasCommand
   {
     mType = type;
     mBlock = blk; 
+    //SEL mSelectionPoint = null;
     // dir = 4;
     // x1 = y1 = 0.0f;
     // x2 = y2 = 1.0f;
@@ -72,7 +78,7 @@ public class DrawingPath implements DrawingICanvasCommand
     // y2 = y20;
     // dir = ( Math.abs( x2-x1 ) >= Math.abs( y2-y1 ) )?
     //          ( (x2 > x1)? 0 : 2 ) : ( (y2>y1)? 1 : 3 );
-    // d = (float) Math.sqrt( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
+    // d = FloatMath.sqrt( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
     cx = (x20+x10)/2;
     cy = (y20+y10)/2;
   }
@@ -81,7 +87,6 @@ public class DrawingPath implements DrawingICanvasCommand
   {
     if ( mBlock == null ) return 0.0f;
     // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "distance to " + x + " " + y + " " + cx + " " + cy );
-    Log.v( TopoDroidApp.TAG, "path distance from " + x + " " + y + " center " + cx + " " + cy );
     return (float)( Math.abs( x - cx ) + Math.abs( y - cy ) );
   }
 

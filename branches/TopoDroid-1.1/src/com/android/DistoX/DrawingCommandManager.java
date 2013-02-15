@@ -13,6 +13,7 @@
  * 20120726 TopoDroidApp log
  * 20121225 getAreaAt and deletePath
  * 20130108 getStationAt getShotAt
+ * 20130204 using Selection class to spped up item selection
  */
 package com.android.DistoX;
 
@@ -64,7 +65,9 @@ public class DrawingCommandManager
   private List<DrawingPath>    mCurrentStack;
   private List<DrawingPath>    mRedoStack;
   // private List<DrawingPath>    mHighlight;  // highlighted path
-  private List<DrawingStation> mStations;
+  private List<DrawingStationName> mStations;
+
+  private Selection mSelection;
 
   private Matrix mMatrix;
 
@@ -75,8 +78,9 @@ public class DrawingCommandManager
     mCurrentStack = Collections.synchronizedList(new ArrayList<DrawingPath>());
     mRedoStack    = Collections.synchronizedList(new ArrayList<DrawingPath>());
     // mHighlight    = Collections.synchronizedList(new ArrayList<DrawingPath>());
-    mStations     = Collections.synchronizedList(new ArrayList<DrawingStation>());
+    mStations     = Collections.synchronizedList(new ArrayList<DrawingStationName>());
     mMatrix = new Matrix(); // identity
+    mSelection = null;
   }
 
   void clearReferences()
@@ -90,6 +94,7 @@ public class DrawingCommandManager
     synchronized( mStations ) {
       mStations.clear();
     }
+    mSelection = null;
   }
 
   // public void clearHighlight()
@@ -137,14 +142,23 @@ public class DrawingCommandManager
   void deletePath( DrawingPath path )
   {
     mCurrentStack.remove( path );
+    mSelection.removeReferencesTo( path );
   }
 
   public void setDisplayMode( int mode ) { mDisplayMode = mode; }
   public int getDisplayMode( ) { return mDisplayMode; }
 
-  public void addFixed( DrawingPath path )
+  void setBounds( float x1, float x2, float y1, float y2 )
+  {
+    mSelection = new Selection( x1, x2, y1, y2, 5.0f );
+  }
+
+  public void addFixedPath( DrawingPath path, boolean selectable )
   {
     mFixedStack.add( path );
+    if ( selectable ) {
+      mSelection.insertPath( path );
+    }
   }
 
   public void addGrid( DrawingPath path )
@@ -152,18 +166,21 @@ public class DrawingCommandManager
     mGridStack.add( path );
   }
 
-  public void addStation( DrawingStation st )
+  public void addStation( DrawingStationName st, boolean selectable )
   {
     mStations.add( st );
+    if ( selectable ) {
+      mSelection.insertStationName( st );
+    }
   }
 
   public void addCommand( DrawingPath path )
   {
-    Log.v( "DistoX", "addCommand stack size  " + mCurrentStack.size() );
     // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "addCommand stack size  " + mCurrentStack.size() );
     // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "addCommand path " + path.toString() );
     mRedoStack.clear();
     mCurrentStack.add( path );
+    mSelection.insertPath( path );
   }
 
   public Bitmap getBitmap()
@@ -242,6 +259,7 @@ public class DrawingCommandManager
       final DrawingPath undoCommand = mCurrentStack.get(  length - 1  );
       mCurrentStack.remove( length - 1 );
       undoCommand.undo();
+      // FIXME_SEL
       mRedoStack.add( undoCommand );
     }
   }
@@ -287,7 +305,7 @@ public class DrawingCommandManager
  
     synchronized( mStations ) {
       if ( mStations != null && stations ) {  
-        for ( DrawingStation st : mStations ) {
+        for ( DrawingStationName st : mStations ) {
           st.draw( canvas, matrix );
         }
       }
@@ -367,88 +385,115 @@ public class DrawingCommandManager
 
   public DrawingPointPath getPointAt( float x, float y )
   {
-    float min_dist = 1000.0f;
-    DrawingPointPath ret = null;
-    for ( DrawingPath p : mCurrentStack ) {
-      if ( p.mType == DrawingPath.DRAWING_PATH_POINT ) {
-        DrawingPointPath pp = (DrawingPointPath)p;
-        float d = Math.abs( pp.mXpos - x ) + Math.abs( pp.mYpos - y );
-        if ( d < mCloseness && d < min_dist ) {
-          min_dist = d;
-          ret = pp;
-        }
-      }
-    }
-    return ret;
+    // FIXME_SEL
+    SelectionPoint sp = mSelection.getClosestItem(x, y, mCloseness, DrawingPath.DRAWING_PATH_POINT );
+    return ( sp != null )? (DrawingPointPath)sp.item : null;
+
+    // float min_dist = 1000.0f;
+    // DrawingPointPath ret = null;
+    // for ( DrawingPath p : mCurrentStack ) {
+    //   if ( p.mType == DrawingPath.DRAWING_PATH_POINT ) {
+    //     DrawingPointPath pp = (DrawingPointPath)p;
+    //     float d = Math.abs( pp.mXpos - x ) + Math.abs( pp.mYpos - y );
+    //     if ( d < mCloseness && d < min_dist ) {
+    //       min_dist = d;
+    //       ret = pp;
+    //     }
+    //   }
+    // }
+    // return ret;
   }
 
   // get station is different it checks drawing-stations
-  public DrawingStation getStationAt( float x, float y )
+  public DrawingStationName getStationAt( float x, float y )
   {
-    float min_dist = 1000.0f;
-    DrawingStation ret = null;
-    for ( DrawingStation st : mStations ) {
-      float d = st.distance( x, y );
-      // Log.v( "DistoX", " check station " + st.mName + " at " + st.mX + " " + st.mY + " dist " + d );
-      if ( d < mCloseness && d < min_dist ) {
-        min_dist = d;
-        ret = st;
-      }
+    if ( (mDisplayMode & DISPLAY_STATION) == 0 ) {
+      return null;
     }
-    return ret;
+
+    // FIXME_SEL
+    // Log.v("DistoX", "Closeness " + mCloseness );
+    // mSelection.dump();
+    SelectionPoint sp = mSelection.getClosestItem(x, y, mCloseness, DrawingPath.DRAWING_PATH_NAME );
+    return ( sp != null )? (DrawingStationName)sp.item : null;
+
+    // float min_dist = 1000.0f;
+    // DrawingStationName ret = null;
+    // for ( DrawingStationName st : mStations ) {
+    //   float d = st.distance( x, y );
+    //   if ( d < mCloseness && d < min_dist ) {
+    //     min_dist = d;
+    //     ret = st;
+    //   }
+    // }
+    // return ret;
   }
 
   public DrawingPath getShotAt( float x, float y )
   {
-    float min_dist = 1000.0f;
-    DrawingPath ret = null;
-    boolean legs   = (mDisplayMode & DISPLAY_LEG) != 0;
+    boolean legs   = (mDisplayMode & DISPLAY_LEG)   != 0;
     boolean splays = (mDisplayMode & DISPLAY_SPLAY) != 0;
-    for ( DrawingPath p : mFixedStack ) {
-      if (    ( legs && p.mType == DrawingPath.DRAWING_PATH_FIXED )
-           || ( splays && p.mType == DrawingPath.DRAWING_PATH_SPLAY ) ) {
-       float d = p.distance( x, y );
-       if ( d < mCloseness && d < min_dist ) { 
-         min_dist = d;
-         ret = p;
-       }
-      }
-    }
-    return ret;
+    if ( ! ( legs || splays ) ) return null;
+
+    // FIXME_SEL
+    SelectionPoint sp = mSelection.getClosestItem(x, y, mCloseness, legs, splays );
+    return ( sp != null )? (DrawingPath)sp.item : null;
+
+    // float min_dist = 1000.0f;
+    // DrawingPath ret = null;
+    // for ( DrawingPath p : mFixedStack ) {
+    //   if (    ( legs && p.mType == DrawingPath.DRAWING_PATH_FIXED )
+    //        || ( splays && p.mType == DrawingPath.DRAWING_PATH_SPLAY ) ) {
+    //    float d = p.distance( x, y );
+    //    if ( d < mCloseness && d < min_dist ) { 
+    //      min_dist = d;
+    //      ret = p;
+    //    }
+    //   }
+    // }
+    // return ret;
   }
 
   public DrawingLinePath getLineAt( float x, float y )
   {
-    DrawingLinePath ret = null;
-    float min_dist = 1000.0f;
-    for ( DrawingPath p : mCurrentStack ) {
-      if ( p.mType == DrawingPath.DRAWING_PATH_LINE ) {
-        DrawingLinePath pp = (DrawingLinePath)p;
-        float d = pp.distance( x, y );
-        if ( d < mCloseness && d < min_dist ) {
-          min_dist = d;
-          ret = pp;
-        }
-      }
-    }
-    return ret;
+    // FIXME_SEL
+    SelectionPoint sp = mSelection.getClosestItem(x, y, mCloseness, DrawingPath.DRAWING_PATH_LINE );
+    return ( sp != null )? (DrawingLinePath)sp.item : null;
+
+    // DrawingLinePath ret = null;
+    // float min_dist = 1000.0f;
+    // for ( DrawingPath p : mCurrentStack ) {
+    //   if ( p.mType == DrawingPath.DRAWING_PATH_LINE ) {
+    //     DrawingLinePath pp = (DrawingLinePath)p;
+    //     float d = pp.distance( x, y );
+    //     if ( d < mCloseness && d < min_dist ) {
+    //       min_dist = d;
+    //       ret = pp;
+    //     }
+    //   }
+    // }
+    // return ret;
   }
 
   public DrawingAreaPath getAreaAt( float x, float y )
   { 
-    DrawingAreaPath ret = null;
-    float min_dist = 1000.0f;
-    for ( DrawingPath p : mCurrentStack ) {
-      if ( p.mType == DrawingPath.DRAWING_PATH_AREA ) {
-        DrawingAreaPath pp = (DrawingAreaPath)p;
-        float d = pp.distance( x, y );
-        if ( d < mCloseness && d < min_dist ) {
-          min_dist = d;
-          ret = pp;
-        }
-      }
-    }
-    return ret;
+    // FIXME_SEL
+    SelectionPoint sp = mSelection.getClosestItem(x, y, mCloseness, DrawingPath.DRAWING_PATH_AREA );
+    return ( sp != null )? (DrawingAreaPath)sp.item : null;
+
+    // DrawingAreaPath ret = null;
+    // float min_dist = 1000.0f;
+    // for ( DrawingPath p : mCurrentStack ) {
+    //   if ( p.mType == DrawingPath.DRAWING_PATH_AREA ) {
+    //     DrawingAreaPath pp = (DrawingAreaPath)p;
+    //     float d = pp.distance( x, y );
+    //     if ( d < mCloseness && d < min_dist ) {
+    //       min_dist = d;
+    //       ret = pp;
+    //     }
+    //   }
+    // }
+    // return ret;
   }
 
 
@@ -464,7 +509,7 @@ public class DrawingCommandManager
       out.write( sw.getBuffer().toString() );
       out.newLine();
       // out.newLine();
-      // for ( DrawingStation st : mStations ) {
+      // for ( DrawingStationName st : mStations ) {
       //   out.write( st.toTherion() );
       //   out.newLine();
       // }
@@ -489,7 +534,7 @@ public class DrawingCommandManager
           DrawingLinePath lp = (DrawingLinePath)p;
           // TopoDroidApp.Log(  TopoDroidApp.LOG_PLOT, "exportTherion line " + lp.lineType() );
           if ( lp.lineType() == DrawingBrushPaths.mLineLib.mLineWallIndex ) {
-            ArrayList< LinePoint > pts = lp.getPoints();
+            ArrayList< LinePoint > pts = lp.points;
             for ( LinePoint pt : pts ) {
               if ( pt.mX < xmin ) xmin = pt.mX;
               if ( pt.mX > xmax ) xmax = pt.mX;
@@ -515,7 +560,7 @@ public class DrawingCommandManager
       out.newLine();
 
       if ( TopoDroidApp.mAutoStations ) {
-        for ( DrawingStation st : mStations ) {
+        for ( DrawingStationName st : mStations ) {
           // FIXME if station is in the convex hull of the lines
           if ( xmin > st.mX || xmax < st.mX ) continue;
           if ( ymin > st.mY || ymax < st.mY ) continue;

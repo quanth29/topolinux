@@ -25,6 +25,10 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import android.content.Intent;
+import android.content.DialogInterface;
+
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 
 import android.widget.TextView;
 import android.widget.ArrayAdapter;
@@ -41,6 +45,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import android.widget.Toast;
+
+import android.util.Log;
 
 import android.bluetooth.BluetoothDevice;
 
@@ -290,13 +296,7 @@ public class DeviceActivity extends Activity
         Toast.makeText(getApplicationContext(), R.string.toggle_ok, Toast.LENGTH_SHORT).show();
       }
      } else if (  b == mBtnHeadTail ) {
-      // TopoDroidApp.Log( TopoDroidApp.LOG_DEVICE, "onClick mBtnHeadTail. Is connected " + app.isConnected() );
-       String ht = comm.readHeadTail( mAddress );
-       if ( ht != null ) {
-         Toast.makeText(getApplicationContext(), getString(R.string.head_tail) + ht, Toast.LENGTH_LONG).show();
-       } else {
-         Toast.makeText(getApplicationContext(), R.string.head_tail_failed, Toast.LENGTH_SHORT).show();
-       }
+       new DeviceHeadTailDialog( this, this ).show();
     } else if ( b == mBtnRead ) {
       // TopoDroidApp.Log( TopoDroidApp.LOG_DEVICE, "onClick mBtnRead. Is connected " + app.isConnected() );
       byte[] coeff = new byte[48];
@@ -399,6 +399,72 @@ public class DeviceActivity extends Activity
     }
     return true;
   }
+
+  // -----------------------------------------------------------------------------
+
+  boolean readDeviceHeadTail( int[] head_tail )
+  {
+    // TopoDroidApp.Log( TopoDroidApp.LOG_DEVICE, "onClick mBtnHeadTail. Is connected " + app.isConnected() );
+    String ht = app.mComm.readHeadTail( mAddress, head_tail );
+    if ( ht == null ) {
+      Toast.makeText(getApplicationContext(), R.string.head_tail_failed, Toast.LENGTH_SHORT).show();
+      return false;
+    }
+    // Log.v( "DistoX", "Head " + head_tail[0] + " tail " + head_tail[1] );
+    // Toast.makeText(getApplicationContext(), getString(R.string.head_tail) + ht, Toast.LENGTH_LONG).show();
+    return true;
+  }
+
+  // reset data from stored-tail (inclusive) to current-tail (exclusive)
+  private void doResetDeviceHeadTail( int[] head_tail )
+  {
+    int from = head_tail[0];
+    int to   = head_tail[1];
+    // Log.v("DistoX", "do reset from " + from + " to " + to );
+    int n = app.mComm.swapHotBit( mAddress, from, to );
+  }
+
+  void storeDeviceHeadTail( int[] head_tail )
+  {
+    // Log.v("DistoX", "store HeadTail " + mAddress + " : " + head_tail[0] + " " + head_tail[1] );
+    app.mData.updateDeviceHeadTail( mAddress, head_tail );
+  }
+
+  void retrieveDeviceHeadTail( int[] head_tail )
+  {
+    // Log.v("DistoX", "store HeadTail " + mAddress + " : " + head_tail[0] + " " + head_tail[1] );
+    app.mData.getDeviceHeadTail( mAddress, head_tail );
+  }
+
+  // reset device from stored-tail to given tail
+  void resetDeviceHeadTail( final int[] head_tail )
+  {
+    // Log.v("DistoX", "reset device from " + head_tail[0] + " to " + head_tail[1] );
+    if ( head_tail[0] < 0 || head_tail[0] >= 0x8000 || head_tail[1] < 0 || head_tail[1] >= 0x8000 ) {
+      Toast.makeText(this, R.string.device_illegal_addr, Toast.LENGTH_LONG).show();
+    } else {
+      // TODO ask confirm
+      AlertDialog.Builder alert = new AlertDialog.Builder( this );
+      // alert.setTitle( R.string.delete );
+      alert.setMessage( getResources().getString( R.string.device_reset ) + " ?" );
+      
+      alert.setPositiveButton( R.string.button_ok, 
+        new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick( DialogInterface dialog, int btn ) {
+            doResetDeviceHeadTail( head_tail );
+          }
+      } );
+
+      alert.setNegativeButton( R.string.button_cancel, 
+        new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick( DialogInterface dialog, int btn ) { }
+      } );
+      alert.show();
+    }
+  }
+
 
   // -----------------------------------------------------------------------------
 

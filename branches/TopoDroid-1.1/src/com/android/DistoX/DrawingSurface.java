@@ -34,10 +34,11 @@ import java.util.List;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.EOFException;
 
-// import android.util.Log;
+import android.util.Log;
 
 /**
  */
@@ -194,17 +195,19 @@ public class DrawingSurface extends SurfaceView
       }
     }
 
-    public void addStation( String name, float x, float y, boolean duplicate )
+    public DrawingStationName addStation( String name, float x, float y, boolean duplicate, boolean selectable )
     {
       // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "addStation " + name + " " + x + " " + y );
-      DrawingStation st = new DrawingStation(name, x, y, duplicate );
+      // Log.v( "DistoX", "addStation " + name + " " + x + " " + y );
+      DrawingStationName st = new DrawingStationName(name, x, y, duplicate );
       st.setPaint( DrawingBrushPaths.fixedStationPaint );
-      commandManager.addStation( st );
+      commandManager.addStation( st, selectable );
+      return st;
     }
 
-    public void addFixedPath( DrawingPath path )
+    public void addFixedPath( DrawingPath path, boolean selectable )
     {
-      commandManager.addFixed( path );
+      commandManager.addFixedPath( path, selectable );
     }
 
     public void addGridPath( DrawingPath path )
@@ -215,6 +218,11 @@ public class DrawingSurface extends SurfaceView
     public void addDrawingPath (DrawingPath drawingPath)
     {
       commandManager.addCommand(drawingPath);
+    }
+    
+    void setBounds( float x1, float x2, float y1, float y2 )
+    {
+      commandManager.setBounds( x1, x2, y1, y2 );
     }
 
     public boolean hasMoreRedo()
@@ -264,7 +272,7 @@ public class DrawingSurface extends SurfaceView
       return commandManager.hasStationName( name );
     }
 
-    public DrawingStation  getStationAt( float x, float y )
+    public DrawingStationName  getStationAt( float x, float y )
     {
       return commandManager.getStationAt( x, y );
     }
@@ -423,48 +431,8 @@ public class DrawingSurface extends SurfaceView
           //   ptType = DrawingBrushPaths.POINT_STAL;
           //   has_orientation = false;
           // } else if ( type.equals( "narrow-end" ) ) {
-          //   ptType = DrawingBrushPaths.POINT_END;
-          //   has_orientation = false;
-          // } else if ( type.equals( "low-end" ) ) {
-          //   ptType = DrawingBrushPaths.POINT_END;
-          //   orientation = 90.0f;
-          //   has_orientation = true;
-          // } else if ( type.equals( "spring" ) ) {
-          //   ptType = DrawingBrushPaths.POINT_SINK;
-          //   orientation = 180.0f;
-          //   has_orientation = true;
-          // } else if ( type.equals( "sink" ) ) {
-          //   ptType = DrawingBrushPaths.POINT_SINK;
-          //   has_orientation = false;
-          // } else if ( type.equals( "ice" ) ) {
-          //   ptType = DrawingBrushPaths.POINT_SNOW;
-          //   orientation = 180.0f;
-          //   has_orientation = true;
-          // } else if ( type.equals( "snow" ) ) {
-          //   ptType = DrawingBrushPaths.POINT_SNOW;
-          //   has_orientation = false;
-          // } else if ( type.equals( "moonmilk" ) ) {
-          //   ptType = DrawingBrushPaths.POINT_FLOWSTONE;
-          //   orientation = 180.0f;
-          //   has_orientation = true;
-          // } else if ( type.equals( "flowstone" ) ) {
-          //   ptType = DrawingBrushPaths.POINT_FLOWSTONE;
-          //   has_orientation = false;
-          // } else if ( type.equals( "breakdown-choke" ) ) {
-          //   ptType = DrawingBrushPaths.POINT_DIG;
-          //   orientation = 180.0f;
-          //   has_orientation = true;
-          // } else if ( type.equals( "dig" ) ) {
-          //   ptType = DrawingBrushPaths.POINT_DIG;
-          //   has_orientation = false;
-          // } else if ( type.equals( "gypsum" ) ) {
-          //   ptType = DrawingBrushPaths.POINT_CRYSTAL;
-          //   orientation = 180.0f;
-          //   has_orientation = true;
-          // } else if ( type.equals( "crystal" ) ) {
-          //   ptType = DrawingBrushPaths.POINT_CRYSTAL;
-          //   has_orientation = false;
-          // } else {
+          //   ...
+          // } 
 
           for ( ptType = 0; ptType < DrawingBrushPaths.mPointLib.mPointNr; ++ptType ) {
             if ( DrawingBrushPaths.canFlip(ptType) ) {
@@ -654,6 +622,8 @@ public class DrawingSurface extends SurfaceView
           }
         }
       }
+    } catch ( FileNotFoundException e ) {
+      // this is OK
     } catch ( IOException e ) {
       e.printStackTrace();
     }

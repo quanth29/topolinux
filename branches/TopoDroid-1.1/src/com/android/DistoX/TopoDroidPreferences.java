@@ -21,8 +21,8 @@ import android.preference.PreferenceActivity;
 import android.preference.CheckBoxPreference;
 // import android.preference.EditTextPreference;
 // import android.preference.ListPreference;
-import android.view.Menu;
-import android.view.MenuItem;
+// import android.view.Menu;
+// import android.view.MenuItem;
 
 /**
  */

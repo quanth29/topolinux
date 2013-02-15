@@ -41,7 +41,7 @@ public class DrawingPointPath extends DrawingPath
   static final int SCALE_L  = 1;
   static final int SCALE_XL = 2;
 
-  float mXpos;
+  float mXpos;                // scene coords
   float mYpos;
   int mPointType;
   protected int mScale;       //! symbol scale
@@ -108,8 +108,8 @@ public class DrawingPointPath extends DrawingPath
   // public void setPointType( int t ) { mPointType = t; }
   public int pointType() { return mPointType; }
 
-  public double xpos() { return mXpos; }
-  public double ypos() { return mYpos; }
+  // public double xpos() { return mXpos; }
+  // public double ypos() { return mYpos; }
 
   // public double orientation() { return mOrientation; }
 

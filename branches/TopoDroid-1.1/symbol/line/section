@@ -1,0 +1,8 @@
+symbol line
+  name section
+  name-it sezione
+  th_name section
+  color 0xffffff 0x99
+  width 1
+  dash 5 10
+endsymbol

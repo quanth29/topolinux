@@ -17,6 +17,7 @@
  * 20120607 added 3D button / rearranged buttons layout
  * 20120610 archive (zip) button
  * 20120619 handle "mustOpen" (immediate) request
+ * 20130213 unified export and zip (export dialog)
  */
 package com.android.DistoX;
 
@@ -83,7 +84,7 @@ public class SurveyActivity extends Activity
   private Button mBTNdelete;
   private Button mBTNnotes;
   private Button mBTNlocation;
-  private Button mBTNarchive;
+  // private Button mBTNarchive;
   private Button mBTNinfo;
   private Button mBTNphoto;
 
@@ -162,7 +163,7 @@ public class SurveyActivity extends Activity
     mBTNdelete   = (Button) findViewById( R.id.surveyDelete );
     mBTNnotes    = (Button) findViewById( R.id.surveyNotes );
     mBTNlocation = (Button) findViewById( R.id.surveyLocation );
-    mBTNarchive  = (Button) findViewById( R.id.surveyArchive );
+    // mBTNarchive  = (Button) findViewById( R.id.surveyArchive );
     mBTNinfo     = (Button) findViewById( R.id.surveyInfo );
     mBTNphoto    = (Button) findViewById( R.id.surveyPhoto );
 
@@ -239,7 +240,7 @@ public class SurveyActivity extends Activity
     mBTNdelete.setEnabled( isSaved );
     mBTNnotes.setEnabled( isSaved );
     mBTNlocation.setEnabled( isSaved );
-    mBTNarchive.setEnabled( isSaved );
+    // mBTNarchive.setEnabled( isSaved );
     mBTNinfo.setEnabled( isSaved );
     mBTNphoto.setEnabled( isSaved );
   }
@@ -266,7 +267,8 @@ public class SurveyActivity extends Activity
         doOpen();
         break;
       case R.id.surveyExport:
-        doExport( true );
+        // doExport( true );
+        new SurveyExportDialog( this, this ).show();
         break;
       case R.id.survey3D:
         do3D();
@@ -280,9 +282,9 @@ public class SurveyActivity extends Activity
       case R.id.surveyDelete:
         askDelete();
         break;
-      case R.id.surveyArchive:
-        doArchive();
-        break;
+      // case R.id.surveyArchive:
+      //   doArchive();
+      //   break;
       case R.id.surveyInfo:
         (new SurveyStatDialog( this, app.mData.getSurveyStat( app.mSID ) )).show();
         break;
@@ -293,12 +295,9 @@ public class SurveyActivity extends Activity
     }
   }
 
-  private void doArchive()
+  void doArchive()
   {
-    doExport( false );
-    if ( app.mExportType != TopoDroidApp.DISTOX_EXPORT_TH ) {
-      app.exportSurveyAsTh(); // make sure to have survey exported as therion
-    }
+    doExport( TopoDroidApp.DISTOX_EXPORT_TH, false );
     Archiver archiver = new Archiver( app );
     if ( archiver.archive( ) ) {
       String msg = getResources().getString( R.string.zip_saved ) + " " + archiver.zipname;
@@ -466,7 +465,7 @@ public class SurveyActivity extends Activity
     }
   }
   
-  private void doExport( boolean warn )
+  void doExport( int exportType, boolean warn )
   {
     if ( app.getSurveyId() < 0 ) {
       if ( warn ) {
@@ -474,7 +473,7 @@ public class SurveyActivity extends Activity
       }
     } else {
       String filename = null;
-      switch ( app.mExportType ) {
+      switch ( exportType ) {
         // case TopoDroidApp.DISTOX_EXPORT_TLX:
         //   filename = app.exportSurveyAsTlx();
         //   break;
