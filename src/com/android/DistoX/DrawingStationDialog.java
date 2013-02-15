@@ -33,9 +33,9 @@ public class DrawingStationDialog extends Dialog
     private Button mBtnCancel;
 
     private DrawingActivity mActivity;
-    private DrawingStation mStation;
+    private DrawingStationName mStation;
 
-    public DrawingStationDialog( Context context, DrawingActivity activity, DrawingStation station )
+    public DrawingStationDialog( Context context, DrawingActivity activity, DrawingStationName station )
     {
       super(context);
       mActivity = activity;

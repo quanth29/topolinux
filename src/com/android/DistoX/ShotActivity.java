@@ -22,6 +22,7 @@
  * 20130109 bug-fix missing block LEG in numberSplays
  * 20130110 menus: Survey -> Display; Distox under More; Number in its place
  * 20130111 photo date
+ * 20130204 sleep menu to turn off screen immediately (1 sec)
  */
 package com.android.DistoX;
 
@@ -45,6 +46,8 @@ import java.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+// import android.os.SystemClock;
+// import android.os.PowerManager;
 
 import android.app.Application;
 import android.app.Activity;
@@ -55,6 +58,7 @@ import android.view.SubMenu;
 // import android.view.MenuInflater;
 // import android.content.res.ColorStateList;
 
+import android.provider.Settings.System;
 
 // import android.location.LocationManager;
 
@@ -140,7 +144,8 @@ public class ShotActivity extends Activity
   private MenuItem mMIplot;
   private MenuItem mMInotes;
   private SubMenu  mSMmore;
-  private MenuItem mMIrefresh;
+  private MenuItem mMIsleep;
+  // private MenuItem mMIrefresh;
   private MenuItem mMIdownload = null;
   private MenuItem mMIsymbol;
   private MenuItem mMIoptions;
@@ -299,7 +304,8 @@ public class ShotActivity extends Activity
       DistoXDBlock cur = item;
       // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "item " + cur.mLength + " " + cur.mBearing + " " + cur.mClino );
       int t = cur.type();
-      if ( cur.relativeDistance( prev ) < app.mCloseDistance ) {
+      if ( cur.mType == DistoXDBlock.BLOCK_LEG
+           || cur.relativeDistance( prev ) < app.mCloseDistance ) {
         if ( mLeg ) { // hide leg extra shots
           // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "close distance");
           if ( mBlank && prev.type() == DistoXDBlock.BLOCK_BLANK ) {
@@ -409,6 +415,7 @@ public class ShotActivity extends Activity
 
     mSMmore = menu.addSubMenu( R.string.menu_more );
       // mMIplotnew  = mSMmore.add( R.string.menu_plot_new );
+      mMIsleep    = mSMmore.add( R.string.menu_sleep );
       mMIundelete = mSMmore.add( R.string.menu_undelete );
       // mMIlocation = mSMmore.add( R.string.menu_location );
       mMI3d       = mSMmore.add( R.string.menu_3d );
@@ -494,6 +501,8 @@ public class ShotActivity extends Activity
     } else if ( item == mMIsensor ) {  // sensor listing
       Intent sensorIntent = new Intent( this, SensorListActivity.class );
       startActivity( sensorIntent );
+    } else if ( item == mMIsleep ) { 
+      System.putInt(getContentResolver(), System.SCREEN_OFF_TIMEOUT, 1000); // 1 secs
     } else if ( item == mMI3d ) { // 3D
       app.exportSurveyAsTh(); // make sure to have survey exported as therion
       Intent intent = new Intent( "Cave3D.intent.action.Launch" );
@@ -672,6 +681,9 @@ public class ShotActivity extends Activity
   public synchronized void onResume() 
   {
     super.onResume();
+
+    System.putInt(getContentResolver(), System.SCREEN_OFF_TIMEOUT, TopoDroidApp.mScreenTimeout );
+
     // if ( app.mComm != null ) { app.mComm.resume(); }
     updateDisplay( );
     app.registerConnListener( mHandler );

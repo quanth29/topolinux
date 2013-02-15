@@ -79,7 +79,7 @@
         android:layout_width="fill_parent" 
         android:layout_height="wrap_content" 
         android:layout_gravity="right"
-        android:text="@string/button_read"
+        android:text="@string/button_read_cal"
         />
       <!-- Button android:id="@+id/button_write_device"
         android:layout_marginTop="5dp"

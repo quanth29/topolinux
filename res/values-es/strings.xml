@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <resources>
-    <string name="topodroid_man">http://topolinux.googlecode.com/files/TopoDroid-20121130.pdf</string>
+    <string name="topodroid_man">http://topolinux.googlecode.com/files/TopoDroid-1.1.0.pdf</string>
 
     <string name="app_name">TopoDroid</string>
     <string name="app_name_calib">TopoDroid - Nombre calibraci\u00f3n</string>
@@ -274,7 +274,7 @@
     <string name="menu_toggle">Modo DistoX</string>
     <string name="menu_undelete">Rehacer</string>
     <string name="menu_write">Enviar a DistoX</string>
-    <string name="menu_zip">Zip</string>
+    <!-- string name="menu_zip">Zip</string -->
 
    
     <string name="surveys">TOPOGRAF\u00cdA</string>
@@ -370,8 +370,8 @@
   <string name="pref_base_path_title">Directorio principal</string>
   <string name="pref_base_path_summary">Directorio principal TopoDroid</string>
   <string name="pref_base_path_message">Introduzca directorio principal TopoDroid</string>
-  <string name="pref_export_title">Exportar</string>
-  <string name="pref_export_summary">Seleccione tipo de exportaci\u00f3n</string>
+  <!-- string name="pref_export_title">Exportar</string -->
+  <!-- string name="pref_export_summary">Seleccione tipo de exportaci\u00f3n</string -->
   <string name="pref_list_refresh_title">Actualizar lista</string>
   <string name="pref_list_refresh_summary">Forzar Actualizaci\u00f3n de la lista</string>
   <string name="pref_leg_title">Rango</string>

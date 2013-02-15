@@ -48,12 +48,12 @@ public class DrawingAreaPath extends DrawingPath
   private BezierPoint c1, c2;
   boolean mVisible; // visible border
 
-  private ArrayList< LinePoint > points; 
+  ArrayList< LinePoint > points; 
 
   public DrawingAreaPath( int type, String id, boolean visible )
   {
     super( DrawingPath.DRAWING_PATH_AREA );
-    // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "new DrawingAreaPath type " + type + " id " + id );
+    // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "DrawingAreaPath cstr type " + type + " id " + id );
     mAreaType = type;
     if ( id != null ) {
       mAreaCnt = Integer.parseInt( id.substring(1) );
@@ -117,9 +117,9 @@ public class DrawingAreaPath extends DrawingPath
 
   public int areaType() { return mAreaType; }
 
-  public ArrayList< LinePoint > getPoints() { return points; }
+  // public ArrayList< LinePoint > getPoints() { return points; }
 
-  public int size() { return points.size(); }
+  // public int size() { return points.size(); }
 
   @Override
   public String toTherion()

@@ -54,7 +54,7 @@ public class DrawingStationPath extends DrawingPath
     // Log.v( TAG, "Point cstr " + type + " orientation " + mOrientation + " flip " + mFlip );
   }
 
-  public DrawingStationPath( DrawingStation st, int scale )
+  public DrawingStationPath( DrawingStationName st, int scale )
   {
     super( DrawingPath.DRAWING_PATH_STATION );
     // TopoDroidApp.Log( TopoDroidApp.LOG_PATH, "Point " + type + " X " + x + " Y " + y );

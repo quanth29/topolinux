@@ -158,9 +158,9 @@ public class DrawingLinePath extends DrawingPath
   // }
   public int lineType() { return mLineType; }
 
-  public ArrayList< LinePoint > getPoints() { return points; }
+  // public ArrayList< LinePoint > getPoints() { return points; }
 
-  public int size() { return points.size(); }
+  // public int size() { return points.size(); }
 
   @Override
   public String toTherion()

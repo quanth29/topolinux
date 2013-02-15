@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <resources>
 	<!-- Translation PT-PT 07/01/2013 jnm -->
-    <string name="topodroid_man">http://topolinux.googlecode.com/files/TopoDroid-20121130.pdf</string>
+    <string name="topodroid_man">http://topolinux.googlecode.com/files/TopoDroid-1.1.0.pdf</string>
 
     <string name="app_name">TopoDroid</string>
     <string name="app_name_calib">TopoDroid - Informação de Calibração</string>
@@ -249,7 +249,7 @@
 	<string name="menu_toggle">Modo do DistoX</string>
     <string name="menu_undelete">Recuperar</string>
     <string name="menu_write">Escrever para DistoX</string>
-    <string name="menu_zip">Comprimir</string>
+    <!-- string name="menu_zip">Comprimir</string -->
    
     <string name="surveys">PROJETOS</string>
     <string name="calibs">CALIBRAÇÕES</string>
@@ -342,8 +342,8 @@
   <string name="pref_closeness_title">Raio de seleção </string>
   <string name="pref_closeness_summary">Raio de seleção de itens</string>
   <string name="pref_closeness_message">Raio de seleção de itens</string>
-  <string name="pref_export_title">Exportar</string>
-  <string name="pref_export_summary">Selecione tipo da exportação</string>
+  <!-- string name="pref_export_title">Exportar</string -->
+  <!-- tring name="pref_export_summary">Selecione tipo da exportação</string -->
   <string name="pref_list_refresh_title">Atualizar lista</string>
   <string name="pref_list_refresh_summary">Forçar atualização da lista</string>
   <string name="pref_leg_title">Tolerância nos troços</string>
