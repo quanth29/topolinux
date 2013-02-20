@@ -16,7 +16,7 @@ any comment that might be useful to others.
 || *Device* || *Android* || *TopoDroid* || *Status* || *Comment* ||
 || Archos 32 (minitablet) || 2.2.1 || 1.0.6 || <font color="green">Mostly working</font> || ||
 || Asus EEPAD Transformer TF101 10"|| 4.0.3 || 0.7.1 || <font color="green">Mostly working</font> || calibration untested ||
-|| Huawei Vodaphone 858 Smart || 2.2 || 1.1.0 || <font color="green">Fully working</font> || ||
+|| Huawei Vodaphone 858 Smart || 2.2 || 1.1.2 || <font color="green">Fully working</font> || ||
 || HTC Desire Senser || 2.3.5 || 0.7.1 || <font color="red">Bluetooth fails</font> || unable to pair with DistoX ||
 || HTC EVO 3D || 2.3 || 0.7.1 || <font color="green">Mostly working</font> || calibration untested ||
 || HTC Wilfire || 2.3 || 0.7.1 - 1.0.6 || <font color="red">Bluetooth fails</font> || unable to pair with DistoX ||
@@ -24,6 +24,7 @@ any comment that might be useful to others.
 || HTC Sense || 2.3.3 || 0.7.1 || <font color="red">Bluetooth fails</font> || unable to pair with DistoX ||
 || HTC Sense || 3.2.1 || 1.0.3 || <font color="red">Bluetooth fails</font> || unable to communicate with DistoX ||
 || Motorola Defy || 2.2.2 || 0.7.1 || <font color="green">Working</font> || drawing not really tested ||
+|| Nexus 4 || 4.2.2 || 1.1.2 || <font color="green">Working</font> || ||
 || Nexus 7 || 4.2.1 || 1.1.0 || <font color="green">Working</font> || ||
 || Samsung Galaxy Ace S5830 || 2.2 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy Ace GTS5830 || 2.3.4 || 0.7.1 || <font color="red">Bluetooth fails</font> || unable to pair with DistoX ||
