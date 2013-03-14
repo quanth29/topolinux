@@ -26,6 +26,7 @@ any comment that might be useful to others.
 || Motorola Defy || 2.2.2 || 0.7.1 || <font color="green">Working</font> || drawing not really tested ||
 || Nexus 4 || 4.2.2 || 1.1.2 || <font color="green">Working</font> || ||
 || Nexus 7 || 4.2.1 || 1.1.0 || <font color="green">Working</font> || ||
+|| Panasonic Toughpad JT-B1 || 4.0.4 || 1.1.2 || <font color="green">Working</font> || ||
 || Samsung Galaxy Ace S5830 || 2.2 || 0.7.1 || <font color="red">Bluetooth fails || unable to pair with DistoX ||
 || Samsung Galaxy Ace GTS5830 || 2.3.4 || 0.7.1 || <font color="red">Bluetooth fails</font> || unable to pair with DistoX ||
 || Samsung Galaxy Mini S5570 || 2.2 || 0.7.1 || <font color="red">Bluetooth fails</font> || unable to pair with DistoX ||
