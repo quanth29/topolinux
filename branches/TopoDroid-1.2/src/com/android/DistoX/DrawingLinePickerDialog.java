@@ -24,7 +24,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 
 public class DrawingLinePickerDialog extends Dialog 
-                               implements View.OnClickListener
+                                     implements View.OnClickListener
 {
     private Button[] mBtnLine;
     private Button mBtnOK;
@@ -34,14 +34,19 @@ public class DrawingLinePickerDialog extends Dialog
     // private TextView mText;
     private int mIndexMax;
 
-    private Context mContext;
-    private DrawingActivity mActivity;
+    public interface OnLineSelectedListener
+    {
+      public void lineSelected( int index );
+    }
 
-    public DrawingLinePickerDialog( Context context, DrawingActivity activity, int index )
+    private Context mContext;
+    private OnLineSelectedListener mListener;
+
+    public DrawingLinePickerDialog( Context context, OnLineSelectedListener listener, int index )
     {
       super(context);
       mContext  = context;
-      mActivity = activity;
+      mListener = listener;
       mIndexMax = DrawingBrushPaths.mLineLib.mLineNr;
       mBtnLine = new Button[ mIndexMax ];
       for (int k=0; k<mIndexMax; ++k ) {
@@ -87,7 +92,7 @@ public class DrawingLinePickerDialog extends Dialog
       // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "DrawingLinePickerDialog::onClick" );
       switch (view.getId()) {
         case R.id.button_ok:
-          mActivity.lineSelected( mIndex );
+          mListener.lineSelected( mIndex );
           dismiss();
           break;
         case R.id.button_cancel:

@@ -227,6 +227,7 @@ public class TopoDroidApp extends Application
   private static String APP_SVX_PATH ; //  = APP_BASE_PATH + "svx/";
   private static String APP_TH_PATH  ; //  = APP_BASE_PATH + "th/";
   private static String APP_TH2_PATH ; //  = APP_BASE_PATH + "th2/";
+  private static String APP_TH3_PATH ; //  = APP_BASE_PATH + "th3/";
   private static String APP_TRO_PATH ; //  = APP_BASE_PATH + "tro/";
   private static String APP_MAPS_PATH; //  = APP_BASE_PATH + "png/";
   private static String APP_NOTE_PATH; //  = APP_BASE_PATH + "note/";
@@ -272,6 +273,10 @@ public class TopoDroidApp extends Application
     dir = new File( APP_TH2_PATH );
     if ( ! dir.exists() ) dir.mkdirs( );
 
+    APP_TH3_PATH    = APP_BASE_PATH + "th3/";
+    dir = new File( APP_TH3_PATH );
+    if ( ! dir.exists() ) dir.mkdirs( );
+
     APP_TRO_PATH    = APP_BASE_PATH + "tro/";
     dir = new File( APP_TRO_PATH );
     if ( ! dir.exists() ) dir.mkdirs( );
@@ -315,6 +320,7 @@ public class TopoDroidApp extends Application
   public static final long PLOT_PLAN      = 1;
   public static final long PLOT_EXTENDED  = 2;
   public static final long PLOT_H_SECTION = 3;
+  public static final long PLOT_SKETCH_3D = 4;
 
   // drawing line styles
   public static final int LINE_STYLE_BEZIER = 0;
@@ -331,7 +337,7 @@ public class TopoDroidApp extends Application
 
 
   public static final String[] projName = { // therion projection names
-    "none", "plan", "extended", "none"
+    "none", "plan", "extended", "none", "sketch_3d"
   };
 
   public static final float LEN_THR    = 20.0f; // corner detection length
@@ -434,13 +440,9 @@ public class TopoDroidApp extends Application
   // intent names
   public static final String TOPODROID_PLOT_ID     = "topodroid.plot_id";
   public static final String TOPODROID_PLOT_NAME   = "topodroid.plot_name";
-  // public static final String TOPODROID_PLOT_TYPE   = "topodroid.plot_type";
-  // public static final String TOPODROID_PLOT_STRT   = "topodroid.plot_strt";
-  // public static final String TOPODROID_PLOT_VIEW   = "topodroid.plot_view";
-  // public static final String TOPODROID_PLOT_FILE   = "topodroid.plot_file";
-  // public static final String TOPODROID_PLOT_XOFFSET = "topodroid.plot_xoffset";
-  // public static final String TOPODROID_PLOT_YOFFSET = "topodroid.plot_yoffset";
-  // public static final String TOPODROID_PLOT_ZOOM    = "topodroid.plot_zoom";
+
+  public static final String TOPODROID_SKETCH_ID   = "topodroid.sketch_id";
+  public static final String TOPODROID_SKETCH_NAME = "topodroid.sketch_name";
 
   public static final String TOPODROID_SURVEY      = "topodroid.survey";
   public static final String TOPODROID_SURVEY_ID   = "topodroid.survey_id";
@@ -653,7 +655,7 @@ public class TopoDroidApp extends Application
     mDisplayWidth  = dm.widthPixels;
     mDisplayHeight = dm.heightPixels;
     mScaleFactor   = (mDisplayHeight / 320.0f) * density;
-    // Log.v( TAG, "display " + mDisplayWidth + " " + mDisplayHeight + " scale " + mScaleFactor );
+    Log.v( TAG, "display " + mDisplayWidth + " " + mDisplayHeight + " scale " + mScaleFactor );
   }
 
   private void setLineStyleAndType( String style )
@@ -773,6 +775,12 @@ public class TopoDroidApp extends Application
     return dir.exists();
   }
 
+  public static boolean hasTh3Dir()
+  {
+    File dir = new File( TopoDroidApp.APP_TH3_PATH );
+    return dir.exists();
+  }
+
   public static boolean hasPngDir()
   {
     File dir = new File( TopoDroidApp.APP_MAPS_PATH );
@@ -783,12 +791,14 @@ public class TopoDroidApp extends Application
   public static String getImportFile( String name ) { return APP_IMPORT_PATH + name; }
   public static String getZipFile( String name )    { return APP_ZIP_PATH + name; }
   public static String getTh2File( String name )    { return APP_TH2_PATH + name; }
+  public static String getTh3File( String name )    { return APP_TH3_PATH + name; }
   public static String getNoteFile( String name )   { return APP_NOTE_PATH + name; }
 
   public static String getJpgDir( String dir ) { return APP_FOTO_PATH + dir; }
   public static String getJpgFile( String dir, String name ) { return APP_FOTO_PATH + dir + "/" + name; }
 
   public String getSurveyPlotFile( String name ) { return APP_TH2_PATH + mySurvey + "-" + name + ".th2"; }
+  public String getSurveySketchFile( String name ) { return APP_TH3_PATH + mySurvey + "-" + name + ".th3"; }
   public String getSurveyPngFile( String name )  { return APP_MAPS_PATH + mySurvey + "-" + name + ".png"; }
 
   public String getTh2FileWithExt( String name ) 
@@ -796,6 +806,13 @@ public class TopoDroidApp extends Application
     File dir = new File( APP_TH2_PATH );
     if (!dir.exists()) dir.mkdirs();
     return APP_TH2_PATH + name + ".th2";
+  }
+
+  public String getTh3FileWithExt( String name ) 
+  {
+    File dir = new File( APP_TH3_PATH );
+    if (!dir.exists()) dir.mkdirs();
+    return APP_TH3_PATH + name + ".th3";
   }
  
   public String getPngFileWithExt( String name ) 

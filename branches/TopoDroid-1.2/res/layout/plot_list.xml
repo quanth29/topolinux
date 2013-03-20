@@ -10,13 +10,22 @@
       android:layout_height="wrap_content"
       >
     <Button android:id="@+id/plot_new"
-       android:layout_width="fill_parent"
+       android:layout_width="wrap_content"
        android:layout_height="match_parent"
        android:layout_marginBottom="15dp"
        android:singleLine="true"
        android:paddingLeft="25dp"
        android:paddingRight="25dp"
        android:text="@string/plot_new"
+    />
+    <Button android:id="@+id/sketch3d_new"
+       android:layout_width="wrap_content"
+       android:layout_height="match_parent"
+       android:layout_marginBottom="15dp"
+       android:singleLine="true"
+       android:paddingLeft="25dp"
+       android:paddingRight="25dp"
+       android:text="@string/sketch3d_new"
     />
    </LinearLayout>
     <ListView android:id="@+id/list"

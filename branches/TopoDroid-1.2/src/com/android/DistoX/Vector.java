@@ -14,6 +14,10 @@
 package com.android.DistoX;
 
 import java.lang.Math;
+import java.io.PrintWriter;
+
+import android.util.FloatMath;
+
 
 public class Vector
 {
@@ -124,5 +128,21 @@ public class Vector
   {
     return new Vector( y*b.z - z*b.y, z*b.x - x*b.z, x*b.y - y*b.x );
   }
- 
+
+  // euclidean distance from another point
+  float distance( Vector p )
+  {
+    float a = x - p.x;
+    float b = y - p.y;
+    float c = z - p.z;
+    return FloatMath.sqrt( a*a + b*b + c*c );
+  }
+
+  // as 3D point (X,Y,Z) are east, south, vert(down) 
+  // Y and Z are reversed in Therion
+  void toTherion( PrintWriter pw )
+  {
+    pw.format( "  %.2f %.2f %.2f\n", x, -y, -z );
+  }
+
 }

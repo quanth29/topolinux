@@ -23,6 +23,7 @@
  * 20130110 menus: Survey -> Display; Distox under More; Number in its place
  * 20130111 photo date
  * 20130204 sleep menu to turn off screen immediately (1 sec)
+ * 20130307 made Annotations into a dialog
  */
 package com.android.DistoX;
 
@@ -468,9 +469,10 @@ public class ShotActivity extends Activity
       }
     } else if ( item == mMInotes ) { // ANNOTATIONS DIALOG
       if ( app.getSurvey() != null ) {
-        Intent notesIntent = new Intent( this, DistoXAnnotations.class );
-        notesIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY, app.getSurvey() );
-        startActivity( notesIntent );
+        (new DistoXAnnotations( this, app.getSurvey() )).show();
+        // Intent notesIntent = new Intent( this, DistoXAnnotations.class );
+        // notesIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY, app.getSurvey() );
+        // startActivity( notesIntent );
       } else {
         Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
       }
@@ -731,26 +733,73 @@ public class ShotActivity extends Activity
     long mPID = app.mData.insertPlot( app.mSID, -1L, name, type, 0L, start, view, 0, 0, TopoDroidApp.mScaleFactor );
     // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "insertPlot " + mPID + " " + name + " start " + start + " view " + view );
     if ( mPID >= 0 ) {
-      startDrawingActivity( start, name, type, view, 0, 0, TopoDroidApp.mScaleFactor );
+      startDrawingActivity( start, name ); // , type, view, 0, 0, TopoDroidApp.mScaleFactor );
     }
     // updateDisplay( );
   }
 
-  public void startExistingPlot( String plot_name )
+  public void makeNewSketch3d( String name, String st1, String st2 )
   {
-    // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "startExistingPlot \"" + plot_name + "\" sid " + app.getSurveyId() );
-    PlotInfo plot =  app.mData.getPlotInfo( app.getSurveyId(), plot_name );
-    if ( plot != null ) {
-      // plot.dump();
-      startDrawingActivity( plot.start, plot.name, plot.type, plot.view, plot.xoffset, plot.yoffset, plot.zoom );
-      // updateDisplay( );
+    // FIXME xoffset yoffset, east south and vert (downwards)
+    if ( st2 != null ) {
+      if ( ! app.mData.hasShot( app.mSID, st1, st2 ) ) {
+        Toast.makeText(getApplicationContext(), R.string.no_shot_between_stations, Toast.LENGTH_LONG).show();
+        return;
+      }
     } else {
-      Toast.makeText(getApplicationContext(), R.string.plot_not_found, Toast.LENGTH_LONG).show();
+      st2 = app.mData.nextStation( app.mSID, st1 );
+    }
+    if ( st2 != null ) {
+      float e = 0.0f; // NOTE (e,s,v) are the coord of station st1, and st1 is taken as the origin of the ref-frame
+      float s = 0.0f;
+      float v = 0.0f;
+      long mPID = app.mData.insertSketch3d( app.mSID, -1L, name, 0L, st1, st1, st2,
+                                            0, // app.mDisplayWidth/(2*TopoDroidApp.mScaleFactor),
+                                            0, // app.mDisplayHeight/(2*TopoDroidApp.mScaleFactor),
+                                            e, s, v, 0, 0, 
+                                            10 * TopoDroidApp.mScaleFactor );
+      if ( mPID >= 0 ) {
+        startSketchActivity( name );
+      }
+    } else {
+      Toast.makeText(getApplicationContext(), "no to station", Toast.LENGTH_LONG).show();
     }
   }
 
-  private void startDrawingActivity( String start, String plot_name, long plot_type, String viewed,
-                                     float xoffset, float yoffset, float zoom )
+  public void startExistingPlot( String name ) // name = plot/sketch3d name
+  {
+    // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "startExistingPlot \"" + name + "\" sid " + app.getSurveyId() );
+    PlotInfo plot =  app.mData.getPlotInfo( app.getSurveyId(), name );
+    if ( plot != null ) {
+      // plot.dump();
+      startDrawingActivity( plot.start, plot.name ); // , plot.type, plot.view, plot.xoffset, plot.yoffset, plot.zoom );
+      // updateDisplay( );
+    } else {
+      Sketch3dInfo sketch = app.mData.getSketch3dInfo( app.getSurveyId(), name );
+      if ( sketch != null ) {
+        startSketchActivity( sketch.name );
+      } else {
+        Toast.makeText(getApplicationContext(), R.string.plot_not_found, Toast.LENGTH_LONG).show();
+      }
+    }
+  }
+ 
+  private void startSketchActivity( String name )
+  {
+    if ( app.mSID < 0 ) {
+      Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
+      return;
+    }
+    // TODO
+    Intent sketchIntent = new Intent( Intent.ACTION_VIEW ).setClass( this, SketchActivity.class );
+    sketchIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY_ID, app.mSID );
+    sketchIntent.putExtra( TopoDroidApp.TOPODROID_SKETCH_NAME, name );
+    startActivity( sketchIntent );
+  }
+  
+
+  private void startDrawingActivity( String start, String plot_name )
+                                     // , long plot_type, String viewed, float xoffset, float yoffset, float zoom 
   {
     if ( app.mSID < 0 ) {
       Toast.makeText( this, R.string.no_survey, Toast.LENGTH_LONG ).show();
@@ -760,16 +809,17 @@ public class ShotActivity extends Activity
     // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "startDrawingActivity start " + start + " viewed " + viewed );
     // FIXME what if plot_name already exists ? 
     // long mPID = app.mData.getPlotId( app.mSID, plot_name );
-    PlotInfo plot = app.mData.getPlotInfo( app.mSID, plot_name );
-    if ( plot != null ) {
+
+    // FIXME this extra check is not necessary
+    // PlotInfo plot = app.mData.getPlotInfo( app.mSID, plot_name );
+    // if ( plot != null ) {
       // plot.dump();
       Intent drawIntent = new Intent( Intent.ACTION_VIEW ).setClass( this, DrawingActivity.class );
       drawIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY_ID, app.mSID );
-      drawIntent.putExtra( TopoDroidApp.TOPODROID_PLOT_NAME, plot.name );
+      drawIntent.putExtra( TopoDroidApp.TOPODROID_PLOT_NAME, plot_name );
 
-      // Log.v( "DistoX", "startDrawing plot " + plot.name + " " + plot.surveyId + "-" + plot.id + "type " + plot.type +" start " + start );
       startActivity( drawIntent );
-    }
+    // }
   }
 
   public void makeNewShot( String from, String to, float distance, float bearing, float clino, long extend,
@@ -778,7 +828,7 @@ public class ShotActivity extends Activity
     long id;
     long sid = app.mSID;
     DataHelper data = app.mData;
-    if ( from != null && to != null && from.length() > 0 && to.length() > 0 ) {
+    if ( from != null && to != null && from.length() > 0 ) {
       // if ( data.makesCycle( -1L, sid, from, to ) ) {
       //   Toast.makeText( this, R.string.makes_cycle, Toast.LENGTH_LONG ).show();
       // } else

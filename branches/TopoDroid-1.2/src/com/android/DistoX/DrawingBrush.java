@@ -15,7 +15,7 @@ import android.graphics.Path;
 /**
  * gereric brush 
  */
-public class DrawingBrush implements  DrawingIBrush 
+public class DrawingBrush implements  IBrush 
 {
     public void mouseDown(Path path, float x, float y) {
     }

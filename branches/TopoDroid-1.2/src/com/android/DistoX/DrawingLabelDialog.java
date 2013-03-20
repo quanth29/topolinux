@@ -32,11 +32,11 @@ public class DrawingLabelDialog extends Dialog
     private Button mBtnOK;
     private Button mBtnCancel;
 
-    private DrawingActivity mActivity;
+    private ILabelAdder mActivity;
     private float mX;
     private float mY;
 
-    public DrawingLabelDialog( Context context, DrawingActivity activity, float x, float y )
+    public DrawingLabelDialog( Context context, ILabelAdder activity, float x, float y )
     {
       super(context);
       mActivity = activity;

@@ -18,6 +18,7 @@
  * 20120610 archive (zip) button
  * 20120619 handle "mustOpen" (immediate) request
  * 20130213 unified export and zip (export dialog)
+ * 20130307 made Annotations into a dialog
  */
 package com.android.DistoX;
 
@@ -397,9 +398,10 @@ public class SurveyActivity extends Activity
   private void doNotes()
   {
     if ( app.getSurvey() != null ) {
-      Intent notesIntent = new Intent( mContext, DistoXAnnotations.class );
-      notesIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY, app.getSurvey() );
-      mContext.startActivity( notesIntent );
+      (new DistoXAnnotations( this, app.getSurvey() )).show();
+      // Intent notesIntent = new Intent( mContext, DistoXAnnotations.class );
+      // notesIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY, app.getSurvey() );
+      // mContext.startActivity( notesIntent );
     } else { // SHOULD NEVER HAPPEN
       Toast.makeText( mContext, R.string.no_survey, Toast.LENGTH_LONG ).show();
     }

@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20130307 made Annotations into a dialog
  */
 package com.android.DistoX;
 
@@ -17,8 +20,10 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import android.app.Activity;
+// import android.app.Activity;
+import android.app.Dialog;
 import android.os.Bundle;
+import android.content.Context;
 
 import android.content.Intent;
 
@@ -30,7 +35,7 @@ import android.view.View;
 // import android.view.KeyEvent;
 
 
-public class DistoXAnnotations extends Activity
+public class DistoXAnnotations extends Dialog // Activity
                                implements View.OnClickListener
 {
   private TextView mTVtitle;
@@ -38,6 +43,13 @@ public class DistoXAnnotations extends Activity
   private Button   mButtonOK;
   private Button   mButtonCancel;
   private String   mFilename;
+  private String   mTitle;
+
+  DistoXAnnotations( Context context, String title )
+  {
+    super( context );
+    mTitle = title;
+  }
 
   private void load( )
   {
@@ -95,10 +107,10 @@ public class DistoXAnnotations extends Activity
     mButtonOK = (Button) findViewById(R.id.button_ok );
     mButtonCancel = (Button) findViewById(R.id.button_cancel );
 
-    Bundle extras = getIntent().getExtras();
-    String title  = extras.getString( TopoDroidApp.TOPODROID_SURVEY );
-    mFilename = TopoDroidApp.getSurveyNoteFile( title );
-    mTVtitle.setText( title );
+    // Bundle extras = getIntent().getExtras();
+    // String title  = extras.getString( TopoDroidApp.TOPODROID_SURVEY );
+    mFilename = TopoDroidApp.getSurveyNoteFile( mTitle );
+    mTVtitle.setText( mTitle );
 
     load();
 
@@ -113,11 +125,9 @@ public class DistoXAnnotations extends Activity
     Button b = (Button) v;
     if ( b == mButtonOK ) {
       save();
-      // setResult( Activity.RESULT_OK, intent );
-    // } else {
-      // setResult( RESULT_CANCELED );
     }
-    finish();
+    // finish();
+    dismiss();
   }
 
 }

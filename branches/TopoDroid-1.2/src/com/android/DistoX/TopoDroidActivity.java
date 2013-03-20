@@ -15,6 +15,7 @@
  * 20120619 added "long-press" for immediate survey opening
  * 20121211 thconfig-manager and symbol-manager menus
  * 20121212 AsyncTask to import therion files
+ * 20130307 made Annotations into a dialog
  */
 package com.android.DistoX;
 
@@ -718,9 +719,10 @@ public class TopoDroidActivity extends Activity
   private void doNotes()
   {
     if ( app.getSurvey() != null ) {
-      Intent notesIntent = new Intent( mContext, DistoXAnnotations.class );
-      notesIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY, app.getSurvey() );
-      mContext.startActivity( notesIntent );
+      (new DistoXAnnotations( this, app.getSurvey() )).show();
+      // Intent notesIntent = new Intent( mContext, DistoXAnnotations.class );
+      // notesIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY, app.getSurvey() );
+      // mContext.startActivity( notesIntent );
     } else { // SHOULD NEVER HAPPEN
       Toast.makeText( mContext, R.string.no_survey, Toast.LENGTH_LONG ).show();
     }
