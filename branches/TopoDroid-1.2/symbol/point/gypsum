@@ -1,0 +1,16 @@
+symbol point
+name gypsum
+name-es yeso
+name-pt gesso
+name-it gesso
+th_name gypsum
+orientation no
+color 0xffffff
+path
+  moveTo -5 0
+  lineTo 0 -5
+  lineTo 0 5
+  lineTo 5 0
+  lineTo -5 0
+endpath
+endsymbol

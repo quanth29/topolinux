@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="wrap_content" 
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp"
+    android:paddingBottom="3dp">
+   					  
+    <!-- TextView android:id="@+id/text_calib"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:text="@string/calib_info"
+        android:textSize="18sp"
+        / -->
+   					  
+    <EditText android:id="@+id/calib_name" 
+        android:maxLines="1" 
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:singleLine="true"
+        android:width="240dp"
+        android:hint="@string/name"
+        android:scrollHorizontally="true" />
+   		
+    <EditText android:id="@+id/calib_date" 
+        android:maxLines="1" 
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:singleLine="true"
+        android:scrollHorizontally="true" />
+
+    <EditText android:id="@+id/calib_device" 
+        android:maxLines="1" 
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:singleLine="true"
+        android:scrollHorizontally="true" />
+
+    <EditText android:id="@+id/calib_comment" 
+        android:maxLines="1" 
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:width="240dp"
+        android:singleLine="true"
+        android:hint="@string/description"
+        android:scrollHorizontally="true" />
+   		
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      >
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:onClick="onClick"
+                android:id="@+id/calibSave"
+                android:text="@string/menu_save"
+        />
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:onClick="onClick"
+                android:id="@+id/calibOpen"
+                android:text="@string/menu_open"
+        />
+    </LinearLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      >
+        <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:onClick="onClick"
+                android:id="@+id/calibDelete"
+                android:text="@string/menu_delete"
+        />
+    </LinearLayout>
+
+</LinearLayout>

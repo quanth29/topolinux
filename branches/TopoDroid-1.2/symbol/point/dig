@@ -1,0 +1,19 @@
+symbol point
+name dig
+name-es excavar
+name-pt escavação
+name-it scavo
+th_name dig
+orientation no
+color 0xcc99cc
+path
+  moveTo -5 -2
+  lineTo -1 -6
+  moveTo -3 -4
+  lineTo 4 3
+  moveTo 5 -2
+  lineTo 1 -6
+  moveTo 3 -4
+  lineTo -4 3
+endpath
+endsymbol

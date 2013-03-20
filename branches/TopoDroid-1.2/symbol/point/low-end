@@ -1,0 +1,15 @@
+symbol point
+name low-end
+name-es techo_bajo
+name-pt término
+name-it termine
+th_name low-end
+orientation no
+color 0x33cc33
+path
+  moveTo -6 -2
+  lineTo 6 -2
+  moveTo -6 2
+  lineTo 6 2
+endpath
+endsymbol

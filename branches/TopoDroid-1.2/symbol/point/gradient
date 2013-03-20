@@ -1,0 +1,16 @@
+symbol point
+name gradient
+name-es inclinación
+name-pt linhas_gradiente
+name-it inclinazione
+th_name gradient
+orientation yes
+color 0x33ff66
+path
+  moveTo 0 8
+  lineTo 0 -4
+  lineTo -2 -2
+  lineTo 2 -2
+  lineTo 0 -4
+endpath
+endsymbol

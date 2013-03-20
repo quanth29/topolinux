@@ -1,0 +1,18 @@
+symbol point
+name debris
+name-es escombros
+name-pt entulho
+name-it detrito
+th_name debris
+orientation no
+color 0x33cc33
+path
+  moveTo 0 0
+  lineTo 4 1
+  lineTo 2 -3
+  lineTo 0 0
+  lineTo -4 0
+  lineTo -2 -4
+  lineTo 0 0
+endpath
+endsymbol

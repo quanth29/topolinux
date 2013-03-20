@@ -1,0 +1,8 @@
+symbol area
+name clay
+name-es arcilla
+name-pt argila
+name-it argilla
+th_name clay
+color 0x99ff00 0x66
+endsymbol

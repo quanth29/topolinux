@@ -1,0 +1,17 @@
+symbol line
+  name overhang
+  name-es saliente
+  name-pt teto
+  name-it tetto
+  th_name overhang
+  color 0xff0066 0xff
+  effect
+    moveTo 0 1
+    lineTo 10 1
+    lineTo 10 0
+    lineTo 7 0
+    lineTo 5 -3
+    lineTo 3 0
+    lineTo 0 0 
+  endeffect
+endsymbol

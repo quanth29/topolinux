@@ -1,0 +1,9 @@
+README
+
+distox7to8.pl 
+perl script to convert zip archives made from database distox7.db to the
+form suitable for database distox8.db
+
+distox8to9.sh
+shell script to upgrade database distox8.db to distox9.db
+
