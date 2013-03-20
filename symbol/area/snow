@@ -1,0 +1,8 @@
+symbol area
+name snow
+name-es nieve
+name-pt neve
+name-it neve
+th_name snow
+color 0xffffff 0x66
+endsymbol

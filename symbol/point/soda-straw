@@ -1,0 +1,19 @@
+symbol point
+name sode-straw
+name-es macarrón
+name-pt canudos
+name-it tubolari
+th_name sode-straw
+orientation no
+color 0xccff66
+path
+  moveTo -6 -2
+  lineTo 6 -2
+  moveTo -4 -2
+  lineTo -4 2
+  moveTo 0 -2
+  lineTo 0 6
+  moveTo 4 -2
+  lineTo 4 4
+endpath
+endsymbol

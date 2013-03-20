@@ -1,0 +1,14 @@
+symbol point
+name sink
+name-es sumidero
+name-pt sumidouro
+name-it perdita_d'acqua
+th_name sink
+orientation no
+color 0x0000ff
+path
+  moveTo -5 -3
+  cubicTo -5 -1 -2 3 0 3
+  cubicTo 2 3 5 -1 5 -3
+endpath
+endsymbol

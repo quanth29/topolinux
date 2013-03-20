@@ -1,0 +1,18 @@
+symbol point
+name continuation
+name-es continuación
+name-pt continuação
+name-it prosecuzione
+th_name continuation
+orientation no
+color 0x99ff99
+path
+  moveTo 0 3
+  lineTo 0 0
+  cubicTo 0 -1 1 -2 2 -3
+  cubicTo 3 -4 1 -6 0 -6
+  cubicTo -1 -6 -3 -3 -3 -4
+  moveTo 0 7
+  lineTo 0 5
+endpath
+endsymbol

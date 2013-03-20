@@ -1,0 +1,8 @@
+symbol area
+name water
+name-es agua
+name-pt água
+name-it acqua
+th_name water
+color 0x0000ff 0x66
+endsymbol

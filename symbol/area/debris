@@ -1,0 +1,8 @@
+symbol area
+name debris
+name-es escombros
+name-pt escombros
+name-it detriti
+th_name debris
+color 0xff6666 0x66
+endsymbol

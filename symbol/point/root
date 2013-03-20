@@ -1,0 +1,16 @@
+symbol point
+name root
+name-it radici
+th_name root
+orientation no
+color 0xffcc99
+path
+  moveTo 0 -8
+  lineTo 0 4 
+  lineTo 3 7
+  moveTo 0 1
+  lineTo 3 4
+  moveTo 0 -2
+  lineTo 3 1
+endpath
+endsymbol

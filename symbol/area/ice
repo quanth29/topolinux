@@ -1,0 +1,8 @@
+symbol area
+name ice
+name-es hielo
+name-pt gelo
+name-it ghiaccio
+th_name ice
+color 0xcccccc 0x66
+endsymbol
