@@ -59,7 +59,7 @@ public class DrawingAreaDialog extends Dialog
     setContentView(R.layout.drawing_area_dialog);
 
     setTitle( String.format( mParent.getResources().getString( R.string.title_draw_area ),
-              DrawingBrushPaths.getLineThName( mArea.mAreaType ) ) );
+              DrawingBrushPaths.getAreaThName( mArea.mAreaType ) ) );
 
     // mTVtype = (TextView) findViewById( R.id.area_type );
     // mTVtype.setText( DrawingBrushPaths.getAreaThName( mArea.areaType() ) );

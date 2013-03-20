@@ -25,8 +25,13 @@ import android.widget.TableRow;
 
 
 public class DrawingAreaPickerDialog extends Dialog 
-                               implements View.OnClickListener
+                                     implements View.OnClickListener
 {
+    public interface OnAreaSelectedListener
+    {
+      public void areaSelected( int index );
+    }
+
     private Button[] mBtnArea;
     private Button mBtnOK;
     private Button mBtnCancel;
@@ -36,9 +41,9 @@ public class DrawingAreaPickerDialog extends Dialog
     // private TextView mText;
 
     private Context mContext;
-    private DrawingActivity mActivity;
+    private OnAreaSelectedListener mActivity;
 
-    public DrawingAreaPickerDialog( Context context, DrawingActivity activity, int index )
+    public DrawingAreaPickerDialog( Context context, OnAreaSelectedListener activity, int index )
     {
       super(context);
       mContext  = context;

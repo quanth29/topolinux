@@ -55,9 +55,9 @@ import java.util.HashMap;
 
 public class DataHelper extends DataSetObservable
 {
-   private static String DATABASE_NAME = TopoDroidApp.getDirFile( "distox9.db" );
-   static final int DATABASE_VERSION = 9;
-   static final String DB_VERSION = "9";
+   private static String DATABASE_NAME = TopoDroidApp.getDirFile( "distox10.db" );
+   static final int DATABASE_VERSION = 10;
+   static final String DB_VERSION = "10";
 
    private static final String CONFIG_TABLE = "configs";
    private static final String SURVEY_TABLE = "surveys";
@@ -66,6 +66,7 @@ public class DataHelper extends DataSetObservable
    private static final String SHOT_TABLE   = "shots";
    private static final String GM_TABLE     = "gms";
    private static final String PLOT_TABLE   = "plots";
+   private static final String SKETCH_TABLE = "sketches";
    private static final String PHOTO_TABLE  = "photos";
    private static final String SENSOR_TABLE = "sensors";
    private static final String DEVICE_TABLE = "devices";
@@ -93,6 +94,8 @@ public class DataHelper extends DataSetObservable
    private SQLiteStatement updatePlotStmt;
    private SQLiteStatement deletePlotStmt;
    private SQLiteStatement undeletePlotStmt;
+   private SQLiteStatement updateSketchStmt;
+   private SQLiteStatement deleteSketchStmt;
    private SQLiteStatement deletePhotoStmt;
    private SQLiteStatement updatePhotoStmt;
    private SQLiteStatement deleteSensorStmt;
@@ -149,6 +152,9 @@ public class DataHelper extends DataSetObservable
         updatePlotStmt   = myDB.compileStatement( "UPDATE plots set xoffset=?, yoffset=?, zoom=? WHERE surveyId=? AND id=?" );
         deletePlotStmt   = myDB.compileStatement( "UPDATE plots set status=1 WHERE surveyId=? AND id=?" );
         undeletePlotStmt = myDB.compileStatement( "UPDATE plots set status=0 WHERE surveyId=? AND id=?" );
+
+        updateSketchStmt = myDB.compileStatement( "UPDATE sketches set st1=?, st2=?, xoffset=?, yoffset=?, east=?, south=?, vert=?, azimuth=?, clino=?, zoom=? WHERE surveyId=? AND id=?" );
+        deleteSketchStmt = myDB.compileStatement( "UPDATE sketches set status=1 WHERE surveyId=? AND id=?" );
 
         deletePhotoStmt  = myDB.compileStatement( "UPDATE photos set status=0 WHERE surveyId=? AND id=?" );
         updatePhotoStmt  = myDB.compileStatement( "UPDATE photos set comment=? WHERE surveyId=? AND id=?" );
@@ -324,7 +330,7 @@ public class DataHelper extends DataSetObservable
    //   TopoDroidApp.Log( TopoDroidApp.LOG_DB, "makesCycle cnt " + cnt );
    //   return cnt >= 2;
    // }
-     
+
 
    public void updateShotName( long id, long sid, String fStation, String tStation )
    {
@@ -393,13 +399,41 @@ public class DataHelper extends DataSetObservable
      updatePlotStmt.bindLong( 5, plot_id );
      updatePlotStmt.execute();
    }
-   
+ 
+   public void updateSketch( long sketch_id, long survey_id, 
+                             String st1, String st2, double xoff, double yoff,
+                             double east, double south, double vert, double azimuth, double clino, double zoom )
+   {
+     if ( myDB == null ) return;
+     updateSketchStmt.bindString( 1, st1 );
+     updateSketchStmt.bindString( 2, st2 );
+     updateSketchStmt.bindDouble( 3, xoff );
+     updateSketchStmt.bindDouble( 4, yoff );
+     updateSketchStmt.bindDouble( 5, east );
+     updateSketchStmt.bindDouble( 6, south );
+     updateSketchStmt.bindDouble( 7, vert );
+     updateSketchStmt.bindDouble( 8, azimuth );
+     updateSketchStmt.bindDouble( 9, clino );
+     updateSketchStmt.bindDouble(10, zoom );
+     updateSketchStmt.bindLong( 11, survey_id );
+     updateSketchStmt.bindLong( 12, sketch_id );
+     updateSketchStmt.execute();
+   }
+    
    public void deletePlot( long plot_id, long survey_id )
    {
      if ( myDB == null ) return;
      // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "deletePlot: " + plot_id + "/" + survey_id );
      deletePlotStmt.bindLong( 1, survey_id );
      deletePlotStmt.bindLong( 2, plot_id );
+     deletePlotStmt.execute();
+   }
+  
+   public void deleteSketch( long sketch_id, long survey_id )
+   {
+     if ( myDB == null ) return;
+     deleteSketchStmt.bindLong( 1, survey_id );
+     deleteSketchStmt.bindLong( 2, sketch_id );
      deletePlotStmt.execute();
    }
    
@@ -736,6 +770,43 @@ public class DataHelper extends DataSetObservable
      return list;
    }
 
+   public List< Sketch3dInfo > selectAllSketches( long sid, long status )
+   {
+     List<  Sketch3dInfo  > list = new ArrayList<  Sketch3dInfo  >();
+     Cursor cursor = myDB.query( SKETCH_TABLE,
+                 new String[] { "id", "name", "start", "st1", "st2", "xoffset", "yoffset", "east", "south", "vert", "azimuth", "clino", "zoom" },
+                                "surveyId=? and status=?", 
+                                new String[] { Long.toString(sid), Long.toString(status) }, 
+                                null,  // groupBy
+                                null,  // having
+                                "id" ); // order by
+     if (cursor.moveToFirst()) {
+       do {
+         Sketch3dInfo sketch = new  Sketch3dInfo ();
+         sketch.surveyId = sid;
+         sketch.id    = cursor.getLong(0);
+         sketch.name  = cursor.getString(1);
+         sketch.start = cursor.getString(2);
+         sketch.st1   = cursor.getString(3);
+         sketch.st2   = cursor.getString(4);
+         sketch.xoffset = (float)( cursor.getDouble(5) );
+         sketch.yoffset = (float)( cursor.getDouble(6) );
+         sketch.east    = (float)( cursor.getDouble(7) );
+         sketch.south   = (float)( cursor.getDouble(8) );
+         sketch.vert    = (float)( cursor.getDouble(9) );
+         sketch.azimuth = (float)( cursor.getDouble(10) );
+         sketch.clino   = (float)( cursor.getDouble(11) );
+         sketch.zoom    = (float)( cursor.getDouble(12) );
+         list.add( sketch );
+       } while (cursor.moveToNext());
+     }
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "selectAllPlots list size " + list.size() );
+     if (cursor != null && !cursor.isClosed()) {
+       cursor.close();
+     }
+     return list;
+   }
+
    public List< PlotInfo > selectAllPlots( long sid, long status )
    {
      List<  PlotInfo  > list = new ArrayList<  PlotInfo  >();
@@ -763,6 +834,43 @@ public class DataHelper extends DataSetObservable
        cursor.close();
      }
      return list;
+   }
+
+   public boolean hasShot( long sid, String fStation, String tStation )
+   {
+     Cursor cursor = myDB.query( SHOT_TABLE,
+       new String[] { "fStation", "tStation" }, // columns
+       "surveyId=? and ( fStation=? and tStation=? ) or ( fStation=? and tStation=? )", 
+       new String[] { Long.toString(sid), fStation, tStation, tStation, fStation },
+       null,   // groupBy
+       null,   // having
+       null ); // order by
+     boolean ret = cursor.moveToFirst();
+     if (cursor != null && !cursor.isClosed()) {
+       cursor.close();
+     }
+     return ret;
+   }
+     
+   public String nextStation( long sid, String fStation )
+   {
+     Cursor cursor = myDB.query( SHOT_TABLE,
+       new String[] { "tStation" }, // columns
+       "surveyId=? and fStation=? ", 
+       new String[] { Long.toString(sid), fStation },
+       null,   // groupBy
+       null,   // having
+       null ); // order by
+     String ret = null;
+     if ( cursor.moveToFirst() ) {
+       do {
+         ret = cursor.getString( 0 );
+       } while ( ret.length() == 0 && cursor.moveToNext());
+     }
+     if (cursor != null && !cursor.isClosed()) {
+       cursor.close();
+     }
+     return ret;
    }
 
    public DistoXDBlock selectShot( long shot_id, long survey_id )
@@ -1339,6 +1447,37 @@ public class DataHelper extends DataSetObservable
      }
      return plot;
    }
+ 
+   public Sketch3dInfo getSketch3dInfo( long sid, String name )
+   {
+     Sketch3dInfo sketch = null;
+     if ( name != null ) {
+       Cursor cursor = myDB.query( SKETCH_TABLE, 
+                 new String[] { "id", "start", "st1", "st2", "xoffset", "yoffset", "east", "south", "vert", "azimuth", "clino", "zoom" },
+                 "surveyId=? and name=?", 
+                 new String[] { Long.toString(sid), name },
+                 null, null, null );
+       if (cursor.moveToFirst() ) {
+         sketch = new Sketch3dInfo();
+         sketch.surveyId = sid;
+         sketch.id    = cursor.getLong(0);
+         sketch.name  = name;
+         sketch.start = cursor.getString(1);
+         sketch.st1   = cursor.getString(2);
+         sketch.st2   = cursor.getString(3);
+         sketch.xoffset = (float)( cursor.getDouble(4) );
+         sketch.yoffset = (float)( cursor.getDouble(5) );
+         sketch.east    = (float)( cursor.getDouble(6) );
+         sketch.south   = (float)( cursor.getDouble(7) );
+         sketch.vert    = (float)( cursor.getDouble(8) );
+         sketch.azimuth = (float)( cursor.getDouble(9) );
+         sketch.clino   = (float)( cursor.getDouble(10) );
+         sketch.zoom    = (float)( cursor.getDouble(11) );
+       }
+       if (cursor != null && !cursor.isClosed()) { cursor.close(); }
+     }
+     return sketch;
+   }
 
    private long getPlotId( long sid, String name )
    {
@@ -1346,6 +1485,22 @@ public class DataHelper extends DataSetObservable
      if ( name != null ) {
        Cursor cursor = myDB.query( PLOT_TABLE, new String[] { "id" },
                             "surveyId=? and name=?", 
+                            new String[] { Long.toString(sid), name },
+                            null, null, null );
+       if (cursor.moveToFirst() ) {
+         ret = cursor.getLong(0);
+       }
+       if (cursor != null && !cursor.isClosed()) { cursor.close(); }
+     }
+     return ret;
+   }
+
+   private long getSketch3dId( long sid, String name )
+   {
+     long ret = -1;
+     if ( name != null ) {
+       Cursor cursor = myDB.query( SKETCH_TABLE, new String[] { "id" },
+                            "surveyId=? and name=?",
                             new String[] { Long.toString(sid), name },
                             null, null, null );
        if (cursor.moveToFirst() ) {
@@ -1513,6 +1668,35 @@ public class DataHelper extends DataSetObservable
      return id;
    }
 
+   public long insertSketch3d( long sid, long id, String name, long status, String start, String st1, String st2,
+                           double xoffset, double yoffset,
+                           double x, double y, double z, double azimuth, double clino, double zoom )
+   {
+     long ret = getSketch3dId( sid, name );
+     if ( ret >= 0 ) return -1;
+     if ( id == -1L ) id = maxId( SKETCH_TABLE, sid );
+     // Log.v( "DistoX", "Survey ID " + sid + " Sketch ID " + id );
+
+     ContentValues cv = new ContentValues();
+     cv.put( "surveyId", sid );
+     cv.put( "id",       id );
+     cv.put( "name",     name );
+     cv.put( "status",   status );
+     cv.put( "start",    start );
+     cv.put( "st1",      st1 );
+     cv.put( "st2",      st2 );
+     cv.put( "xoffset",  xoffset );
+     cv.put( "yoffset",  yoffset );
+     cv.put( "east",     x );
+     cv.put( "south",    y );
+     cv.put( "vert",     z );
+     cv.put( "azimuth",  azimuth );
+     cv.put( "clino",    clino );
+     cv.put( "zoom",     zoom );
+     myDB.insert( SKETCH_TABLE, null, cv );
+     return id;
+   }
+
    private long maxId( String table, long sid )
    {
      long id = 1;
@@ -1523,6 +1707,7 @@ public class DataHelper extends DataSetObservable
      if (cursor.moveToFirst() ) {
        id = 1 + cursor.getLong(0);
      }
+     if (cursor != null && !cursor.isClosed()) { cursor.close(); }
      return id;
    }
 
@@ -1578,7 +1763,7 @@ public class DataHelper extends DataSetObservable
                          new String[] { address },
                          null, null, null );
     if (cursor.moveToFirst() ) {
-      Log.v("DistoX", "update Head Tail " + address + " " + head_tail[0] + " " + head_tail[1] );
+      // Log.v("DistoX", "update Head Tail " + address + " " + head_tail[0] + " " + head_tail[1] );
       long head = head_tail[0];
       long tail = head_tail[1];
       updateDeviceHeadTailStmt.bindLong( 1, head );
@@ -2137,6 +2322,28 @@ public class DataHelper extends DataSetObservable
              +   " view TEXT, "
              +   " xoffset REAL, "
              +   " yoffset REAL, "
+             +   " zoom REAL "
+             // +   " surveyId REFERENCES " + SURVEY_TABLE + "(id)"
+             // +   " ON DELETE CASCADE "
+             +   ")"
+           );
+
+           db.execSQL(
+               create_table + SKETCH_TABLE
+             + " ( surveyId INTEGER, "
+             +   " id INTEGER, " // PRIMARY KEY AUTOINCREMENT, "
+             +   " name TEXT, "
+             +   " status INTEGER, "
+             +   " start TEXT, "
+             +   " st1 TEXT, "
+             +   " st2 TEXT, "
+             +   " xoffset REAL, "
+             +   " yoffset REAL, "
+             +   " east REAL, "
+             +   " south REAL, "
+             +   " vert REAL, "
+             +   " azimuth REAL, "
+             +   " clino REAL, "
              +   " zoom REAL "
              // +   " surveyId REFERENCES " + SURVEY_TABLE + "(id)"
              // +   " ON DELETE CASCADE "

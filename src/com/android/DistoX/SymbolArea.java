@@ -39,7 +39,7 @@ class SymbolArea
     mPaint = new Paint();
     mPaint.setDither(true);
     mPaint.setColor( color );
-    mPaint.setStyle(Paint.Style.STROKE);
+    mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
     mPaint.setStrokeJoin(Paint.Join.ROUND);
     mPaint.setStrokeCap(Paint.Cap.ROUND);
     mPaint.setStrokeWidth( 1 );

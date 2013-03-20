@@ -63,10 +63,6 @@ public class DrawingSurface extends SurfaceView
     public int width()  { return mWidth; }
     public int height() { return mHeight; }
 
-    TreeSet< String > mMissingPoint;
-    TreeSet< String > mMissingLine;
-    TreeSet< String > mMissingArea;
-
     public DrawingSurface(Context context, AttributeSet attrs) 
     {
       super(context, attrs);
@@ -79,10 +75,6 @@ public class DrawingSurface extends SurfaceView
       mHolder = getHolder();
       mHolder.addCallback(this);
       commandManager = new DrawingCommandManager();
-
-      mMissingPoint = new TreeSet< String >();
-      mMissingLine  = new TreeSet< String >();
-      mMissingArea  = new TreeSet< String >();
     }
 
     // public void clearHighlight()
@@ -340,12 +332,11 @@ public class DrawingSurface extends SurfaceView
     return line;
   } 
 
-  public boolean loadTherion( String filename )
+  public boolean loadTherion( String filename, MissingSymbols missingSymbols )
   {
     float x, y, x1, y1, x2, y2;
-    mMissingPoint.clear();
-    mMissingLine.clear();
-    mMissingArea.clear();
+    missingSymbols.resetSymbolLists();
+
     // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "loadTherion file " + filename );
     // DrawingBrushPaths.makePaths( );
     DrawingBrushPaths.resetPointOrientations();
@@ -451,8 +442,7 @@ public class DrawingSurface extends SurfaceView
             }
           }
           if ( ptType == DrawingBrushPaths.mPointLib.mPointNr ) {
-            // Log.v("DistoX", "missing point " + type );
-            mMissingPoint.add( type );
+            missingSymbols.addPoint( type );
             continue;
           }
 
@@ -507,7 +497,7 @@ public class DrawingSurface extends SurfaceView
                     path.setAreaType( arType );
                     addDrawingPath( path );
                   } else {
-                    mMissingArea.add( vals2[1] );
+                    missingSymbols.addArea( vals2[1] );
                   }
                   line = readLine( br ); // skip two lines
                   line = readLine( br );
@@ -590,7 +580,7 @@ public class DrawingSurface extends SurfaceView
                 y = - Float.parseFloat( pt[1] ) / TopoDroidApp.TO_THERION;
                 path.addStartPoint( x, y );
               } else {
-                mMissingLine.add( type );
+                missingSymbols.addLine( type );
               }
               while ( (line = readLine( br )) != null ) {
                 if ( line.indexOf( "l-size" ) >= 0 ) continue;
@@ -628,8 +618,7 @@ public class DrawingSurface extends SurfaceView
       e.printStackTrace();
     }
     // remove repeated names
-    // Log.v("DistoX", "missing " + mMissingPoint.size() + " points " );
-    return mMissingPoint.size() == 0 && mMissingLine.size() == 0 && mMissingArea.size() == 0;
+    return missingSymbols.isOK();
   }
 
 }

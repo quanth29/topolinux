@@ -21,7 +21,7 @@ import android.util.Log;
 
 /**
  */
-public class DrawingPath implements DrawingICanvasCommand
+public class DrawingPath implements ICanvasCommand
 {
   public static final int DRAWING_PATH_FIXED   = 0; // leg
   public static final int DRAWING_PATH_SPLAY   = 1; // splay
@@ -85,7 +85,7 @@ public class DrawingPath implements DrawingICanvasCommand
 
   float distance( float x, float y )
   {
-    if ( mBlock == null ) return 0.0f;
+    if ( mBlock == null ) return 1000.0f; // a large number
     // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "distance to " + x + " " + y + " " + cx + " " + cy );
     return (float)( Math.abs( x - cx ) + Math.abs( y - cy ) );
   }

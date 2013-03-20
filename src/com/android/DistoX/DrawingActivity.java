@@ -26,6 +26,7 @@
  * 20121225 point/line/area delete
  * 20130131 fixed multitouch
  * 20130213 save dialog (therion + PNG )
+ * 20130307 made Annotations into a dialog
  */
 package com.android.DistoX;
 
@@ -81,7 +82,10 @@ public class DrawingActivity extends Activity
                                       , View.OnClickListener
                                       , View.OnLongClickListener
                                       , DrawingPointPickerDialog.OnPointSelectedListener
+                                      , DrawingLinePickerDialog.OnLineSelectedListener
+                                      , DrawingAreaPickerDialog.OnAreaSelectedListener
                                       , OnZoomListener
+                                      , ILabelAdder
 {
   // static final String TAG = "DistoX";
 
@@ -417,10 +421,17 @@ public class DrawingActivity extends Activity
           //         alertDialog.show();
                }
           } ;
-          new SaveTherionFile(this, saveHandler, mDrawingSurface, mFullName ).execute();
+          new SaveTh2File(this, saveHandler, mDrawingSurface, mFullName ).execute();
         }
       }
       return false;
+    }
+
+    @Override
+    protected synchronized void onResume()
+    {
+      super.onResume();
+      mDrawingSurface.isDrawing = true;
     }
 
     @Override
@@ -582,6 +593,8 @@ public class DrawingActivity extends Activity
 
       mAllSymbols  = true; // by default there are all the symbols
 
+      mBezierInterpolator = new BezierInterpolator( );
+
       // mLineSegment = app.mLineSegment;
       // mLineAcc     = app.mLineAccuracy;
       // mLineCorner  = app.mLineCorner;
@@ -691,44 +704,14 @@ public class DrawingActivity extends Activity
       }
       // now try to load drawings from therion file
       String filename = app.getTh2FileWithExt( mFullName );
-      mAllSymbols = mDrawingSurface.loadTherion( filename );
+      MissingSymbols missingSymbols = new MissingSymbols();
+      mAllSymbols = mDrawingSurface.loadTherion( filename, missingSymbols );
       if ( ! mAllSymbols ) {
         // Toast.makeText( this, "Missing symbols", Toast.LENGTH_LONG ).show();
-        
-        String prev = "";
-        Resources res = getResources();
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter( sw );
-        pw.format( "%s\n",  res.getString( R.string.missing_warning ) );
-        if ( mDrawingSurface.mMissingPoint.size() > 0 ) {
-          pw.format( "%s:", res.getString( R.string.missing_point ) );
-          for ( String p : mDrawingSurface.mMissingPoint ) {
-            if ( ! p.equals(prev) ) pw.format( " %s", p );
-          }
-          pw.format( "\n");
-        }
-        if ( mDrawingSurface.mMissingLine.size() > 0 ) {
-          pw.format( "%s:", res.getString( R.string.missing_line ) );
-          prev = "";
-          for ( String p : mDrawingSurface.mMissingLine ) {
-            if ( ! p.equals(prev) ) pw.format( " %s", p );
-          }
-          pw.format( "\n");
-        }
-        if ( mDrawingSurface.mMissingArea.size() > 0 ) {
-          pw.format( "%s:", res.getString( R.string.missing_area ) );
-          prev = "";
-          for ( String p : mDrawingSurface.mMissingArea ) {
-            if ( ! p.equals(prev) ) pw.format( " %s", p );
-          }
-          pw.format( "\n");
-        }
-        pw.format( "%s\n",  res.getString( R.string.missing_hint ) );
-        (new MissingDialog( this, sw.getBuffer().toString() )).show();
+        String msg = missingSymbols.getMessage( getResources() );
+        (new MissingDialog( this, msg )).show();
       }
-      
 
-      mBezierInterpolator = new BezierInterpolator( );
       // resetZoom();
       mOffset.x = mPlot.xoffset; 
       mOffset.y = mPlot.yoffset; 
@@ -885,7 +868,7 @@ public class DrawingActivity extends Activity
         if ( i+1 < ev.getPointerCount() ) sb.append( ":" );
       }
       sb.append( "]" );
-      Log.v( TopoDroidApp.TAG, sb.toString() );
+      // Log.v( TopoDroidApp.TAG, sb.toString() );
     }
     
 
@@ -952,7 +935,7 @@ public class DrawingActivity extends Activity
           return false;
         }
       } else if (action == MotionEvent.ACTION_MOVE) {
-        Log.v( "DistoX", "action MOVE mode " + mMode + " touch-mode " + mTouchMode);
+        // Log.v( "DistoX", "action MOVE mode " + mMode + " touch-mode " + mTouchMode);
         if ( mTouchMode == MODE_MOVE) {
           float x_shift = x_canvas - mSaveX; // compute shift
           float y_shift = y_canvas - mSaveY;
@@ -977,10 +960,12 @@ public class DrawingActivity extends Activity
               }
             }
           } else if ( mMode == MODE_MOVE ) {
-            mOffset.x += x_shift / mZoom;                // add shift to offset
-            mOffset.y += y_shift / mZoom; 
-            mDrawingSurface.setTransform( mOffset.x, mOffset.y, mZoom );
-            // mDrawingSurface.refresh();
+            if ( Math.abs( x_shift ) < 60 && Math.abs( y_shift ) < 60 ) {
+              mOffset.x += x_shift / mZoom;                // add shift to offset
+              mOffset.y += y_shift / mZoom; 
+              mDrawingSurface.setTransform( mOffset.x, mOffset.y, mZoom );
+              // mDrawingSurface.refresh();
+            }
           } else { // mMode == MODE_EDIT
           }
         } else { // mTouchMode == MODE_ZOOM
@@ -1095,7 +1080,7 @@ public class DrawingActivity extends Activity
       return true;
     }
 
-    // add a therion label point
+    // add a therion label point (ILabelAdder)
     public void addLabel( String label, float x, float y )
     {
       if ( label != null && label.length() > 0 ) {
@@ -1153,20 +1138,20 @@ public class DrawingActivity extends Activity
         }
     }
 
-    private class SaveTherionFile extends AsyncTask<Intent,Void,Boolean>
+    private class SaveTh2File extends AsyncTask<Intent,Void,Boolean>
     {
         private Context mContext;
         private Handler mHandler;
         private DrawingSurface mSurface;
         private String mFullName;
 
-        public SaveTherionFile( Context context, Handler handler, DrawingSurface surface, String name )
+        public SaveTh2File( Context context, Handler handler, DrawingSurface surface, String name )
         {
            mContext  = context;
            mSurface  = surface;
            mHandler  = handler;
            mFullName = name;
-           // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "SaveTherionFile " + mFullName );
+           // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "SaveTh2File " + mFullName );
         }
 
         @Override
@@ -1327,10 +1312,11 @@ public class DrawingActivity extends Activity
           mDrawingSurface.redo();
         }
       } else if ( item == mMInotes ) {
-        String survey = mData.getSurveyFromId(mSid);
-        Intent notesIntent = new Intent( this, DistoXAnnotations.class );
-        notesIntent.putExtra( app.TOPODROID_SURVEY, survey );
-        startActivity( notesIntent );
+        (new DistoXAnnotations( this, mData.getSurveyFromId(mSid) )).show();
+        // String survey = mData.getSurveyFromId(mSid);
+        // Intent notesIntent = new Intent( this, DistoXAnnotations.class );
+        // notesIntent.putExtra( app.TOPODROID_SURVEY, survey );
+        // startActivity( notesIntent );
       } else if (item == mMIstats && mNum != null ) {
         new DistoXStatDialog( mDrawingSurface.getContext(), mNum ).show();
       } else if (item == mMIone ) {

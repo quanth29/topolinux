@@ -23,6 +23,7 @@
     <string name="missing_line">LINE</string>
     <string name="missing_area">AREA</string>
     <string name="missing_hint">Please, install the symbols with TdSymbol</string>
+    <string name="missing_station">Missing station</string>
     <string name="missing_symbols">There are missing symbols.\nSave anyway ?</string>
     <!-- string name="missing_save">Sketch has missing symbols.\nNot saving it.</string -->
 
@@ -59,6 +60,10 @@
     <string name="duplicate">duplicate</string>
     <string name="regular">regular</string>
     <string name="surface">surface</string>
+    <string name="surface_radius_tr">Top-right radius</string>
+    <string name="surface_radius_tl">Top-left radius</string>
+    <string name="surface_radius_bl">Bottom-left radius</string>
+    <string name="surface_radius_br">Bottom-right radius</string>
     <string name="extend_ignore">None</string>
     <string name="extend_left">Left</string>
     <string name="extend_right">Right</string>
@@ -89,12 +94,10 @@
     <string name="none">none</string>
 
     <!-- string name="makes_cycle">Shot makes a loop</string -->
-    <string name="missing_station">Missing station</string>
+    <string name="make_surface">Surface exists. Replace it?</string>
     <string name="no_calib">No calibration</string>
     <string name="no_calibration">No calibration selected\nUse menu to select one</string>
     <string name="no_cave3d">Cave3D not installed</string>
-    <string name="no_thmanager">ThManager not installed</string>
-    <string name="no_tdsymbol">TdSymbol not installed</string>
     <string name="no_db">No database</string>
     <string name="no_device_address">Device address not selected</string>
     <string name="no_device_found">No device found</string>
@@ -105,9 +108,14 @@
     <string name="no_plots">Survey has no sketches\nUse menu to make one</string>
     <!-- string name="no_service">No BT service</string -->
     <string name="no_sensors">Survey has no measurement</string>
+    <string name="no_shot_between_stations">No shot between stations</string>
+    <string name="no_shot_found">No shot found</string>
     <string name="no_shots">Survey has no shots.\nUse Download menu to get some</string>
     <string name="no_survey">No survey selected.\nUse menus to select one</string>
+    <string name="no_tdsymbol">TdSymbol not installed</string>
+    <string name="no_thmanager">ThManager not installed</string>
     <string name="no_undelete">No item to undelete</string>
+
     <!-- string name="not_connect">Failed to connect</string -->
     <string name="not_available">BT not available</string>
     <string name="not_connected">Not connected</string>
@@ -161,9 +169,19 @@
     <string name="shot_length">length</string>
     <string name="shot_note">note</string>
     <string name="shot_to">to</string>
+
+    <string name="sketch3d_name">name</string>
+    <string name="sketch3d_new">New 3D sketch</string>
+    <string name="sketch3d_next">next station</string>
+    <string name="sketch3d_null_name">Missing sketch name</string>
+    <string name="sketch3d_null_next">Missing sketch next station</string>
+    <string name="sketch3d_null_start">Missing sketch start station</string>
+    <string name="sketch3d_start">start station</string>
+
     <string name="station">station</string>
     <string name="station_ask">Insert station ?</string>
     <string name="station_base">base station</string>
+    <string name="station_next">next station</string>
     <string name="station_viewed">viewed station</string>
     <!-- string name="shot_tolerance">Shot: tolerance</string -->
     <!-- string name="survey_export_type">Survey export: </string -->
@@ -246,6 +264,7 @@
     <string name="menu_shot_new">Append shot</string>
     <string name="menu_sleep">Sleep</string> 
     <string name="menu_stats">Stats</string>
+    <string name="menu_surface">Make surface</string>
     <string name="menu_survey">Display</string>
     <string name="menu_symbol">Symbol manager</string>
     <string name="menu_thconfig">Thconfig manager</string>
@@ -278,6 +297,8 @@
     <string name="button_erase"     >Erase     </string>
     <string name="button_eval"      >Eval      </string>
     <string name="button_eval_cal"  >Eval w. calib.</string>
+    <string name="button_gps_start" >GPS       </string>
+    <string name="button_gps_stop"  >Stop      </string>
     <string name="button_load"      >Load      </string>
     <string name="button_measure"   >Measure   </string>
     <string name="button_manual"    >Manual    </string>
@@ -288,13 +309,12 @@
     <string name="button_prev"      >Previous  </string>
     <string name="button_read"      >Read      </string>
     <string name="button_read_cal"  >Read calibration </string>
+    <string name="button_redraw"    >Redraw    </string>
     <!-- string name="button_refresh"   >Refresh   </string -->
     <string name="button_reset"     >Reset     </string>
     <string name="button_save"      >Save      </string>
     <string name="button_select"    >Select    </string>
     <string name="button_store"     >Store     </string>
-    <string name="button_gps_start" >GPS       </string>
-    <string name="button_gps_stop"  >Stop      </string>
     <string name="button_toggle"    >Toggle CAL mode  </string>
     <string name="button_write"     >Write calibration</string>
     <string name="button_yes"       >Yes       </string>
@@ -304,6 +324,7 @@
     <string name="mode_station">Stations</string>
     <string name="mode_grid">Grid</string>
 
+    <string name="btn_3d">3D</string>
     <string name="btn_area">Area</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_compass">Compass</string>
@@ -315,9 +336,14 @@
     <string name="btn_png">PNG</string>
     <string name="btn_point">Point</string>
     <!-- string name="btn_redo">Redo</string -->
+    <string name="btn_side">Side</string>
+    <string name="btn_step">Step</string>
     <string name="btn_survex">Survex</string>
     <string name="btn_therion">Therion</string>
+    <string name="btn_top">Top</string>
+    <string name="btn_turn">Turn</string>
     <string name="btn_undo">Undo</string>
+    <string name="btn_view">View</string>
     <string name="btn_vtopo">VisualTopo</string>
     <string name="btn_zip">Zip</string>
     <!-- string name="btn_zoom">Zoom</string -->
@@ -338,6 +364,7 @@
     <string name="title_photo_comment">Photo comment</string>
     <string name="title_plot_save">Save sketch as</string>
     <string name="title_scraps">%1$s sketches</string>
+    <string name="title_sketch">Mode %1$s - View %2$s [%2$s %4$s]</string>
     <string name="title_stats">Statistics</string>
     <string name="title_survey">Survey Info</string>
     <string name="title_survey_export">Export survey as</string>

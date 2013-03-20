@@ -68,6 +68,7 @@ class DistoXNum
     }
   }
 
+  // FIXME make mStations a hashmap (key station name)
   private ArrayList<NumStation> mStations;
   private ArrayList<NumShot>    mShots;
   private ArrayList<NumSplay>   mSplays;
@@ -149,13 +150,23 @@ class DistoXNum
     return s2.mShortpathDist;
   }
 
-  private NumStation getStation( String id ) 
+  // FIXME use hashmap
+  NumStation getStation( String id ) 
   {
     for (NumStation st : mStations ) {
       if ( id.equals(st.name) ) { return st; }
     }
     return null;
   }
+
+  // NumShot getShot( String s1, String s2 )
+  // {
+  //   for (NumShot sh : mShots ) {
+  //     if ( s1.equals( sh.from.name ) && s2.equals( sh.to.name ) ) return sh;
+  //     if ( s2.equals( sh.from.name ) && s1.equals( sh.to.name ) ) return sh;
+  //   }
+  //   return null;
+  // }
 
   private void updateBBox( NumSurveyPoint s )
   {

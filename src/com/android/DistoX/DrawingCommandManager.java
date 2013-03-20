@@ -83,6 +83,7 @@ public class DrawingCommandManager
     mSelection = null;
   }
 
+
   void clearReferences()
   {
     synchronized( mGridStack ) {
@@ -132,17 +133,17 @@ public class DrawingCommandManager
 
   public void setTransform( float dx, float dy, float s )
   {
-    Matrix matrix = new Matrix();
-    matrix.postTranslate( dx, dy );
-    matrix.postScale( s, s );
-
-    mMatrix = matrix;
+    mMatrix = new Matrix();
+    mMatrix.postTranslate( dx, dy );
+    mMatrix.postScale( s, s );
   }
 
   void deletePath( DrawingPath path )
   {
     mCurrentStack.remove( path );
-    mSelection.removeReferencesTo( path );
+    if ( mSelection != null ) {
+      mSelection.removeReferencesTo( path );
+    }
   }
 
   public void setDisplayMode( int mode ) { mDisplayMode = mode; }
@@ -156,7 +157,7 @@ public class DrawingCommandManager
   public void addFixedPath( DrawingPath path, boolean selectable )
   {
     mFixedStack.add( path );
-    if ( selectable ) {
+    if ( selectable && mSelection != null ) {
       mSelection.insertPath( path );
     }
   }
@@ -169,7 +170,7 @@ public class DrawingCommandManager
   public void addStation( DrawingStationName st, boolean selectable )
   {
     mStations.add( st );
-    if ( selectable ) {
+    if ( selectable && mSelection != null ) {
       mSelection.insertStationName( st );
     }
   }
@@ -180,7 +181,9 @@ public class DrawingCommandManager
     // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "addCommand path " + path.toString() );
     mRedoStack.clear();
     mCurrentStack.add( path );
-    mSelection.insertPath( path );
+    if ( mSelection != null ) {
+      mSelection.insertPath( path );
+    }
   }
 
   public Bitmap getBitmap()
@@ -276,14 +279,12 @@ public class DrawingCommandManager
     boolean splays = (mDisplayMode & DISPLAY_SPLAY ) != 0;
     boolean stations = (mDisplayMode & DISPLAY_STATION ) != 0;
 
-    Matrix matrix = mMatrix;
-
     synchronized( mGridStack ) {
       if( mGridStack != null && ( (mDisplayMode & DISPLAY_GRID) != 0 ) ) {
         final Iterator i = mGridStack.iterator();
         while ( i.hasNext() ){
           final DrawingPath drawingPath = (DrawingPath) i.next();
-          drawingPath.draw( canvas, matrix );
+          drawingPath.draw( canvas, mMatrix );
           //doneHandler.sendEmptyMessage(1);
         }
       }
@@ -296,7 +297,7 @@ public class DrawingCommandManager
           final DrawingPath drawingPath = (DrawingPath) i.next();
           if ( ( legs && drawingPath.mType == DrawingPath.DRAWING_PATH_FIXED ) 
             || ( splays && drawingPath.mType == DrawingPath.DRAWING_PATH_SPLAY ) ) {
-            drawingPath.draw( canvas, matrix );
+            drawingPath.draw( canvas, mMatrix );
           }
           //doneHandler.sendEmptyMessage(1);
         }
@@ -306,7 +307,7 @@ public class DrawingCommandManager
     synchronized( mStations ) {
       if ( mStations != null && stations ) {  
         for ( DrawingStationName st : mStations ) {
-          st.draw( canvas, matrix );
+          st.draw( canvas, mMatrix );
         }
       }
     }
@@ -316,7 +317,7 @@ public class DrawingCommandManager
         final Iterator i = mCurrentStack.iterator();
         while ( i.hasNext() ){
           final DrawingPath drawingPath = (DrawingPath) i.next();
-          drawingPath.draw( canvas, matrix );
+          drawingPath.draw( canvas, mMatrix );
 
           // FIXME DEBUG area contour points
           // if ( drawingPath.mType == DrawingPath.DRAWING_PATH_AREA ) {
@@ -326,20 +327,20 @@ public class DrawingCommandManager
           //     // public float mY;
           //     Path p = new Path( DrawingBrushPaths.crossPath );
           //     p.offset( pt.mX, pt.mY );
-          //     p.transform( matrix );
+          //     p.transform( mMatrix );
           //     canvas.drawPath( p, DrawingBrushPaths.debugRed );
           //     if ( pt.has_cp ) {
           //       // float mX1; // first control point
           //       // float mY1;
           //       p = new Path( DrawingBrushPaths.crossPath );
           //       p.offset( pt.mX1, pt.mY1 );
-          //       p.transform( matrix );
+          //       p.transform( mMatrix );
           //       canvas.drawPath( p, DrawingBrushPaths.debugGreen );
           //       // float mX2; // second control point
           //       // float mY2;
           //       p = new Path( DrawingBrushPaths.crossPath );
           //       p.offset( pt.mX2, pt.mY2 );
-          //       p.transform( matrix );
+          //       p.transform( mMatrix );
           //       canvas.drawPath( p, DrawingBrushPaths.debugBlue );
           //     }
           //   }
@@ -386,6 +387,7 @@ public class DrawingCommandManager
   public DrawingPointPath getPointAt( float x, float y )
   {
     // FIXME_SEL
+    if ( mSelection == null ) return null;
     SelectionPoint sp = mSelection.getClosestItem(x, y, mCloseness, DrawingPath.DRAWING_PATH_POINT );
     return ( sp != null )? (DrawingPointPath)sp.item : null;
 
@@ -410,6 +412,7 @@ public class DrawingCommandManager
     if ( (mDisplayMode & DISPLAY_STATION) == 0 ) {
       return null;
     }
+    if ( mSelection == null ) return null;
 
     // FIXME_SEL
     // Log.v("DistoX", "Closeness " + mCloseness );
@@ -436,6 +439,7 @@ public class DrawingCommandManager
     if ( ! ( legs || splays ) ) return null;
 
     // FIXME_SEL
+    if ( mSelection == null ) return null;
     SelectionPoint sp = mSelection.getClosestItem(x, y, mCloseness, legs, splays );
     return ( sp != null )? (DrawingPath)sp.item : null;
 
@@ -457,6 +461,7 @@ public class DrawingCommandManager
   public DrawingLinePath getLineAt( float x, float y )
   {
     // FIXME_SEL
+    if ( mSelection == null ) return null;
     SelectionPoint sp = mSelection.getClosestItem(x, y, mCloseness, DrawingPath.DRAWING_PATH_LINE );
     return ( sp != null )? (DrawingLinePath)sp.item : null;
 
@@ -478,6 +483,7 @@ public class DrawingCommandManager
   public DrawingAreaPath getAreaAt( float x, float y )
   { 
     // FIXME_SEL
+    if ( mSelection == null ) return null;
     SelectionPoint sp = mSelection.getClosestItem(x, y, mCloseness, DrawingPath.DRAWING_PATH_AREA );
     return ( sp != null )? (DrawingAreaPath)sp.item : null;
 

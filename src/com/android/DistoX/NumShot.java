@@ -38,5 +38,10 @@ public class NumShot
 
   float length() { return block.mLength; }
 
+  // boolean connectedTo( NumShot sh ) 
+  // {
+  //   return sh.from == from || sh.to == from || sh.from == to || sh.to == to;
+  // }
+
 }
 

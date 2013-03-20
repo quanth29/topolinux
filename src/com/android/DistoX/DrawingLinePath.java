@@ -24,6 +24,8 @@ import java.util.Iterator;
 // import java.util.List;
 import java.util.ArrayList;
 
+import android.util.FloatMath;
+
 /**
  */
 public class DrawingLinePath extends DrawingPath
@@ -161,6 +163,20 @@ public class DrawingLinePath extends DrawingPath
   // public ArrayList< LinePoint > getPoints() { return points; }
 
   // public int size() { return points.size(); }
+
+  // public float length()
+  // {
+  //   int n = points.size();
+  //   float len = 0.0f;
+  //   LinePoint p1 = points.get(0);
+  //   LinePoint p2;
+  //   for ( int k = 1; k<n; ++k ) {
+  //     p2 = points.get(k);
+  //     len += FloatMath.sqrt( (p2.mX-p1.mX)*(p2.mX-p1.mX) + (p2.mY-p1.mY)*(p2.mY-p1.mY) );
+  //     p1 = p2;
+  //   }
+  //   return len;
+  // }
 
   @Override
   public String toTherion()

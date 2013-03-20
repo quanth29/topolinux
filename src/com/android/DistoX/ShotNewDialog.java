@@ -93,14 +93,18 @@ public class ShotNewDialog extends Dialog
     Button b = (Button) v;
     // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "ShotNewDialog onClick button " + b.getText().toString() );
 
-    if ( notDone && b == mButtonOK ) {
+    if ( notDone && b == mButtonOK && mETfrom.getText() != null ) {
       notDone = false;
       String shot_from = mETfrom.getText().toString();
       String shot_to   = mETto.getText().toString();
-      if ( shot_from != null && shot_to != null ) {
+      if ( shot_to == null ) {
+        shot_to = "";
+      } else {
+        shot_to = TopoDroidApp.noSpaces( shot_to );
+      }
+      if ( shot_from != null ) {
         shot_from = TopoDroidApp.noSpaces( shot_from );
-        shot_to   = TopoDroidApp.noSpaces( shot_to );
-        if ( shot_from.length() > 0 && shot_to.length() > 0 ) { 
+        if ( shot_from.length() > 0 ) { 
           String distance = mETdistance.getText().toString();
           String bearing  = mETbearing.getText().toString();
           String clino    = mETclino.getText().toString();
@@ -112,7 +116,8 @@ public class ShotNewDialog extends Dialog
               long shot_extend = 1;
               if ( mRadioLeft.isChecked() ) { shot_extend = -1; }
               else if ( mRadioVert.isChecked() ) { shot_extend = 0; }
-              mParent.makeNewShot( shot_from, shot_to,
+              if ( shot_to.length() > 0 ) {
+                mParent.makeNewShot( shot_from, shot_to,
                                    Float.parseFloat(distance),
                                    Float.parseFloat(bearing),
                                    Float.parseFloat(clino),
@@ -121,6 +126,14 @@ public class ShotNewDialog extends Dialog
                                    mETright.getText().toString(),
                                    mETup.getText().toString(),
                                    mETdown.getText().toString() );
+              } else {
+                mParent.makeNewShot( shot_from, shot_to,
+                                   Float.parseFloat(distance),
+                                   Float.parseFloat(bearing),
+                                   Float.parseFloat(clino),
+                                   shot_extend,
+                                   null, null, null, null );
+              }
             }
           }
         }

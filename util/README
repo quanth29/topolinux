@@ -7,3 +7,6 @@ form suitable for database distox8.db
 distox8to9.sh
 shell script to upgrade database distox8.db to distox9.db
 
+from distox9t010
+CREATE TABLE sketches ( surveyId INTEGER, id INTEGER, name TEXT, status INTEGER, start TEXT, st1 TEXT, st2 TEXT, xoffset REAL, yoffset REAL, east REAL, south REAL, vert REAL, azimuth REAL, clino REAL, zoom REAL);
+
