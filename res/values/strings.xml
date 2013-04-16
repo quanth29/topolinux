@@ -64,7 +64,7 @@
     <string name="extend_right">Right</string>
     <string name="extend_vert">Vert</string>
     <string name="external_prompt">Enter measurement</string>
-    <string name="few_data">Too few data</string>
+    <string name="few_data">Not enough data</string>
     <string name="file_chooser_title">File Import</string>
     <string name="file_import">Importing file may take long.\nPlease wait ...</string>
     <string name="file_parse_already">Survey already imported</string>
