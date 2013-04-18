@@ -16,6 +16,7 @@ any comment that might be useful to others.
 || *Device* || *Android* || *TopoDroid* || *Status* || *Comment* ||
 || Archos 32 (minitablet) || 2.2.1 || 1.0.6 || <font color="green">Mostly working</font> || ||
 || Asus EEPAD Transformer TF101 10"|| 4.0.3 || 0.7.1 || <font color="green">Mostly working</font> || calibration untested ||
+|| BQ Elcano Tablet 7"|| 4.0.3 || 1.1.3 || <font color="green">Mostly working</font> || calibration untested ||
 || Huawei Vodaphone 858 Smart || 2.2 || 1.1.2 || <font color="green">Fully working</font> || ||
 || HTC Desire Senser || 2.3.5 || 0.7.1 || <font color="red">Bluetooth fails</font> || unable to pair with DistoX ||
 || HTC EVO 3D || 2.3 || 0.7.1 || <font color="green">Mostly working</font> || calibration untested ||
