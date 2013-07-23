@@ -4,6 +4,12 @@
  * @date feb 2013
  *
  * @brief Selection among drawing items
+ * --------------------------------------------------------
+ *  Copyright This sowftare is distributed under GPL-3.0 or later
+ *  See the file COPYING.
+ * ----------------------------------------------------
+ * CHANGES
+ * 20130627 SelectionException
  */
 package com.android.DistoX;
 
@@ -18,6 +24,7 @@ class Selection
   SelectionBucket[] mBucket;
 
   Selection( float x00, float x10, float y00, float y10, float delta0 )
+    throws SelectionException
   {
     x0 = x00;
     y0 = y00;
@@ -29,6 +36,9 @@ class Selection
       delta /= 2;
       N = 1+(int)((x1-x0)/delta);
       M = 1+(int)((y1-y0)/delta);
+    }
+    if ( N*M > 1024*1024 ) {
+      throw new SelectionException(); 
     }
     delta2 = delta/2;
     float d = ((N*delta) - (x1-x0))/2;

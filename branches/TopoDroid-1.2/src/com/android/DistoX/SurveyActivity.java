@@ -416,7 +416,7 @@ public class SurveyActivity extends Activity
   // {
   //   // mFixed.add( new FixedInfo( station, latitude, longitude, altitude ) );
   //   // NOTE info.id == app.mSID
-  //   app.mData.insertFixed( station, info.id, longitude, latitude, altitude, "" ); // FIXME comment
+  //   app.mData.insertFixed( station, info.id, longitude, latitude, altitude, altimetric, "" ); // FIXME altimetric comment
   // }
 
   // populate fixed from the DB
@@ -491,6 +491,14 @@ public class SurveyActivity extends Activity
         case TopoDroidApp.DISTOX_EXPORT_TRO:
           filename = app.exportSurveyAsTro();
           break;
+        case TopoDroidApp.DISTOX_EXPORT_DXF:
+          List<DistoXDBlock> list = app.mData.selectAllShots( app.mSID, TopoDroidApp.STATUS_NORMAL );
+          DistoXDBlock blk = list.get( 0 );
+          if ( blk != null ) {
+            DistoXNum num = new DistoXNum( list, blk.mFrom );
+            filename = app.exportSurveyAsDxf( num );
+          }
+          break;
       }
       if ( warn ) { 
         if ( filename != null ) {
@@ -564,12 +572,11 @@ public class SurveyActivity extends Activity
     // dismiss();
   }
  
-  public FixedInfo addLocation( String station, double latitude, double longitude, double altitude )
+  public FixedInfo addLocation( String station, double latitude, double longitude, double altitude, double altimetric )
   {
-    
     // app.addFixed( station, latitude, longitude, altitude );
     // addFixed( station, latitude, longitude, altitude );
-    long id = app.mData.insertFixed( app.mSID, -1L, station, longitude, latitude, altitude, "", 0L ); // FIXME comment
+    long id = app.mData.insertFixed( app.mSID, -1L, station, longitude, latitude, altitude, altimetric, "", 0L ); // FIXME comment
     // TopoDroidApp.Log( TopoDroidApp.LOG_LOC, "addLocation mSID " + app.mSID + " id " + id );
 
     // StringWriter sw = new StringWriter();
@@ -577,7 +584,7 @@ public class SurveyActivity extends Activity
     // pw.format("\nfix %s %f %f %f m\n", station, latitude, longitude, altitude );
     // DistoXAnnotations.append( app.getSurvey(), sw.getBuffer().toString() );
 
-    return new FixedInfo( id, station, latitude, longitude, altitude, "" ); // FIXME comment
+    return new FixedInfo( id, station, latitude, longitude, altitude, altimetric, "" ); // FIXME comment
   }
 
   public void updateFixed( FixedInfo fxd, String station )

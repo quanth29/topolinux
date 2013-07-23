@@ -58,10 +58,12 @@ public class DrawingSurface extends SurfaceView
     private int mWidth;            // canvas width
     private int mHeight;           // canvas height
 
-    private DrawingCommandManager commandManager;
+    DrawingCommandManager commandManager; // FIXME not private only to export DXF
 
     public int width()  { return mWidth; }
     public int height() { return mHeight; }
+
+    boolean isSelectable() { return commandManager.isSelectable(); }
 
     public DrawingSurface(Context context, AttributeSet attrs) 
     {

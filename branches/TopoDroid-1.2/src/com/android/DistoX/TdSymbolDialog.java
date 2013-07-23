@@ -55,6 +55,7 @@ public class TdSymbolDialog extends Dialog
   {
     if ( mCBask.isChecked() ) {
       mApp.setBooleanPreference( "DISTOX_TD_SYMBOL", false );
+      mApp.mStartTdSymbol = false;
     }
     mApp.mStartTdSymbol = ( (Button)v == mBTyes );
     dismiss();

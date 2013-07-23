@@ -34,6 +34,7 @@ public class SurveyExportDialog extends Dialog
   private Button   mBtnSvx;
   private Button   mBtnDat;
   private Button   mBtnTro;
+  private Button   mBtnDxf;
   private Button   mBtnZip;
   private Button   mBtnCancel;
 
@@ -56,6 +57,7 @@ public class SurveyExportDialog extends Dialog
     mBtnSvx = (Button) findViewById(R.id.btn_survex );
     mBtnDat = (Button) findViewById(R.id.btn_compass );
     mBtnTro = (Button) findViewById(R.id.btn_vtopo );
+    mBtnDxf = (Button) findViewById(R.id.btn_dxf );
     mBtnZip = (Button) findViewById(R.id.btn_zip );
     mBtnCancel = (Button) findViewById(R.id.btn_cancel );
 
@@ -66,6 +68,7 @@ public class SurveyExportDialog extends Dialog
     mBtnSvx.setOnClickListener( this );
     mBtnDat.setOnClickListener( this );
     mBtnTro.setOnClickListener( this );
+    mBtnDxf.setOnClickListener( this );
     mBtnZip.setOnClickListener( this );
     mBtnCancel.setOnClickListener( this );
 
@@ -85,6 +88,8 @@ public class SurveyExportDialog extends Dialog
       mParent.doExport( TopoDroidApp.DISTOX_EXPORT_DAT, true );
     } else if ( b == mBtnTro ) {
       mParent.doExport( TopoDroidApp.DISTOX_EXPORT_TRO, true );
+    } else if ( b == mBtnDxf ) {
+      mParent.doExport( TopoDroidApp.DISTOX_EXPORT_DXF, true );
     } else if ( b == mBtnZip ) {
       mParent.doArchive( );
     // } else {

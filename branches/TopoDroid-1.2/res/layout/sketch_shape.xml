@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+>
+  <com.android.DistoX.SketchShapeSurface
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:id="@+id/sketchShapeSurface"
+  />
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+    >
+        <Button android:id="@+id/btn_ok"
+                android:text="@string/button_ok"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:onClick="onClick"
+                android:textSize="12sp"
+        />
+        <Button android:id="@+id/btn_redraw"
+                android:text="@string/button_redraw"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:onClick="onClick"
+                android:textSize="12sp"
+        />
+        <Button android:id="@+id/btn_cancel"
+                android:text="@string/button_cancel"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:onClick="onClick"
+                android:textSize="12sp"
+        />
+        <Button android:id="@+id/btn_erase"
+                android:text="@string/button_erase"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:onClick="onClick"
+                android:textSize="12sp"
+        />
+        <CheckBox android:id="@+id/cb_vertical"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Vertical"
+                android:textSize="12sp"
+        />
+   </LinearLayout>
+</RelativeLayout>
+

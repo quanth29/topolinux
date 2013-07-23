@@ -14,6 +14,7 @@
  * 20121225 getAreaAt and deletePath
  * 20130108 getStationAt getShotAt
  * 20130204 using Selection class to spped up item selection
+ * 20130627 SelectionException
  */
 package com.android.DistoX;
 
@@ -61,8 +62,8 @@ public class DrawingCommandManager
   static int mDisplayMode = DISPLAY_ALL;
 
   private List<DrawingPath>    mGridStack;
-  private List<DrawingPath>    mFixedStack;
-  private List<DrawingPath>    mCurrentStack;
+  List<DrawingPath>    mFixedStack;
+  List<DrawingPath>    mCurrentStack;
   private List<DrawingPath>    mRedoStack;
   // private List<DrawingPath>    mHighlight;  // highlighted path
   private List<DrawingStationName> mStations;
@@ -83,6 +84,7 @@ public class DrawingCommandManager
     mSelection = null;
   }
 
+  boolean isSelectable() { return mSelection != null; }
 
   void clearReferences()
   {
@@ -151,7 +153,12 @@ public class DrawingCommandManager
 
   void setBounds( float x1, float x2, float y1, float y2 )
   {
-    mSelection = new Selection( x1, x2, y1, y2, 5.0f );
+    try {
+      mSelection = new Selection( x1, x2, y1, y2, 5.0f );
+    } catch ( SelectionException e ) {
+      TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "oversize: unable to select " );
+      mSelection = null;
+    }
   }
 
   public void addFixedPath( DrawingPath path, boolean selectable )

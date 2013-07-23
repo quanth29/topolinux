@@ -3,10 +3,13 @@
  * @author marco corvi
  * @date nov 2011
  *
- * @brief TopoDroid dialog for a new shot
+ * @brief TopoDroid dialog for a new (manually entered) shot
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20130621 set hint for FROM field
  */
 package com.android.DistoX;
 
@@ -32,6 +35,7 @@ public class ShotNewDialog extends Dialog
                            implements View.OnClickListener
 {
   private ShotActivity mParent;
+  private DistoXDBlock mPrevBlk;
   private boolean  notDone;
 
   private EditText mETfrom;
@@ -49,11 +53,12 @@ public class ShotNewDialog extends Dialog
   private Button   mButtonOK;
   private Button   mButtonCancel;
 
-  public ShotNewDialog( Context context, ShotActivity parent )
+  public ShotNewDialog( Context context, ShotActivity parent, DistoXDBlock last_blk )
   {
     super( context );
-    mParent = parent;
-    notDone = true;
+    mParent  = parent;
+    mPrevBlk = last_blk;
+    notDone  = true;
   }
 
 // -------------------------------------------------------------------
@@ -76,6 +81,10 @@ public class ShotNewDialog extends Dialog
     mETfrom.setRawInputType( InputType.TYPE_CLASS_NUMBER );
     mETto.setRawInputType( InputType.TYPE_CLASS_NUMBER );
 
+    if ( mPrevBlk != null ) {
+      mETfrom.setHint( mPrevBlk.mTo );
+    }
+
     mButtonOK     = (Button) findViewById(R.id.button_ok_shot_name );
     mButtonCancel = (Button) findViewById(R.id.button_cancel_shot_name );
 
@@ -96,6 +105,9 @@ public class ShotNewDialog extends Dialog
     if ( notDone && b == mButtonOK && mETfrom.getText() != null ) {
       notDone = false;
       String shot_from = mETfrom.getText().toString();
+      if ( shot_from == null || shot_from.length() == 0 ) {
+        shot_from = mETfrom.getHint().toString();
+      }
       String shot_to   = mETto.getText().toString();
       if ( shot_to == null ) {
         shot_to = "";

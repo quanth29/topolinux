@@ -13,6 +13,7 @@
  * 20120619 added therion export to the zip
  * 20120720 added manifest
  * 20120725 TopoDroidApp log
+ * 20130324 zip export of 3D sketches
  */
 package com.android.DistoX;
 
@@ -36,6 +37,8 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.Intent;
+
+import android.util.Log;
 
 
 public class Archiver
@@ -86,6 +89,17 @@ public class Archiver
       String pathname;
       FileOutputStream fos = new FileOutputStream( zipname );
       ZipOutputStream zos = new ZipOutputStream( new BufferedOutputStream( fos ) );
+
+      List< Sketch3dInfo > sketches  = app.mData.selectAllSketches( app.mSID, TopoDroidApp.STATUS_NORMAL );
+      for ( Sketch3dInfo skt : sketches ) {
+        pathname = app.getSurveySketchFile( skt.name );
+        addEntry( zos, new File( pathname ) );
+      }
+      sketches  = app.mData.selectAllSketches( app.mSID, TopoDroidApp.STATUS_DELETED );
+      for ( Sketch3dInfo skt : sketches ) {
+        pathname = app.getSurveySketchFile( skt.name );
+        addEntry( zos, new File( pathname ) );
+      }
 
       List< PlotInfo > plots  = app.mData.selectAllPlots( app.mSID, TopoDroidApp.STATUS_NORMAL );
       for ( PlotInfo plt : plots ) {
@@ -204,6 +218,8 @@ public class Archiver
               sql = true;
             } else if ( ze.getName().endsWith( ".th2" ) ) {
               pathname = TopoDroidApp.getTh2File( ze.getName() );
+            } else if ( ze.getName().endsWith( ".th3" ) ) {
+              pathname = TopoDroidApp.getTh3File( ze.getName() );
             } else if ( ze.getName().endsWith( ".jpg" ) ) {
               // FIXME need survey dir
               pathname = TopoDroidApp.getJpgDir( surveyname );

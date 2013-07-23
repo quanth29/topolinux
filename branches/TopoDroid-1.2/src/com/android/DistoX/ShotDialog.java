@@ -3,7 +3,7 @@
  * @author marco corvi
  * @date nov 2011
  *
- * @brief TopoDroid survey shot dialog
+ * @brief TopoDroid survey shot dialog to enter FROM-TO stations etc.
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
@@ -197,9 +197,9 @@ public class ShotDialog extends Dialog
     mButtonPrev = (Button) findViewById(R.id.btn_prev );
     mButtonNext = (Button) findViewById(R.id.btn_next );
 
-    mETfrom.setRawInputType( InputType.TYPE_CLASS_NUMBER );
+    // mETfrom.setRawInputType( InputType.TYPE_CLASS_NUMBER );
     // mETfrom.setKeyListener( NumberKeyListener );
-    mETto.setRawInputType( InputType.TYPE_CLASS_NUMBER );
+    // mETto.setRawInputType( InputType.TYPE_CLASS_NUMBER );
 
     mButtonDrop.setOnClickListener( this );
     mButtonSave.setOnClickListener( this );

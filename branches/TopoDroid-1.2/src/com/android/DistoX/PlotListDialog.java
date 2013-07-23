@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120520 created
+ * 20130215 3D sketches button
  */
 package com.android.DistoX;
 
@@ -45,7 +46,7 @@ public class PlotListDialog extends Dialog
   private TopoDroidApp app;
   private ArrayAdapter<String> mArrayAdapter;
   private Button mBtnPlotNew;
-  // private Button mBtnSketch3dNew;
+  private Button mBtnSketch3dNew;
 
   private ListView mList;
 
@@ -65,7 +66,7 @@ public class PlotListDialog extends Dialog
     mArrayAdapter = new ArrayAdapter<String>( mContext, R.layout.message );
 
     mBtnPlotNew = (Button) findViewById(R.id.plot_new);
-    // mBtnSketch3dNew = (Button) findViewById(R.id.sketch3d_new);
+    mBtnSketch3dNew = (Button) findViewById(R.id.sketch3d_new);
 
     mList = (ListView) findViewById(R.id.list);
     mList.setAdapter( mArrayAdapter );
@@ -73,7 +74,14 @@ public class PlotListDialog extends Dialog
     mList.setDividerHeight( 2 );
 
     mBtnPlotNew.setOnClickListener( this );
-    // mBtnSketch3dNew.setOnClickListener( this );
+
+    if ( app.mSketches ) {
+      mBtnSketch3dNew.setOnClickListener( this );
+    } else {
+      mBtnSketch3dNew.setEnabled( false );
+      // mBtnSketch3dNew.  <-- hide
+    }
+    // mBtnSketch3dNew.setEnabled( false );
 
     updateList();
   }
@@ -81,12 +89,14 @@ public class PlotListDialog extends Dialog
   private void updateList()
   {
     if ( app.mData != null && app.mSID >= 0 ) {
-      List< PlotInfo > list = app.mData.selectAllPlots( app.mSID, TopoDroidApp.STATUS_NORMAL ); 
-      List< Sketch3dInfo > slist = app.mData.selectAllSketches( app.mSID, TopoDroidApp.STATUS_NORMAL );
+      setTitle( String.format( mContext.getResources().getString( R.string.title_scraps ), app.getSurvey() ) );
 
-      setTitle( String.format( mContext.getResources().getString( R.string.title_scraps ),
-                               app.getSurvey() ) );
-      if ( list.size() == 0 && slist.size() == 0 ) {
+      List< PlotInfo > list = app.mData.selectAllPlots( app.mSID, TopoDroidApp.STATUS_NORMAL ); 
+      List< Sketch3dInfo > slist = null;
+      if ( app.mSketches ) {
+        slist = app.mData.selectAllSketches( app.mSID, TopoDroidApp.STATUS_NORMAL );
+      }
+      if ( list.size() == 0 && ( slist == null || slist.size() == 0 ) ) {
         Toast.makeText( mContext, R.string.no_plots, Toast.LENGTH_LONG ).show();
         dismiss();
       }
@@ -100,11 +110,13 @@ public class PlotListDialog extends Dialog
         mArrayAdapter.add( sw.getBuffer().toString() );
         // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "Data " + result );
       }
-      for ( Sketch3dInfo sketch : slist ) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw  = new PrintWriter(sw);
-        pw.format("%d <%s> Sketch 3D", sketch.id, sketch.name );
-        mArrayAdapter.add( sw.getBuffer().toString() );
+      if ( slist != null ) {
+        for ( Sketch3dInfo sketch : slist ) {
+          StringWriter sw = new StringWriter();
+          PrintWriter pw  = new PrintWriter(sw);
+          pw.format("%d <%s> Sketch 3D", sketch.id, sketch.name );
+          mArrayAdapter.add( sw.getBuffer().toString() );
+        }
       }
     } else {
       // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "null data or survey (" + app.mSID + ")" );
@@ -119,8 +131,8 @@ public class PlotListDialog extends Dialog
     hide();
     if ( b == mBtnPlotNew ) {
       new PlotNewDialog( mParent, mParent ).show();
-    // } else if ( b == mBtnSketch3dNew ) {
-      // new Sketch3dNewDialog( mParent, mParent ).show();
+    } else if ( app.mSketches && b == mBtnSketch3dNew ) {
+      new Sketch3dNewDialog( mParent, mParent ).show();
     }
     dismiss();
   }
@@ -139,9 +151,10 @@ public class PlotListDialog extends Dialog
     int from = value.indexOf('<');
     int to = value.lastIndexOf('>');
     String plot_name = value.substring( from+1, to );
+    String plot_type = value.substring( to+2 );
     // int end = st[1].length() - 1;
     // String plot_name = st[1].substring( 1, end );
-    mParent.startExistingPlot( plot_name ); // context of current SID
+    mParent.startExistingPlot( plot_name, plot_type ); // context of current SID
     dismiss();
   }
 

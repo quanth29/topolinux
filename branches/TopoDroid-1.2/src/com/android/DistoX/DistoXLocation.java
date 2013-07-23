@@ -84,9 +84,10 @@ public class DistoXLocation extends Dialog
   private int mSavePos;
   private FixedInfo mSaveFixed;
 
-  private double latitude;  // decimal degrees
-  private double longitude; // decimal degrees
-  private double altitude;  // meters
+  private double latitude;   // decimal degrees
+  private double longitude;  // decimal degrees
+  private double altitude;   // meters
+  private double altimetric; // altimetric altitude
   private SurveyActivity mParent;
   private GpsStatus mStatus;
   private boolean mLocating; // whether is locating
@@ -172,14 +173,16 @@ public class DistoXLocation extends Dialog
 
   public void addFixedPoint( double lng, // decimal degrees
                              double lat,
-                             double alt  // meters
+                             double alt,  // meters
+                             double asl
                            )
   {
     // TopoDroidApp.Log(TopoDroidApp.LOG_DEBUG, "addFixedPoint " + lng + " " + lat + " " + alt );
+    // FIXME TODO try to get altimetric altitude
     if ( mETstation.getText() != null ) {
       String name = mETstation.getText().toString();
       if ( name.length() > 0 ) {
-        FixedInfo f = mParent.addLocation( name, lng, lat, alt);
+        FixedInfo f = mParent.addLocation( name, lng, lat, alt, asl );
         // no need to update the adatper: fixeds are not many and can just request
         // the list to the database 
         // mFixedAdapter.add( f );
@@ -233,7 +236,8 @@ public class DistoXLocation extends Dialog
     Button b = (Button) v;
     // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "Location onClick button " + b.getText().toString() );
     if ( b == mBtnAdd ) {
-      addFixedPoint( longitude, latitude, altitude );
+      altimetric = altitude - GeodeticHeight.geodeticHeight( latitude, longitude );
+      addFixedPoint( longitude, latitude, altitude, altimetric );
     } else if ( b == mBtnMan ) {
       // stop GPS location and start dialog for lat/long/alt data
       if ( mLocating ) {

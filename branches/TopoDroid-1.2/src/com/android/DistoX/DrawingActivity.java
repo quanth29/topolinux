@@ -98,7 +98,7 @@ public class DrawingActivity extends Activity
     public static float CENTER_X = 100f;
     public static float CENTER_Y = 120f;
 
-    private static final float SCALE_FIX = 20.0f; // FIXME
+    static final float SCALE_FIX = 20.0f; // FIXME
 
     private BezierInterpolator mBezierInterpolator;
     private DrawingSurface mDrawingSurface;
@@ -310,7 +310,7 @@ public class DrawingActivity extends Activity
       y1 = toSceneY( y1 );
       x2 = toSceneX( x2 );
       y2 = toSceneY( y2 );
-      mFixedDrawingPath.setEndPoints( x1, y1, x2, y2 );
+      mFixedDrawingPath.setEndPoints( x1, y1, x2, y2 ); // this sets the midpoint only
       mFixedDrawingPath.path.moveTo( x1 - mOffset.x, y1 - mOffset.y );
       mFixedDrawingPath.path.lineTo( x2 - mOffset.x, y2 - mOffset.y );
       mDrawingSurface.addFixedPath( mFixedDrawingPath, selectable );
@@ -375,6 +375,9 @@ public class DrawingActivity extends Activity
         modeBtn.setBackgroundColor( 0xffff9999 );
         setTitle( R.string.btn_edit );
       }
+      if ( ! mDrawingSurface.isSelectable() ) {
+        setTitle( getTitle() + " [!s]" );
+      }
     }
 
     private void AlertMissingSymbols()
@@ -399,7 +402,7 @@ public class DrawingActivity extends Activity
       alert.show();
     }
 
-    private boolean doSaveTh2( boolean not_all_symbols )
+    private void doSaveTh2( boolean not_all_symbols )
     {
       // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, " savingTh2 ");
       if ( mFullName != null && mDrawingSurface != null ) {
@@ -407,9 +410,20 @@ public class DrawingActivity extends Activity
           AlertMissingSymbols();
         }
         if ( mAllSymbols ) {
+          final boolean alert = not_all_symbols;
+          final Activity currentActivity  = this;
           Handler saveHandler = new Handler(){
-               @Override
-               public void handleMessage(Message msg) {
+            @Override
+            public void handleMessage(Message msg) {
+              if ( alert ) {
+                if (msg.what == 1 ) {
+                  Toast.makeText( currentActivity, 
+                                  getString(R.string.saved_file_) + mFullName + ".th2", Toast.LENGTH_SHORT ).show();
+                } else {
+                  Toast.makeText( currentActivity, 
+                                  getString(R.string.saving_file_failed), Toast.LENGTH_SHORT ).show();
+                }
+              }
           //         final AlertDialog alertDialog = new AlertDialog.Builder(currentActivity).create();
           //         alertDialog.setTitle("Saving sketch");
           //         alertDialog.setMessage("File: " + mFullName );
@@ -422,9 +436,10 @@ public class DrawingActivity extends Activity
                }
           } ;
           new SaveTh2File(this, saveHandler, mDrawingSurface, mFullName ).execute();
+        } else {
+          // FIXME what to do ?
         }
       }
-      return false;
     }
 
     @Override
@@ -440,11 +455,8 @@ public class DrawingActivity extends Activity
       if ( mIsNotMultitouch ) mZoomBtnsCtrl.setVisible(false);
       mDrawingSurface.isDrawing = false;
       mData.updatePlot( mPid, mSid, mOffset.x, mOffset.y, mZoom );
-      // Toast.makeText( this, R.string.saving_wait, Toast.LENGTH_LONG ).show();
       if ( mAllSymbols ) {
         doSaveTh2( false ); // do not alert-dialog on mAllSymbols: in case do not save 
-      // } else {
-      //   Toast.makeText( this, R.string.missing_save, Toast.LENGTH_LONG ).show();
       }
       super.onPause();
     }
@@ -583,6 +595,7 @@ public class DrawingActivity extends Activity
       mData        = app.mData; // new DataHelper( this ); 
       Bundle extras = getIntent().getExtras();
       mSid         = extras.getLong(   app.TOPODROID_SURVEY_ID );
+      // mPid         = extras.getLong(   app.TOPODROID_PLOT_ID );
       String name  = extras.getString( app.TOPODROID_PLOT_NAME );
       mFullName    = app.getSurvey() + "-" + name;
 
@@ -604,8 +617,9 @@ public class DrawingActivity extends Activity
         // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT,
         //   "DrawingActivity::onCreate SID " + mSid + " start at " + start + " shots " + list.size() );
         if ( list.size() == 0 ) {
-           Toast.makeText( this, R.string.few_data, Toast.LENGTH_LONG ).show();
-           finish();
+          Toast.makeText( this, R.string.few_data, Toast.LENGTH_LONG ).show();
+          app.mData.dropPlot( mPid, mSid );
+          finish();
         } else {
           computeReferences( list, start );
         }
@@ -621,6 +635,7 @@ public class DrawingActivity extends Activity
         // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "start " + start + " viewed " + viewed + " shots " + list.size() );
         if ( list.size() == 0 ) {
           Toast.makeText( this, R.string.few_data, Toast.LENGTH_LONG ).show();
+          app.mData.dropPlot( mPid, mSid );
           finish();
         } else if ( mType == TopoDroidApp.PLOT_H_SECTION ) {
           // find bounds
@@ -754,9 +769,11 @@ public class DrawingActivity extends Activity
 
       //   doSelectAt( x_scene, y_scene );
       // }
-      if ( mMode == MODE_MOVE && (Button)view == modeBtn ) {
-        mMode = MODE_EDIT;
-        setTheTitle();
+      if ( mDrawingSurface.isSelectable() ) { 
+        if ( mMode == MODE_MOVE && (Button)view == modeBtn ) {
+          mMode = MODE_EDIT;
+          setTheTitle();
+        }
       }
       return true;
     }
@@ -927,7 +944,7 @@ public class DrawingActivity extends Activity
           // setTitle( R.string.title_edit );
           doSelectAt( x_scene, y_scene );
         } else if ( mMode == MODE_MOVE ) {
-          setTitle( R.string.title_move );
+          setTheTitle( );
           mSaveX = x_canvas;
           mSaveY = y_canvas;
           mStartX = x_canvas;
@@ -1175,9 +1192,7 @@ public class DrawingActivity extends Activity
         @Override
         protected void onPostExecute(Boolean bool) {
             super.onPostExecute(bool);
-            if ( bool ){
-                mHandler.sendEmptyMessage(1);
-            }
+            mHandler.sendEmptyMessage( bool? 1 : 0 );
         }
     }
 
@@ -1219,9 +1234,55 @@ public class DrawingActivity extends Activity
         @Override
         protected void onPostExecute(Boolean bool) {
             super.onPostExecute(bool);
-            if ( bool ){
-                mHandler.sendEmptyMessage(1);
-            }
+            mHandler.sendEmptyMessage( bool? 1 : 0 );
+        }
+    }
+
+
+    private class ExportDxfToFile extends AsyncTask<Intent,Void,Boolean> 
+    {
+        private Context mContext;
+        private DrawingCommandManager mCommand;
+        private DistoXNum mNum;
+        private int mType;
+        private Handler mHandler;
+        private String mFullName;
+
+        public ExportDxfToFile( Context context, Handler handler, DrawingCommandManager command, DistoXNum num, int type, String name )
+        {
+           mContext  = context;
+           mCommand  = command;
+           mNum = num;
+           mType = type;
+           mHandler  = handler;
+           mFullName = name;
+        }
+
+        @Override
+        protected Boolean doInBackground(Intent... arg0)
+        {
+          try {
+            String filename = app.getDxfFileWithExt( mFullName );
+            // final FileOutputStream out = new FileOutputStream( filename );
+            final FileWriter fw = new FileWriter( filename );
+            BufferedWriter bw = new BufferedWriter( fw );
+            DrawingDxf.write( bw, mNum, mCommand, mType );
+            fw.flush();
+            fw.close();
+            return true;
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+          //mHandler.post(completeRunnable);
+          return false;
+        }
+
+
+        @Override
+        protected void onPostExecute(Boolean bool) 
+        {
+          super.onPostExecute(bool);
+          mHandler.sendEmptyMessage( bool? 1 : 0 );
         }
     }
 
@@ -1267,6 +1328,13 @@ public class DrawingActivity extends Activity
       Handler saveHandler = new Handler(){
            @Override
            public void handleMessage(Message msg) {
+             if (msg.what == 1 ) {
+               Toast.makeText( currentActivity, 
+                               getString(R.string.saved_file_) + mFullName + ".png", Toast.LENGTH_SHORT ).show();
+             } else {
+               Toast.makeText( currentActivity, 
+                               getString(R.string.saving_file_failed), Toast.LENGTH_SHORT ).show();
+             }
       //         final AlertDialog alertDialog = new AlertDialog.Builder(currentActivity).create();
       //         alertDialog.setTitle("Saving sketch");
       //         alertDialog.setMessage("File: " + mFullName );
@@ -1280,18 +1348,33 @@ public class DrawingActivity extends Activity
       } ;
       Bitmap bitmap = mDrawingSurface.getBitmap();
       if ( bitmap == null ) {
-        Toast.makeText( this, R.string.null_bitmap, Toast.LENGTH_LONG ).show();
+        Toast.makeText( this, R.string.null_bitmap, Toast.LENGTH_SHORT ).show();
       } else {
         new ExportBitmapToFile(this, saveHandler, mDrawingSurface.getBitmap(), mFullName ).execute();
-        Toast.makeText( this, getString(R.string.saved_file_) + mFullName + ".png", Toast.LENGTH_LONG ).show();
       }
+    }
+
+    void saveDxf()
+    {
+      final Activity currentActivity  = this;
+      Handler saveHandler = new Handler(){
+           @Override
+           public void handleMessage(Message msg) {
+             if (msg.what == 1 ) {
+               Toast.makeText( currentActivity, 
+                               getString(R.string.saved_file_) + mFullName + ".dxf", Toast.LENGTH_SHORT ).show();
+             } else {
+               Toast.makeText( currentActivity, 
+                               getString(R.string.saving_file_failed), Toast.LENGTH_SHORT ).show();
+             }
+           }
+      } ;
+      new ExportDxfToFile(this, saveHandler, mDrawingSurface.commandManager, mNum, mType, mFullName ).execute();
     }
 
     void saveTh2()
     {
-      if ( doSaveTh2( ! mAllSymbols ) ) {
-        Toast.makeText( this, getString(R.string.saved_file_) + mFullName + ".th2", Toast.LENGTH_LONG ).show();
-      }
+      doSaveTh2( ! mAllSymbols );
     }
 
     @Override
@@ -1349,9 +1432,7 @@ public class DrawingActivity extends Activity
       //   TopoDroidHelp.show( this, R.string.help_drawing );
       } else if (item == mMIsave ) {
         new PlotSaveDialog( this, this ).show();
-        // if ( doSaveTh2( ! mAllSymbols ) ) {
-        //   Toast.makeText( this, getString(R.string.saved_file_) + mFullName + ".th2", Toast.LENGTH_LONG ).show();
-        // }
+        // doSaveTh2( ! mAllSymbols );
       }
       return true;
     }

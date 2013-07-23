@@ -49,6 +49,15 @@
        android:entryValues="@array/unitLocationValue"
      />
 
+     <com.android.DistoX.MyListPreference
+       android:key="DISTOX_ALTITUDE"
+       android:summary="@string/pref_altitude_summary"
+       android:title="@string/pref_altitude_title"
+       android:defaultValue="1"
+       android:entries="@array/altitudeType"
+       android:entryValues="@array/altitudeTypeValue"
+     />
+
      <!-- com.android.DistoX.MyListPreference
        android:key="DISTOX_EXPORT_TYPE"
        android:summary="@string/pref_export_summary"
@@ -95,6 +104,13 @@
        android:key="DISTOX_LIST_REFRESH"
        android:summary="@string/pref_list_refresh_summary"
        android:title="@string/pref_list_refresh_title"
+       android:defaultValue="false"
+     />
+
+     <CheckBoxPreference
+       android:key="DISTOX_SURVEY_STATIONS"
+       android:summary="@string/pref_survey_stations_summary"
+       android:title="@string/pref_survey_stations_title"
        android:defaultValue="false"
      />
 

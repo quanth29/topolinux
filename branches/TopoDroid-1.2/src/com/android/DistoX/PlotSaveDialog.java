@@ -32,6 +32,7 @@ public class PlotSaveDialog extends Dialog
 {
   private Button   mBtnTh2;
   private Button   mBtnPng;
+  private Button   mBtnDxf;
   private Button   mBtnCancel;
 
   private DrawingActivity mParent;
@@ -51,6 +52,7 @@ public class PlotSaveDialog extends Dialog
     setContentView(R.layout.plot_save_dialog);
     mBtnTh2 = (Button) findViewById(R.id.btn_th2 );
     mBtnPng = (Button) findViewById(R.id.btn_png );
+    mBtnDxf = (Button) findViewById(R.id.btn_dxf );
     mBtnCancel = (Button) findViewById(R.id.btn_cancel );
 
     // Bundle extras = getIntent().getExtras();
@@ -58,6 +60,7 @@ public class PlotSaveDialog extends Dialog
 
     mBtnTh2.setOnClickListener( this );
     mBtnPng.setOnClickListener( this );
+    mBtnDxf.setOnClickListener( this );
     mBtnCancel.setOnClickListener( this );
 
     setTitle( R.string.title_plot_save );
@@ -72,6 +75,8 @@ public class PlotSaveDialog extends Dialog
       mParent.saveTh2();
     } else if ( b == mBtnPng ) {
       mParent.savePng();
+    } else if ( b == mBtnDxf ) {
+      mParent.saveDxf();
     // } else {
       // setResult( RESULT_CANCELED );
     }

@@ -54,6 +54,15 @@
         android:paddingRight="15dp"
         android:text="@string/btn_vtopo"
         />
+
+      <Button android:id="@+id/btn_dxf"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:singleLine="true"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:text="@string/btn_dxf"
+        />
    					  
       <Button android:id="@+id/btn_zip"
         android:layout_width="wrap_content" 
