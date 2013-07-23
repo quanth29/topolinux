@@ -1,0 +1,123 @@
+
+/* @file GeodeticHeight.java
+ *
+ * @author marco corvi
+ * @date nov 2012
+ *
+ * @brief TopoDroid manual location dialog
+ * --------------------------------------------------------
+ *  Copyright This sowftare is distributed under GPL-3.0 or later
+ *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20130520 altimetric altitude
+ */
+package com.android.DistoX;
+
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.HttpURLConnection;
+import java.net.URLEncoder;
+import java.net.MalformedURLException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedInputStream;
+
+class GeodeticHeight
+{
+  private static String NGA_URL = "http://earth-info.nga.mil/nga-bin/gandg-bin/intpt.cgi";
+
+  static double geodeticHeight( double lat, double lng )
+  {
+    int latdd = (int)lat;
+    lat = (lat-latdd)*60;
+    int latmm = (int)lat;
+    lat = (lat-latdd)*60;
+    int lngdd = (int)lng;
+    lng = (lng-lngdd)*60;
+    int lngmm = (int)lng;
+    lng = (lng-lngdd)*60;
+    return geodeticHeight( Integer.toString(latdd), Integer.toString(latmm), Double.toString(lat),
+                           Integer.toString(lngdd), Integer.toString(lngmm), Double.toString(lng) );
+  }
+   
+  static double geodeticHeight( String lat, String lng ) 
+  {
+    String[] lattoken = lat.split( ":" );
+    String[] lngtoken = lng.split( ":" );
+    return geodeticHeight( lattoken[0], lattoken[1], lattoken[2],
+                           lngtoken[0], lngtoken[1], lngtoken[2] );
+  }
+
+  static double geodeticHeight( String latdd, String latmm, String latss,
+                                String lngdd, String lngmm, String lngss )
+  {
+    double N = 0.0;
+    String content = 
+         "LatitudeDeg="  + URLEncoder.encode(latdd)
+      + "&LatitudeMin="  + URLEncoder.encode(latmm)
+      + "&LatitudeSec="  + URLEncoder.encode(latss)
+      + "&LongitudeDeg=" + URLEncoder.encode(lngdd)
+      + "&LongitudeMin=" + URLEncoder.encode(lngmm)
+      + "&LongitudeSec=" + URLEncoder.encode(lngss)
+      + "&Units=meters";
+
+    OutputStream os = null;
+    BufferedReader br = null;
+    try {
+      URLConnection url_conn = new URL( NGA_URL ).openConnection();
+      url_conn.setDoOutput( true );
+      HttpURLConnection conn = (HttpURLConnection)url_conn;
+ 
+      url_conn.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded" );
+      url_conn.setRequestProperty( "Content-length", Integer.toString(content.getBytes().length) );
+
+      os = conn.getOutputStream();
+      os.write( content.getBytes() );
+      os.close();
+    
+      InputStream in = new BufferedInputStream( conn.getInputStream() );
+      br = new BufferedReader( new InputStreamReader( in ) );
+      String line = "";
+      while ( (line = br.readLine()) != null ) {
+        if ( line.contains("Geoid Height") ) break;
+      }
+      StringBuilder sb = new StringBuilder( line );
+      while ( (line = br.readLine()) != null ) {
+        sb.append( line );
+        if ( line.contains("Meters") ) {
+          int to = sb.indexOf("Meters") - 1;
+          int fr = to - 1;
+          while ( ! Character.isWhitespace( sb.charAt( fr ) ) ) --fr;
+          fr += 5;
+          try {
+            N = Double.parseDouble( sb.substring( fr, to ) );
+          } catch ( NumberFormatException e ) {
+          }
+        }
+      }
+    } catch ( MalformedURLException e ) {
+      // TODO
+    } catch ( IOException e ) {
+      // TODO
+    } finally {
+      if ( os != null ) {
+        try {
+          os.close();
+        } catch ( IOException e ) {
+        }
+      }
+      if ( br != null ) {
+        try {
+          br.close();
+        } catch ( IOException e ) {
+        }
+      }
+    }
+    return N;
+  }
+}

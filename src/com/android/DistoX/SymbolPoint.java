@@ -32,7 +32,7 @@ class SymbolPoint
 
   boolean mHasText;
   boolean mOrientable;
-  double mOrientation;
+  double mOrientation;      // orientation [degrees]
   SymbolPointBasic mPoint1; // basic point
   SymbolPointBasic mPoint2; // overloading point
 
@@ -51,6 +51,18 @@ class SymbolPoint
   {
     if ( mPoint2 == null ) return mPoint1.mName;
     return ( mOrientation > 90 )? mPoint2.mName : mPoint1.mName; 
+  }
+
+  String getDxf( boolean flip )
+  {
+    if ( mPoint2 == null ) return mPoint1.mDxf;
+    return ( flip )? mPoint2.mDxf : mPoint1.mDxf; 
+  }
+
+  String getDxf( )
+  {
+    if ( mPoint2 == null ) return mPoint1.mDxf;
+    return ( mOrientation > 90 )? mPoint2.mDxf : mPoint1.mDxf; 
   }
 
   String getThName( boolean flip ) 
@@ -81,6 +93,18 @@ class SymbolPoint
   { 
     if ( mPoint2 == null ) return mPoint1.mPath;
     return ( mOrientation > 90 ) ? mPoint2.mPath : mPoint1.mPath;
+  }
+
+  Path getOrigPath( boolean flip )
+  {
+    if ( mPoint2 == null ) return mPoint1.mOrigPath;
+    return flip? mPoint2.mOrigPath : mPoint1.mOrigPath;
+  }
+ 
+  Path getOrigPath( )
+  {
+    if ( mPoint2 == null ) return mPoint1.mOrigPath;
+    return ( mOrientation > 90 ) ? mPoint2.mOrigPath : mPoint1.mOrigPath;
   }
  
   Paint getPaint( boolean flip )

@@ -41,6 +41,8 @@
  * 20130108 auto_stations option
  * 20130130 bug fix: export shot-type check for BLOCK_LEG
  * 20130204 disable lock
+ * 20130504 DXF export
+ * 20130520 altimetric altitude
  */
 package com.android.DistoX;
 
@@ -135,7 +137,7 @@ public class TopoDroidApp extends Application
   }
 
 
-  static final String VERSION = "1.1.0"; // must agree with AndroidManifest.xml
+  static final String VERSION = "1.2.2"; // must agree with AndroidManifest.xml
 
   private SharedPreferences prefs;
 
@@ -148,6 +150,7 @@ public class TopoDroidApp extends Application
   BluetoothAdapter mBTAdapter = null;
   DistoXComm mComm = null;
   DataHelper mData = null;
+  ShotActivity mShotActivity = null;
   Calibration mCalibration = null;
 
   // final static int CONN_MODE_BATCH = 0; // DistoX connection mode
@@ -164,29 +167,33 @@ public class TopoDroidApp extends Application
   boolean mTdSymbol;       // whether to ask TdSymbol
   boolean mStartTdSymbol;  // whether to start TdSymbol (result "yes" of TdSymbolDialog)
   static String  mManual;  // manual url
+  boolean mSketches;       // whether to use 3D sketches
 
   String  mBasePath = Environment.getExternalStorageDirectory().getAbsolutePath(); // app base path
 
   float mCloseDistance;
   // int   mExportType;
   float mGroupDistance;
-  float mCalibEps;
-  int   mCalibMaxIt;
+
+  int mGroupBy;          // how to group calib data
+  float mCalibEps;       // calibartion epsilon
+  int   mCalibMaxIt;     // calibration max nr of iterations
+
   String mDevice = DEVICE_NAME;
   // private boolean mSaveOnDestroy = SAVE_ON_DESTROY;
   // int   mDefaultConnectionMode;
 
   int   mLineSegment;
-  float mVThreshold;    // verticality threshold (LRUD)
+  float mVThreshold;       // verticality threshold (LRUD)
   float mLineAccuracy;
-  float mLineCorner;    // corner threshold
+  float mLineCorner;       // corner threshold
   static float mCloseness;
-  boolean mCheckBT;     // check BT on start
-  boolean mCheckAttached; 
-  boolean mListRefresh;  // whether to refresh list on edit-dialog ok-return
+  boolean mCheckBT;        // check BT on start
+  boolean mCheckAttached;  // whether to check is there are shots non-attached
+  boolean mListRefresh;    // whether to refresh list on edit-dialog ok-return
+  boolean mSurveyStations; // whether to assign automatically survey stations
   static boolean mAutoStations; // whether to add stations automatically to scrap therion files
   static boolean mLoopClosure;  // whether to do loop closure
-  int mGroupBy;          // how to group calib data
 
   // create socket type
   static final int TOPODROID_SOCK_DEFAULT      = 0;
@@ -228,6 +235,7 @@ public class TopoDroidApp extends Application
   private static String APP_TH_PATH  ; //  = APP_BASE_PATH + "th/";
   private static String APP_TH2_PATH ; //  = APP_BASE_PATH + "th2/";
   private static String APP_TH3_PATH ; //  = APP_BASE_PATH + "th3/";
+  private static String APP_DXF_PATH ; //  = APP_BASE_PATH + "dxf/";
   private static String APP_TRO_PATH ; //  = APP_BASE_PATH + "tro/";
   private static String APP_MAPS_PATH; //  = APP_BASE_PATH + "png/";
   private static String APP_NOTE_PATH; //  = APP_BASE_PATH + "note/";
@@ -275,6 +283,10 @@ public class TopoDroidApp extends Application
 
     APP_TH3_PATH    = APP_BASE_PATH + "th3/";
     dir = new File( APP_TH3_PATH );
+    if ( ! dir.exists() ) dir.mkdirs( );
+
+    APP_DXF_PATH    = APP_BASE_PATH + "dxf/";
+    dir = new File( APP_DXF_PATH );
     if ( ! dir.exists() ) dir.mkdirs( );
 
     APP_TRO_PATH    = APP_BASE_PATH + "tro/";
@@ -335,6 +347,8 @@ public class TopoDroidApp extends Application
   public static final int GROUP_BY_FOUR     = 1;
   public static final int GROUP_BY_ONLY_16  = 2;
 
+  public static final int ALT_WGS84 = 0; // WGS84 altitude
+  public static final int ALT_ASL = 1;   // altimetric altitude
 
   public static final String[] projName = { // therion projection names
     "none", "plan", "extended", "none", "sketch_3d"
@@ -348,6 +362,7 @@ public class TopoDroidApp extends Application
   public static float mUnitLength;
   public static float mUnitAngle;
   public static int mUnitLocation; // 0 dec-degree, 1 ddmmss
+  public static int mAltitude;     // location altitude type
   public static double mExtendThr;
 
   public static final String[] key = { // prefs keys
@@ -378,25 +393,27 @@ public class TopoDroidApp extends Application
     "DISTOX_EXTEND_THR2",      // 24
     "DISTOX_LOOP_CLOSURE",     // 25
     "DISTOX_CLOSENESS",        // 26
+    "DISTOX_ALTITUDE",         // 27
+    "DISTOX_SURVEY_STATIONS",  // 28
     // --------------- LOG PREFERENCES ----------------------
     "DISTOX_LOG_DEBUG",
     "DISTOX_LOG_ERR",
-    "DISTOX_LOG_INPUT",        // 29
-    "DISTOX_LOG_BT",           // 30
+    "DISTOX_LOG_INPUT",        // 31
+    "DISTOX_LOG_BT",           // 32
     "DISTOX_LOG_COMM",
     "DISTOX_LOG_PROTO",
     "DISTOX_LOG_DISTOX",
-    "DISTOX_LOG_DEVICE",       // 34
+    "DISTOX_LOG_DEVICE",       // 36
     "DISTOX_LOG_DATA",
-    "DISTOX_LOG_DB",           // 36
+    "DISTOX_LOG_DB",           // 38
     "DISTOX_LOG_CALIB",
     "DISTOX_LOG_FIXED",
-    "DISTOX_LOG_LOC",          // 39
+    "DISTOX_LOG_LOC",          // 41
     "DISTOX_LOG_PHOTO",
-    "DISTOX_LOG_SENSOR"        // 41
+    "DISTOX_LOG_SENSOR"        // 43
     // "DISTOX_LOG_SHOT",
     // "DISTOX_LOG_SURVEY",
-    // "DISTOX_LOG_NUM",          // 44
+    // "DISTOX_LOG_NUM",          // 46
     // "DISTOX_LOG_THERION",
     // "DISTOX_LOG_PLOT",
     // "DISTOX_LOG_BEZIER"
@@ -407,7 +424,8 @@ public class TopoDroidApp extends Application
   public static final int DISTOX_EXPORT_DAT = 2;
   public static final int DISTOX_EXPORT_SVX = 3;
   public static final int DISTOX_EXPORT_TRO = 4;
-  public static final int DISTOX_EXPORT_MAX = 5;   // placeholder 
+  public static final int DISTOX_EXPORT_DXF = 5;
+  public static final int DISTOX_EXPORT_MAX = 6;   // placeholder 
 
   public static final int DISTOX_MIN_ITER   = 50;  // hard limits
   public static final float DISTOX_MAX_EPS  = 0.1f;
@@ -421,6 +439,7 @@ public class TopoDroidApp extends Application
   public static final  String LINE_STYLE     = "2";     // LINE_STYLE_TWO
   public static final  String DRAWING_UNIT   = "1.2f";  // UNIT
   public static final  String CLOSENESS      = "16";    // drawing closeness threshold
+  public static final  String ALTITUDE       = "1";     // 
   // public static final  String EXPORT_TYPE    = "th";    // DISTOX_EXPORT_TH
   public static final  String GROUP_DISTANCE = "40.0f";
   public static final  String CALIB_EPS      = "0.0000001f";
@@ -431,6 +450,7 @@ public class TopoDroidApp extends Application
   public static final  boolean CHECK_BT      = true;
   public static final  boolean CHECK_ATTACHED = false;
   public static final  boolean LIST_REFRESH  = false;
+  public static final  boolean SURVEY_STATIONS = false;
   public static final  boolean AUTO_STATIONS = true;
   public static final  boolean LOOP_CLOSURE  = false;
   public static final  String UNIT_LENGTH    = "meters";
@@ -599,6 +619,7 @@ public class TopoDroidApp extends Application
     setLineStyleAndType( prefs.getString( key[11], LINE_STYLE ) );                 // DISTOX_LINE_STYLE
     mUnit          = Float.parseFloat( prefs.getString( key[13], DRAWING_UNIT ) );
     mCloseness     = Float.parseFloat( prefs.getString( key[26], CLOSENESS ) );
+    mAltitude      = Integer.parseInt( prefs.getString( key[27], ALTITUDE ) );
 
     // ------------------- CALIBRATION PREFERENCES
     mGroupBy       = Integer.parseInt( prefs.getString( key[14], GROUP_BY ) );
@@ -608,6 +629,7 @@ public class TopoDroidApp extends Application
     
     mCheckBT       = prefs.getBoolean( key[12], CHECK_BT );        // DISTOX_CHECK_BT
     mListRefresh   = prefs.getBoolean( key[15], LIST_REFRESH );
+    mSurveyStations= prefs.getBoolean( key[28], SURVEY_STATIONS );
     mAutoStations  = prefs.getBoolean( key[16], AUTO_STATIONS );
     mCheckAttached = prefs.getBoolean( key[21], CHECK_ATTACHED );
 
@@ -626,6 +648,10 @@ public class TopoDroidApp extends Application
     mData = new DataHelper( this );
     mCalibration = new Calibration( 0, this );
     mConnListener = new ArrayList< Handler >();
+    {
+      String sketches = mData.getValue("sketch");
+      mSketches = sketches != null && sketches.equals("on");
+    }
 
     mBTAdapter = BluetoothAdapter.getDefaultAdapter();
     if ( mBTAdapter == null ) {
@@ -815,6 +841,12 @@ public class TopoDroidApp extends Application
     return APP_TH3_PATH + name + ".th3";
   }
  
+  public String getDxfFileWithExt( String name ) 
+  {
+    File dir = new File( APP_DXF_PATH );
+    if (!dir.exists()) dir.mkdirs();
+    return APP_DXF_PATH + name + ".dxf";
+  }
   public String getPngFileWithExt( String name ) 
   {
     File dir = new File( APP_MAPS_PATH );
@@ -883,6 +915,13 @@ public class TopoDroidApp extends Application
     File dir = new File( APP_TRO_PATH );
     if (!dir.exists()) dir.mkdirs();
     return APP_TRO_PATH + mySurvey + ".tro";
+  }
+
+  public String getSurveyDxfFile( )
+  {
+    File dir = new File( APP_DXF_PATH );
+    if (!dir.exists()) dir.mkdirs();
+    return APP_DXF_PATH + mySurvey + ".dxf";
   }
 
   public String getSurveySvxFile( )
@@ -992,10 +1031,14 @@ public class TopoDroidApp extends Application
       DrawingBrushPaths.doMakePaths( );
     } else if ( k.equals( key[26] ) ) {
       mCloseness = Float.parseFloat( sp.getString( k, CLOSENESS ) );
+    } else if ( k.equals( key[27] ) ) {
+      mAltitude = Integer.parseInt( sp.getString( k, ALTITUDE ) );
     } else if ( k.equals( key[14] ) ) {
       mGroupBy = Integer.parseInt( sp.getString( k, GROUP_BY ) );
     } else if ( k.equals( key[15] ) ) {
       mListRefresh = sp.getBoolean( k, LIST_REFRESH );
+    } else if ( k.equals( key[28] ) ) {
+      mSurveyStations = sp.getBoolean( k, SURVEY_STATIONS );
     } else if ( k.equals( key[16] ) ) {
       mAutoStations = sp.getBoolean( k, AUTO_STATIONS );
     } else if ( k.equals( key[25] ) ) {
@@ -1024,37 +1067,37 @@ public class TopoDroidApp extends Application
       setExtendThr( sp );
 
     // ---------------------- LOG PREFERENCES
-    } else if ( k.equals( key[27] ) ) { // "DISTOX_LOG_DEBUG",
+    } else if ( k.equals( key[29] ) ) { // "DISTOX_LOG_DEBUG",
       LOG_DEBUG = sp.getBoolean( k, false );
-    } else if ( k.equals( key[28] ) ) { // "DISTOX_LOG_ERR",
+    } else if ( k.equals( key[30] ) ) { // "DISTOX_LOG_ERR",
       LOG_ERR = sp.getBoolean( k, true );
-    } else if ( k.equals( key[29] ) ) { // "DISTOX_LOG_INPUT",        // 28
+    } else if ( k.equals( key[31] )) { // "DISTOX_LOG_INPUT",        // 31
       LOG_INPUT = sp.getBoolean( k, false );
-    } else if ( k.equals( key[30] ) ) { // "DISTOX_LOG_BT",
+    } else if ( k.equals( key[32] ) ) { // "DISTOX_LOG_BT",
       LOG_BT = sp.getBoolean( k, false );
-    } else if ( k.equals( key[31] ) ) { // "DISTOX_LOG_COMM",
+    } else if ( k.equals( key[33] ) ) { // "DISTOX_LOG_COMM",
       LOG_COMM = sp.getBoolean( k, false );
-    } else if ( k.equals( key[32] ) ) { // "DISTOX_LOG_PROTO",
+    } else if ( k.equals( key[34] ) ) { // "DISTOX_LOG_PROTO",
       LOG_PROTO = sp.getBoolean( k, false );
-    } else if ( k.equals( key[33] ) ) { // "DISTOX_LOG_DISTOX",
+    } else if ( k.equals( key[35] ) ) { // "DISTOX_LOG_DISTOX",
       LOG_DISTOX = sp.getBoolean( k, false );
-    } else if ( k.equals( key[34] ) ) { // "DISTOX_LOG_DEVICE",       // 33
+    } else if ( k.equals( key[36] ) ) { // "DISTOX_LOG_DEVICE",       // 36
       LOG_DEVICE = sp.getBoolean( k, false );
-    } else if ( k.equals( key[35] ) ) { // "DISTOX_LOG_DATA",
+    } else if ( k.equals( key[37] ) ) { // "DISTOX_LOG_DATA",
       LOG_DATA = sp.getBoolean( k, false );
-    } else if ( k.equals( key[36] ) ) { // "DISTOX_LOG_DB",
+    } else if ( k.equals( key[38] ) ) { // "DISTOX_LOG_DB",
       LOG_DB = sp.getBoolean( k, false );
-    } else if ( k.equals( key[37] ) ) { // "DISTOX_LOG_CALIB",
+    } else if ( k.equals( key[39] ) ) { // "DISTOX_LOG_CALIB",
       LOG_CALIB = sp.getBoolean( k, false );
-    } else if ( k.equals( key[38] ) ) { // "DISTOX_LOG_FIXED",
+    } else if ( k.equals( key[40] ) ) { // "DISTOX_LOG_FIXED",
       LOG_FIXED = sp.getBoolean( k, false );
-    } else if ( k.equals( key[39] ) ) { // "DISTOX_LOG_LOC",          // 38
+    } else if ( k.equals( key[41] ) ) { // "DISTOX_LOG_LOC",          // 41
       LOG_LOC = sp.getBoolean( k, false );
-    } else if ( k.equals( key[40] ) ) { // "DISTOX_LOG_PHOTO",
+    } else if ( k.equals( key[42] ) ) { // "DISTOX_LOG_PHOTO",
       LOG_PHOTO = sp.getBoolean( k, false );
-    } else if ( k.equals( key[41] ) ) { // "DISTOX_LOG_SENSOR"        // 40
+    } else if ( k.equals( key[43] ) ) { // "DISTOX_LOG_SENSOR"        // 43
       LOG_SENSOR = sp.getBoolean( k, false );
-    // } else if ( k.equals( key[42] ) ) { // "DISTOX_LOG_SHOT"        
+    // } else if ( k.equals( key[44] ) ) { // "DISTOX_LOG_SHOT"        
     //   LOG_SHOT = sp.getBoolean( k, false );
     } 
   }
@@ -1081,7 +1124,50 @@ public class TopoDroidApp extends Application
   {
     // Log.v( TAG, "downloadData() device " + mDevice );
     if ( mComm != null && mDevice != null ) {
-      return mComm.downloadData( mDevice );
+      int ret = mComm.downloadData( mDevice );
+      if ( ret > 0 && mSurveyStations ) {
+        // assign stations
+        List<DistoXDBlock> list = mData.selectAllShots( mSID, STATUS_NORMAL );
+        DistoXDBlock prev = null;
+        String from = "0";
+        boolean atStation = false;
+        for ( DistoXDBlock blk : list ) {
+          if ( blk.mFrom.length() == 0 ) {
+            if ( prev == null ) {
+              prev = blk;
+              blk.mFrom = from;
+              mData.updateShotName( blk.mId, mSID, from, "" );
+            } else {
+              if ( prev.relativeDistance( blk ) < mCloseDistance ) {
+                if ( ! atStation ) {
+                  String to = DistoXStationName.increment( from );
+                  prev.mFrom = from;
+                  prev.mTo   = to;
+                  mData.updateShotName( prev.mId, mSID, from, to );
+                  from = to;
+                  atStation = true;
+                } else {
+                  /* nothing: centerline extra shot */
+                }
+              } else {
+                atStation = false;
+                blk.mFrom = from;
+                mData.updateShotName( blk.mId, mSID, from, "" );
+                prev = blk;
+              }
+            }
+          } else { // blk.mFrom.length > 0
+            if ( blk.mTo.length() > 0 ) {
+              from = blk.mTo;
+              atStation = true;
+            } else {
+              atStation = false;
+            }
+            prev = blk;
+          }
+        }
+      }
+      return ret;
     }
     return 0;
   }
@@ -1773,6 +1859,120 @@ public class TopoDroidApp extends Application
       pw.format(" ;%s", item.mComment );
     }
     pw.format("\r\n");
+  }
+
+  public String exportSurveyAsDxf( DistoXNum num )
+  {
+    String filename = getSurveyDxfFile();
+    try {
+      FileWriter fw = new FileWriter( filename );
+      PrintWriter out = new PrintWriter( fw );
+      // TODO
+      out.printf("999\nDXF created from TopoDroid\n");
+      out.printf("0\nSECTION\n2\nHEADER\n");
+      out.printf("9\n$ACADVER\n1\nAC1006\n");
+      out.printf("9\n$INSBASE\n");
+      out.printf(Locale.ENGLISH, "10\n%.2f\n20\n%.2f\n30\n%.2f\n", 0.0, 0.0, 0.0 ); // FIXME (0,0,0)
+      out.printf("9\n$EXTMIN\n");
+      float emin = num.surveyEmin() - 2.0f;
+      float nmin = - num.surveySmax() - 2.0f;
+      float zmin = - num.surveyVmax() - 2.0f;
+      out.printf(Locale.ENGLISH, "10\n%.2f\n20\n%.2f\n30\n%.2f\n", emin, nmin, zmin );
+        // num.surveyEmin(), -num.surveySmax(), -num.surveyVmax() );
+      out.printf("9\n$EXTMAX\n");
+      float emax = num.surveyEmax();
+      float nmax = - num.surveySmin();
+      float zmax = - num.surveyVmin();
+      
+      int de = (100f < emax-emin )? 100 : (50f < emax-emin)? 50 : 10;
+      int dn = (100f < nmax-nmin )? 100 : (50f < nmax-nmin)? 50 : 10;
+      int dz = (100f < zmax-zmin )? 100 : (50f < zmax-zmin)? 50 : 10;
+
+      out.printf(Locale.ENGLISH, "10\n%.2f\n20\n%.2f\n30\n%.2f\n", emax, nmax, zmax );
+        // num.surveyEmax(), -num.surveySmin(), -num.surveyVmin() );
+      out.printf("0\nENDSEC\n");
+
+      out.printf("0\nSECTION\n2\nTABLES\n");
+      {
+        out.printf("0\nTABLE\n2\nLTYPE\n70\n1\n");
+        // int flag = 64;
+        out.printf("0\nLTYPE\n2\nCONTINUOUS\n70\n64\n3\nSolid line\n72\n65\n73\n0\n40\n0.0\n");
+        out.printf("0\nENDTAB\n");
+
+        out.printf("0\nTABLE\n2\nLAYER\n70\n6\n");
+          // 2 layer name, 70 flag (64), 62 color code, 6 line style
+          String style = "CONTINUOUS";
+          int flag = 64;
+          out.printf("0\nLAYER\n2\nLEG\n70\n%d\n62\n%d\n6\n%s\n",     flag, 1, style );
+          out.printf("0\nLAYER\n2\nSPLAY\n70\n%d\n62\n%d\n6\n%s\n",   flag, 2, style );
+          out.printf("0\nLAYER\n2\nSTATION\n70\n%d\n62\n%d\n6\n%s\n", flag, 3, style );
+          out.printf("0\nLAYER\n2\nREF\n70\n%d\n62\n%d\n6\n%s\n",     flag, 4, style );
+        out.printf("0\nENDTAB\n");
+
+        out.printf("0\nTABLE\n2\nSTYLE\n70\n0\n");
+        out.printf("0\nENDTAB\n");
+      }
+      out.printf("0\nENDSEC\n");
+
+      out.printf("0\nSECTION\n2\nBLOCKS\n");
+      out.printf("0\nENDSEC\n");
+
+      out.printf("0\nSECTION\n2\nENTITIES\n");
+      {
+        emin += 1f;
+        nmin += 1f;
+        zmin += 1f;
+        out.printf("0\nLINE\n8\nREF\n");
+        out.printf(Locale.ENGLISH, "10\n%.2f\n20\n%.2f\n30\n%.2f\n", emin, nmin, zmin );
+        out.printf(Locale.ENGLISH, "11\n%.2f\n21\n%.2f\n31\n%.2f\n", emin+de, nmin, zmin );
+        out.printf("0\nLINE\n8\nREF\n");
+        out.printf(Locale.ENGLISH, "10\n%.2f\n20\n%.2f\n30\n%.2f\n", emin, nmin, zmin );
+        out.printf(Locale.ENGLISH, "11\n%.2f\n21\n%.2f\n31\n%.2f\n", emin, nmin+dn, zmin );
+        out.printf("0\nLINE\n8\nREF\n");
+        out.printf(Locale.ENGLISH, "10\n%.2f\n20\n%.2f\n30\n%.2f\n", emin, nmin, zmin );
+        out.printf(Locale.ENGLISH, "11\n%.2f\n21\n%.2f\n31\n%.2f\n", emin, nmin, zmin+dz );
+        out.printf("0\nTEXT\n8\nREF\n");
+        out.printf("1\n%s\n", (de==100)? "100" : (de==50)? "50" : "10" );
+        out.printf(Locale.ENGLISH, "10\n%.2f\n20\n%.2f\n30\n%.2f\n40\n0.3\n", emin+de+1, nmin, zmin );
+        out.printf("0\nTEXT\n8\nREF\n");
+        out.printf("1\n%s\n", (dn==100)? "100" : (dn==50)? "50" : "10" );
+        out.printf(Locale.ENGLISH, "10\n%.2f\n20\n%.2f\n30\n%.2f\n40\n0.3\n", emin, nmin+de+1, zmin );
+        out.printf("0\nTEXT\n8\nREF\n");
+        out.printf("1\n%s\n", (dz==100)? "100" : (dz==50)? "50" : "10" );
+        out.printf(Locale.ENGLISH, "10\n%.2f\n20\n%.2f\n30\n%.2f\n40\n0.3\n", emin, nmin, zmin+dz+1 );
+
+        // centerline data
+        for ( NumShot sh : num.getShots() ) {
+          NumStation f = sh.from;
+          NumStation t = sh.to;
+          out.printf("0\nLINE\n8\nLEG\n");
+          out.printf(Locale.ENGLISH, "10\n%.2f\n20\n%.2f\n30\n%.2f\n", f.e, -f.s, -f.v );
+          out.printf(Locale.ENGLISH, "11\n%.2f\n21\n%.2f\n31\n%.2f\n", t.e, -t.s, -t.v );
+        }
+
+        for ( NumSplay sh : num.getSplays() ) {
+          NumStation f = sh.from;
+          out.printf("0\nLINE\n8\nSPLAY\n");
+          out.printf(Locale.ENGLISH, "10\n%.2f\n20\n%.2f\n30\n%.2f\n", f.e, -f.s, -f.v );
+          out.printf(Locale.ENGLISH, "11\n%.2f\n21\n%.2f\n31\n%.2f\n", sh.e, -sh.s, -sh.v );
+        }
+   
+        for ( NumStation st : num.getStations() ) {
+          // FIXME station scale is 0.3
+          out.printf("0\nTEXT\n8\nSTATION\n");
+          out.printf("1\n%s\n", st.name );
+          out.printf(Locale.ENGLISH, "10\n%.2f\n20\n%.2f\n30\n%.2f\n40\n0.3\n", st.e, -st.s, -st.v );
+        }
+      }
+      out.printf("0\nENDSEC\n");
+      out.printf("0\nEOF\n");
+
+      fw.flush();
+      fw.close();
+      return filename;
+    } catch ( IOException e ) {
+      return null;
+    }
   }
 
   public String exportSurveyAsTro()

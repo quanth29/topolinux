@@ -45,7 +45,7 @@ class SymbolPointLibrary
     loadUserPoints();
   }
 
-  // int size() { return mPoint.size(); }
+  int size() { return mPoint.size(); }
 
   boolean pointHasText( int k ) 
   {
@@ -168,6 +168,18 @@ class SymbolPointLibrary
   {
     if ( k < 0 || k >= mPointNr ) return null;
     return mPoint.get(k).getPath( );
+  }
+
+  Path getPointOrigPath( int k, boolean flip )
+  {
+    if ( k < 0 || k >= mPointNr ) return null;
+    return mPoint.get(k).getOrigPath( flip );
+  }
+
+  Path getPointOrigPath( int k )
+  {
+    if ( k < 0 || k >= mPointNr ) return null;
+    return mPoint.get(k).getOrigPath( );
   }
 
 

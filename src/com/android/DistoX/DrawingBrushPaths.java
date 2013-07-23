@@ -158,6 +158,16 @@ public class DrawingBrushPaths
     return mPointLib.getPointPath( i ); 
   }
 
+  public static Path getPointOrigPath( int i, boolean flip ) 
+  { 
+    return mPointLib.getPointOrigPath( i, flip );
+  }
+
+  public static Path getPointOrigPath( int i )
+  { 
+    return mPointLib.getPointOrigPath( i ); 
+  }
+
   public static void makePaths( Resources res )
   {
     if ( mStationSymbol == null ) {

@@ -119,5 +119,7 @@ public class DrawingStationPath extends DrawingPath
     pw.format(Locale.ENGLISH, "point %.2f %.2f station -name %s\n", mXpos*toTherion, -mYpos*toTherion, mName );
     return sw.getBuffer().toString();
   }
+
+
 }
 

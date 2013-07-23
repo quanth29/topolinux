@@ -69,7 +69,7 @@
     <string name="extend_right">Right</string>
     <string name="extend_vert">Vert</string>
     <string name="external_prompt">Enter measurement</string>
-    <string name="few_data">Too few data</string>
+    <string name="few_data">Not enough data</string>
     <string name="file_chooser_title">File Import</string>
     <string name="file_import">Importing file may take long.\nPlease wait ...</string>
     <string name="file_parse_already">Survey already imported</string>
@@ -79,12 +79,16 @@
     <string name="head_tail">Head/Tail: </string>
     <string name="head_tail_failed">Failed to read Head/Tail</string>
     <string name="label_text">Enter the label text</string>
-    <string name="altitude">Alt.  </string>
-    <string name="latitude">Lat.  </string>
+    <string name="altitude">Alt. </string>
+    <string name="latitude">Lat. </string>
     <string name="longitude">Long. </string>
+    <string name="altitude_hint">Alt. [meters]</string>
+    <string name="latitude_hint">Lat. dd:mm:ss.sss</string>
+    <string name="longitude_hint">Long. dd:mm:ss.sss</string>
     <!-- string name="loading_wait">Loading. Please wait.</string -->
     <string name="loop_closure_errors">Loop closure errors</string>
     <string name="loop_none">no loop</string>
+    <string name="line_delete">Delete line</string>
 
     <string name="scale">scale</string>
     <string name="reversed">reversed</string>
@@ -111,6 +115,7 @@
     <string name="no_shot_between_stations">No shot between stations</string>
     <string name="no_shot_found">No shot found</string>
     <string name="no_shots">Survey has no shots.\nUse Download menu to get some</string>
+    <string name="no_station_found">No station found</string>
     <string name="no_survey">No survey selected.\nUse menus to select one</string>
     <string name="no_tdsymbol">TdSymbol not installed</string>
     <string name="no_thmanager">ThManager not installed</string>
@@ -140,11 +145,12 @@
     <string name="read_fail_with_code">Read failure: error code </string>
     <string name="read_failed">Failed to read from DistoX</string>
     <string name="reading_file_failed">Failed to read file</string>
-    <string name="saved_file_">Saved file </string>
+    <string name="saved_file_">Saved file\ </string>
     <string name="saving_">Saving </string>
     <string name="saving_file_failed">Failed to save file</string>
     <!-- string name="saving_wait">Saving. Please wait.</string -->
     <string name="scrap_name">sketch name</string>
+    <string name="splay">splay</string>
 
     <string name="sensor">sensor</string>
     <string name="sensor_accelerometer">accelerometer</string>
@@ -233,6 +239,7 @@
     <string name="menu_device">DistoX</string>
     <string name="menu_display">Display mode</string>
     <string name="menu_download">Download</string>
+    <string name="menu_edit">Edit</string>
     <string name="menu_export">Export</string>
     <string name="menu_extend">Extend splays</string>
     <string name="menu_group">Guess groups</string>
@@ -264,7 +271,7 @@
     <string name="menu_shot_new">Append shot</string>
     <string name="menu_sleep">Sleep</string> 
     <string name="menu_stats">Stats</string>
-    <string name="menu_surface">Make surface</string>
+    <string name="menu_surface">Surface</string>
     <string name="menu_survey">Display</string>
     <string name="menu_symbol">Symbol manager</string>
     <string name="menu_thconfig">Thconfig manager</string>
@@ -328,16 +335,23 @@
     <string name="btn_area">Area</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_compass">Compass</string>
+    <string name="btn_cut">Cut</string>
     <string name="btn_draw">Draw</string>
+    <string name="btn_dxf">DXF</string>
     <string name="btn_edit">Edit</string>
+    <string name="btn_erase">Erase</string>
+    <string name="btn_extrude">Extrude</string>
     <string name="btn_line">Line</string>
     <string name="btn_move">Move</string>
     <string name="btn_mode">Mode</string>
+    <string name="btn_ok">OK</string>
     <string name="btn_png">PNG</string>
     <string name="btn_point">Point</string>
     <!-- string name="btn_redo">Redo</string -->
+    <string name="btn_shot">Shot</string>
     <string name="btn_side">Side</string>
     <string name="btn_step">Step</string>
+    <string name="btn_stretch">Stretch</string>
     <string name="btn_survex">Survex</string>
     <string name="btn_therion">Therion</string>
     <string name="btn_top">Top</string>
@@ -364,7 +378,9 @@
     <string name="title_photo_comment">Photo comment</string>
     <string name="title_plot_save">Save sketch as</string>
     <string name="title_scraps">%1$s sketches</string>
-    <string name="title_sketch">Mode %1$s - View %2$s [%2$s %4$s]</string>
+    <string name="title_sketch">Mode %1$s %2$s - View %3$s [%4$s %5$s]</string>
+    <string name="title_sketch_edit">Edit 3D</string>
+    <string name="title_sketch_shot">New shot</string>
     <string name="title_stats">Statistics</string>
     <string name="title_survey">Survey Info</string>
     <string name="title_survey_export">Export survey as</string>
@@ -388,10 +404,14 @@
   <string name="pref_closeness_title">Selection radius</string>
   <string name="pref_closeness_summary">Sketch item selection radius</string>
   <string name="pref_closeness_message">Sketch item selection radius</string>
+  <string name="pref_altitude_title">Export</string>
+  <string name="pref_altitude_summary">Select type of export</string>
   <!-- string name="pref_export_title">Export</string -->
   <!-- string name="pref_export_summary">Select type of export</string -->
   <string name="pref_list_refresh_title">List refresh</string>
   <string name="pref_list_refresh_summary">Force list refresh</string>
+  <string name="pref_survey_stations_title">Survey stations</string>
+  <string name="pref_survey_stations_summary">Automatic survey stations</string>
   <string name="pref_leg_title">Leg tolerance</string>
   <string name="pref_leg_summary">Tolerance among the shots of a leg</string>
   <string name="pref_leg_message">Tolerance among the shots of a leg</string>
@@ -463,7 +483,7 @@
   <string name="pref_log_sensor">Sensors</string>
   <string name="pref_log_input">User input</string>
 
-    <string name="welcome_title">Welcome to TopoDroid 1.1</string>
+    <string name="welcome_title">Welcome to TopoDroid 1.2</string>
     <string name="welcome_text">
 \nTopoDroid is an Open Source Android app for surveying caves with the DistoX.
 \n\nNo warranty: by using it you agree that the authors are not responsible for any loss of data you might incur or damage whatsoever.

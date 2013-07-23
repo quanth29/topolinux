@@ -25,7 +25,7 @@ import java.util.Stack;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
-// import android.util.Log;
+import android.util.Log;
 
 class DistoXNum
 {
@@ -363,6 +363,9 @@ class DistoXNum
     }
   }
 
+  /** for each branch compute the error and distribute it over the
+   * branch shots
+   */
   private void compensateSingleLoops( ArrayList<NumBranch> branches )
   {
     for ( NumBranch br : branches ) {
@@ -372,9 +375,10 @@ class DistoXNum
     }
   }
 
-  // from the list of nodes make he branches of type cross-cross
-  // FIXME there is a flaw:
-  // this method does not detect single loops with no hair attached
+  /** from the list of nodes make the branches of type cross-cross
+   * FIXME there is a flaw:
+   * this method does not detect single loops with no hair attached
+   */
   void makeBranches( ArrayList<NumBranch> branches, ArrayList<NumNode> nodes )
   {
     for ( NumNode node : mNodes ) {
@@ -420,7 +424,13 @@ class DistoXNum
     }
   }
 
-  float invertMatrix( float[] a, int nr, int nc, int nd)
+  /** matrix inverse: gauss pivoting method
+   * @param a    matrix
+   * @param nr   size of rows
+   * @param nc   size of columns
+   * @param nd   row-stride
+   */
+  static float invertMatrix( float[] a, int nr, int nc, int nd)
   {
     float  det_val = 1.0f;                /* determinant value */
     int     ij, jr, ki, kj;
@@ -568,7 +578,9 @@ class DistoXNum
   }
 
 
-  // need the loop length to compute the percent error
+  /** get the string description of the loop closure error(s)
+   * need the loop length to compute the percent error
+   */
   private String getClosureError( NumStation at, NumStation fr, float d, float b, float c, float len )
   {
     float dv = (float)Math.abs( fr.v - d * (float)Math.sin(c * grad2rad) - at.v );
@@ -586,6 +598,100 @@ class DistoXNum
   }
 
   // ==========================================================================
+  /** insert a set of shots into the survey
+   * N.B. the new shots are assumed not to close any loop
+   */
+  public boolean addData( List<DistoXDBlock> data )
+  {
+    boolean ret = true;
+    NumStation sf, st;
+    int rev = 0;
+    for ( DistoXDBlock block : data ) {
+      switch ( block.type() ) {
+        case DistoXDBlock.BLOCK_SPLAY:
+          Log.v("DistoX", "add splay " + block.mFrom );
+          String f = block.mFrom;
+          rev = 1;
+          if ( f == null || f.length() == 0 ) {
+            f = block.mTo;
+            rev = -1;
+          }
+          if ( f != null && f.length() > 0 ) {
+            sf = getStation( f ); // find station with name "f"
+            if ( sf != null ) {              // add splay at station
+              mSplays.add( new NumSplay( sf, rev*block.mLength, block.mBearing, block.mClino,
+                                        (int)(block.mExtend), block ) );
+            }
+          } else {
+            ret = false;
+          }
+          break;
+        case DistoXDBlock.BLOCK_CENTERLINE:
+          sf = getStation( block.mFrom );
+          st = getStation( block.mTo );
+          Log.v("DistoX", "add centerline leg " + block.mFrom + " " + block.mTo + " FROM " + sf + " TO " + st );
+          if ( sf != null ) {
+            mLength += block.mLength;
+            if ( st != null ) { // close loop
+              if ( /* TopoDroidApp.mAutoStations || */ ! TopoDroidApp.mLoopClosure ) {
+                NumStation st1 = new NumStation( block.mTo, sf, block.mLength, block.mBearing, block.mClino,
+                                                 (int)(block.mExtend) );
+                st1.mDuplicate = true;
+                mStations.add( st1 );
+                addShotToStations( new NumShot( sf, st1, block, 1 ), st1, sf );
+              } else { // loop-closure
+                addShotToStations( new NumShot( sf, st, block, 1 ), sf, st );
+              }
+              // if ( ts.duplicate ) { // FIXME
+              //   ++mDupNr;
+              // if ( block.mFlag == DistoXDBlock.BLOCK_SURFACE ) { // FIXME
+              //   ++mSurfNr;
+              // }
+              // do close loop also on duplicate shots
+              // need the loop length to compute the fractional closure error
+              float length = shortestPath( sf, st) + block.mLength;
+              mClosures.add( getClosureError( st, sf, block.mLength, block.mBearing, block.mClino, length ) );
+            } else { // add from-->to
+              st = new NumStation( block.mTo, sf, block.mLength, block.mBearing, block.mClino,
+                                   (int)(block.mExtend) );
+              updateBBox( st );
+              // if ( ts.duplicate ) { // FIXME
+              //   ++mDupNr;
+              // } else if ( ts.surface ) {
+              //   ++mSurfNr;
+              // } 
+              mLength += block.mLength;
+              if ( st.v < mZmin ) { mZmin = st.v; }
+              if ( st.v > mZmax ) { mZmax = st.v; }
+              mStations.add( st );
+              addShotToStations( new NumShot( sf, st, block, 1 ), st, sf );
+            }
+          } else if ( st != null ) {
+            sf = new NumStation( block.mFrom, st, -block.mLength, block.mBearing, block.mClino,
+                                 (int)(block.mExtend) );
+            updateBBox( sf );
+            // if ( ts.duplicate ) {
+            //   ++mDupNr;
+            // } else if ( ts.surface ) {
+            //   ++mSurfNr;
+            // } 
+            mLength += block.mLength;
+            if ( sf.v < mZmin ) { mZmin = sf.v; }
+            if ( sf.v > mZmax ) { mZmax = sf.v; }
+            mStations.add( sf );
+            addShotToStations( new NumShot( st, sf, block, -1), sf, st );
+          } else {
+            ret = false;
+          }
+          break;
+        default:
+          Log.v("DistoX", "add unknown " + block.mType + " " + block.mFrom + " " + block.mTo );
+          break;
+      }
+    }
+    return ret;
+  }
+
   /** survey data reduction 
    * return true if all shots are attached
    */
