@@ -10,6 +10,8 @@
  * --------------------------------------------------------
  * CHANGES
  * 20121225 implemented erase
+ * 20130825 added a field to edit the point text (for labels)
+ * 20130829 added the buttons for the point orientation
  */
 package com.android.DistoX;
 
@@ -26,31 +28,78 @@ import android.widget.EditText;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ImageView;
 import android.view.View;
+// import android.graphics.drawable.Drawable;
+// import android.graphics.Rect;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Matrix;
+
+import android.util.FloatMath;
 
 public class DrawingPointDialog extends Dialog
                                implements View.OnClickListener
+                               , View.OnLongClickListener
 {
   private DrawingPointPath mPoint;
   private DrawingActivity  mParent;
+  private int mOrient;
 
   private TextView mTVtype;
   private EditText mEToptions;
+  private EditText mETtext;
   private RadioButton mBtnScaleXS;
   private RadioButton mBtnScaleS;
   private RadioButton mBtnScaleM;
   private RadioButton mBtnScaleL;
   private RadioButton mBtnScaleXL;
+
+  private Button   mBtnLeft;
+  private Button   mBtnRight;
+  private TextView mTVorientation;
+  private ImageView mIVorientation;
+  // private Drawable mDrawable;
+  private Bitmap mBitmap;
+  private Canvas mCanvas;
  
   private Button   mBtnOk;
-  private Button   mBtnCancel;
+  // private Button   mBtnCancel;
+  // private Button   mBtnShift;
   private Button   mBtnErase;
 
   public DrawingPointDialog( DrawingActivity context, DrawingPointPath point )
   {
     super( context );
     mParent = context;
-    mPoint = point;
+    mPoint  = point;
+    mOrient = (int)mPoint.mOrientation;
+    // mDrawable = new Drawable();
+    // mDrawable.setBounds( new Rect( -10, -10, 10, 10 ) );
+    mBitmap = Bitmap.createBitmap( 40, 40, Bitmap.Config.ARGB_8888);
+    mCanvas = new Canvas( mBitmap );
+  }
+
+  private void drawOrientation()
+  {
+    int d = 20;
+    mTVorientation.setText( Integer.toString(mOrient) );
+    mCanvas.drawColor( 0xff666666 );
+    float c = FloatMath.cos( mOrient * TopoDroidApp.GRAD2RAD_FACTOR );
+    float s = FloatMath.sin( mOrient * TopoDroidApp.GRAD2RAD_FACTOR );
+    float c135 = FloatMath.cos( (mOrient+135) * TopoDroidApp.GRAD2RAD_FACTOR );
+    float s135 = FloatMath.sin( (mOrient+135) * TopoDroidApp.GRAD2RAD_FACTOR );
+    float c225 = FloatMath.cos( (mOrient+225) * TopoDroidApp.GRAD2RAD_FACTOR );
+    float s225 = FloatMath.sin( (mOrient+225) * TopoDroidApp.GRAD2RAD_FACTOR );
+    float x1 = d+d*s;
+    float y1 = d-d*c;
+    Paint paint = DrawingBrushPaths.highlightPaint;
+    mCanvas.drawLine( d-d*s, d+d*c, x1, y1, paint );
+    mCanvas.drawLine( x1, y1, x1+10*s135, y1-10*c135, paint );
+    mCanvas.drawLine( x1, y1, x1+10*s225, y1-10*c225, paint );
+    mIVorientation.setImageBitmap( mBitmap );
+    mIVorientation.invalidate();
   }
 
 // -------------------------------------------------------------------
@@ -62,8 +111,35 @@ public class DrawingPointDialog extends Dialog
 
     mTVtype = (TextView) findViewById( R.id.point_type );
     mEToptions = (EditText) findViewById( R.id.point_options );
+    mETtext    = (EditText) findViewById( R.id.point_text );
+
 
     mTVtype.setText( DrawingBrushPaths.mPointLib.getPointThName( mPoint.mPointType, mPoint.mFlip ) );
+    if ( DrawingBrushPaths.mPointLib.pointHasText( mPoint.mPointType ) ) {
+      mETtext.setText( mPoint.getText() );
+    } else {
+      mETtext.setEnabled( false );
+    }
+
+    mBtnLeft  = (Button) findViewById( R.id.left );
+    mBtnRight = (Button) findViewById( R.id.right );
+    mTVorientation = (TextView) findViewById( R.id.value );
+
+    mIVorientation = (ImageView) findViewById( R.id.image );
+    // mIVorientation.setImageDrawable( mDrawable );
+    mIVorientation.setImageBitmap( mBitmap );
+    drawOrientation();
+
+    if ( DrawingBrushPaths.canRotate( mPoint.mPointType ) ) {
+      mBtnLeft.setOnClickListener( this );
+      mBtnRight.setOnClickListener( this );
+      mBtnLeft.setOnLongClickListener( this );
+      mBtnRight.setOnLongClickListener( this );
+    } else {
+      mBtnLeft.setEnabled( false );
+      mBtnRight.setEnabled( false );
+    }
+
     if ( mPoint.mOptions != null ) {
       mEToptions.setText( mPoint.mOptions );
     }
@@ -84,12 +160,32 @@ public class DrawingPointDialog extends Dialog
     mBtnOk = (Button) findViewById( R.id.button_ok );
     mBtnOk.setOnClickListener( this );
 
-    mBtnCancel = (Button) findViewById( R.id.button_cancel );
-    mBtnCancel.setOnClickListener( this );
+    // mBtnCancel = (Button) findViewById( R.id.button_cancel );
+    // mBtnCancel.setOnClickListener( this );
+
+    // mBtnShift = (Button) findViewById( R.id.button_shift );
+    // mBtnShift.setOnClickListener( this );
 
     mBtnErase = (Button) findViewById( R.id.button_erase );
     mBtnErase.setOnClickListener( this );
   }
+
+  public boolean onLongClick( View v ) 
+  {
+    Button b = (Button)v;
+    if ( b == mBtnLeft ) {
+      mOrient -= 10;
+      if ( mOrient < 0 ) mOrient += 360;
+      drawOrientation();
+      return true;
+    } else if ( b == mBtnRight ) {
+      mOrient += 10;
+      if ( mOrient >= 360 ) mOrient -= 360;
+      drawOrientation();
+      return true;
+    }
+    return false;
+  } 
 
   public void onClick(View v) 
   {
@@ -107,10 +203,30 @@ public class DrawingPointDialog extends Dialog
       else if ( mBtnScaleL.isChecked() )  mPoint.setScale( DrawingPointPath.SCALE_L  );
       else if ( mBtnScaleXL.isChecked() ) mPoint.setScale( DrawingPointPath.SCALE_XL );
 
+      if ( DrawingBrushPaths.canRotate( mPoint.mPointType ) ) {
+        mPoint.setOrientation( mOrient );
+      }
+      if ( DrawingBrushPaths.mPointLib.pointHasText( mPoint.mPointType ) ) {
+        mPoint.setText( mETtext.getText().toString().trim() );
+      }
+      dismiss();
     } else if ( b == mBtnErase ) {
       mParent.deletePoint( mPoint );
+      dismiss();
+    // } else if ( b == mBtnShift ) {
+    //   mParent.shiftPoint( mPoint );
+    //   dismiss();
+    } else if ( b == mBtnLeft ) {
+      mOrient --;
+      if ( mOrient < 0 ) mOrient += 360;
+      drawOrientation();
+    } else if ( b == mBtnRight ) {
+      mOrient ++;
+      if ( mOrient >= 360 ) mOrient -= 360;
+      drawOrientation();
+    } else {
+      dismiss();
     }
-    dismiss();
   }
 
 }

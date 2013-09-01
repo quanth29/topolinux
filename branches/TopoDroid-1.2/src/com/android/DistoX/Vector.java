@@ -10,6 +10,9 @@
  * --------------------------------------------------------
  * This software is adapted from TopoLinux implementation,
  * which, in turns, is based on PocketTopo implementation.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20130831 static cross, dot, and triple product
  */
 package com.android.DistoX;
 
@@ -45,6 +48,14 @@ public class Vector
     x = a.x;
     y = a.y;
     z = a.z;
+  }
+
+
+  public Vector getUnitVector( )
+  {
+    Vector ret = new Vector( x, y, z );
+    ret.Normalized();
+    return ret;
   }
 
   public float Length()
@@ -98,6 +109,13 @@ public class Vector
     z = b.z;
   }
 
+  // public void set( Vector a )
+  // {
+  //   x = a.x;
+  //   y = a.y;
+  //   z = a.z;
+  // }
+
   public void add( Vector b ) 
   {
     x += b.x;
@@ -141,13 +159,53 @@ public class Vector
     return x*b.x + y*b.y + z*b.z;
   }
 
+  // dot-product of two Vectors
+  static double dot_product( Vector p1, Vector p2 )
+  {
+    return p1.x * p2.x + p1.y * p2.y + p1.z * p2.z;
+  }
+
   // CROSS PRODUCT: this % b
   public Vector cross( Vector b )
   {
     return new Vector( y*b.z - z*b.y, z*b.x - x*b.z, x*b.y - y*b.x );
   }
 
-  // projection in the plane orthogonal to this vector (supposed nomralized)
+  // cross-product of two Vectors
+  static Vector cross_product( Vector p1, Vector p2 )
+  {
+    return new Vector( p1.y * p2.z - p1.z * p2.y,
+                       p1.z * p2.x - p1.x * p2.z,
+    		       p1.x * p2.y - p1.y * p2.x );
+  }
+
+  // triple-product of three Vectors
+  static double triple_product( Vector p1, Vector p2, Vector p3 )
+  {
+    return dot_product( cross_product( p1, p2 ), p3 );
+  }
+
+  // arc-distance = arccos of the dot-product ( range in [0, PI] )
+  static double arc_distance( Vector p1, Vector p2 )
+  {
+    double ca1 = dot_product( p1, p2 );
+    return Math.acos( ca1 );
+  }
+
+  // cosine of the spherical angle
+  // static double spherical_angle( Vector p1, Vector p2, Vector p3 )
+  // {
+  //   Vector p12 = cross_product( p1, p2 );
+  //   Vector p13 = cross_product( p1, p3 );
+  //   p12.normalized();
+  //   p13.normalized();
+  //   return dot_product( p12, p13 );
+  // }
+
+  /** projection of a vector in the plane orthogonal to this vector (supposed nomralized)
+   * @param b vector to project
+   * @return projected vector
+   */
   public Vector orthogonal( Vector b )
   {
     float f = this.dot( b );
@@ -213,6 +271,31 @@ public class Vector
     }
     int n = pts.size();
     return new Vector( x0/n, y0/n, z0/n );
+  }
+
+  static Vector computeNormal( ArrayList<Vector> pts )
+  {
+    Vector normal = new Vector();
+    Vector m = computeMeanVector( pts );
+    int n = pts.size() - 1;
+    Vector p1 = pts.get( n );
+    float x0 = p1.x - m.x;
+    float y0 = p1.y - m.y;
+    float z0 = p1.z - m.z;
+    for ( int k=0; k < n; ++k ) {
+      p1 = pts.get( k );
+      float x1 = p1.x - m.x;
+      float y1 = p1.y - m.y;
+      float z1 = p1.z - m.z;
+      normal.x += y0*z1 - y1*z0;
+      normal.y += z0*x1 - z1*x1;
+      normal.z += x0*y1 - x1*y0;
+      x0 = x1;
+      y0 = y1;
+      z0 = z1;
+    }
+    normal.Normalized();
+    return normal;
   }
 
   static float computeLength( ArrayList<Vector> pts )

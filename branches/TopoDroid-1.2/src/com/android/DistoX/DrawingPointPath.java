@@ -12,6 +12,7 @@
  * 20120706 Therion "scale" option
  * 20121113 sink/spring points toTherion
  * 20121122 points snow/ice flowstone/moonmilk dig/choke crystal/gypsum
+ * 20130829 (re)set orientation
  */
 
 package com.android.DistoX;
@@ -61,17 +62,18 @@ public class DrawingPointPath extends DrawingPath
     mScale   = SCALE_NONE;
     mOrientation = 0.0;
     if ( DrawingBrushPaths.canRotate( type ) ) {
-      setOrientation( DrawingBrushPaths.getPointOrientation(type) );
+      mOrientation = DrawingBrushPaths.getPointOrientation(type);
     }
     if ( DrawingBrushPaths.canFlip( type ) ) {
       mFlip = DrawingBrushPaths.getFlip( type );
     }
     setPaint( DrawingBrushPaths.getPointPaint( mPointType, mFlip ) );
     if ( ! DrawingBrushPaths.pointHasText( mPointType ) ) {
-      setScale( scale );
+      mScale = scale;
     } else {
       mScale = SCALE_M;
     }
+    resetPath( 0 );
     // Log.v( TAG, "Point cstr " + type + " orientation " + mOrientation + " flip " + mFlip );
   }
 
@@ -79,24 +81,34 @@ public class DrawingPointPath extends DrawingPath
   {
     if ( scale != mScale ) {
       mScale = scale;
-      if ( ! DrawingBrushPaths.pointHasText( mPointType ) ) {
-        float f = 1.0f;
-        switch ( mScale ) {
-          case SCALE_XS: f = 0.60f;
-          case SCALE_S:  f = 0.77f;
-          case SCALE_L:  f = 1.30f;
-          case SCALE_XL: f = 1.70f;
-        }
-        Matrix m = new Matrix();
-        m.postScale(f,f);
-        path = new Path( DrawingBrushPaths.getPointPath( mPointType, mFlip ) );
-        path.transform( m );
-        path.offset( mXpos, mYpos );
-      }
-    }  
+      resetPath( 0 );
+    }
   }
-      
+
   int getScale() { return mScale; }
+      
+
+  private void resetPath( int off )
+  {
+    Matrix m = new Matrix();
+    if ( DrawingBrushPaths.canRotate( mPointType ) ) {
+      m.postRotate( (float)mOrientation + off );
+    }
+    if ( ! DrawingBrushPaths.pointHasText( mPointType ) ) {
+      float f = 1.0f;
+      switch ( mScale ) {
+        case SCALE_XS: f = 0.60f;
+        case SCALE_S:  f = 0.77f;
+        case SCALE_L:  f = 1.30f;
+        case SCALE_XL: f = 1.70f;
+      }
+      m.postScale(f,f);
+    }
+
+    path = new Path( DrawingBrushPaths.getPointOrigPath( mPointType, mFlip ) );
+    path.transform( m );
+    path.offset( mXpos, mYpos );
+  }
       
 
   // public void setPos( float x, float y ) 
@@ -121,6 +133,18 @@ public class DrawingPointPath extends DrawingPath
     mOrientation = angle; 
     while ( mOrientation >= 360.0 ) mOrientation -= 360.0;
     while ( mOrientation < 0.0 ) mOrientation += 360.0;
+    resetPath( 0 );
+  }
+
+  public String getText() { return null; }
+
+  public void setText( String text ) { }
+
+  public void shiftTo( float x, float y ) // x,y scene coords
+  {
+    path.offset( x-mXpos, y-mYpos );
+    mXpos = x;
+    mYpos = y;
   }
 
   @Override

@@ -15,6 +15,7 @@
  * 20130108 getStationAt getShotAt
  * 20130204 using Selection class to spped up item selection
  * 20130627 SelectionException
+ * 20130828 shift point path (change position of symbol point)
  */
 package com.android.DistoX;
 
@@ -139,12 +140,46 @@ public class DrawingCommandManager
     mMatrix.postTranslate( dx, dy );
     mMatrix.postScale( s, s );
   }
+  
+  void splitLine( DrawingLinePath line, float x, float y ) 
+  {
+    DrawingLinePath line1 = new DrawingLinePath( line.mLineType );
+    DrawingLinePath line2 = new DrawingLinePath( line.mLineType );
+    line.splitAt( x, y, line1, line2 );
+    mCurrentStack.remove( line );
+    if ( line1 != null ) mCurrentStack.add( line1 );
+    if ( line2 != null ) mCurrentStack.add( line2 );
+    if ( mSelection != null ) {
+      mSelection.removeReferencesTo( line );
+      if ( line1 != null ) mSelection.insertPath( line1 );
+      if ( line2 != null ) mSelection.insertPath( line2 );
+    }
+  }
 
   void deletePath( DrawingPath path )
   {
     mCurrentStack.remove( path );
     if ( mSelection != null ) {
       mSelection.removeReferencesTo( path );
+    }
+  }
+  
+  void shiftPoint( DrawingPointPath point, float x, float y ) // x,y scene coords
+  {
+    if ( mSelection != null ) {
+      mSelection.updateItem( x, y, point );
+    }
+    point.shiftTo( x, y );
+  }
+
+  void shiftLine( DrawingLinePath line, float x0, float y0, float dx, float dy ) // x,y scene coords
+  { 
+    if ( mSelection != null ) {
+      mSelection.removeReferencesTo( line );
+    }
+    line.shiftTo( x0, y0, dx, dy );
+    if ( mSelection != null ) {
+      mSelection.insertPath( line );
     }
   }
 

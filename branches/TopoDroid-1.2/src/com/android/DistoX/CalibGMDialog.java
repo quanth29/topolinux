@@ -7,6 +7,9 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20130730 bug fix: use hint when no text entered in the edit box
  */
 package com.android.DistoX;
 
@@ -90,7 +93,11 @@ public class CalibGMDialog extends Dialog
     Button b = (Button) v;
     // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "GM dialog onClick button " + b.getText().toString() );
     if ( b == mButtonOK ) {
-      mParent.updateGM( mEditText.getText().toString() );
+      if ( mEditText.getText() != null ) {
+        mParent.updateGM( mEditText.getText().toString() );
+      } else if ( mEditText.getHint() != null ) {
+        mParent.updateGM( mEditText.getHint().toString() );
+      }
     }
     dismiss();
   }

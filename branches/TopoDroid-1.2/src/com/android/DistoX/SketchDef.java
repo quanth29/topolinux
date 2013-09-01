@@ -15,17 +15,16 @@ package com.android.DistoX;
 
 class SketchDef
 {
-    public static final float POINT_STEP = 0.5f; // 0.5 m between line 3d points
-    public static final float BORDER_STEP = 0.2f; // 0.2 m between line 3d points
-    public static final int BORDER       = 50;
-    public static final float CLOSE_GAP  = 1.0f;
-    public static final int SHAPE_STEP   = 20;  
-    public static final int POINT_MIN    =  4; //  4 minimum number of 3D points on a line
-    public static final int POINT_MAX    = 12; // 12 maximum number of 3D points on a line
-    public static final float MIN_DISTANCE = 20.0f; // minimum closeness distance (select at)
+    // static final float LINE_STEP = 0.5f; // 0.5 m between line 3d points
+    // static final float INNER_BORDER_STEP = 0.2f; // 0.2 m between border-line 3d points
+    // static final float SECTION_STEP = 0.5f;  
+    static final float CLOSE_GAP  = 1.0f;
+    static final int POINT_MIN    =  4; //  4 minimum number of 3D points on a line
+    // static final int POINT_MAX    = 20; // 12 maximum number of 3D points on a line. UNUSED
+    static final float MIN_DISTANCE = 20.0f; // minimum closeness distance (select at)
 
-    public static final float ZOOM_INC = 1.4f;
-    public static final float ZOOM_DEC = 1.0f/ZOOM_INC;
+    // public static final float ZOOM_INC = 1.4f;
+    // public static final float ZOOM_DEC = 1.0f/ZOOM_INC;
 
     public final static int DISPLAY_NGBH = 0;
     public final static int DISPLAY_SINGLE = 1;
@@ -39,28 +38,30 @@ class SketchDef
     public static final int MODE_NONE = 0;
     public static final int MODE_DRAW = 1;
     public static final int MODE_MOVE = 2;
-    public static final int MODE_STEP = 3;
-    public static final int MODE_ROTATE = 4;
-    public static final int MODE_SHOT = 5;
+    public static final int MODE_SELECT = 3;
+    public static final int MODE_JOIN = 4;
 
     public static final int TOUCH_NONE = 0;
     public static final int TOUCH_MOVE = 2;
     public static final int TOUCH_ZOOM = 5;
 
     public static final int VIEW_NONE  = 0;
-    public static final int VIEW_TOP   = 1; // plan
-    public static final int VIEW_SIDE  = 2; // profile
-    public static final int VIEW_3D    = 3; 
-    public static final int VIEW_EXTRUDE = 4;
-    public static final int VIEW_CROSS = 5;
+    public static final int VIEW_3D    = 1; 
 
     public static final int EDIT_NONE = 0;
     public static final int EDIT_CUT = 1;
     public static final int EDIT_STRETCH = 2;
     public static final int EDIT_EXTRUDE = 3;
 
-    static final String[] mode_name = { "none", "draw", "move", "step", "rotate", "shot" };
-    static final String[] view_type = { "none", "top", "side", "3d", "extrude", "cross" };
+    public static final int SELECT_NONE = 0;
+    public static final int SELECT_SECTION = 1;
+    public static final int SELECT_STEP = 2;
+    public static final int SELECT_SHOT = 3;
+    
+    public static final int LINE_SECTION = -1; // section line type
+
+    static final String[] mode_name = { "none", "draw", "move", "item" };
+    static final String[] view_type = { "none", "3d" };
     static final String[] edit_name = { "none", "cut", "stretch", "extrude" };
 
 }

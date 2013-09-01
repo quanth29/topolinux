@@ -64,6 +64,13 @@ public class DrawingLabelPath extends DrawingPointPath
   }
 
   @Override
+  public String getText() { return mText; }
+
+  @Override
+  public void setText( String text ) { mText = text; }
+
+
+  @Override
   public String toTherion()
   {
     StringWriter sw = new StringWriter();

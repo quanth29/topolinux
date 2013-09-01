@@ -113,7 +113,7 @@ public class SketchPointPath extends SketchPath
   //   }
   // }
 
-  public void draw( Canvas canvas, Matrix matrix, Sketch3dInfo info, int view )
+  public void draw( Canvas canvas, Matrix matrix, Sketch3dInfo info )
   {
     Path  path = null;
     if ( mLabel == null ) {
@@ -123,34 +123,26 @@ public class SketchPointPath extends SketchPath
       path.moveTo( 0, 0 );
       path.lineTo( 20*mLabel.length(), 0 );
     }
-    if ( view == SketchDef.VIEW_TOP ) { // FIXME_TOP
-      info.topPathOffset( path, mXpos, mYpos );
-    } else if ( view == SketchDef.VIEW_SIDE ) {
-      info.sidePathOffset( path, mXpos, mYpos, mZpos );
-    } else if ( view == SketchDef.VIEW_3D ) {
-      PointF q = new PointF();
-      // project on (cos_clino*sin_azi, -cos_clino*cos_azimuth, -sin_clino)
-      info.worldToSceneOrigin( mXpos, mYpos, mZpos, q );
-      if ( mOrientation != null ) {
-        PointF q1 = new PointF();
-        info.worldToSceneOrigin( mOrientation.x, mOrientation.y, mOrientation.z, q1 );
-        q1.x -= q.x; // cos-rotation
-        q1.y -= q.y; // minus sin-rotation
-        // path.moveTo(0,0);
-        // path.lineTo( q1.x, q1.y );
-        float d = FloatMath.sqrt( q1.x*q1.x + q1.y*q1.y );
-        if ( Math.abs(d) > 0.01 ) {
-          Matrix matrix1 = new Matrix();
-          // float angle = (float)Math.atan2( q1.y/d, q1.x/d );
-          // matrix1.preRotate( angle * (float)Math.PI/180 );
-          matrix1.setSinCos( q1.x/d, -q1.y/d ); // android rotation is counterclockwise ?
-          path.transform( matrix1 );
-        }
-      }  
-      path.offset( q.x, q.y );
-    } else {
-      // FIXME cross view
-    }
+    PointF q = new PointF();
+    // project on (cos_clino*sin_azi, -cos_clino*cos_azimuth, -sin_clino)
+    info.worldToSceneOrigin( mXpos, mYpos, mZpos, q );
+    if ( mOrientation != null ) {
+      PointF q1 = new PointF();
+      info.worldToSceneOrigin( mOrientation.x, mOrientation.y, mOrientation.z, q1 );
+      q1.x -= q.x; // cos-rotation
+      q1.y -= q.y; // minus sin-rotation
+      // path.moveTo(0,0);
+      // path.lineTo( q1.x, q1.y );
+      float d = FloatMath.sqrt( q1.x*q1.x + q1.y*q1.y );
+      if ( Math.abs(d) > 0.01 ) {
+        Matrix matrix1 = new Matrix();
+        // float angle = (float)Math.atan2( q1.y/d, q1.x/d );
+        // matrix1.preRotate( angle * (float)Math.PI/180 );
+        matrix1.setSinCos( q1.x/d, -q1.y/d ); // android rotation is counterclockwise ?
+        path.transform( matrix1 );
+      }
+    }  
+    path.offset( q.x, q.y );
     path.transform( matrix );
     if ( mLabel == null ) {
       canvas.drawPath( path, mPaint );

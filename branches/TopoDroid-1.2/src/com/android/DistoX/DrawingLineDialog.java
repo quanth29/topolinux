@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20121225 implemented erase
+ * 20130826 added splitLine
  */
 package com.android.DistoX;
 
@@ -45,14 +46,20 @@ public class DrawingLineDialog extends Dialog
   private CheckBox mReversed;
 
   private Button   mBtnOk;
-  private Button   mBtnCancel;
+  // private Button   mBtnCancel;
+  private Button   mBtnSplit;
   private Button   mBtnErase;
 
-  public DrawingLineDialog( DrawingActivity context, DrawingLinePath line )
+  private float mX; // scene X coordinate of the selection point (= split point)
+  private float mY; // scene Y coordinate 
+
+  public DrawingLineDialog( DrawingActivity context, DrawingLinePath line, float x, float y )
   {
     super( context );
     mParent = context;
     mLine = line;
+    mX = x; 
+    mY = y;
   }
 
 // -------------------------------------------------------------------
@@ -91,8 +98,11 @@ public class DrawingLineDialog extends Dialog
     mBtnOk = (Button) findViewById( R.id.button_ok );
     mBtnOk.setOnClickListener( this );
 
-    mBtnCancel = (Button) findViewById( R.id.button_cancel );
-    mBtnCancel.setOnClickListener( this );
+    // mBtnCancel = (Button) findViewById( R.id.button_cancel );
+    // mBtnCancel.setOnClickListener( this );
+
+    mBtnSplit = (Button) findViewById( R.id.button_split );
+    mBtnSplit.setOnClickListener( this );
 
     mBtnErase = (Button) findViewById( R.id.button_erase );
     mBtnErase.setOnClickListener( this );
@@ -113,6 +123,8 @@ public class DrawingLineDialog extends Dialog
       else if ( mBtnOutlineNone.isChecked() ) mLine.mOutline = DrawingLinePath.OUTLINE_NONE;
 
       mLine.setReversed( mReversed.isChecked() );
+    } else if ( b == mBtnSplit   ) {
+      mParent.splitLine( mLine, mX, mY );
     } else if ( b == mBtnErase ) {
       mParent.deleteLine( mLine );
     }

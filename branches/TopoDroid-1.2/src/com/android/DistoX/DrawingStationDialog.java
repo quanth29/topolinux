@@ -3,7 +3,10 @@
  * @author marco corvi
  * @date nov 2011
  *
- * @brief TopoDroid drawing: dialog for a station point
+ * @brief TopoDroid drawing: dialog for a station point to the scrap
+ *
+ * for when station points are not automatically added
+ *
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.

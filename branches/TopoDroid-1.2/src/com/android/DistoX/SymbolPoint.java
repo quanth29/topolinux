@@ -30,7 +30,7 @@ class SymbolPoint
 {
   // static final String TAG = "DistoX";
 
-  boolean mHasText;
+  boolean mHasText;         // whether the point has a text
   boolean mOrientable;
   double mOrientation;      // orientation [degrees]
   SymbolPointBasic mPoint1; // basic point

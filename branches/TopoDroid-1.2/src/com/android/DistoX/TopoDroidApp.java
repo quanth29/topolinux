@@ -43,6 +43,7 @@
  * 20130204 disable lock
  * 20130504 DXF export
  * 20130520 altimetric altitude
+ * 20130829 mLineShift pref
  */
 package com.android.DistoX;
 
@@ -137,7 +138,7 @@ public class TopoDroidApp extends Application
   }
 
 
-  static final String VERSION = "1.2.2"; // must agree with AndroidManifest.xml
+  static final String VERSION = "1.2.3"; // must agree with AndroidManifest.xml
 
   private SharedPreferences prefs;
 
@@ -167,7 +168,12 @@ public class TopoDroidApp extends Application
   boolean mTdSymbol;       // whether to ask TdSymbol
   boolean mStartTdSymbol;  // whether to start TdSymbol (result "yes" of TdSymbolDialog)
   static String  mManual;  // manual url
-  boolean mSketches;       // whether to use 3D sketches
+
+  boolean mSketches;         // whether to use 3D sketches
+  static boolean mSketchUsesSplays; // whether 3D sketches surfaces use splays
+  static float mSketchLineStep;
+  static float mSketchBorderStep;
+  static float mSketchSectionStep;
 
   String  mBasePath = Environment.getExternalStorageDirectory().getAbsolutePath(); // app base path
 
@@ -187,7 +193,9 @@ public class TopoDroidApp extends Application
   float mVThreshold;       // verticality threshold (LRUD)
   float mLineAccuracy;
   float mLineCorner;       // corner threshold
+  static float mLineShift;        // line-point shift radius
   static float mCloseness;
+  static float mDeltaExtrude;
   boolean mCheckBT;        // check BT on start
   boolean mCheckAttached;  // whether to check is there are shots non-attached
   boolean mListRefresh;    // whether to refresh list on edit-dialog ok-return
@@ -395,25 +403,31 @@ public class TopoDroidApp extends Application
     "DISTOX_CLOSENESS",        // 26
     "DISTOX_ALTITUDE",         // 27
     "DISTOX_SURVEY_STATIONS",  // 28
+    "DISTOX_SKETCH_USES_SPLAYS", // 29
+    "DISTOX_SKETCH_LINE_STEP",
+    "DISTOX_SKETCH_BERDER_STEP",
+    "DISTOX_SKETCH_SECTION_STEP",     // 32
+    "DISTOX_LINE_SHIFT",
+    "DISTOX_DELTA_EXTRUDE",
     // --------------- LOG PREFERENCES ----------------------
-    "DISTOX_LOG_DEBUG",
+    "DISTOX_LOG_DEBUG",        // 35
     "DISTOX_LOG_ERR",
-    "DISTOX_LOG_INPUT",        // 31
-    "DISTOX_LOG_BT",           // 32
+    "DISTOX_LOG_INPUT",        // 37
+    "DISTOX_LOG_BT",           // 38
     "DISTOX_LOG_COMM",
     "DISTOX_LOG_PROTO",
     "DISTOX_LOG_DISTOX",
-    "DISTOX_LOG_DEVICE",       // 36
+    "DISTOX_LOG_DEVICE",       // 42
     "DISTOX_LOG_DATA",
-    "DISTOX_LOG_DB",           // 38
+    "DISTOX_LOG_DB",           // 44
     "DISTOX_LOG_CALIB",
     "DISTOX_LOG_FIXED",
-    "DISTOX_LOG_LOC",          // 41
+    "DISTOX_LOG_LOC",          // 47
     "DISTOX_LOG_PHOTO",
-    "DISTOX_LOG_SENSOR"        // 43
+    "DISTOX_LOG_SENSOR"        // 50
     // "DISTOX_LOG_SHOT",
     // "DISTOX_LOG_SURVEY",
-    // "DISTOX_LOG_NUM",          // 46
+    // "DISTOX_LOG_NUM",          // 53
     // "DISTOX_LOG_THERION",
     // "DISTOX_LOG_PLOT",
     // "DISTOX_LOG_BEZIER"
@@ -436,6 +450,7 @@ public class TopoDroidApp extends Application
   public static final  String LINE_SEGMENT   = "3";
   public static final  String LINE_ACCURACY  = "1.0f";
   public static final  String LINE_CORNER    = "20.0f";
+  public static final  String LINE_SHIFT     = "20.0f";
   public static final  String LINE_STYLE     = "2";     // LINE_STYLE_TWO
   public static final  String DRAWING_UNIT   = "1.2f";  // UNIT
   public static final  String CLOSENESS      = "16";    // drawing closeness threshold
@@ -613,13 +628,21 @@ public class TopoDroidApp extends Application
     mLoopClosure   = prefs.getBoolean( key[25], LOOP_CLOSURE );
 
     // -------------------  DRAWING PREFERENCES
-    mLineSegment   = Integer.parseInt( prefs.getString( key[7], LINE_SEGMENT ) ); // DISTOX_LINE_SEGMENT
+    mLineSegment   = Integer.parseInt( prefs.getString( key[7], LINE_SEGMENT ) );  // DISTOX_LINE_SEGMENT
     mLineAccuracy  = Float.parseFloat( prefs.getString( key[9], LINE_ACCURACY ) ); // DISTOX_LINE_ACCURACY
     mLineCorner    = Float.parseFloat( prefs.getString( key[10], LINE_CORNER ) );  // DISTOX_LINE_CORNER
+    mLineShift     = Float.parseFloat( prefs.getString( key[33], LINE_SHIFT ) );   // DISTOX_LINE_SHIFT
     setLineStyleAndType( prefs.getString( key[11], LINE_STYLE ) );                 // DISTOX_LINE_STYLE
     mUnit          = Float.parseFloat( prefs.getString( key[13], DRAWING_UNIT ) );
     mCloseness     = Float.parseFloat( prefs.getString( key[26], CLOSENESS ) );
     mAltitude      = Integer.parseInt( prefs.getString( key[27], ALTITUDE ) );
+
+    // ------------------- SKETCH PREFERENCES
+    mSketchUsesSplays  = prefs.getBoolean( key[29], false );
+    mSketchLineStep    = Float.parseFloat( prefs.getString( key[30], "0.5f") );
+    mSketchBorderStep  = Float.parseFloat( prefs.getString( key[31], "0.2f") );
+    mSketchSectionStep = Float.parseFloat( prefs.getString( key[32], "0.5f") );
+    mDeltaExtrude      = Float.parseFloat( prefs.getString( key[34], "0.3f") );
 
     // ------------------- CALIBRATION PREFERENCES
     mGroupBy       = Integer.parseInt( prefs.getString( key[14], GROUP_BY ) );
@@ -1066,38 +1089,51 @@ public class TopoDroidApp extends Application
     } else if ( k.equals( key[24] ) ) { 
       setExtendThr( sp );
 
+    } else if ( k.equals( key[29] ) ) {
+      mSketchUsesSplays = sp.getBoolean( k, false );
+    } else if ( k.equals( key[30] ) ) { 
+      mSketchLineStep    = Float.parseFloat( prefs.getString( k, "0.5f") );
+    } else if ( k.equals( key[31] ) ) {
+      mSketchBorderStep  = Float.parseFloat( prefs.getString( k, "0.2f") );
+    } else if ( k.equals( key[32] ) ) {
+      mSketchSectionStep = Float.parseFloat( prefs.getString( k, "0.5f") );
+    } else if ( k.equals( key[33] ) ) {
+      mLineShift     = Float.parseFloat( prefs.getString( k, LINE_SHIFT ) );   // DISTOX_LINE_SHIFT
+    } else if ( k.equals( key[34] ) ) {
+      mDeltaExtrude  = Float.parseFloat( prefs.getString( k, "0.3f" ) );   // DISTOX_LINE_SHIFT
+
     // ---------------------- LOG PREFERENCES
-    } else if ( k.equals( key[29] ) ) { // "DISTOX_LOG_DEBUG",
+    } else if ( k.equals( key[35] ) ) { // "DISTOX_LOG_DEBUG",
       LOG_DEBUG = sp.getBoolean( k, false );
-    } else if ( k.equals( key[30] ) ) { // "DISTOX_LOG_ERR",
+    } else if ( k.equals( key[36] ) ) { // "DISTOX_LOG_ERR",
       LOG_ERR = sp.getBoolean( k, true );
-    } else if ( k.equals( key[31] )) { // "DISTOX_LOG_INPUT",        // 31
+    } else if ( k.equals( key[37] )) { // "DISTOX_LOG_INPUT",        // 35
       LOG_INPUT = sp.getBoolean( k, false );
-    } else if ( k.equals( key[32] ) ) { // "DISTOX_LOG_BT",
+    } else if ( k.equals( key[38] ) ) { // "DISTOX_LOG_BT",
       LOG_BT = sp.getBoolean( k, false );
-    } else if ( k.equals( key[33] ) ) { // "DISTOX_LOG_COMM",
+    } else if ( k.equals( key[39] ) ) { // "DISTOX_LOG_COMM",
       LOG_COMM = sp.getBoolean( k, false );
-    } else if ( k.equals( key[34] ) ) { // "DISTOX_LOG_PROTO",
+    } else if ( k.equals( key[40] ) ) { // "DISTOX_LOG_PROTO",
       LOG_PROTO = sp.getBoolean( k, false );
-    } else if ( k.equals( key[35] ) ) { // "DISTOX_LOG_DISTOX",
+    } else if ( k.equals( key[41] ) ) { // "DISTOX_LOG_DISTOX",
       LOG_DISTOX = sp.getBoolean( k, false );
-    } else if ( k.equals( key[36] ) ) { // "DISTOX_LOG_DEVICE",       // 36
+    } else if ( k.equals( key[42] ) ) { // "DISTOX_LOG_DEVICE",       // 40
       LOG_DEVICE = sp.getBoolean( k, false );
-    } else if ( k.equals( key[37] ) ) { // "DISTOX_LOG_DATA",
+    } else if ( k.equals( key[43] ) ) { // "DISTOX_LOG_DATA",
       LOG_DATA = sp.getBoolean( k, false );
-    } else if ( k.equals( key[38] ) ) { // "DISTOX_LOG_DB",
+    } else if ( k.equals( key[44] ) ) { // "DISTOX_LOG_DB",
       LOG_DB = sp.getBoolean( k, false );
-    } else if ( k.equals( key[39] ) ) { // "DISTOX_LOG_CALIB",
+    } else if ( k.equals( key[45] ) ) { // "DISTOX_LOG_CALIB",
       LOG_CALIB = sp.getBoolean( k, false );
-    } else if ( k.equals( key[40] ) ) { // "DISTOX_LOG_FIXED",
+    } else if ( k.equals( key[46] ) ) { // "DISTOX_LOG_FIXED",
       LOG_FIXED = sp.getBoolean( k, false );
-    } else if ( k.equals( key[41] ) ) { // "DISTOX_LOG_LOC",          // 41
+    } else if ( k.equals( key[47] ) ) { // "DISTOX_LOG_LOC",          // 45
       LOG_LOC = sp.getBoolean( k, false );
-    } else if ( k.equals( key[42] ) ) { // "DISTOX_LOG_PHOTO",
+    } else if ( k.equals( key[48] ) ) { // "DISTOX_LOG_PHOTO",
       LOG_PHOTO = sp.getBoolean( k, false );
-    } else if ( k.equals( key[43] ) ) { // "DISTOX_LOG_SENSOR"        // 43
+    } else if ( k.equals( key[49] ) ) { // "DISTOX_LOG_SENSOR"        // 47
       LOG_SENSOR = sp.getBoolean( k, false );
-    // } else if ( k.equals( key[44] ) ) { // "DISTOX_LOG_SHOT"        
+    // } else if ( k.equals( key[50] ) ) { // "DISTOX_LOG_SHOT"        
     //   LOG_SHOT = sp.getBoolean( k, false );
     } 
   }
