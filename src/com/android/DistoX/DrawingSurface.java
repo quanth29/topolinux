@@ -14,6 +14,8 @@
  * 20121113 sink/spring points from Therion
  * 20121122 overloaded point snow/ice, flowstone/moonmilk dig/choke crystal/gypsum
  * 20121206 symbol libraries
+ * 20130826 split line path
+ * 20130828 shift point path (change position of symbol point)
  */
 package com.android.DistoX;
 
@@ -26,6 +28,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
+import android.view.MotionEvent;
+
 import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.Collections;
@@ -37,6 +41,9 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.EOFException;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.util.Log;
 
@@ -63,6 +70,9 @@ public class DrawingSurface extends SurfaceView
     public int width()  { return mWidth; }
     public int height() { return mHeight; }
 
+    // private Timer mTimer;
+    // private TimerTask mTask;
+
     boolean isSelectable() { return commandManager.isSelectable(); }
 
     public DrawingSurface(Context context, AttributeSet attrs) 
@@ -77,7 +87,27 @@ public class DrawingSurface extends SurfaceView
       mHolder = getHolder();
       mHolder.addCallback(this);
       commandManager = new DrawingCommandManager();
+
+      // setOnLongClickListener(new View.OnLongClickListener() 
+      //   {
+      //     public boolean onLongClick(View v)
+      //     {
+      //       Log.v( "DistoX", "LONG CLICK!" );
+      //       return true;
+      //     }
+      //   }
+      // );
     }
+
+    // @Override
+    // public boolean onTouchEvent(MotionEvent event) 
+    // {
+    //   Log.v( "DistoX", "TOUCH EVENT!" );
+    //   super.onTouchEvent(event);
+    //   return true;
+    // }
+
+    // -----------------------------------------------------------
 
     // public void clearHighlight()
     // {
@@ -98,11 +128,27 @@ public class DrawingSurface extends SurfaceView
       commandManager.setTransform( dx, dy, s );
     }
 
+    void splitLine( DrawingLinePath line, float x, float y ) 
+    {
+      commandManager.splitLine( line, x, y );
+    }
+
+
     void deletePath( DrawingPath path )
     {
       commandManager.deletePath( path );
     }
     
+    void shiftPoint( DrawingPointPath point, float x, float y ) // x,y scene coords
+    {
+      commandManager.shiftPoint( point, x, y);
+    }
+
+    void shiftLine( DrawingLinePath line, float x0, float y0, float dx, float dy ) // x,y scene coords
+    {
+      commandManager.shiftLine( line, x0, y0, dx, dy );
+    }
+
     void clearReferences() 
     {
       commandManager.clearReferences();

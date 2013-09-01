@@ -70,6 +70,7 @@
     <string name="extend_vert">Vert</string>
     <string name="external_prompt">Enter measurement</string>
     <string name="few_data">Not enough data</string>
+    <string name="few_sections_at_station">Too few sections at station</string>
     <string name="file_chooser_title">File Import</string>
     <string name="file_import">Importing file may take long.\nPlease wait ...</string>
     <string name="file_parse_already">Survey already imported</string>
@@ -258,7 +259,7 @@
     <string name="menu_paired">Paired</string>    <!-- list paired distox -->
     <string name="menu_photo">Photos</string>
     <string name="menu_plot">Sketches</string>
-    <string name="plot_new">New sketch</string>
+    <string name="plot_new">New scrap</string>
     <string name="menu_read">Read from DistoX</string>
     <string name="menu_redo">Redo</string>
     <string name="menu_refresh">Refresh</string> <!-- refresh list -->
@@ -321,6 +322,8 @@
     <string name="button_reset"     >Reset     </string>
     <string name="button_save"      >Save      </string>
     <string name="button_select"    >Select    </string>
+    <!-- string name="button_shift"     >Shift     </string -->
+    <string name="button_split"     >Split     </string>
     <string name="button_store"     >Store     </string>
     <string name="button_toggle"    >Toggle CAL mode  </string>
     <string name="button_write"     >Write calibration</string>
@@ -341,6 +344,7 @@
     <string name="btn_edit">Edit</string>
     <string name="btn_erase">Erase</string>
     <string name="btn_extrude">Extrude</string>
+    <string name="btn_horizontal">Horizontal</string>
     <string name="btn_line">Line</string>
     <string name="btn_move">Move</string>
     <string name="btn_mode">Mode</string>
@@ -348,15 +352,21 @@
     <string name="btn_png">PNG</string>
     <string name="btn_point">Point</string>
     <!-- string name="btn_redo">Redo</string -->
+    <string name="btn_item">Item</string>
+    <string name="btn_join">Join</string>
+    <string name="btn_section">Cross</string>
     <string name="btn_shot">Shot</string>
-    <string name="btn_side">Side</string>
-    <string name="btn_step">Step</string>
+    <!-- string name="btn_side">Side</string -->
+    <string name="btn_shift">Shift</string>
+    <string name="btn_step">Leg</string>
     <string name="btn_stretch">Stretch</string>
+    <string name="btn_surface">Surface</string>
     <string name="btn_survex">Survex</string>
     <string name="btn_therion">Therion</string>
-    <string name="btn_top">Top</string>
+    <!-- string name="btn_top">Top</string -->
     <string name="btn_turn">Turn</string>
     <string name="btn_undo">Undo</string>
+    <string name="btn_vertical">Vertical</string>
     <string name="btn_view">View</string>
     <string name="btn_vtopo">VisualTopo</string>
     <string name="btn_zip">Zip</string>
@@ -378,9 +388,10 @@
     <string name="title_photo_comment">Photo comment</string>
     <string name="title_plot_save">Save sketch as</string>
     <string name="title_scraps">%1$s sketches</string>
-    <string name="title_sketch">Mode %1$s %2$s - View %3$s [%4$s %5$s]</string>
+    <string name="title_sketch">[%1$s] %2$s %3$s %4$s</string>
     <string name="title_sketch_edit">Edit 3D</string>
     <string name="title_sketch_shot">New shot</string>
+    <string name="title_sketch_section_type">Sections type</string>
     <string name="title_stats">Statistics</string>
     <string name="title_survey">Survey Info</string>
     <string name="title_survey_export">Export survey as</string>
@@ -390,6 +401,7 @@
   <string name="pref_cat_drawing">Drawing options</string>
   <string name="pref_cat_calib">Calibration options</string>
   <string name="pref_cat_device">DistoX options</string>
+  <string name="pref_cat_sketch">Sketch options</string>
   <string name="pref_cat_log">Log options</string>
 
   <string name="pref_sock_type_title">Socket</string>
@@ -435,6 +447,9 @@
   <string name="pref_linecorner_title">Bezier corner</string>
   <string name="pref_linecorner_summary">Bezier corner threshold</string>
   <string name="pref_linecorner_message">Bezier corner detection threshold</string>
+  <string name="pref_lineshift_title">Shift radius</string>
+  <string name="pref_lineshift_summary">Line-point shift radius</string>
+  <string name="pref_lineshift_message">Radius within which points are shifted</string>
   <string name="pref_group_by_title">Group policy</string>
   <string name="pref_group_by_summary">Policy to group calibration data</string>
   <string name="pref_group_title">Group tolerance</string>
@@ -459,6 +474,21 @@
   <string name="pref_autoStations_summary">Add stations automatically</string>
   <string name="pref_loopClosure_title">Loop closure</string>
   <string name="pref_loopClosure_summary">Loop closure-error compensation</string>
+
+  <string name="pref_sketchUsesSplays_title">Sketch splays</string>
+  <string name="pref_sketchUsesSplays_summary">Sketch surface uses splays</string>
+  <string name="pref_sketchLineStep_title">Line step</string>
+  <string name="pref_sketchLineStep_summary">Distance between line points</string>
+  <string name="pref_sketchLineStep_message">Distance between line points</string>
+  <string name="pref_sketchBorderStep_title">Border step</string>
+  <string name="pref_sketchBorderStep_summary">Distance between edit-line points</string>
+  <string name="pref_sketchBorderStep_message">Distance between edit-line points</string>
+  <string name="pref_sketchSectionStep_title">Section step</string>
+  <string name="pref_sketchSectionStep_summary">Distance between sections</string>
+  <string name="pref_sketchSectionStep_message">Distance between intermediate sections</string>
+  <string name="pref_sketchDeltaExtrude_title">Extrude delta</string>
+  <string name="pref_sketchDeltaExtrude_summary">Extrude delta</string>
+  <string name="pref_sketchDeltaExtrude_message">Extrude delta</string>
 
   <string name="pref_unit_length_title">Length units</string>
   <string name="pref_unit_length_summary">Display units for lengths</string>

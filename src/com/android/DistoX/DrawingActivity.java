@@ -27,6 +27,8 @@
  * 20130131 fixed multitouch
  * 20130213 save dialog (therion + PNG )
  * 20130307 made Annotations into a dialog
+ * 20130825 added updateBlockName
+ * 20130826 added splitLine
  */
 package com.android.DistoX;
 
@@ -72,6 +74,8 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.util.Log;
 
@@ -113,6 +117,8 @@ public class DrawingActivity extends Activity
     // private boolean canRedo;
     private DistoXNum mNum;
     private int mPointCnt; // counter of points in the currently drawing line
+    private DrawingPointPath mShiftPoint;  // point to be shifted
+    private DrawingLinePath mShiftLine;  // line to be shifted
 
     private boolean mIsNotMultitouch;
 
@@ -161,12 +167,13 @@ public class DrawingActivity extends Activity
     public static final int MODE_MOVE  = 2;
     public static final int MODE_EDIT  = 3;
     public static final int MODE_ZOOM = 4;
+    public static final int MODE_SHIFT = 5; // chnge point symbol position
     public int mSymbol = SYMBOL_LINE; // default
     public int mMode   = MODE_MOVE;
     private int mTouchMode = MODE_MOVE;
     private float mSaveX;
     private float mSaveY;
-    private float mStartX;
+    private float mStartX; // line shift scene start point
     private float mStartY;
     private PointF mOffset  = new PointF( 0f, 0f );
     private PointF mOffset0 = new PointF( 0f, 0f );
@@ -186,6 +193,10 @@ public class DrawingActivity extends Activity
     // public float  Zoom()   { return mZoom; }
 
     private boolean mAllSymbols; // whether the library has all the symbols of the plot
+
+    // private Timer mTimer;
+    // private TimerTask mTask;
+
 
     @Override
     public void onVisibilityChanged(boolean visible)
@@ -374,6 +385,10 @@ public class DrawingActivity extends Activity
         modeBtn.setText( res.getString(R.string.btn_edit ) );
         modeBtn.setBackgroundColor( 0xffff9999 );
         setTitle( R.string.btn_edit );
+      } else if ( mMode == MODE_SHIFT ) {
+        modeBtn.setText( res.getString(R.string.btn_shift ) );
+        modeBtn.setBackgroundColor( 0xffff9999 );
+        setTitle( R.string.btn_shift );
       }
       if ( ! mDrawingSurface.isSelectable() ) {
         setTitle( getTitle() + " [!s]" );
@@ -547,6 +562,8 @@ public class DrawingActivity extends Activity
       mCurrentPoint = 0; // DrawingBrushPaths.POINT_LABEL;
       mCurrentLine  = 0; // DrawingBrushPaths.mLineLib.mLineWallIndex;
       mCurrentArea  = 0; // DrawingBrushPaths.AREA_WATER;
+      mShiftPoint = null;
+      mShiftLine  = null;
 
       mDrawingSurface = (DrawingSurface) findViewById(R.id.drawingSurface);
       mDrawingSurface.previewPath = new DrawingPath( DrawingPath.DRAWING_PATH_LINE );
@@ -591,6 +608,9 @@ public class DrawingActivity extends Activity
 
       DrawingBrushPaths.makePaths( getResources() );
       setTheTitle();
+
+      // mTimer = null;
+      // mTask  = null;
 
       mData        = app.mData; // new DataHelper( this ); 
       Bundle extras = getIntent().getExtras();
@@ -770,9 +790,14 @@ public class DrawingActivity extends Activity
       //   doSelectAt( x_scene, y_scene );
       // }
       if ( mDrawingSurface.isSelectable() ) { 
-        if ( mMode == MODE_MOVE && (Button)view == modeBtn ) {
-          mMode = MODE_EDIT;
-          setTheTitle();
+        if ( (Button)view == modeBtn ) {
+          if ( mMode == MODE_MOVE ) {
+            mMode = MODE_EDIT;
+            setTheTitle();
+          } else if ( mMode == MODE_DRAW ) {
+            mMode = MODE_SHIFT;
+            setTheTitle();
+          }
         }
       }
       return true;
@@ -782,47 +807,76 @@ public class DrawingActivity extends Activity
     {
       // Log.v( "DistoX", "doSelectAt at " + x_scene + " " + y_scene );
       float d0 = TopoDroidApp.mCloseness;
-      if ( ! TopoDroidApp.mAutoStations && ( mType == TopoDroidApp.PLOT_PLAN || mType == TopoDroidApp.PLOT_EXTENDED ) ) {
-        DrawingStationName station = mDrawingSurface.getStationAt( x_scene, y_scene );
-        if ( station != null ) {
-          // this check should prevent to insert a station twice
-          if ( mDrawingSurface.hasStationName( station.mName ) ) {
-            // Log.v("DistoX", "station " + station.mName + " already inserted" );
-            // Toast
-          } else { // start dialog to set the station
-            new DrawingStationDialog( this, this, station ).show();
+      if ( mMode == MODE_EDIT ) {
+        if ( ! TopoDroidApp.mAutoStations && ( mType == TopoDroidApp.PLOT_PLAN || mType == TopoDroidApp.PLOT_EXTENDED ) ) {
+          DrawingStationName station = mDrawingSurface.getStationAt( x_scene, y_scene );
+          if ( station != null ) {
+            // this check should prevent to insert a station twice
+            if ( mDrawingSurface.hasStationName( station.mName ) ) {
+              // Log.v("DistoX", "station " + station.mName + " already inserted" );
+              // Toast
+            } else { // start dialog to set the station
+              new DrawingStationDialog( this, this, station ).show();
+              return;
+            }
+          }
+        } 
+
+        if ( mType == TopoDroidApp.PLOT_EXTENDED ) {
+          //SLE   shot = sp.item;
+          DrawingPath shot = mDrawingSurface.getShotAt( x_scene, y_scene );
+          if ( shot != null ) {
+            new DrawingShotDialog( this, this, shot ).show();
             return;
           }
         }
-      } 
 
-      if ( mType == TopoDroidApp.PLOT_EXTENDED ) {
-        //SLE   shot = sp.item;
-        DrawingPath shot = mDrawingSurface.getShotAt( x_scene, y_scene );
-        if ( shot != null ) {
-          new DrawingShotDialog( this, this, shot ).show();
+        DrawingPointPath point = mDrawingSurface.getPointAt( x_scene, y_scene );
+        if ( point != null ) {
+          new DrawingPointDialog( this, point ).show();
+          // mDrawingSurface.refresh();
+          return;
+        } 
+
+        DrawingLinePath line = mDrawingSurface.getLineAt( x_scene, y_scene );
+        if ( line != null ) {
+          new DrawingLineDialog( this, line, x_scene, y_scene ).show();
           return;
         }
-      }
-
-      DrawingPointPath point = mDrawingSurface.getPointAt( x_scene, y_scene );
-      if ( point != null ) {
-        new DrawingPointDialog( this, point ).show();
-        return;
-      } 
-
-      DrawingLinePath line = mDrawingSurface.getLineAt( x_scene, y_scene );
-      if ( line != null ) {
-        new DrawingLineDialog( this, line ).show();
-        return;
-      }
-      
-      DrawingAreaPath area = mDrawingSurface.getAreaAt( x_scene, y_scene );
-      if ( area != null ) {
-        new DrawingAreaDialog( this, area ).show();
-        return;
+        
+        DrawingAreaPath area = mDrawingSurface.getAreaAt( x_scene, y_scene );
+        if ( area != null ) {
+          new DrawingAreaDialog( this, area ).show();
+          return;
+        }
+      } else if ( mMode == MODE_SHIFT ) {
+        mShiftPoint = mDrawingSurface.getPointAt( x_scene, y_scene );
+        if ( mShiftPoint == null ) {
+          mShiftLine = mDrawingSurface.getLineAt( x_scene, y_scene );
+        }
       }
     }
+
+    void updateBlockName( DistoXDBlock block, String from, String to )
+    {
+      block.mFrom = from;
+      block.mTo = to;
+      mData.updateShotName( block.mId, mSid, from, to );
+      float x = mOffset.x; 
+      float y = mOffset.y; 
+      float z = mZoom;    
+      mOffset.x = 0.0f;
+      mOffset.y = 0.0f;
+      mZoom = app.mScaleFactor;    // canvas zoom
+      List<DistoXDBlock> list = mData.selectAllShots( mSid, TopoDroidApp.STATUS_NORMAL );
+      computeReferences( list, mPlot.start );
+      mOffset.x = x; 
+      mOffset.y = y; 
+      mZoom = z;    
+      mDrawingSurface.setTransform( mOffset.x, mOffset.y, mZoom );
+      // mDrawingSurface.refresh();
+    }
+ 
     
     void updateBlockExtend( DistoXDBlock block, long extend )
     {
@@ -849,6 +903,11 @@ public class DrawingActivity extends Activity
     void deletePoint( DrawingPointPath point ) 
     {
       mDrawingSurface.deletePath( point );
+    }
+
+    void splitLine( DrawingLinePath line, float x, float y ) // x,y scene coords of split point
+    {
+      mDrawingSurface.splitLine( line, x, y );
     }
 
     void deleteLine( DrawingLinePath line ) 
@@ -915,6 +974,12 @@ public class DrawingActivity extends Activity
       float y_scene = y_canvas/mZoom - mOffset.y;
 
       int action = event.getAction() & MotionEvent.ACTION_MASK;
+
+      // if ( mTimer != null ) {
+      //   mTimer.cancel();
+      //   mTimer = null;
+      // }
+        
       if (action == MotionEvent.ACTION_POINTER_DOWN) {
         mTouchMode = MODE_ZOOM;
         oldDist = spacing( event );
@@ -922,6 +987,16 @@ public class DrawingActivity extends Activity
         mTouchMode = MODE_MOVE;
         /* nothing */
       } else if (action == MotionEvent.ACTION_DOWN) {
+
+        // mTask = new TimerTask( ) {
+        //   @Override
+        //   public void run() {
+        //     Log.v( "DistoX", "TIMER TASK RUN" );
+        //   }
+        // };
+        // mTimer = new Timer();
+        // mTimer.schedule( mTask, 800, 1000 );
+
         if ( mMode == MODE_DRAW ) {
           // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "onTouch ACTION_DOWN symbol " + mSymbol );
           mPointCnt = 0;
@@ -943,12 +1018,14 @@ public class DrawingActivity extends Activity
         } else if ( mMode == MODE_EDIT ) {
           // setTitle( R.string.title_edit );
           doSelectAt( x_scene, y_scene );
+        } else if ( mMode == MODE_SHIFT ) {
+          doSelectAt( x_scene, y_scene );
+          mStartX = x_scene;
+          mStartY = y_scene;
         } else if ( mMode == MODE_MOVE ) {
           setTheTitle( );
           mSaveX = x_canvas;
           mSaveY = y_canvas;
-          mStartX = x_canvas;
-          mStartY = y_canvas;
           return false;
         }
       } else if (action == MotionEvent.ACTION_MOVE) {
@@ -983,7 +1060,7 @@ public class DrawingActivity extends Activity
               mDrawingSurface.setTransform( mOffset.x, mOffset.y, mZoom );
               // mDrawingSurface.refresh();
             }
-          } else { // mMode == MODE_EDIT
+          } else { // mMode == MODE_EDIT || mMode == MODE_SHIFT
           }
         } else { // mTouchMode == MODE_ZOOM
           float newDist = spacing( event );
@@ -1086,8 +1163,16 @@ public class DrawingActivity extends Activity
                 }
               }
             }
+          } else if ( mMode == MODE_SHIFT ) {
+            if ( mShiftPoint != null ) {
+              mDrawingSurface.shiftPoint( mShiftPoint, x_scene, y_scene );
+              mShiftPoint = null;
+              mShiftLine = null;
+            } else if ( mShiftLine != null ) {
+              mDrawingSurface.shiftLine( mShiftLine, mStartX, mStartY, (x_scene - mStartX), (y_scene - mStartY) );
+              mShiftLine = null;
+            }
           } else { // MODE_MOVE 
-            // if ( Math.abs( x_canvas - mStartX ) < 16 && Math.abs( y_canvas - mStartY ) < 16 ) {
             //   return false; // long click
             // }
             /* nothing */
@@ -1144,10 +1229,10 @@ public class DrawingActivity extends Activity
               new DrawingAreaPickerDialog(this, this, mCurrentArea).show();
               break;
             case R.id.modeBtn:
-              if ( mMode == MODE_DRAW ||  mMode == MODE_EDIT ) { 
-                mMode = MODE_MOVE;
-              } else if ( mMode == MODE_MOVE ) {
+              if ( mMode == MODE_MOVE ) {
                 mMode = MODE_DRAW;
+              } else {
+                mMode = MODE_MOVE;
               }
               // mDrawingSurface.clearHighlight();
               setTheTitle();

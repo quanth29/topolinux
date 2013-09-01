@@ -28,30 +28,14 @@ import android.preference.CheckBoxPreference;
  */
 public class TopoDroidPreferences extends PreferenceActivity 
 {
-  // private MyEditPreference mCloseDistance;
-  // private MyEditPreference mVThreshold;
-  // private MyEditPreference mLineSegment;
-  // private MyEditPreference mLineAccuracy;
-  // private MyListPreference mExportType;
-  // private MyListPreference mLineStyle;
-  // private MyEditPreference mGroupDistance;
-  // private MyEditPreference mCalibEps;
-  // private MyEditPreference mCalibMaxIt;
-  // private MyEditPreference mDeviceName;
-  // // private CheckBoxPreference mSaveOnDestroy;
-  // private CheckBoxPreference mCheckBT;
-  // private CheckBoxPreference mListRefresh;
-  // private MyListPreference mUnitLength;
-  // private MyListPreference mUnitAngle;
-  // private MyListPreference mSockType;
-
   static final String PREF_CATEGORY = "PrefCategory";
   static final int PREF_CATEGORY_ALL    = 0;
   static final int PREF_CATEGORY_SURVEY = 1;
   static final int PREF_CATEGORY_PLOT   = 2;
   static final int PREF_CATEGORY_CALIB  = 3;
   static final int PREF_CATEGORY_DEVICE = 4;
-  static final int PREF_CATEGORY_LOG    = 5;
+  static final int PREF_CATEGORY_SKETCH = 5;
+  static final int PREF_CATEGORY_LOG    = 6; // this must be the last
   private int mPrefCategory = PREF_CATEGORY_ALL; // preference category
 
   @Override
@@ -77,34 +61,11 @@ public class TopoDroidPreferences extends PreferenceActivity
       addPreferencesFromResource(R.xml.preferences_device);
     } else if (mPrefCategory == PREF_CATEGORY_LOG ) {
       addPreferencesFromResource(R.xml.preferences_log);
+    } else if (mPrefCategory == PREF_CATEGORY_SKETCH ) {
+      addPreferencesFromResource(R.xml.preferences_sketch);
     } else {
       addPreferencesFromResource(R.xml.preferences);
     }
-
-    // if ( mPrefCategory == PREF_CATEGORY_ALL || mPrefCategory == PREF_CATEGORY_SURVEY ) {
-    //   mCloseDistance = (MyEditPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[0] );
-    //   mVThreshold    = (MyEditPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[8] );
-    //   mExportType    = (MyListPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[1] );
-    //   mListRefresh   = (CheckBoxPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[15] );
-    //   mUnitLength    = (MyListPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[16] );
-    //   mUnitAngle     = (MyListPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[17] );
-    // }
-    // if ( mPrefCategory == PREF_CATEGORY_ALL || mPrefCategory == PREF_CATEGORY_PLOT ) {
-    //   mLineSegment   = (MyEditPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[7] );
-    //   mLineAccuracy  = (MyEditPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[9] );
-    //   mLineStyle     = (MyListPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[11] );
-    // }
-    // if ( mPrefCategory == PREF_CATEGORY_ALL || mPrefCategory == PREF_CATEGORY_CALIB ) {
-    //   mGroupDistance = (MyEditPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[2] );
-    //   mCalibEps      = (MyEditPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[3] );
-    //   mCalibMaxIt    = (MyEditPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[4] );
-    // }
-    // if ( mPrefCategory == PREF_CATEGORY_ALL || mPrefCategory == PREF_CATEGORY_DEVICE ) {
-    //   mDeviceName    = (MyEditPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[5] );
-    //   // mSaveOnDestroy = (CheckBoxPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[6] );
-    //   mCheckBT       = (CheckBoxPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[12] );
-    //   mSockType      = (MyListPreference)getPreferenceScreen().findPreference( TopoDroidApp.key[21] );
-    // }
 
   }
 

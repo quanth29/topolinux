@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20120621 attribute "outline" and "options"
+ * 20130829 line point(s) shift
  */
 package com.android.DistoX;
 
@@ -25,6 +26,7 @@ import java.util.Iterator;
 import java.util.ArrayList;
 
 import android.util.FloatMath;
+import android.util.Log;
 
 /**
  */
@@ -42,7 +44,6 @@ public class DrawingLinePath extends DrawingPath
   String mOptions;
   private float alpha0, alpha1;  // temporary
   private BezierPoint c1, c2;
-  // private int mTick;
 
   ArrayList< LinePoint > points; 
 
@@ -60,43 +61,56 @@ public class DrawingLinePath extends DrawingPath
     points  = new ArrayList< LinePoint >();
     path    = new Path();
     setPaint( DrawingBrushPaths.getLinePaint( type, mReversed ) );
-    // mTick = DrawingBrushPaths.lineTick[mLineType];
   }
 
-  // @override
-  // public void draw( Canvas canvas )
-  // {
-  //   if ( mReversed ) {
-  //     canvas.drawPath( path, mPaint );
-  //   } else {
-  //     canvas.drawPath( path, mPaint );
-  //   }
-  // }
+  boolean splitAt( float x, float y, DrawingLinePath line1, DrawingLinePath line2 ) // x,y scene point
+  {
+    line1.mOutline = mOutline;
+    line1.mOptions = mOptions;
+    line1.mReversed = mReversed;
+    int kmin = -1;
+    float dmin = 100000f;
+    int k = 0;
+    for ( LinePoint pt : points ) {
+      float d = Math.abs( pt.mX - x ) + Math.abs( pt.mY - y );
+      if ( d < dmin ) { dmin = d; kmin = k; }
+      ++ k;
+    }
+    if ( kmin <= 0 && kmin >= points.size() - 1 ) return false;
+    k = 0;
+    LinePoint lp = points.get(k);
+    line1.addStartPoint( lp.mX, lp.mY );
+    for ( ; k < kmin; ++k ) {
+      lp = points.get(k);
+      if ( lp.has_cp ) {
+        line1.addPoint3( lp.mX1, lp.mY1, lp.mX2, lp.mY2, lp.mX, lp.mY );
+      } else {
+        line1.addPoint( lp.mX, lp.mY );
+      }
+    }
+    lp = points.get(k);
+    if ( lp.has_cp ) {
+      line1.addPoint3( lp.mX1, lp.mY1, lp.mX2, lp.mY2, lp.mX, lp.mY );
+    } else {
+      line1.addPoint( lp.mX, lp.mY );
+    }
+    line2.addStartPoint( lp.mX, lp.mY );
+    for ( ; k < points.size(); ++k ) {
+      lp = points.get(k);
+      if ( lp.has_cp ) {
+        line2.addPoint3( lp.mX1, lp.mY1, lp.mX2, lp.mY2, lp.mX, lp.mY );
+      } else {
+        line2.addPoint( lp.mX, lp.mY );
+      }
+    }
+    return true;
+  }
 
-
-  public void addStartPoint( float x, float y ) 
+  public void addStartPoint( float x, float y ) // x,y scene point
   {
     points.add( new LinePoint(x,y) );
     path.moveTo( x, y );
   }
-
-  // public void addTick( float x, float y )
-  // {
-  //   if ( mTick != 0 ) {
-  //     if ( points.size() > 1 ) {
-  //       LinePoint p = points.get( points.size() - 2 );
-  //       float dx = x - p.mX;
-  //       float dy = y - p.mY;
-  //       float d = dx*dx + dy*dy;
-  //       if ( d > 0.0f ) {
-  //         d = (mReversed? -0.2f : 0.2f) * (float)Math.sqrt( d );
-  //         path.lineTo( x+dy/d, y-dx/d );
-  //         path.moveTo( x, y );
-  //         mTick --;
-  //       }
-  //     }
-  //   }
-  // }
 
   public void addPoint( float x, float y ) 
   {
@@ -110,6 +124,53 @@ public class DrawingLinePath extends DrawingPath
     points.add( new LinePoint( x1,y1, x2,y2, x,y ) );
     path.cubicTo( x1,y1, x2,y2, x,y );
     // addTick( x, y );
+  }
+
+  void shiftTo( float x0, float y0, float dx, float dy )
+  {
+    Log.v("DistoX", "shift line " + x0 + " " + y0 + " by " + dx + " " + dy );
+    float d0 = 1000f; // FIXME
+    int k0 = -1;
+    for ( int k=0; k<points.size(); ++k ) {
+      LinePoint pt = points.get( k );
+      float d = Math.abs( pt.mX - x0 ) + Math.abs( pt.mY - y0 );
+      if ( d < d0 ) {
+        d0 = d;
+        k0 = k;
+      }
+    }
+    d0 += TopoDroidApp.mLineShift;
+    for ( int k=k0; k<points.size(); ++k ) {
+      LinePoint lp = points.get( k );
+      float d = Math.abs( lp.mX - x0 ) + Math.abs( lp.mY - y0 );
+      if ( d >= d0 ) break;
+      float zx = (1 - d/d0)*dx;
+      float zy = (1 - d/d0)*dy;
+      if ( lp.has_cp ) {
+        lp.mX1 += zx;
+        lp.mY1 += zy;
+        lp.mX2 += zx;
+        lp.mY2 += zy;
+      } 
+      lp.mX += zx;
+      lp.mY += zy;
+    }
+    for ( int k=k0-1; k>=0; --k ) {
+      LinePoint lp = points.get( k );
+      float d = Math.abs( lp.mX - x0 ) + Math.abs( lp.mY - y0 );
+      if ( d >= d0 ) break;
+      float zx = (1 - d/d0)*dx;
+      float zy = (1 - d/d0)*dy;
+      if ( lp.has_cp ) {
+        lp.mX1 += zx;
+        lp.mY1 += zy;
+        lp.mX2 += zx;
+        lp.mY2 += zy;
+      } 
+      lp.mX += zx;
+      lp.mY += zy;
+    }
+    retracePath();
   }
 
   void retracePath()
@@ -151,32 +212,7 @@ public class DrawingLinePath extends DrawingPath
     }
   }
 
-  // public void setLineType( int t ) 
-  // { 
-  //   if ( t != mLineType ) {
-  //     mLineType = t;
-  //     mOutline  = ( mLineType == DrawingBrushPaths.mLineLib.mLineWallIndex )? OUTLINE_OUT : OUTLINE_NONE;
-  //   }
-  // }
   public int lineType() { return mLineType; }
-
-  // public ArrayList< LinePoint > getPoints() { return points; }
-
-  // public int size() { return points.size(); }
-
-  // public float length()
-  // {
-  //   int n = points.size();
-  //   float len = 0.0f;
-  //   LinePoint p1 = points.get(0);
-  //   LinePoint p2;
-  //   for ( int k = 1; k<n; ++k ) {
-  //     p2 = points.get(k);
-  //     len += FloatMath.sqrt( (p2.mX-p1.mX)*(p2.mX-p1.mX) + (p2.mY-p1.mY)*(p2.mY-p1.mY) );
-  //     p1 = p2;
-  //   }
-  //   return len;
-  // }
 
   @Override
   public String toTherion()

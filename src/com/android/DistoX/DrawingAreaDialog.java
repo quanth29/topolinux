@@ -41,7 +41,7 @@ public class DrawingAreaDialog extends Dialog
   private CheckBox mCBvisible;
 
   private Button   mBtnOk;
-  private Button   mBtnCancel;
+  // private Button   mBtnCancel;
   private Button   mBtnErase;
 
   public DrawingAreaDialog( DrawingActivity context, DrawingAreaPath line )
@@ -75,8 +75,8 @@ public class DrawingAreaDialog extends Dialog
     mBtnOk = (Button) findViewById( R.id.button_ok );
     mBtnOk.setOnClickListener( this );
 
-    mBtnCancel = (Button) findViewById( R.id.button_cancel );
-    mBtnCancel.setOnClickListener( this );
+    // mBtnCancel = (Button) findViewById( R.id.button_cancel );
+    // mBtnCancel.setOnClickListener( this );
 
     mBtnErase = (Button) findViewById( R.id.button_erase );
     mBtnErase.setOnClickListener( this );

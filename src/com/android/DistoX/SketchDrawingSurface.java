@@ -165,17 +165,11 @@ public class SketchDrawingSurface extends SurfaceView
     public void undo()
     {
       isDrawing = true;
-      // commandManager.undo();
       mModel.undo();
     }
 
     // public boolean hasMoreUndo() { return commandManager.hasMoreUndo(); }
 
-    public Bitmap getBitmap() 
-    { 
-      // return commandManager.getBitmap();
-      return mModel.getBitmap();
-    }
 
     // public boolean hasStationName( String name ) { return commandManager.hasStationName( name ); }
     // public DrawingStationName  getStationAt( float x, float y ) { return commandManager.getStationAt( x, y ); }

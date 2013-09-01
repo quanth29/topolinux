@@ -114,6 +114,18 @@ class Selection
     mBucket[ m*N + n].addPoint( point );
   }
 
+  void updateItem( float xx, float yy, DrawingPath path )
+  {
+    for ( int k=0; k<M*N; ++k ) {
+      SelectionBucket bucket = mBucket[ k ];
+      SelectionPoint pt = bucket.removeReferenceTo( path );
+      if ( pt != null ) {
+        insertItem( xx, yy, path );
+        break;
+      }
+    }
+  }
+
   void removeReferencesTo( DrawingPath path )
   {
     // FIXME use path to call only relevant buckets

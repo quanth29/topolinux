@@ -1,4 +1,16 @@
 /** @file SketchDxf.java
+ *
+ * @author marco corvi
+ * @date apr 2013
+ *
+ * @brief TopoDroid 3d sketch DXF export
+ * --------------------------------------------------------
+ *  Copyright This sowftare is distributed under GPL-3.0 or later
+ *  See the file COPYING.
+ * --------------------------------------------------------
+ * CHANGES
+ * 20130416 created
+ * 20130831 added join(s) to the export
  */
 package com.android.DistoX;
 
@@ -50,6 +62,7 @@ class SketchDxf
         out.printf("0\nLAYER\n2\nPOINT\n70\n%d\n62\n%d\n6\n%s\n",   flag, 5, style );
         out.printf("0\nLAYER\n2\nAREA\n70\n%d\n62\n%d\n6\n%s\n",    flag, 6, style );
         out.printf("0\nLAYER\n2\nSURFACE\n70\n%d\n62\n%d\n6\n%s\n", flag, 7, style );
+        out.printf("0\nLAYER\n2\nJOIN\n70\n%d\n62\n%d\n6\n%s\n",    flag, 8, style );
       out.printf("0\nENDTAB\n");
       
       out.printf("0\nTABLE\n2\nSTYLE\n70\n0\n");
@@ -94,7 +107,7 @@ class SketchDxf
         out.printf(Locale.ENGLISH, "10\n%.2f\n20\n%.2f\n30\n%.2f\n40\n0.3\n", st.e, st.s, st.v );
       }
 
-      for ( SketchPath path : model.paths ) {
+      for ( SketchPath path : model.mPaths ) {
         if ( path.mType == DrawingPath.DRAWING_PATH_LINE ) {
           String layer = "LINE";
           int flag = 0;
@@ -126,7 +139,7 @@ class SketchDxf
         }
       }
     
-      for ( SketchSurface sf : model.surfaces ) {
+      for ( SketchSurface sf : model.mSurfaces ) {
         HashMap< Integer, SketchVertex > vts = sf.vertices;
         // for ( SketchBorder brd : sf.borders ) {
         //   for ( SketchSide s : brd.sides ) {
@@ -149,6 +162,31 @@ class SketchDxf
           out.printf(Locale.ENGLISH, "13\n%.2f\n23\n%.2f\n33\n%.2f\n", v3.x, v3.y, v3.z );
         }
       }
+
+      for ( SketchSurface sf : model.mJoins ) {
+        HashMap< Integer, SketchVertex > vts = sf.vertices;
+        // for ( SketchBorder brd : sf.borders ) {
+        //   for ( SketchSide s : brd.sides ) {
+        //     SketchVertex v1 = vts.get( s.v1 );
+        //     SketchVertex v2 = vts.get( s.v2 );
+        //     out.printf("0\nLINE\n8\nBORDER\n" );
+        //     out.printf(Locale.ENGLISH, "10\n%.2f\n20\n%.2f\n30\n%.2f\n", v1.x, v1.y, v1.z );
+        //     out.printf(Locale.ENGLISH, "11\n%.2f\n21\n%.2f\n31\n%.2f\n", v2.x, v2.y, v2.z );
+        //   }
+        // }
+        ArrayList< SketchTriangle > tris = sf.triangles;
+        for ( SketchTriangle tri : tris ) {
+          SketchVertex v1 = vts.get( tri.i );
+          SketchVertex v2 = vts.get( tri.j );
+          SketchVertex v3 = vts.get( tri.k );
+          out.printf("0\n3DFACE\n8\nJOIN\n");
+          out.printf(Locale.ENGLISH, "10\n%.2f\n20\n%.2f\n30\n%.2f\n", v1.x, v1.y, v1.z );
+          out.printf(Locale.ENGLISH, "11\n%.2f\n21\n%.2f\n31\n%.2f\n", v2.x, v2.y, v2.z );
+          out.printf(Locale.ENGLISH, "12\n%.2f\n22\n%.2f\n32\n%.2f\n", v3.x, v3.y, v3.z );
+          out.printf(Locale.ENGLISH, "13\n%.2f\n23\n%.2f\n33\n%.2f\n", v3.x, v3.y, v3.z );
+        }
+      }
+
     }
     out.printf("0\nENDSEC\n");
 

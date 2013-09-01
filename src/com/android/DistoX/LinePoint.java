@@ -14,6 +14,8 @@ package com.android.DistoX;
 import java.io.PrintWriter;
 import java.util.Locale;
 
+// import android.util.FloatMath;
+
 public class LinePoint extends BezierPoint
 {
   private static final float toTherion = TopoDroidApp.TO_THERION;
@@ -45,6 +47,11 @@ public class LinePoint extends BezierPoint
     mY2 = y2;
     has_cp = true;
   }
+
+  // float distance( float x, float y )
+  // {
+  //   return FloatMath.sqrt( (x-mX)*(x-mX) + (y-mY)*(y-mY) );
+  // }
 
 
   public void toTherion( PrintWriter pw )

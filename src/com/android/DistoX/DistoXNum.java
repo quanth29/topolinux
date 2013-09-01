@@ -159,14 +159,14 @@ class DistoXNum
     return null;
   }
 
-  // NumShot getShot( String s1, String s2 )
-  // {
-  //   for (NumShot sh : mShots ) {
-  //     if ( s1.equals( sh.from.name ) && s2.equals( sh.to.name ) ) return sh;
-  //     if ( s2.equals( sh.from.name ) && s1.equals( sh.to.name ) ) return sh;
-  //   }
-  //   return null;
-  // }
+  NumShot getShot( String s1, String s2 )
+  {
+    for (NumShot sh : mShots ) {
+      if ( s1.equals( sh.from.name ) && s2.equals( sh.to.name ) ) return sh;
+      if ( s2.equals( sh.from.name ) && s1.equals( sh.to.name ) ) return sh;
+    }
+    return null;
+  }
 
   private void updateBBox( NumSurveyPoint s )
   {

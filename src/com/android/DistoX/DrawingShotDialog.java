@@ -23,6 +23,7 @@ import android.graphics.*;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.EditText;
 import android.widget.RadioButton;
 
 public class DrawingShotDialog extends Dialog 
@@ -31,6 +32,8 @@ public class DrawingShotDialog extends Dialog
     // private TextView mLabel;
     private Button mBtnOK;
     private Button mBtnCancel;
+    private EditText mETfrom;
+    private EditText mETto;
     private RadioButton mRBleft;
     private RadioButton mRBvert;
     private RadioButton mRBright;
@@ -54,6 +57,9 @@ public class DrawingShotDialog extends Dialog
       setContentView(R.layout.drawing_shot_dialog);
 
       // mLabel     = (TextView) findViewById(R.id.shot_text);
+      mETfrom    = (EditText) findViewById(R.id.shot_from );
+      mETto      = (EditText) findViewById(R.id.shot_to );
+
       mBtnOK     = (Button) findViewById(R.id.btn_ok);
       mBtnCancel = (Button) findViewById(R.id.btn_cancel);
       mRBleft    = (RadioButton) findViewById( R.id.left );
@@ -72,6 +78,8 @@ public class DrawingShotDialog extends Dialog
       mBtnCancel.setOnClickListener( this );
 
       if ( mBlock != null ) {
+        mETfrom.setText( mBlock.mFrom );
+        mETto.setText( mBlock.mTo );
         switch ( (int)mBlock.mExtend ) {
           case DistoXDBlock.EXTEND_LEFT:
             mRBleft.setChecked( true );
@@ -107,9 +115,12 @@ public class DrawingShotDialog extends Dialog
           extend = DistoXDBlock.EXTEND_IGNORE;
         }
         if ( extend != mBlock.mExtend ) {
-          // mBlock.mExtend = extend;
-          // update DataBase
           mActivity.updateBlockExtend( mBlock, extend );
+        }
+        String from = mETfrom.getText().toString().trim();
+        String to   = mETto.getText().toString().trim();
+        if ( ! from.equals( mBlock.mFrom ) || ! to.equals( mBlock.mTo ) ) {
+          mActivity.updateBlockName( mBlock, from, to );
         }
       }
       dismiss();

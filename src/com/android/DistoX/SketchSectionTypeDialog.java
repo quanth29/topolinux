@@ -1,4 +1,4 @@
-/** @file SketchEditDialog.java
+/** @file SketchSectionTypeDialog.java
  *
  * @author marco corvi
  * @date mar 2013
@@ -13,8 +13,6 @@
  */
 package com.android.DistoX;
 
-import java.util.ArrayList;
-
 import android.app.Dialog;
 // import android.app.Activity;
 import android.os.Bundle;
@@ -25,24 +23,22 @@ import android.content.Context;
 
 import android.widget.Button;
 import android.widget.RadioButton;
-import android.widget.Toast;
+// import android.widget.Toast;
 import android.view.View;
 
 
-public class SketchEditDialog extends Dialog
+public class SketchSectionTypeDialog extends Dialog
                               implements View.OnClickListener
 {
-  // private Button   mBtnOk;
+  private Button mBtnOk;
   private Button mBtnCancel;
-  private Button mBtnErase;
-  private Button mBtnExtrude;
-  private Button mBtnStretch;
-  private Button mBtnCut;
+  private RadioButton mBtnVert;
+  private RadioButton mBtnHoriz;
 
   private SketchActivity mParent;
   // private TopoDroidApp   mApp;
 
-  SketchEditDialog( Context context, SketchActivity parent )
+  SketchSectionTypeDialog( Context context, SketchActivity parent )
   {
     super( context );
     mParent = parent;
@@ -54,35 +50,34 @@ public class SketchEditDialog extends Dialog
   {
     super.onCreate(savedInstanceState);
 
-    setContentView(R.layout.sketch_edit_dialog);
-    // mBtnOk     = (Button) findViewById(R.id.btn_ok );
+    setContentView(R.layout.sketch_section_type_dialog);
+    mBtnOk     = (Button) findViewById(R.id.btn_ok );
     mBtnCancel = (Button) findViewById(R.id.btn_cancel );
-    mBtnErase   = (Button) findViewById(R.id.rb_erase );
-    mBtnExtrude = (Button) findViewById(R.id.rb_extrude );
-    mBtnStretch = (Button) findViewById(R.id.rb_stretch );
-    mBtnCut     = (Button) findViewById(R.id.rb_cut );
+    mBtnVert   = (RadioButton) findViewById(R.id.rb_vertical );
+    mBtnHoriz  = (RadioButton) findViewById(R.id.rb_horizontal );
 
-    // mBtnOk.setOnClickListener( this );
+    mBtnOk.setOnClickListener( this );
     mBtnCancel.setOnClickListener( this );
-    mBtnErase.setOnClickListener( this );
-    mBtnExtrude.setOnClickListener( this );
-    mBtnStretch.setOnClickListener( this );
-    mBtnCut.setOnClickListener( this );
+    // mBtnVert.setOnClickListener( this );
+    // mBtnHoriz.setOnClickListener( this );
 
-    setTitle( R.string.title_sketch_edit );
+    setTitle( R.string.title_sketch_section_type );
   }
 
   public void onClick( View v ) 
   {
+    
     Button b = (Button) v;
-    if ( b == mBtnErase ) {
-      mParent.removeSurface( true ); // with_sections = true
-    } else if ( b == mBtnCut ) {
-      mParent.cutRegion();
-    } else if ( b == mBtnStretch ) {
-      mParent.stretchRegion();
-    } else if ( b == mBtnExtrude ) {
-      mParent.extrudeRegion();
+    if ( b == mBtnOk ) {
+      int type = SketchSection.SECTION_NONE;
+      if ( mBtnVert.isChecked() ) {
+        type = SketchSection.SECTION_VERT;
+      } else if ( mBtnHoriz.isChecked() ) {
+        type = SketchSection.SECTION_HORIZ;
+      }
+      if ( type != SketchSection.SECTION_NONE ) {
+        mParent.setSectionType( type );
+      }
     } else { // mBtnCancel
       // mParent.highlightRegion();
     }

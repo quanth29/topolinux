@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20130219 created 
+ * 20130830 addPoint for Vector
  */
 package com.android.DistoX;
 
@@ -30,6 +31,11 @@ class Line3D
   void addPoint( float x, float y, float z )
   {
     points.add( new Vector(x,y,z) );
+  }
+
+  void addPoint( Vector v )
+  {
+    points.add( new Vector( v.x, v.y, v.z ) );
   }
 
 }

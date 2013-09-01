@@ -60,23 +60,17 @@ public class SketchLinePath extends SketchPath
     mOptions  = null;
     mLine = new Line3D();
     mPts3D = new ArrayList< Vector >();
-    if ( mViewType == SketchDef.VIEW_TOP ) { // set the paint by the line/area type
-      mPaint = painter.topLinePaint;
-    } else if ( mViewType == SketchDef.VIEW_SIDE ) {
-      mPaint = painter.sideLinePaint;
-    } else if ( mViewType == SketchDef.VIEW_EXTRUDE ) {
-      mPaint = painter.bluePaint;
-    } else { // if ( mView == SketchDef.VIEW_3D ) 
-      if ( path_type == DrawingPath.DRAWING_PATH_LINE ) {
-        mPaint = painter.greenPaint;
-        // mPaint = DrawingBrushPaths.getLinePaint( mThType );
-      } else if ( path_type == DrawingPath.DRAWING_PATH_AREA ) {
-        mPaint = painter.areaPaint;
-        // mPaint = DrawingBrushPaths.getAreaPaint( mThType );
-      } else {
-        mPaint = painter.whitePaint;
-      }
+
+    if ( path_type == DrawingPath.DRAWING_PATH_LINE ) {
+      mPaint = painter.greenPaint;
+      // mPaint = DrawingBrushPaths.getLinePaint( mThType );
+    } else if ( path_type == DrawingPath.DRAWING_PATH_AREA ) {
+      mPaint = painter.areaPaint;
+      // mPaint = DrawingBrushPaths.getAreaPaint( mThType );
+    } else {
+      mPaint = painter.whitePaint;
     }
+    
   }
 
   // (x,y,z) world (=scene) coords
@@ -109,7 +103,7 @@ public class SketchLinePath extends SketchPath
 
     // estimate number of points for the triangulated surface
     // FIXME divide by cos(clino)
-    int np = (1 + (int)(len/(cos_clino * SketchDef.POINT_STEP)) );
+    int np = (1 + (int)(len/(cos_clino * TopoDroidApp.mSketchLineStep)) );
     if ( np < SketchDef.POINT_MIN ) np = SketchDef.POINT_MIN;
     // if ( np > SketchDef.POINT_MAX ) np = SketchDef.POINT_MAX; 
     float step = len / np;
@@ -162,56 +156,27 @@ public class SketchLinePath extends SketchPath
 
   // public int lineType() { return mViewType; }
 
-  public void draw( Canvas canvas, Matrix matrix, Sketch3dInfo info, int view )
+  public void draw( Canvas canvas, Matrix matrix, Sketch3dInfo info )
   {
     Path  path = new Path();
     boolean first = true;
-    // if ( log ) {
-    //   Log.v("DistoX", "line draw type " + mViewType + " view " + view );
-    //   log = false;
-    // }
-    if ( view == SketchDef.VIEW_TOP ) {
-      if ( mViewType == SketchDef.VIEW_TOP || mViewType == SketchDef.VIEW_EXTRUDE ) {
-        for ( Vector p : mLine.points ) {
-          if ( first ) {
-            info.topPathMoveTo( path, p );
-            first = false;
-          } else {
-            info.topPathLineTo( path, p );
-          }
-        }
+    PointF q = new PointF();
+    for ( Vector p : mLine.points ) {
+      // project on (cos_clino*sin_azi, -cos_clino*cos_azimuth, -sin_clino)
+      info.worldToSceneOrigin( p.x, p.y, p.z, q );
+      if ( first ) {
+        path.moveTo( q.x, q.y );
+        first = false;
+      } else {
+        path.lineTo( q.x, q.y );
       }
-    } else if ( view == SketchDef.VIEW_SIDE ) {
-      if ( mViewType == SketchDef.VIEW_SIDE || mViewType == SketchDef.VIEW_EXTRUDE ) {
-        for ( Vector p : mLine.points ) {
-          if ( first ) {
-            info.sidePathMoveTo( path, p );
-            first = false;
-          } else {
-            info.sidePathLineTo( path, p );
-          }
-        }
-      }
-    } else if ( view == SketchDef.VIEW_3D ) {
-      PointF q = new PointF();
-      for ( Vector p : mLine.points ) {
-        // project on (cos_clino*sin_azi, -cos_clino*cos_azimuth, -sin_clino)
-        info.worldToSceneOrigin( p.x, p.y, p.z, q );
-        if ( first ) {
-          path.moveTo( q.x, q.y );
-          first = false;
-        } else {
-          path.lineTo( q.x, q.y );
-        }
-      }
-      // if ( mClosed && mLine.points.size() > 2 ) { // FIXME SOON
-      //   Vector p = mLine.points.get(0);
-      //   info.worldToSceneOrigin( p.x, p.y, p.z, q );
-      //   path.lineTo( q.x, q.y );
-      // }
-    } else {
-      // FIXME cross view
     }
+    // if ( mClosed && mLine.points.size() > 2 ) { // FIXME SOON
+    //   Vector p = mLine.points.get(0);
+    //   info.worldToSceneOrigin( p.x, p.y, p.z, q );
+    //   path.lineTo( q.x, q.y );
+    // }
+    
     path.transform( matrix );
     canvas.drawPath( path, mPaint );
   }

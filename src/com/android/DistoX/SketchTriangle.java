@@ -120,12 +120,12 @@ class SketchTriangle
   }
 
   // dot product of the normal with a vector
-  float direction( float x, float y, float z )
+  float dotNormal( float x, float y, float z )
   {
     return x * normal.x + y * normal.y + z * normal.z;
   }
 
-  float dot( float x, float y, float z )
+  float dotCenter( float x, float y, float z )
   {
     return x * center.x + y * center.y + z * center.z;
   }
@@ -170,6 +170,20 @@ class SketchTriangle
     return ret;
   }
 
+  /** check if this triangle contais a scene point X=(x,y)
+   * compute the three cross-products:
+   *     (X - P1) ^ (P2 - P1)
+   *     (X - P2) ^ (P3 - P2)
+   *     (X - P3) ^ (P1 - P3)
+   * if they have all the same sign the point X is on the same side of every
+   * side of the triangle
+   *                + P1
+   *               / \
+   *              /   \    neg. side
+   *             /     \
+   *  ------ P2 +--->---+ P3 -------
+   *                       pos. side
+   */
   boolean contains( float x, float y ) // (x,y) scene coords
   {
     float x1 = x - p1.x;

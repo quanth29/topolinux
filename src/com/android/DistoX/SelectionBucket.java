@@ -24,6 +24,14 @@ class SelectionBucket
     mChecked = false;
   }
 
+  // SelectionPoint containsPath( DrawingPath path )
+  // {
+  //   for ( SelectionPoint p : mPoints ) {
+  //     if ( p.item == path ) return p;
+  //   }
+  //   return null;
+  // }
+
   boolean isEmpty() { return mSize == 0; }
 
   void reset() { mChecked = (mSize == 0); }
@@ -41,17 +49,18 @@ class SelectionBucket
   //   }
   // }
 
-  void removeReferenceTo( DrawingPath path )
+  SelectionPoint removeReferenceTo( DrawingPath path )
   {
-    int k = 0;
-    while ( k < mPoints.size() ) {
+    SelectionPoint ret = null;
+    for ( int k = 0; k < mPoints.size(); ++k ) {
       if ( mPoints.get(k).item == path ) {
+        ret = mPoints.get(k);
         mPoints.remove( k );
-      } else {
-        ++k;
+        break;
       }
     }
-    mSize = k; // mPoints.size();
+    mSize = mPoints.size();
+    return ret;
   }
 
   SelectionPoint closestPoint( float xx, float yy, int type ) 

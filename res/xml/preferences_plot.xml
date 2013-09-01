@@ -63,6 +63,15 @@
        android:inputType="numberDecimal"
        android:defaultValue="20.0" />
 
+     <com.android.DistoX.MyEditPreference
+       android:key="DISTOX_LINE_SHIFT"
+       android:title="@string/pref_lineshift_title"
+       android:summary="@string/pref_lineshift_summary"
+       android:dialogTitle="@string/pref_lineshift_title"
+       android:dialogMessage="@string/pref_lineshift_message"
+       android:inputType="numberDecimal"
+       android:defaultValue="20.0" />
+
      <!-- CheckBoxPreference
        android:key="DISTOX_ZOOM_MULTITOUCH"
        android:summary="@string/pref_zoom_multitouch_summary"

@@ -23,8 +23,8 @@ class SketchPainter
   Paint bluePaint;
   Paint blackPaint;
   Paint previewPaint;
-  Paint topLinePaint;
-  Paint sideLinePaint;
+  // Paint topLinePaint;
+  // Paint sideLinePaint;
   Paint borderLinePaint;
   Paint surfaceForPaint;
   Paint surfaceBackPaint;
@@ -37,9 +37,7 @@ class SketchPainter
 
   Paint getLinePaint( int view ) 
   {
-    return (view == SketchDef.VIEW_TOP)? topLinePaint 
-         : (view == SketchDef.VIEW_SIDE)? sideLinePaint
-         : whitePaint;
+    return whitePaint;
   }
 
   private void makePaints()
@@ -85,19 +83,19 @@ class SketchPainter
     previewPaint.setStrokeJoin(Paint.Join.ROUND);
     previewPaint.setStrokeCap(Paint.Cap.ROUND);
     previewPaint.setStrokeWidth( DrawingBrushPaths.STROKE_WIDTH_PREVIEW );
-    topLinePaint = new Paint();
-    topLinePaint.setColor(0x99cc6633);
-    topLinePaint.setStyle(Paint.Style.STROKE);
-    topLinePaint.setStrokeJoin(Paint.Join.ROUND);
-    topLinePaint.setStrokeCap(Paint.Cap.ROUND);
-    topLinePaint.setStrokeWidth( DrawingBrushPaths.STROKE_WIDTH_PREVIEW );
-    sideLinePaint = new Paint();
-    // sideLinePaint.setColor(0xFF3333ff);
-    sideLinePaint.setColor(0x99cc9900);
-    sideLinePaint.setStyle(Paint.Style.STROKE);
-    sideLinePaint.setStrokeJoin(Paint.Join.ROUND);
-    sideLinePaint.setStrokeCap(Paint.Cap.ROUND);
-    sideLinePaint.setStrokeWidth( DrawingBrushPaths.STROKE_WIDTH_PREVIEW );
+    // topLinePaint = new Paint();
+    // topLinePaint.setColor(0x99cc6633);
+    // topLinePaint.setStyle(Paint.Style.STROKE);
+    // topLinePaint.setStrokeJoin(Paint.Join.ROUND);
+    // topLinePaint.setStrokeCap(Paint.Cap.ROUND);
+    // topLinePaint.setStrokeWidth( DrawingBrushPaths.STROKE_WIDTH_PREVIEW );
+    // sideLinePaint = new Paint();
+    // // sideLinePaint.setColor(0xFF3333ff);
+    // sideLinePaint.setColor(0x99cc9900);
+    // sideLinePaint.setStyle(Paint.Style.STROKE);
+    // sideLinePaint.setStrokeJoin(Paint.Join.ROUND);
+    // sideLinePaint.setStrokeCap(Paint.Cap.ROUND);
+    // sideLinePaint.setStrokeWidth( DrawingBrushPaths.STROKE_WIDTH_PREVIEW );
     borderLinePaint = new Paint();
     // borderLinePaint.setColor(0xFFcc3399);
     borderLinePaint.setColor(0x99ff0000);
