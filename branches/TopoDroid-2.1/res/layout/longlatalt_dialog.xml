@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp"
+    android:paddingBottom="3dp">
+   					  
+    <EditText android:id="@+id/edit_long" 
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+      	android:ems="25"
+        android:layout_height="wrap_content" 
+        android:hint="@string/longitude_hint"
+        android:singleLine="true"
+        android:inputType="number"
+        android:digits="0123456789:."
+        android:scrollHorizontally="true" />
+
+    <EditText android:id="@+id/edit_lat"
+         android:layout_marginTop="2dp"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content" 
+      	 android:ems="25"
+         android:singleLine="true"
+         android:hint="@string/latitude_hint"
+         android:inputType="number"
+         android:digits="0123456789:."
+         android:scrollHorizontally="true" />
+   		
+    <EditText android:id="@+id/edit_alt"
+         android:layout_marginTop="2dp"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content" 
+      	 android:ems="25"
+         android:singleLine="true"
+         android:hint="@string/altitude_hint"
+         android:numeric="decimal"
+         android:scrollHorizontally="true" />
+
+    <CheckBox android:id="@+id/edit_wgs84"
+         android:layout_marginTop="2dp"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content" 
+      	 android:ems="25"
+         android:text="wgs84"
+         />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal" 
+      >
+      <Button android:id="@+id/button_ok"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="left"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+        android:text="@string/button_ok"
+        />
+      <!-- Button android:id="@+id/button_back"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="left"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+        android:text="@string/button_back"
+        / -->
+      <!-- Button android:id="@+id/button_cancel"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="left"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+        android:text="@string/button_cancel"
+        / -->
+    </LinearLayout>
+</LinearLayout>

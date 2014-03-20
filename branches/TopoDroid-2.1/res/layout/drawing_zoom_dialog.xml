@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="wrap_content" 
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp"
+    android:paddingBottom="3dp">
+   					  
+
+    <TextView android:id="@+id/text_calib"
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:text="@string/zoom_in_out"
+        />
+   					  
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal" 
+      >
+      <Button android:id="@+id/button_zoom_minus"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="left"
+        android:text="  -  "
+        android:textSize="12sp"
+        />
+   		
+      <Button android:id="@+id/button_zoom_one"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="center"
+        android:text="  1  "
+        android:textSize="12sp"
+        />
+
+      <Button android:id="@+id/button_zoom_plus"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="right"
+        android:text="  +  "
+        android:textSize="12sp"
+        />
+
+    </LinearLayout>
+
+    <!-- Button android:id="@+id/button_zoom_cancel"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="right"
+        android:text="@string/button_cancel"
+        android:textSize="12sp"
+        / -->
+
+</LinearLayout>
