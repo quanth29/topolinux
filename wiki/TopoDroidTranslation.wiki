@@ -1,0 +1,61 @@
+#summary Howto translate TopoDroid to another language
+
+== TopoDroid translation ==
+
+TopoDroid comes with titles and messages in English.
+This page describes how to add support for another
+language to TopoDroid
+
+
+=== Get TopoDroid sources ===
+
+Get the TopoDroid sources for the branch
+you want to translate. In particular get the 
+resources (directory "res").
+
+=== Translate the strings ===
+
+First you need to translate three files
+  * res/values/strings.xml
+  * res/values/array.xml
+  * and the symbols files in the res/raw/symbols zip
+
+The "strings.xml" file is straightforword, just use a
+proper encoding (tag in the first line).
+
+The "array.xml" file also needs the proper encoding.
+Translate only the TypeValues, and leave the Types
+in English.
+
+Symbols files are included in the res/raw/symbols zip file.
+You need to extract the symbols files and add a line
+to each with the name in the target language.
+The line must start with "name-xx" where xx is the iso code
+of the language. Finally recreate the zip archive.
+
+
+== Check the translation ==
+
+You may want to build your own TopoDroid
+just to check that the translation files are correct
+and there is no mistake.
+
+The translation of "strings.xml" and "array.xml" must be put
+in the directory "res/values-xx" where xx is the iso code of
+the language.
+
+The new symbols zip must replace the old one and
+must be named "res/raw/symbols".
+
+Make sure TopoDroid default language presentation (English)
+is not affected by the translation.
+
+
+=== Submit the translation ===
+
+Send me your translation files (marco.corvi@gmail.com).
+
+TopoDroid comes with a vanilla, only English, apk,
+and an apk with internationalized support.
+I can test only the former.
+I can build the latter but I cannot test it.
