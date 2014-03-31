@@ -33,6 +33,8 @@ to each with the name in the target language.
 The line must start with "name-xx" where xx is the iso code
 of the language. Finally recreate the zip archive.
 
+For the syntax of symbol files see [TopoDroidSymbols]
+
 
 == Check the translation ==
 
