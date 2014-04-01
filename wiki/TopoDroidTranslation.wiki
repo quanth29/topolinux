@@ -61,3 +61,6 @@ TopoDroid comes with a vanilla, only English, apk,
 and an apk with internationalized support.
 I can test only the former.
 I can build the latter but I cannot test it.
+
+If you have translated the latest branch (currently 2.1),
+I can include it in the build that I put on [https://sites.google.com/site/speleoapps/home TopoDroid] site.
