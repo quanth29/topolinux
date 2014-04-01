@@ -24,7 +24,10 @@ views the cave maps.
 == Remarks ==
 
 TopoDroid attach a start station to a sketch: this station is placed at the origin of the canvas and the rest of the centerline is computed from it.
-For cross sections you have to specify also the direction by giving the station you are looking at: this is used only to show the splay shots properly.
+
+Each sketch comprises a plan view and an extended section view.
+Cross sections are added by drawing "section" lines to one of the two views.
+See [TopoDroidCrossSections] for details.
 
 The statistics are referred to the start station. In particular the depth is measured from this station.
 
@@ -32,12 +35,9 @@ The scrap files are saved in the "th2" directory of TopoDroid.
 They are named composing the survey name with the scrap name: for example
 the file of the scrap "p1" of the survey "my_cave" is "my_cave-p1.th2".
 
-<wiki:comment>
 All the files are inserted in the zip archive without the directory name
 in the path. Therefore, when you unzip the archive you get the "th" file
 and the "th2" files in the same directory. 
-</wiki:comment>
-
 
 If you map small caves, you can do all the work in the cave.
 When you get back, you create the zip archive of the survey, download it to the pc, unzip it, add a thconfig file with two lines:
@@ -45,8 +45,7 @@ When you get back, you create the zip archive of the survey, download it to the 
     source your_cave.th
     export map -proj plan -o your_cave.pdf
 }}}
-(maybe you must also to uncomment the input of the th2 files in the th: don't
-remember exactly)
+You must also uncomment the input of the th2 files in the th.
 
 Then run therion on it, and you have your pdf map.
-The quality depends on your ability top draw sketches, of course.
+The quality depends on your ability to draw sketches, of course.
