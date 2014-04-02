@@ -1,5 +1,4 @@
 #summary TopoDroid 2.1 Database
-#labels Featured
 
 == TopoDroid 2.1 DB =
 
