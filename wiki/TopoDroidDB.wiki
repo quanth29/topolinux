@@ -1,6 +1,6 @@
-#summary TopoDroid database.
+#summary TopoDroid 1.0 database
 
-== TopoDroid DB ==
+== TopoDroid 1.0 DB ==
 
 TopoDroid stores the data in a SQLite database. The default location of this file 
 is in the TopoDroid directory in the "external storage". The user can override this
