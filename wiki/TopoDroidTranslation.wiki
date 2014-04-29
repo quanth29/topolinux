@@ -31,7 +31,8 @@ Symbols files are included in the res/raw/symbols zip file.
 You need to extract the symbols files and add a line
 to each with the name in the target language.
 The line must start with "name-xx" where xx is the iso code
-of the language. Finally recreate the zip archive.
+of the language. Use underscore '_' for the space.
+Finally recreate the zip archive.
 
 For the syntax of symbol files see [TopoDroidSymbols]
 
