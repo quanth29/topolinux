@@ -31,7 +31,9 @@ Symbols files are included in the res/raw/symbols zip file.
 You need to extract the symbols files and add a line
 to each with the name in the target language.
 The line must start with "name-xx" where xx is the iso code
-of the language. Use underscore '_' for the space.
+of the language. Names must not contain spaces: use _underscore_ for the space.
+At the moment names are parsed with iso-8859-1 encoding.
+Contact me if your language uses another encoding.
 Finally recreate the zip archive.
 
 For the syntax of symbol files see [TopoDroidSymbols]
