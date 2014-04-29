@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="wrap_content" 
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp"
+    android:paddingBottom="3dp">
+   					  
+    <EditText android:id="@+id/edit_plot_name" 
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+      	android:ems="25"
+        android:layout_height="wrap_content" 
+        android:hint="@string/plot_name"
+        android:singleLine="true"
+        android:scrollHorizontally="true" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+       android:layout_width="wrap_content" 
+       android:layout_height="wrap_content"
+       android:orientation="horizontal"
+       >
+
+      <EditText android:id="@+id/edit_plot_start"
+         android:layout_marginTop="2dp"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content" 
+      	 android:ems="25"
+         android:singleLine="true"
+         android:hint="@string/plot_start"
+         android:scrollHorizontally="true" />
+   		
+      <!-- EditText android:id="@+id/edit_plot_view"
+         android:layout_marginTop="2dp"
+         android:layout_width="150dp"
+         android:layout_height="wrap_content" 
+      	 android:ems="25"
+         android:singleLine="true"
+         android:hint="@string/plot_view"
+         android:scrollHorizontally="true" / -->
+
+    </LinearLayout>
+
+    <!-- RadioGroup xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"
+      android:orientation="vertical" 
+      >
+        <RadioButton android:id="@+id/btn_plot_plan"
+          android:layout_width="wrap_content" 
+          android:layout_height="wrap_content" 
+          android:layout_gravity="left"
+          android:text="@string/plan"
+          />
+        <RadioButton android:id="@+id/btn_plot_ext"
+          android:layout_width="wrap_content" 
+          android:layout_height="wrap_content" 
+          android:layout_gravity="left"
+          android:text="@string/extended"
+          />
+        <RadioButton android:id="@+id/btn_plot_vcross"
+          android:layout_width="wrap_content" 
+          android:layout_height="wrap_content" 
+          android:layout_gravity="left"
+          android:text="@string/v_section"
+          />
+        <RadioButton android:id="@+id/btn_plot_hcross"
+          android:layout_width="wrap_content" 
+          android:layout_height="wrap_content" 
+          android:layout_gravity="left"
+          android:text="@string/h_section"
+          />
+    </RadioGroup -->
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal" 
+      >
+      <Button android:id="@+id/button_ok_plot_name"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="left"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+        android:text="@string/button_select"
+        />
+      <!-- Button android:id="@+id/button_back_plot_name"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="left"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+        android:text="@string/button_back"
+        / -->
+      <!-- Button android:id="@+id/button_cancel_plot_name"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="left"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+        android:text="@string/button_cancel"
+        / -->
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <!-- CheckBoxPreference
+    android:key="DISTOX_SAVE_ON_DESTROY"
+    android:summary="Save current survey and calib"
+    android:title="Store preferences"
+    android:defaultValue="true"
+  / -->
+
+     <com.topodroid.DistoX.MyListPreference
+       android:key="DISTOX_UNIT_LENGTH"
+       android:summary="@string/pref_unit_length_summary"
+       android:title="@string/pref_unit_length_title"
+       android:defaultValue="meters"
+       android:entries="@array/unitLength"
+       android:entryValues="@array/unitLengthValue"
+     />
+
+     <com.topodroid.DistoX.MyListPreference
+       android:key="DISTOX_UNIT_ANGLE"
+       android:summary="@string/pref_unit_angle_summary"
+       android:title="@string/pref_unit_angle_title"
+       android:defaultValue="degrees"
+       android:entries="@array/unitAngle"
+       android:entryValues="@array/unitAngleValue"
+     />
+
+     <com.topodroid.DistoX.MyListPreference
+       android:key="DISTOX_UNIT_LOCATION"
+       android:summary="@string/pref_unit_location_summary"
+       android:title="@string/pref_unit_location_title"
+       android:defaultValue="degrees"
+       android:entries="@array/unitLocation"
+       android:entryValues="@array/unitLocationValue"
+     />
+
+     <com.topodroid.DistoX.MyListPreference
+       android:key="DISTOX_ALTITUDE"
+       android:summary="@string/pref_altitude_summary"
+       android:title="@string/pref_altitude_title"
+       android:defaultValue="0"
+       android:entries="@array/altitudeType"
+       android:entryValues="@array/altitudeTypeValue"
+     />
+
+     <com.topodroid.DistoX.MyEditPreference
+       android:key="DISTOX_CRS"
+       android:title="@string/pref_crs_title"
+       android:summary="@string/pref_crs_summary"
+       android:dialogTitle="@string/pref_crs_title"
+       android:dialogMessage="@string/pref_crs_message"
+       android:defaultValue="Long-Lat"
+       android:enabled="false"
+     />
+
+     <CheckBoxPreference
+        android:key="DISTOX_GPS_AVERAGING"
+        android:title="@string/pref_gps_averaging_title"
+        android:summary="@string/pref_gps_averaging_summary"
+        android:defaultValue="false"
+     />
+
+     <!-- com.topodroid.DistoX.MyListPreference
+       android:key="DISTOX_EXPORT_TYPE"
+       android:summary="@string/pref_export_summary"
+       android:title="@string/pref_export_title"
+       android:defaultValue="th"
+       android:entries="@array/exportType"
+       android:entryValues="@array/exportTypeValue"
+     / -->
+     <com.topodroid.DistoX.MyEditPreference
+       android:key="DISTOX_CLOSE_DISTANCE"
+       android:title="@string/pref_leg_title"
+       android:summary="@string/pref_leg_summary"
+       android:dialogTitle="@string/pref_leg_title"
+       android:dialogMessage="@string/pref_leg_message"
+       android:inputType="numberDecimal"
+       android:defaultValue="0.1" />
+
+     <com.topodroid.DistoX.MyEditPreference
+       android:key="DISTOX_VTHRESHOLD"
+       android:title="@string/pref_vthr_title"
+       android:summary="@string/pref_vthr_summary"
+       android:dialogTitle="@string/pref_vthr_title"
+       android:dialogMessage="@string/pref_vthr_message"
+       android:inputType="numberDecimal"
+       android:defaultValue="80.0" />
+
+     <CheckBoxPreference
+       android:key="DISTOX_LOOP_CLOSURE"
+       android:summary="@string/pref_loopClosure_summary"
+       android:title="@string/pref_loopClosure_title"
+       android:defaultValue="false"
+     />
+
+     <!-- CheckBoxPreference
+       android:key="DISTOX_LIST_REFRESH"
+       android:summary="@string/pref_list_refresh_summary"
+       android:title="@string/pref_list_refresh_title"
+       android:defaultValue="false"
+     / -->
+
+     <CheckBoxPreference
+       android:key="DISTOX_SURVEY_STATIONS"
+       android:summary="@string/pref_survey_stations_summary"
+       android:title="@string/pref_survey_stations_title"
+       android:defaultValue="false"
+     />
+
+     <com.topodroid.DistoX.MyEditPreference
+       android:key="DISTOX_ACCEL_THR"
+       android:title="@string/pref_accel_thr_title"
+       android:summary="@string/pref_accel_thr_summary"
+       android:dialogTitle="@string/pref_accel_thr_title"
+       android:dialogMessage="@string/pref_accel_thr_message"
+       android:inputType="numberDecimal"
+       android:defaultValue="400.0" />
+
+     <com.topodroid.DistoX.MyEditPreference
+       android:key="DISTOX_MAG_THR"
+       android:title="@string/pref_mag_thr_title"
+       android:summary="@string/pref_mag_thr_summary"
+       android:dialogTitle="@string/pref_mag_thr_title"
+       android:dialogMessage="@string/pref_mag_thr_message"
+       android:inputType="numberDecimal"
+       android:defaultValue="300.0" />
+
+     <com.topodroid.DistoX.MyEditPreference
+       android:key="DISTOX_DIP_THR"
+       android:title="@string/pref_dip_thr_title"
+       android:summary="@string/pref_dip_thr_summary"
+       android:dialogTitle="@string/pref_dip_thr_title"
+       android:dialogMessage="@string/pref_dip_thr_message"
+       android:inputType="numberDecimal"
+       android:defaultValue="3.0" />
+
+</PreferenceScreen>
