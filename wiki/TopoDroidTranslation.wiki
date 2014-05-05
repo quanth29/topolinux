@@ -60,10 +60,18 @@ is not affected by the translation.
 
 Send me your translation files (marco.corvi@gmail.com).
 
-TopoDroid comes with a vanilla, only English, apk,
-and an apk with internationalized support.
-I can test only the former.
-I can build the latter but I cannot test it.
+I can test only the defaut (English) version.
 
-If you have translated the latest branch (currently 2.1),
-I can include it in the build that I put on [https://sites.google.com/site/speleoapps/home TopoDroid] site.
+If you have translated the latest branch (currently 2.2),
+I will include it in the build that I put on [https://sites.google.com/site/speleoapps/home TopoDroid] site.
+
+
+=== Maintaining a translation ===
+
+As TopoDroid evolves, some strings are changed, new strings are added,
+while others are dropped.
+Usually there are only a few changes between one version and the next.
+
+You should keep the last English string files that you used for your
+translation and diff the current ones against them.
+You can then propagate the differences to your translation.
