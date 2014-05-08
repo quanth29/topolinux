@@ -49,13 +49,39 @@ class GeodeticHeight
   {
     String[] lattoken = lat.split( ":" );
     String[] lngtoken = lng.split( ":" );
-    return geodeticHeight( lattoken[0], lattoken[1], lattoken[2],
-                           lngtoken[0], lngtoken[1], lngtoken[2] );
+    String dd0 = "0";
+    String mm0 = "0";
+    String ss0 = "0";
+    String dd1 = "0";
+    String mm1 = "0";
+    String ss1 = "0";
+    if ( lattoken.length > 0 ) {
+      dd0 = lattoken[0];
+      if ( lattoken.length > 1 ) {
+        mm0 = lattoken[1];
+        if ( lattoken.length > 2 ) {
+          ss0 = lattoken[2];
+        }
+      }
+    }
+    if ( lngtoken.length > 0 ) {
+      dd1 = lngtoken[0];
+      if ( lngtoken.length > 1 ) {
+        mm1 = lngtoken[1];
+        if ( lngtoken.length > 2 ) {
+          ss1 = lngtoken[2];
+        }
+      }
+    }
+    return geodeticHeight( dd0, mm0, ss0, dd1, mm1, ss1 );
   }
 
   static double geodeticHeight( String latdd, String latmm, String latss,
                                 String lngdd, String lngmm, String lngss )
   {
+    if ( latdd == null || latmm == null || latss == null
+      || lngdd == null || lngmm == null || lngss == null ) return -4000;
+
     double N = 0.0;
     String content = 
          "LatitudeDeg="  + URLEncoder.encode(latdd)

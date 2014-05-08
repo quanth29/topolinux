@@ -226,11 +226,13 @@ public class DistoXLocation extends Dialog
       EditText et = (EditText)v;
       if ( et == mETstation ) {
         CharSequence item = v.getText();
-        if ( item != null ) {
-          String str = item.toString();
-          mBtnLoc.setEnabled( str != null && str.length() > 0 );
-          mBtnMan.setEnabled( str != null && str.length() > 0 );
+        if ( item == null || item.length() == 0 ) {
+          String error = mContext.getResources().getString( R.string.error_station_required );
+          mETstation.setError( error );
+          return false;
         }
+        String str = item.toString();
+        mBtnLoc.setEnabled( str != null && str.length() > 0 );
       }
     }
     return false;

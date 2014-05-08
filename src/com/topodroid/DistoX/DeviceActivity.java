@@ -69,6 +69,7 @@ public class DeviceActivity extends Activity
                         R.drawable.ic_scan,
                         R.drawable.ic_bt,
                         R.drawable.ic_pref,
+                        R.drawable.ic_detach,
                         R.drawable.ic_help
                      };
   private static int help_texts[] = { R.string.help_toggle,
@@ -77,6 +78,7 @@ public class DeviceActivity extends Activity
                         R.string.help_scan,
                         R.string.help_bluetooth,
                         R.string.help_prefs,
+                        R.string.help_detach,
                         R.string.help_help
                       };
 
@@ -87,6 +89,7 @@ public class DeviceActivity extends Activity
   private Device mDevice;
 
   private MenuItem mMIoptions;
+  private MenuItem mMIdetach;
   private MenuItem mMIhelp;
 
 // -------------------------------------------------------------------
@@ -210,6 +213,19 @@ public class DeviceActivity extends Activity
         }
         setState();
       }
+    }
+  }
+
+  void detachDevice()
+  {
+    if ( mDevice != null ) {
+      app.setDevice( null );
+      mDevice = app.mDevice;
+      // mAddress = address;
+      if ( app.mComm != null ) {
+        app.mComm.disconnectRemoteDevice();
+      }
+      setState();
     }
   }
 
@@ -443,9 +459,11 @@ public class DeviceActivity extends Activity
     super.onCreateOptionsMenu( menu );
 
     mMIoptions = menu.add( R.string.menu_options );
+    mMIdetach  = menu.add( R.string.menu_detach );
     mMIhelp    = menu.add( R.string.menu_help  );
 
     mMIoptions.setIcon( R.drawable.ic_pref );
+    mMIdetach.setIcon( R.drawable.ic_detach );
     mMIhelp.setIcon( R.drawable.ic_help );
 
     return true;
@@ -460,6 +478,8 @@ public class DeviceActivity extends Activity
       Intent intent = new Intent( this, TopoDroidPreferences.class );
       intent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_DEVICE );
       startActivity( intent );
+    } else if ( item == mMIdetach  ) { // DETACH DEVICE
+      detachDevice();
     } else if ( item == mMIhelp  ) { // HELP DIALOG
       (new HelpDialog(this, icons, help_texts ) ).show();
     } else {

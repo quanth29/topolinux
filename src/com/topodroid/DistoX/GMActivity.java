@@ -546,12 +546,12 @@ public class GMActivity extends Activity
   //   }
   // }
  
-  public void updateGM( String name )
+  public void updateGM( long value, String name )
   {
     app.mData.updateGMName( mCIDid, app.mCID, name );
     String id = (new Long(mCIDid)).toString();
     // CalibCBlock blk = app.mData.selectGM( mCIDid, app.mCID );
-    mSaveCBlock.setGroup( Long.parseLong( name ) );
+    mSaveCBlock.setGroup( value );
 
     // if ( app.mListRefresh ) {
     //   mDataAdapter.notifyDataSetChanged();
