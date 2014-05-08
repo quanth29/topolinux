@@ -93,13 +93,12 @@
     <EditText android:id="@+id/point_text"
       android:layout_width="fill_parent" 
       android:layout_height="wrap_content"
-      android:hint=""
       />
 
     <EditText android:id="@+id/point_options"
       android:layout_width="fill_parent" 
       android:layout_height="wrap_content"
-      android:hint="@+strings/options"
+      android:hint="@string/options"
       />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 

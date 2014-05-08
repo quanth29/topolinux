@@ -16,7 +16,7 @@
     <!-- EditText android:id="@+id/area_options"
       android:layout_width="fill_parent" 
       android:layout_height="wrap_content"
-      android:hint="@+strings/options"
+      android:hint="@string/options"
       / -->
 
     <CheckBox android:id="@+id/area_visible"

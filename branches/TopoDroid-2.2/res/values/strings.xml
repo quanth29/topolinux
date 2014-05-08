@@ -15,7 +15,7 @@
     <string name="memoryA3">DistoX A3 memory</string>
     <string name="memoryX310">DistoX X310 memory</string>
 
-    <string name="td_symbol_text">Do you need to install drawing symbols?\nYou can do it later with the app TdSymbol</string>
+    <string name="td_symbol_text">Do you need to install drawing tools?\nYou can do it later with the app TdSymbol</string>
     <string name="td_symbol_ask">Don\'t ask me again</string>
 
     <string name="thp_label">label</string>
@@ -24,14 +24,14 @@
     <string name="tha_water">water</string>
 
     <string name="missing_area">AREA</string>
-    <string name="missing_hint">Please, install the symbols with TdSymbol</string>
+    <string name="missing_hint">Please, enable the missing tools or install them</string>
     <string name="missing_line">LINE</string>
     <string name="missing_point">POINT</string>
-    <!-- string name="missing_save">Sketch has missing symbols.\nNot saving it.</string -->
+    <!-- string name="missing_save">Sketch has missing drawing tools.\nNot saving it.</string -->
     <string name="missing_station">Missing station</string>
-    <string name="missing_symbols">There are missing symbols.\nSave anyway ?</string>
+    <string name="missing_symbols">There are missing drawing tools.\nSave anyway ?</string>
     <string name="missing_title">MISSING SYMBOLS</string>
-    <string name="missing_warning">The following drawing symbols are missing.\n</string>
+    <string name="missing_warning">The following drawing tools are missing.\n</string>
 
     <string name="calib_exists">Calibration already exists</string>
     <string name="calib_delete">Delete calibration </string>
@@ -74,6 +74,7 @@
     <string name="latitude">Lat. </string>
     <string name="longitude">Long. </string>
     <string name="altitude_hint">Alt. [meters]</string>
+    <string name="altitude_wgs84">WGS84 altitude</string>
     <string name="latitude_hint">Lat. dd:mm:ss.sss</string>
     <string name="longitude_hint">Long. dd:mm:ss.sss</string>
     <string name="loop_closure_errors">Loop closure errors</string>
@@ -86,6 +87,10 @@
     <string name="error_begin_required">Start address is required</string>
     <string name="error_end_required">Final address is required</string>
     <string name="error_from_required">First station is required</string>
+    <string name="error_group_required">Group number is required</string>
+    <string name="error_alt_required">Altitude is required</string>
+    <string name="error_lat_required">Latitude is required</string>
+    <string name="error_long_required">Longitude is required</string>
     <string name="error_name_required">Name is required</string>
     <string name="error_start_required">Reference station is required</string>
     <string name="error_station_required">Station is required</string>
@@ -111,7 +116,7 @@
     <string name="no_leg_intersection">Section line does not cross any leg</string>
     <string name="no_paired_device">No paired device.\nScan and pair a DistoX</string>
     <string name="no_photos">Survey has no photo</string>
-    <string name="no_plots">Survey has no sketches\nUse Add button to make one</string>
+    <string name="no_plots">Survey has no sketch\nUse Add button to make one</string>
     <string name="no_proj4">Proj$ not installed</string>
     <string name="no_sensors">Survey has no measurement</string>
     <string name="no_shots">Survey has no shots.\nUse Download button to get some</string>
@@ -121,8 +126,10 @@
     <string name="no_undelete">No item to recover</string>
 
     <string name="menu_about">About</string>
+    <string name="menu_detach">Disconnect</string>
     <string name="menu_help">Help</string>
     <string name="menu_logs">Logs</string>
+    <string name="menu_manual">Manual</string>
     <string name="menu_options">Options</string>
     <string name="menu_palette">Palette</string>
 
@@ -154,7 +161,7 @@
     <!-- string name="plot_null_name">Missing sketch name</string -->
     <!-- string name="plot_null_start">Missing base station</string -->
     <string name="plot_start">Base station</string>
-    <string name="plot_view">Viewed station</string>
+    <!-- string name="plot_view">Viewed station</string -->
     <string name="read_">Read </string>
     <string name="read_fail_with_code">Read failure: error code </string>
     <string name="read_failed">Failed to read from DistoX</string>
@@ -214,12 +221,12 @@
     <string name="description">description</string>
     <string name="name">name</string>
     <string name="team">team</string>
-    <string name="toggle_device">Toggle device calib. mode</string>
+    <string name="toggle_device">Toggle device calibration mode</string>
     <string name="toggle_failed">Failed to toggle DistoX</string>
     <string name="toggle_ok">Toggled DistoX calibration mode</string>
     <string name="undelete_text">Tap item to recover</string>
     <string name="visible_border">visible border</string>
-    <string name="vthreshold">vthreshold</string>
+    <string name="vthreshold">vert. threshold</string>
     <string name="wait_scan">Scanning: wait ...</string>
     <string name="write_failed">Failed to write to DistoX</string>
     <string name="write_ok">Written calibration to DistoX</string>
@@ -307,7 +314,7 @@
     <string name="btn_csv">CSV</string>
     <string name="btn_dxf">DXF</string>
     <string name="btn_man">Manual</string>
-    <string name="btn_symbol">Symbols</string>
+    <string name="btn_symbol">Drawing tools</string>
     <string name="btn_png">PNG</string>
     <string name="btn_pockettopo">PocketTopo</string>
     <string name="btn_survex">Survex</string>
@@ -320,9 +327,9 @@
     <string name="help_less">Return to the primary actions</string>
     
     <string name="help_device">Enter device activity</string>
-    <string name="help_add_topodroid">Create new survey/calib</string>
+    <string name="help_add_topodroid">Create new survey/calibration</string>
     <string name="help_import">Import zip archive or Therion file</string>
-    <string name="help_symbol">Enable/disable drawing symbols</string>
+    <string name="help_symbol">Enable/disable drawing tools</string>
     <string name="help_therion">Therion manager app</string>
     <string name="help_database">Database viewer app (SQliteViewer)</string>
     <string name="help_prefs">Edit preferences</string>
@@ -349,11 +356,11 @@
     <string name="help_trash">Delete sketch</string>
     <string name="help_undo">Undo last drawing action</string>
     <string name="help_redo">Redo last drawing action</string>
-    <string name="help_symbol_plot">Select the drawing symbol to draw</string>
+    <string name="help_symbol_plot">Select the current drawing tool</string>
     <!-- string name="help_clear">Clear selection</string -->
     <string name="help_eraser">Erase drawings</string>
-    <string name="help_previuos">Choose previous item in the selection</string>
-    <string name="help_next">Choose next item in the selection</string>
+    <string name="help_previuos">Previous item in the selection</string>
+    <string name="help_next">Next item in the selection</string>
    
     <string name="help_line_point">Line point actions: join, split, cut, remove</string>
 <!--
@@ -362,15 +369,16 @@
     <string name="help_split_line">Split the line into two at the point</string>
     <string name="help_kink">Use a straight line at the point [line/area]</string>
 -->
-    <string name="help_note_plot">Edit the properties of the sketched item</string>
-    <string name="help_save">Save changes to survey/calib info</string>
+    <string name="help_note_plot">Edit the properties of the selected sketch item</string>
+    <string name="help_save">Save changes to survey/calibration info</string>
     <string name="help_export_survey">Export survey</string>
-    <string name="help_loc">GPS location (GPSaverage)</string>
+    <string name="help_loc">GPS location</string>
     <string name="help_delete_survey">Delete survey</string>
     <string name="help_delete_calib">Delete calibration</string>
+    <string name="help_detach">Clear current DistoX choice</string>
     <string name="help_toggle">Toggle DistoX calibration/normal mode</string>
     <string name="help_sdcard">DistoX memory functions</string>
-    <string name="help_read">Read DistoX calibration coefficients</string>
+    <string name="help_read">Read and display DistoX calibration coefficients</string>
     <string name="help_scan">Scan for new DistoX devices</string>
     <string name="help_open_calib">Open calibration</string>
     <string name="help_group">Assign group numbers automatically</string>
@@ -392,10 +400,11 @@
     <string name="title_location_gps">Location *</string>
     <string name="title_mode">Display Mode</string>
     <string name="title_move">Moving</string>
+    <string name="title_note">Survey notes</string>
     <string name="title_photo">Photo/Measurements</string>
     <string name="title_photo_comment">Photo comment</string>
     <string name="title_plot_save">Save sketch as</string>
-    <string name="title_scraps">%1$s sketches</string>
+    <string name="title_scraps">Survey sketches</string>
     <string name="title_shift">Shift</string>
 <!--
     <string name="title_sketch">[%1$s] %2$s %3$s %4$s</string>
@@ -466,15 +475,15 @@
   <string name="pref_ethr_title">Extend threshold</string>
   <string name="pref_ethr_summary">Splay shot extend threshold</string>
   <string name="pref_ethr_message">Threshold to compute splay shot extend</string>
-  <string name="pref_vthr_title">Shot vthreshold</string>
+  <string name="pref_vthr_title">Shot vertical threshold</string>
   <string name="pref_vthr_summary">Vertical LRUD/WENS threshold</string>
   <string name="pref_vthr_message">Leg inclination threshold between LRUD/WENS</string>
   <string name="pref_hthr_title">Cross-section hthreshold</string>
   <string name="pref_hthr_summary">Threshold for horizontal cross-sections</string>
   <string name="pref_hthr_message">Shot clino over which cross-sections are horizontal</string>
-  <string name="pref_drawing_unit_title">Symbol scale</string>
-  <string name="pref_drawing_unit_summary">Scale of the drawing symbols</string>
-  <string name="pref_drawing_unit_message">Scale of the drawing symbols [restart the app after change]</string>
+  <string name="pref_drawing_unit_title">Point tools scale</string>
+  <string name="pref_drawing_unit_summary">Scale of the point tools</string>
+  <string name="pref_drawing_unit_message">Scale of the point drawing tools [restart the app after change]</string>
   <string name="pref_segment_title">Line-point spacing</string>
   <string name="pref_segment_summary">Minimum line-point distance</string>
   <string name="pref_segment_message">Minimum distance between points on a line</string>
@@ -510,8 +519,8 @@
   <string name="pref_autoStations_summary">Add stations automatically</string>
   <string name="pref_loopClosure_title">Loop closure</string>
   <string name="pref_loopClosure_summary">Loop closure-error compensation</string>
-  <string name="pref_picker_type_title">Symbol picker</string>
-  <string name="pref_picker_type_summary">Symbol picker type</string>
+  <string name="pref_picker_type_title">Drawing tool picker</string>
+  <string name="pref_picker_type_summary">Drawing tool picker type</string>
   <string name="pref_station_size_title">Station label size</string>
   <string name="pref_station_size_summary">Size of the station labels</string>
   <string name="pref_station_size_message">Size of the station labels</string>
