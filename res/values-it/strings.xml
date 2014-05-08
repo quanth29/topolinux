@@ -4,7 +4,7 @@
 
     <string name="app_name">TopoDroid</string>
 
-    <string name="version_ask">Stai aggiornando ad una nuova versione di TopoDroid.\nVuoi reinstallare le icone per i disegni?</string>
+    <string name="version_ask">Stai aggiornando ad una nuova versione di TopoDroid.\nVuoi reinstallare prototipi grafici?</string>
     <string name="version_title">Aggiornamento di versione</string>
 
     <string name="POINT">PUNTO</string>
@@ -15,7 +15,7 @@
     <string name="memoryA3">DistoX A3</string>
     <string name="memoryX310">DistoX X310</string>
 
-    <string name="td_symbol_text">Vuoi installare le icone?\nPuoi farlo anche dopo con l\'app TdSymbol</string>
+    <string name="td_symbol_text">Vuoi installare strumenti grafici?\nPuoi farlo anche dopo con l\'app TdSymbol</string>
     <string name="td_symbol_ask">Non chiederlo piú</string>
 
     <string name="thp_label">testo</string>
@@ -24,14 +24,14 @@
     <string name="tha_water">acqua</string>
 
     <string name="missing_area">AREA</string>
-    <string name="missing_hint">Installa le icone con TdSymbol</string>
+    <string name="missing_hint">Installa i prototipi grafici con TdSymbol</string>
     <string name="missing_line">LINEA</string>
     <string name="missing_point">PUNTO</string>
-    <!-- string name="missing_save">Disegno non salvato causa icone mancanti</string -->
+    <!-- string name="missing_save">Disegno non salvato causa prototipi mancanti</string -->
     <string name="missing_station">Caposaldo assente</string>
-    <string name="missing_symbols">Mancano delle icone.\nSalvare ugualmente?</string>
-    <string name="missing_title">ICONE MANCANTI</string>
-    <string name="missing_warning">Le seguenti icone mancano.\n</string>
+    <string name="missing_symbols">Mancano alcuni prototipi grafici.\nSalvare ugualmente?</string>
+    <string name="missing_title">PROTOTIPI MANCANTI</string>
+    <string name="missing_warning">Mancano i seguenti prototipi grafici.\n</string>
 
     <string name="calib_exists">Calibrazione già presente</string>
     <string name="calib_delete">Eliminare calibrazione </string>
@@ -39,7 +39,7 @@
     <string name="calib_no_name">Nome della calibrazione mancante</string>
     <string name="calib_saved">Salvata calibrazione</string>
     <string name="calib_updated">Aggiornata calibrazione</string>
-    <string name="connect_failed">Failed connect</string>
+    <string name="connect_failed">Comunicazione DistoX fallita</string>
     <string name="data"> dati</string>
     <string name="using">Usando %1$s</string>
    
@@ -74,6 +74,7 @@
     <string name="latitude">Lat. </string>
     <string name="longitude">Long. </string>
     <string name="altitude_hint">Alt. [metri]</string>
+    <string name="altitude_wgs84">Quota WGS84</string>
     <string name="latitude_hint">Lat. gg:mm:ss.sss</string>
     <string name="longitude_hint">Long. gg:mm:ss.sss</string>
     <string name="loop_closure_errors">Errori chiusura anelli</string>
@@ -86,6 +87,10 @@
     <string name="error_begin_required">Indirizzo iniziale mancante</string>
     <string name="error_end_required">Indirizzo finale mancante</string>
     <string name="error_from_required">Primo caposaldo mancante</string>
+    <string name="error_group_required">Numero di gruppo mancante</string>
+    <string name="error_alt_required">Altezza mancante</string>
+    <string name="error_lat_required">Latitudine mancante</string>
+    <string name="error_long_required">Longitudine mancante</string>
     <string name="error_name_required">Nome mancante</string>
     <string name="error_start_required">Caposaldo di riferimento mancante</string>
     <string name="error_station_required">Caposaldo mancante</string>
@@ -121,10 +126,12 @@
     <string name="no_undelete">Nessun oggetto da riprendere</string>
 
     <string name="menu_about">Info</string>
+    <string name="menu_detach">Sconnetti</string>
     <string name="menu_help">Aiuto</string>
     <string name="menu_logs">Logs</string>
+    <string name="menu_manual">Manuale</string>
     <string name="menu_options">Opzioni</string>
-    <string name="menu_palette">Icone</string>
+    <string name="menu_palette">PalettPalettee</string>
 
     <string name="popup_join_pt">Attacca al punto vicino</string>
     <string name="popup_split_pt">Dividi il punto</string>
@@ -154,7 +161,7 @@
     <!-- string name="plot_null_name">Nome del disegno mancante</string -->
     <!-- string name="plot_null_start">Caposaldo di riferimento mancante</string -->
     <string name="plot_start">Caposaldo di riferimento</string>
-    <string name="plot_view">Caposaldo puntato</string>
+    <!-- string name="plot_view">Caposaldo puntato</string -->
     <string name="read_">Letti </string>
     <string name="read_fail_with_code">Lettura fallita. Codice </string>
     <string name="read_failed">Lettura dati DistoX fallita</string>
@@ -307,7 +314,7 @@
     <string name="btn_csv">CSV</string>
     <string name="btn_dxf">DXF</string>
     <string name="btn_man">Manuale</string>
-    <string name="btn_symbol">Icone</string>
+    <string name="btn_symbol">Prototipi grafici</string>
     <string name="btn_png">PNG</string>
     <string name="btn_pockettopo">PocketTopo</string>
     <string name="btn_survex">Survex</string>
@@ -322,7 +329,7 @@
     <string name="help_device">Finestra DistoX</string>
     <string name="help_add_topodroid">Nuovo rilievo/calibr.</string>
     <string name="help_import">Importa zip o file Therion</string>
-    <string name="help_symbol">Attiva/disattiva icone disegno</string>
+    <string name="help_symbol">Attiva/disattiva prototipi grafici</string>
     <string name="help_therion">App Therion manager</string>
     <string name="help_database">App database (SQliteViewer)</string>
     <string name="help_prefs">Preferenze</string>
@@ -347,9 +354,9 @@
     <string name="help_save_plot">Esporta disegno</string>
     <string name="help_toggle_plot">Passa tra pianta e sezione long.</string>
     <string name="help_trash">ELimina disegno</string>
-    <string name="help_undo">Cancella ultima azione di diegno</string>
+    <string name="help_undo">Cancella ultima azione di disegno</string>
     <string name="help_redo">Ripeti ultima azione di disegno</string>
-    <string name="help_symbol_plot">Seleziona icona</string>
+    <string name="help_symbol_plot">Seleziona prototipo per disegno</string>
     <!-- string name="help_clear">Pulisci selezione</string -->
     <string name="help_eraser">Modalità cancella</string>
     <string name="help_previuos">Precedente oggetto nella selezione</string>
@@ -365,9 +372,10 @@
     <string name="help_note_plot">Edita le propertà dell\'oggetto</string>
     <string name="help_save">Salva le modifiche al rilievo/calibr.</string>
     <string name="help_export_survey">Esporta rilievo</string>
-    <string name="help_loc">App GPS (GPSaverage)</string>
+    <string name="help_loc">Localizzazione GPS</string>
     <string name="help_delete_survey">Elimina rilievo</string>
     <string name="help_delete_calib">Elimina calibrazione</string>
+    <string name="help_detach">Rimuovi selezione DistoX</string>
     <string name="help_toggle">Cambia modalità DistoX calibrazione/normal</string>
     <string name="help_sdcard">Funzioni memoria DistoX</string>
     <string name="help_read">Leggi la calibrazione dal DistoX</string>
@@ -392,10 +400,11 @@
     <string name="title_location_gps">Posizione *</string>
     <string name="title_mode">Modalità display</string>
     <string name="title_move">Sposta</string>
+    <string name="title_note">Annotazioni</string>
     <string name="title_photo">Foto/Misurazione</string>
     <string name="title_photo_comment">Commento foto</string>
     <string name="title_plot_save">Salva disegno come </string>
-    <string name="title_scraps">Disegno %1$s</string>
+    <string name="title_scraps">Disegni</string>
     <string name="title_shift">Sposta</string>
 <!--
     <string name="title_sketch">[%1$s] %2$s %3$s %4$s</string>
@@ -472,9 +481,9 @@
   <string name="pref_hthr_title">Soglia sezione</string>
   <string name="pref_hthr_summary">Soglia sezioni orizzontali</string>
   <string name="pref_hthr_message">Soglia inclinazione battuta per sezioni orizzontali</string>
-  <string name="pref_drawing_unit_title">Scala icone</string>
-  <string name="pref_drawing_unit_summary">Scala icone</string>
-  <string name="pref_drawing_unit_message">Scala icone [far ripartire app per aver effetto]</string>
+  <string name="pref_drawing_unit_title">Scala simboli grafici</string>
+  <string name="pref_drawing_unit_summary">Scala simboli grafici</string>
+  <string name="pref_drawing_unit_message">Scala simboli grafici [far ripartire l\'app per aver effetto]</string>
   <string name="pref_segment_title">Spaziatura punti sulle linee</string>
   <string name="pref_segment_summary">Minima spaziatura dei punti sulle linee</string>
   <string name="pref_segment_message">Minima distanza fra punti di una linea</string>
@@ -510,8 +519,8 @@
   <string name="pref_autoStations_summary">Aggiungi capisaldi automaticamente</string>
   <string name="pref_loopClosure_title">Chiusura anelli</string>
   <string name="pref_loopClosure_summary">Compensazione errore nella chiusura anelli</string>
-  <string name="pref_picker_type_title">Dialogo icone</string>
-  <string name="pref_picker_type_summary">Tipo dialogo icone</string>
+  <string name="pref_picker_type_title">Dialogo scelta prototipo</string>
+  <string name="pref_picker_type_summary">Tipo dialogo scelta prototipo grafico</string>
   <string name="pref_station_size_title">Dimensione nome capisaldi</string>
   <string name="pref_station_size_summary">Dimensione nome capisaldi</string>
   <string name="pref_station_size_message">Size of the station labels</string>
