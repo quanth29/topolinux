@@ -92,10 +92,19 @@ public class CalibGMDialog extends Dialog
     Button b = (Button) v;
     // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "GM dialog onClick button " + b.getText().toString() );
     if ( b == mButtonOK ) {
-      if ( mEditText.getText() != null ) {
-        mParent.updateGM( mEditText.getText().toString() );
-      } else if ( mEditText.getHint() != null ) {
-        mParent.updateGM( mEditText.getHint().toString() );
+      String name = mEditText.getText().toString();
+      if ( name == null || name.length() == 0 ) {
+        name = mEditText.getHint().toString();
+      }
+      if ( name == null || name.length() == 0 ) {
+        mEditText.setError( mParent.getResources().getString( R.string.error_group_required ) );
+      } else {
+        try {
+          long value = Long.parseLong( name );
+          mParent.updateGM( value, name );
+        } catch ( NumberFormatException e ) {
+          TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "Error: non-integer group name" );
+        }
       }
     }
     dismiss();

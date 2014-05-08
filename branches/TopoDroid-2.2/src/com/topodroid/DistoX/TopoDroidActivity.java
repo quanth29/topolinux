@@ -124,6 +124,7 @@ public class TopoDroidActivity extends Activity
   private MenuItem mMIsymbol;
   private MenuItem mMIoptions;
   private MenuItem mMIlogs;
+  private MenuItem mMImanual;
   private MenuItem mMIhelp;
   private MenuItem mMIabout;
 
@@ -271,7 +272,11 @@ public class TopoDroidActivity extends Activity
           app.setSurveyFromName( null );
           (new SurveyNewDialog( this, this )).show();
         } else {
-          startCalib( null, 0 );
+          if ( app.mDevice != null ) {
+            startCalib( null, 0 );
+          } else {
+            Toast.makeText( this, R.string.device_none, Toast.LENGTH_SHORT ).show();
+          }
         }
       } else if ( b == mButton1[k1++] ) {  // mBtnImport
         if ( mStatus == STATUS_SURVEY ) {
@@ -466,8 +471,10 @@ public class TopoDroidActivity extends Activity
     } else if ( filename.endsWith(".top") ) {
       // import PocketTopo (only data for the first trip)
       PTFile ptfile = new PTFile();
+      String filepath = TopoDroidApp.getImportFile( filename );
       try {
-        FileInputStream fs = new FileInputStream( filename );
+        // Log.v("DistoX", "PT read file " + filename );
+        FileInputStream fs = new FileInputStream( filepath );
         ptfile.read( fs );
         fs.close();
       } catch ( FileNotFoundException e ) {
@@ -479,7 +486,6 @@ public class TopoDroidActivity extends Activity
       int nr_trip = ptfile.tripCount();
       if ( nr_trip > 0 ) { // use only the first trip
         PTTrip trip = ptfile.getTrip(0);
-
         String name = filename.replace( ".top", "" );
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter( sw );
@@ -490,10 +496,10 @@ public class TopoDroidActivity extends Activity
         // trip.declination(); NOT USED
         // TODO create a survey
         String team = "";
+
         long sid = app.setSurveyFromName( name );
         app.mData.updateSurveyDayAndComment( app.mSID, date, comment );
         app.mData.updateSurveyTeam( app.mSID, team );
-
         ArrayList< ParserShot > shots = new ArrayList< ParserShot >();
 
         int shot_count = ptfile.shotCount();
@@ -589,7 +595,10 @@ public class TopoDroidActivity extends Activity
         PTDrawing sideview = ptfile.getSideview();
         mapping = sideview.mapping();
         // TODO do the same for the section
+
+        updateDisplay();
       }
+      setTitleColor( TopoDroidApp.COLOR_NORMAL );
     } else if ( filename.endsWith(".zip") ) {
       // Toast.makeText(this, R.string.import_wait, Toast.LENGTH_LONG).show();
       new ImportZipTask() .execute( filename );
@@ -909,12 +918,14 @@ public class TopoDroidActivity extends Activity
     mMIsymbol  = menu.add( R.string.menu_palette );
     mMIoptions = menu.add( R.string.menu_options );
     mMIlogs    = menu.add( R.string.menu_logs );
+    mMImanual  = menu.add( R.string.menu_manual  );
     mMIhelp    = menu.add( R.string.menu_help  );
     mMIabout   = menu.add( R.string.menu_about );
 
     mMIsymbol.setIcon( R.drawable.ic_symbol );
     mMIoptions.setIcon( R.drawable.ic_pref );
     mMIlogs.setIcon( R.drawable.ic_logs );
+    mMImanual.setIcon( R.drawable.ic_manual );
     mMIhelp.setIcon( R.drawable.ic_help );
     mMIabout.setIcon( R.drawable.ic_info );
 
@@ -938,6 +949,14 @@ public class TopoDroidActivity extends Activity
       intent = new Intent( this, TopoDroidPreferences.class );
       intent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_LOG );
       startActivity( intent );
+    } else if ( item == mMImanual ) { // ABOUT DIALOG
+      try {
+        // TopoDroidHelp.show( this, R.string.help_topodroid );
+        Intent pdf = new Intent( Intent.ACTION_VIEW, Uri.parse( TopoDroidApp.mManual ) );
+        startActivity( pdf );
+      } catch ( ActivityNotFoundException e ) {
+        Toast.makeText( this, "No pdf viewer app", Toast.LENGTH_SHORT ).show();
+      }
     } else if ( item == mMIabout ) { // ABOUT DIALOG
       (new TopoDroidAbout( this )).show();
     } else if ( item == mMIhelp  ) { // HELP DIALOG

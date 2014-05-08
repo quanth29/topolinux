@@ -724,7 +724,7 @@ public class DrawingActivity extends Activity // ActionBarActivity
       // mButton4[k4++].setBackgroundResource(  R.drawable.ic_pref );
       // mButton4[k4++].setBackgroundResource(  R.drawable.ic_help );
       // mButton4[].setBackgroundResource(  R.drawable.ic_disto );
-      if ( mApp.mCheckBT != 0 && mApp.mBTAdapter.isEnabled() ) {
+      if ( mApp.mDevice == null ) {
         mButton4[1].setBackgroundResource(  R.drawable.ic_add );
       }
 
@@ -1152,9 +1152,11 @@ public class DrawingActivity extends Activity // ActionBarActivity
             mCurrentAreaPath.addStartPoint( x_scene, y_scene );
             mCurrentBrush.mouseDown( mDrawingSurface.previewPath.mPath, x_canvas, y_canvas );
           } else { // SYMBOL_POINT
-            mSaveX = x_canvas;
-            mSaveY = y_canvas;
+            // mSaveX = x_canvas; // FIXME-000
+            // mSaveY = y_canvas;
           }
+          mSaveX = x_canvas; // FIXME-000
+          mSaveY = y_canvas;
         } else if ( mMode == MODE_EDIT ) {
           mStartX = x_canvas;
           mStartY = y_canvas;
@@ -1180,14 +1182,14 @@ public class DrawingActivity extends Activity // ActionBarActivity
               mStartY = y_scene;
             }
           }
-          mSaveX = x_canvas;
+          mSaveX = x_canvas; // FIXME-000
           mSaveY = y_canvas;
           // return false;
         } else if ( mMode == MODE_ERASE ) {
           doEraseAt(  x_scene, y_scene );
         } else if ( mMode == MODE_MOVE ) {
           setTheTitle( );
-          mSaveX = x_canvas;
+          mSaveX = x_canvas; // FIXME-000
           mSaveY = y_canvas;
           return false;
         }
@@ -1199,8 +1201,9 @@ public class DrawingActivity extends Activity // ActionBarActivity
         if ( mTouchMode == MODE_MOVE) {
           float x_shift = x_canvas - mSaveX; // compute shift
           float y_shift = y_canvas - mSaveY;
-          mSaveX = x_canvas;                 // reset start
-          mSaveY = y_canvas;
+          boolean save = true; // FIXME-000
+          // mSaveX = x_canvas; 
+          // mSaveY = y_canvas;
           if ( mMode == MODE_DRAW ) {
             if ( mSymbol == SYMBOL_LINE ) {
               if ( Math.sqrt( x_shift*x_shift + y_shift*y_shift ) > mApp.mLineSegment ) {
@@ -1209,6 +1212,8 @@ public class DrawingActivity extends Activity // ActionBarActivity
                   mCurrentLinePath.addPoint( x_scene, y_scene );
                 }
                 mCurrentBrush.mouseMove( mDrawingSurface.previewPath.mPath, x_canvas, y_canvas );
+              } else {
+                save = false;
               }
             } else if ( mSymbol == SYMBOL_AREA ) {
               if ( Math.sqrt( x_shift*x_shift + y_shift*y_shift ) > mApp.mLineSegment ) {
@@ -1217,6 +1222,8 @@ public class DrawingActivity extends Activity // ActionBarActivity
                   mCurrentAreaPath.addPoint( x_scene, y_scene );
                 }
                 mCurrentBrush.mouseMove( mDrawingSurface.previewPath.mPath, x_canvas, y_canvas );
+              } else {
+                save = false;
               }
             }
           } else if (  mMode == MODE_MOVE 
@@ -1236,6 +1243,10 @@ public class DrawingActivity extends Activity // ActionBarActivity
             mStartY = y_scene;
           } else if ( mMode == MODE_ERASE ) {
             doEraseAt(  x_scene, y_scene );
+          }
+          if ( save ) { // FIXME-000
+            mSaveX = x_canvas; 
+            mSaveY = y_canvas;
           }
         } else { // mTouchMode == MODE_ZOOM
           float newDist = spacing( event );
@@ -2062,15 +2073,16 @@ public class DrawingActivity extends Activity // ActionBarActivity
 
   private void tryDownloadData()
   {
-    if ( mApp.mCheckBT != 0 && mApp.mBTAdapter.isEnabled() ) {
-      if ( mApp.mDevice != null ) {
-        setTitleColor( TopoDroidApp.COLOR_CONNECTED );
-        // TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "shot menu DOWNLOAD" );
-        new DistoXRefresh( mApp, this ).execute();
-        // updateDisplay( );
-      } else {
-        Toast.makeText( this, R.string.device_none, Toast.LENGTH_SHORT ).show();
-      }
+    if ( mType == (int)PlotInfo.PLOT_PLAN ) {
+      saveReference( mPlot1, mPid1 );
+    } else if ( mType == (int)PlotInfo.PLOT_EXTENDED ) {
+      saveReference( mPlot2, mPid2 );
+    }
+    if ( mApp.mCheckBT != 0 && mApp.mBTAdapter.isEnabled() && mApp.mDevice != null ) {
+      setTitleColor( TopoDroidApp.COLOR_CONNECTED );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "shot menu DOWNLOAD" );
+      new DistoXRefresh( mApp, this ).execute();
+      // updateDisplay( );
     } else {
       if ( mApp.mSID < 0 ) {
         Toast.makeText( this, R.string.no_survey, Toast.LENGTH_SHORT ).show();

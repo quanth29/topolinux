@@ -493,15 +493,11 @@ public class ShotActivity extends Activity
   private void tryDownloadData()
   {
     mSecondLastShotId = mLastShotId;
-    if ( app.mBTAdapter.isEnabled() ) {
-      if ( app.mDevice != null ) {
-        setTitleColor( TopoDroidApp.COLOR_CONNECTED );
-        // TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "shot menu DOWNLOAD" );
-        new DistoXRefresh( app, this ).execute();
-        // updateDisplay( );
-      } else {
-        Toast.makeText( this, R.string.device_none, Toast.LENGTH_SHORT ).show();
-      }
+    if ( app.mDevice != null && app.mBTAdapter.isEnabled() ) {
+      setTitleColor( TopoDroidApp.COLOR_CONNECTED );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "shot menu DOWNLOAD" );
+      new DistoXRefresh( app, this ).execute();
+      // updateDisplay( );
     } else {
       if ( app.mSID < 0 ) {
         Toast.makeText( this, R.string.no_survey, Toast.LENGTH_SHORT ).show();
@@ -675,7 +671,7 @@ public class ShotActivity extends Activity
       mButton1[k].setOnClickListener( this );
       mButton1[k].setBackgroundResource(  icons[k] );
     }
-    if ( ! app.mBTAdapter.isEnabled() ) {
+    if ( app.mDevice == null ) {
       mButton1[0].setBackgroundResource( icons[9] );
     }
 

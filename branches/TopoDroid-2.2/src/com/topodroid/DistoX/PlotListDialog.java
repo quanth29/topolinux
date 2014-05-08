@@ -106,7 +106,7 @@ public class PlotListDialog extends Dialog
   private void updateList()
   {
     if ( app.mData != null && app.mSID >= 0 ) {
-      setTitle( String.format( mContext.getResources().getString( R.string.title_scraps ), app.mySurvey ) );
+      setTitle( R.string.title_scraps );
 
       List< PlotInfo > list = app.mData.selectAllPlots( app.mSID, TopoDroidApp.STATUS_NORMAL ); 
       // FIXME_SKETCH_3D

@@ -58,6 +58,7 @@
  * 20140409 returned to TAG "DistoX"
  * 20140415 using GPSAveraging optional (default no)
  * 20140415 commented TdSymbol stuff
+ * 20140508 removed DISABLE_KEYGUARD
  */
 package com.topodroid.DistoX;
 
@@ -130,10 +131,10 @@ import android.widget.Toast;
 public class TopoDroidApp extends Application
                           implements OnSharedPreferenceChangeListener
 {
-  static final String VERSION = "2.2.3"; // must agree with AndroidManifest.xml
+  static final String VERSION = "2.2.4"; // must agree with AndroidManifest.xml
   static final int MAJOR = 2;
   static final int MINOR = 2;
-  static final int SUB   = 3;
+  static final int SUB   = 4;
   static final int MAJOR_MIN = 2; // minimum compatible version
   static final int MINOR_MIN = 1;
   static final int SUB_MIN   = 1;
@@ -808,15 +809,15 @@ public class TopoDroidApp extends Application
   {
     super.onCreate();
 
-    // disable lock
-    KeyguardManager keyguardManager = (KeyguardManager)getSystemService(Activity.KEYGUARD_SERVICE);
-    KeyguardLock lock = keyguardManager.newKeyguardLock(KEYGUARD_SERVICE);
-    lock.disableKeyguard();
+    // // disable lock
+    // KeyguardManager keyguardManager = (KeyguardManager)getSystemService(Activity.KEYGUARD_SERVICE);
+    // KeyguardLock lock = keyguardManager.newKeyguardLock(KEYGUARD_SERVICE);
+    // lock.disableKeyguard();
 
-    try {
-      mScreenTimeout = System.getInt(getContentResolver(), System.SCREEN_OFF_TIMEOUT );
-    } catch ( SettingNotFoundException e ) {
-    }
+    // try {
+    //   mScreenTimeout = System.getInt(getContentResolver(), System.SCREEN_OFF_TIMEOUT );
+    // } catch ( SettingNotFoundException e ) {
+    // }
 
     // Log.v(TAG, "onCreate app");
     this.prefs = PreferenceManager.getDefaultSharedPreferences( this );
@@ -1365,7 +1366,12 @@ public class TopoDroidApp extends Application
 
   void setDevice( String address ) 
   { 
-    mDevice = mData.getDevice( address );
+    if ( address == null ) {
+      mDevice = null;
+      address = "";
+    } else {
+      mDevice = mData.getDevice( address );
+    }
     if ( prefs != null ) {
       Editor editor = prefs.edit();
       editor.putString( key[indexKeyDeviceName], address ); 
@@ -1737,23 +1743,26 @@ public class TopoDroidApp extends Application
       String to   = item.mTo;
       extend = item.mExtend;
       if ( from == null || from.length() == 0 ) {
-        from = "-";
+        from = "";
         if ( to == null || to.length() == 0 ) {
-          to = "-";
-          if ( ref_item != null && item.mType == DistoXDBlock.BLOCK_SEC_LEG || item.relativeDistance( ref_item ) < mCloseDistance ) {
+          to = "";
+          if ( ref_item != null 
+            && ( item.mType == DistoXDBlock.BLOCK_SEC_LEG || item.relativeDistance( ref_item ) < mCloseDistance ) ) {
             from = ref_item.mFrom;
             to   = ref_item.mTo;
             extend = ref_item.mExtend;
-          } else { // only TO station
-            ref_item = null;
-          }
-        } else { // with FROM station
-          if ( to == null || to.length() == 0 ) { // splay shot
-            to = "-";
-            ref_item = null;
           } else {
-            ref_item = item;
+            ref_item = null;
           }
+        } else { // only TO station
+          ref_item = null;
+        }
+      } else { // with FROM station
+        if ( to == null || to.length() == 0 ) { // splay shot
+          to = "";
+          ref_item = null;
+        } else {
+          ref_item = item;
         }
       }
       ptfile.addShot( (short)0, from, to, item.mLength, item.mBearing, item.mClino, item.mRoll, (int)extend, item.mComment );
@@ -2572,7 +2581,7 @@ public class TopoDroidApp extends Application
       PrintWriter out = new PrintWriter( fw );
       // TODO
       SimpleDateFormat sdf = new SimpleDateFormat( "yyyy.MM.dd", Locale.US );
-      out.printf("999\nDXF created by TopoDroid v %s - %s\n\n", VERSION, sdf.format( new Date() ) );
+      out.printf("999\nDXF created by TopoDroid v %s - %s\n", VERSION, sdf.format( new Date() ) );
       out.printf("0\nSECTION\n2\nHEADER\n");
       out.printf("9\n$ACADVER\n1\nAC1006\n");
       out.printf("9\n$INSBASE\n");

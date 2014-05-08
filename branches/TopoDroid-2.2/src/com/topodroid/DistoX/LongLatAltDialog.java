@@ -90,12 +90,13 @@ public class LongLatAltDialog extends Dialog
         if ( token.length > 1 && token[1] != null ) {
           ret += Integer.parseInt( token[1] ) / 60.0;
           if ( token.length > 2 && token[2] != null ) {
+            token[2].replace(",", ".");
             ret += Double.parseDouble( token[2] ) / 3600.0;
           }
         }
       } 
     } catch (NumberFormatException e ) {
-      // TODO
+      TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "Error parsing " + str + ": " + e.toString() );
       ret = 0.0;
     }
     return ret;
@@ -111,28 +112,36 @@ public class LongLatAltDialog extends Dialog
     if ( b == mBtnOK ) {
    
       String longit = mEditLong.getText().toString();
-      String latit  = mEditLat.getText().toString();
-      String altit  = mEditAlt.getText().toString();
       // TODO convert string to dec-degrees
-      if ( longit != null && latit != null && altit != null ) {
-        double lng = string2decdegrees( longit );
-        double lat = string2decdegrees( latit );
-        double alt = -1.0;
-        double asl = -1.0;
-        if ( mWGS84.isChecked() ) {
-          alt = Double.parseDouble( altit );
-        } else {
-          asl = Double.parseDouble( altit );
-        }
-        if ( alt < 0 ) {
-          alt = asl + GeodeticHeight.geodeticHeight( latit, longit );
-        } else if ( asl < 0 ) {
-          asl = alt - GeodeticHeight.geodeticHeight( latit, longit );
-        }
-        mParent.addFixedPoint( lng, lat, alt, asl );
-      } else {
-        // TODO Toast a warning
+      if ( longit == null || longit.length() == 0 ) {
+        mEditLong.setError( mContext.getResources().getString( R.string.error_long_required ) );
+        return;
       }
+      String latit  = mEditLat.getText().toString();
+      if ( latit  == null || latit.length()  == 0 ) {
+        mEditLat.setError( mContext.getResources().getString( R.string.error_lat_required) );
+        return;
+      }
+      String altit  = mEditAlt.getText().toString();
+      if ( altit  == null || altit.length()  == 0 ) {
+        mEditAlt.setError( mContext.getResources().getString( R.string.error_alt_required) );
+        return;
+      }
+      double lng = string2decdegrees( longit );
+      double lat = string2decdegrees( latit );
+      double alt = -1.0;
+      double asl = -1.0;
+      if ( mWGS84.isChecked() ) {
+        alt = Double.parseDouble( altit );
+      } else {
+        asl = Double.parseDouble( altit );
+      }
+      if ( alt < 0 ) {
+        alt = asl + GeodeticHeight.geodeticHeight( latit, longit );
+      } else if ( asl < 0 ) {
+        asl = alt - GeodeticHeight.geodeticHeight( latit, longit );
+      }
+      mParent.addFixedPoint( lng, lat, alt, asl );
     }
     dismiss();
   }

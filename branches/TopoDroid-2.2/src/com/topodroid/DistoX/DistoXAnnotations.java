@@ -112,7 +112,7 @@ public class DistoXAnnotations extends Dialog // Activity
     // String title  = extras.getString( TopoDroidApp.TOPODROID_SURVEY );
     mFilename = TopoDroidApp.getSurveyNoteFile( mTitle );
     // mTVtitle.setText( mTitle );
-    setTitle( mTitle );
+    setTitle( R.string.title_note );
 
     load();
 
