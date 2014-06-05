@@ -44,6 +44,7 @@ The syntax of a point symbol file is
     th_name TH_NAME
     color 0xRRGGBB
     orientation YES_NO
+    csurvey LAYER TYPE CATEGORY
     path
       MULTILINE_PATH_DIRECTIVES
     endpath
@@ -56,6 +57,9 @@ name "name", while in the sketch file it is saved with "th_name" (the Therion
 name). The "color" is specified with the RGB (red, green, blue) components
 as a single hex-number. For example "0xff0000" is full red. The value of the orientation can be either "yes" or "no". By default it is "no". It specifies 
 whether the point has an orientation (like "water-flow") or not (like "stalactite").
+
+The "csurvey" attributes are used in the export of sketches into cSurvey format.
+The LAYER must be 6, as point symbols go on cSurvey layer 6. Type and category must follow cSurvey semantics. 
 
 The commands between "path" and "endpath" specify the point shape. The possible directives are
   * "moveTo X Y"
@@ -82,6 +86,8 @@ The syntax is
     name NAME
     th_name TH_NAME
     color 0xRRGGBB 0xAA
+    width WIDTH
+    csurvey LAYER TYPE CATEGORY PEN
     dash ON OFF
     effect
       MULTILINE_EFFECT_DIRECTIVES
@@ -93,6 +99,9 @@ The directives "dash" and "effect" can be omitted.
 
 The "color" dircetive allows to specify also the alpha value (transparency);
 the default is 0xff (255) which means "not transparent".
+
+The "csurvey" values are used to export sketches into cSurvey format.
+The LAYER can be 2, 3, 4, 5 or 6, according to the cSurvey layer for the line type. Type, category, and pen must follow cSurvey semantics. 
 
 The "dash" is used to get a dashed line: ON and OFF are the length of the
 portions that are drawn and not-drawn, respectively.
@@ -114,5 +123,9 @@ as for line symbols),
     name NAME
     th_name TH_NAME
     color 0xRRGGBB 0xAA
+    csurvey LAYER
   endsymbol
 }}}
+
+The "csurvey" values are used to export sketches into cSurvey format.
+The LAYER must be 1.
