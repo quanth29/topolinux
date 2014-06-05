@@ -2,16 +2,47 @@
 
 = TopoDroid FAQ =
 
-=== I cannot install TopoDroid ===
+=== How can I install TopoDroid ? ===
+
+The simplest way: go to Google Play and install it.
+This way you get the very latest version. 
+
+Alternative way nr. 1: allow "Unknow sources" (Settings | Applications).
+Download the latest debug build from https://sites.goggle.com/speleoapps
+to your android and open it with the installer.
+
+Alternative way nr. 2: get the latest sources from this site, build the apk and install it. Beware that the sources are not updated as regularly as the apks.
+
+=== What is the required Android version to run TopoDroid ? ===
 
 TopoDroid is build with minimum Android version 8 (ie, Froyo, 2.2).
-If your device has an older version of Android it will refuse to 
+If your device has an older version of Android it will not 
 install it.
 
 This does not mean that TopoDroid cannot run on your device.
 Rather I cannot test TopoDroid for older version of Android.
 You can download the sources and build TopoDroid for your version of
 Android, or you can ask me a special build with a lower minimum version.
+
+
+=== Why TopoDroid does not connect to the DistoX ? ===
+
+Make sure that your device is paired with the DistoX.
+
+Turn on the DistoX.
+Start the "Settings" app. Go to "Wireless and Networks | Bluetooth settings".
+If your DistoX is already listed among the Bluetooth devices, tap it and pair with it: enter the PIN "0000" (four zeros).
+
+If the DistoX is not listed, scan for devices. Wait a little: bluetooth scanning takes a while. The DistoX should compare in the list.
+If it does not you are in really bad luck: get another android.
+Tap on the DistoX entry and select to pair with it.
+
+Now the DistoX is also paired and the android can communicate via Bluetooth with it. TopoDroid should work with the DistoX. 
+
+Note: make sure that TopoDroid is talking to the correct DistoX device.
+TopoDroid talks to one DistoX at a time: the address of the DistoX is
+displayed in the "device window", at the top.
+
 
 === Where did the drawing symbols (points, lines and areas) go (v. 1.1) ? ===
 
@@ -28,7 +59,7 @@ Mainly because Therion is my primary tool to put together the maps of
 cave surveys. The real answer is that the Therion language provides
 the syntax to specify a cave drawing properly.
 
-Survey data can be exported also in other formats: Compass, Survex and VisualTopo.
+Survey data can be exported also in other formats: Compass, Survex, VisualTopo, PocketTopo, and as DXF and CSV files
 
 
 === Why loops do not close in the plots ? ===
@@ -73,47 +104,24 @@ in _/mnt/sdcard/TopoDroid/_. These files are not cleared automatically.
 You should clear up these directories now and then.
 
 
-=== Why I don't see the "welcome message" any more ? === 
-
-The welcome message is shown, at start, only when no
-survey is selected. TopoDroid saves the selected survey in the
-database.
-
-
-=== Why can't I toggle the DistoX in calibration mode ? ===
-
-First of all make sure that your device is paired with the DistoX.
-You can check this in the "Settings" of th e device, under 
-"Wireless and Networks | Bluetooth settings".
-
-Next make sure that TopoDroid is talking to the correct DistoX device.
-TopoDroid talks to one DistoX at a time: the address of the DistoX is
-displayed in the "device window", at the top.
-
 
 === What can i do if TopoDroid crashes ? ===
 
-Get a "logcat" filtered on "DistoX".
+You can file a crash report which will go to Google Play.
+I will get it and with luck it has enough information to fix it
+
+Better.
+If the crash is reproducible get a "logcat" filtered on "DistoX".
 If there is something pointing to an invalid value that caused
 the crash, send me the logcat.
 
+Even better.
+Before doing a logcat, activate the logs that seem relevant to
+what you did. The logs are disabled by default.
 If the logcat has only system messages, send me an email:
 describe what you did and how the app crashed. I can build a
 version of the app with debug info enabled in the section that
-caused the problem.
-The debug info is usually disabled, to limit the log.  
-
-
-
-=== Why is TopoDroid not on the Google Play (market) ? ===
-
-The market is a place where developpers sell or give their work to users.
-One pays to put apps on the market, expecting to get something
-in return for that.
-So far it seems that TopoDroid will not have enough buyers to pay 
-for it to be on the market.
-I do not want to have a free version, with limited functionalities and 
-clogged with ads, and a paid version ad-free and fully working.
+caused the problem. 
 
 
 === How can I help TopoDroid ? ===
