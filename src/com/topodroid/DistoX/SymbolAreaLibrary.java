@@ -113,13 +113,36 @@ class SymbolAreaLibrary
     return mArea.get(k).mColor;
   }
   
+  int areaCsxLayer( int k )
+  {
+    if ( k < 0 || k >= mAreaNr ) return -1;
+    return mArea.get(k).mCsxLayer;
+  }
+
+  int areaCsxType( int k )
+ {
+    if ( k < 0 || k >= mAreaNr ) return -1;
+    return mArea.get(k).mCsxType;
+  }
+
+  int areaCsxCategory( int k )
+  {
+    if ( k < 0 || k >= mAreaNr ) return -1;
+    return mArea.get(k).mCsxCategory;
+  }
+
   // ========================================================================
 
   private void loadSystemAreas( Resources res )
   {
     // Log.v( TopoDroidApp.TAG, "load system areas");
     if ( mAnyArea.size() > 0 ) return;
+
     SymbolArea symbol = new SymbolArea( res.getString( R.string.tha_water ),  "water",  0x660000ff );
+    symbol.mCsxLayer = 1;
+    symbol.mCsxType  = 1;    // FIXME
+    symbol.mCsxCategory = 1; // FIXME
+
     mAnyArea.add( symbol );
     mAnyAreaNr = mAnyArea.size();
   }

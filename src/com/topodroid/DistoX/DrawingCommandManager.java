@@ -21,6 +21,8 @@
  * ...
  * 20140117 added date/version to export
  * 20140328 line-legs intersection
+ * 20140513 export as cSurvey
+ * 20140521 1-point line bug
  */
 package com.topodroid.DistoX;
 
@@ -60,7 +62,6 @@ public class DrawingCommandManager
   private static final int BORDER = 20;
 
   private static final float mCloseness = TopoDroidApp.mCloseness;
-
 
   static final int DISPLAY_NONE    = 0;
   static final int DISPLAY_LEG     = 0x01;
@@ -103,7 +104,7 @@ public class DrawingCommandManager
     for ( DrawingPath p : mFixedStack ) {
       if ( p.mType == DrawingPath.DRAWING_PATH_FIXED ) {
         if ( p.intersect( p1.mX, p1.mY, p2.mX, p2.mY ) ) {
-          // Log.v("TopoDroid", "intersect " + p.mBlock.toString(false) );
+          // Log.v( TopoDroidApp.TAG, "intersect " + p.mBlock.toString(false) );
           // if ( ret != null ) return null;
           ret.add( p );
         }
@@ -137,9 +138,14 @@ public class DrawingCommandManager
   {
     mGridStack.clear();
     mFixedStack.clear();
+    mStations.clear();
+    clearSketchItems();
+  }
+
+  void clearSketchItems()
+  {
     mCurrentStack.clear();
     mRedoStack.clear();
-    mStations.clear();
 
     mSelection.clear();
     mSelected.clear();
@@ -188,45 +194,75 @@ public class DrawingCommandManager
 
   // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
-  void eraseAt( float x, float y, float zoom ) 
+  /** 
+   * @return result code:
+   *    0  no erasing
+   *    1  point erased
+   *    2  line complete erase
+   *    3  line start erase
+   *    4  line end erase 
+   *    5  line split
+   *    6  area complete erase
+   *    7  area point erase
+   */
+  int eraseAt( float x, float y, float zoom ) 
   {
     SelectionSet sel = new SelectionSet();
     mSelection.selectAt( x, y, zoom, sel, false, false, false );
+    int ret = 0;
     if ( sel.size() > 0 ) {
       synchronized( mCurrentStack ) {
         for ( SelectionPoint pt : sel.mPoints ) {
           DrawingPath path = pt.mItem;
           if ( path.mType == DrawingPath.DRAWING_PATH_LINE ) {
             DrawingLinePath line = (DrawingLinePath)path;
-            int size = line.mPoints.size();
-            if ( size <= 2 || ( size == 3 && pt.mPoint == line.mPoints.get(1) ) ) {
+            ArrayList< LinePoint > points = line.mPoints;
+            int size = points.size();
+            if ( size <= 2 || ( size == 3 && pt.mPoint == points.get(1) ) ) {
+              ret = 2;
               mCurrentStack.remove( path );
               synchronized( mSelection ) {
                 mSelection.removePath( path );
               }
-            } else if ( pt.mPoint == line.mPoints.get(1) ) {
-              doRemoveLinePoint( line, line.mPoints.get(0), null );
+            } else if ( pt.mPoint == points.get(1) ) {
+              ret = 3;
+              LinePoint lp = points.get(0);
+              doRemoveLinePoint( line, lp, null );
               doRemoveLinePoint( line, pt.mPoint, pt );
+              synchronized( mSelection ) {
+                mSelection.removeLinePoint( line, lp ); // index = 0
+                mSelection.mPoints.remove( pt );        // index = 1
+              }
               line.retracePath();
-            } else if ( pt.mPoint == line.mPoints.get(size-2) ) {
-              doRemoveLinePoint( line, line.mPoints.get(size-1), null );
+            } else if ( pt.mPoint == points.get(size-2) ) {
+              ret = 4;
+              LinePoint lp = points.get(size-1);
+              doRemoveLinePoint( line, lp, null );
               doRemoveLinePoint( line, pt.mPoint, pt );
+              synchronized( mSelection ) {
+                mSelection.removeLinePoint( line, lp ); // size -1
+                mSelection.mPoints.remove( pt );        // size -2
+              }
               line.retracePath();
             } else {
+              ret = 5;
               doSplitLine( line, pt.mPoint );
             }
           } else if ( path.mType == DrawingPath.DRAWING_PATH_AREA ) {
             DrawingAreaPath area = (DrawingAreaPath)path;
             if ( area.mPoints.size() <= 3 ) {
+              ret = 6;
               mCurrentStack.remove( path );
               synchronized( mSelection ) {
                 mSelection.removePath( path );
               }
             } else {
+              ret = 7;
               doRemoveLinePoint( area, pt.mPoint, pt );
               area.retracePath();
             }
           } else if ( path.mType == DrawingPath.DRAWING_PATH_POINT ) {
+            ret = 1;
             // DrawingPointPath point = (DrawingPointPath)path;
             mCurrentStack.remove( path );
             synchronized( mSelection ) {
@@ -236,20 +272,24 @@ public class DrawingCommandManager
         }
       }
     }
+    return ret;
   }
 
   // called from synchronized( CurrentStack ) context
+  // called only by eraseAt
   private void doSplitLine( DrawingLinePath line, LinePoint lp )
   {
     DrawingLinePath line1 = new DrawingLinePath( line.mLineType );
     DrawingLinePath line2 = new DrawingLinePath( line.mLineType );
-    if ( line.splitAt( lp, line1, line2 ) ) {
+    if ( line.splitAt( lp, line1, line2, true ) ) {
       mCurrentStack.remove( line );
       mCurrentStack.add( line1 );
       mCurrentStack.add( line2 );
-      mSelection.removePath( line ); 
-      mSelection.insertLinePath( line1 );
-      mSelection.insertLinePath( line2 );
+      synchronized( mSelection ) {
+        mSelection.removePath( line ); 
+        mSelection.insertLinePath( line1 );
+        mSelection.insertLinePath( line2 );
+      }
     }
   }
 
@@ -272,7 +312,7 @@ public class DrawingCommandManager
 
     DrawingLinePath line1 = new DrawingLinePath( line.mLineType );
     DrawingLinePath line2 = new DrawingLinePath( line.mLineType );
-    if ( line.splitAt( lp, line1, line2 ) ) {
+    if ( line.splitAt( lp, line1, line2, false ) ) {
       synchronized( mCurrentStack ) {
         mCurrentStack.remove( line );
         mCurrentStack.add( line1 );
@@ -280,7 +320,6 @@ public class DrawingCommandManager
       }
       synchronized( mSelection ) {
         mSelection.removePath( line ); 
-
         mSelection.insertLinePath( line1 );
         mSelection.insertLinePath( line2 );
       }
@@ -375,6 +414,19 @@ public class DrawingCommandManager
   //   }
   // } 
 
+  void resetFixedPaint( Paint paint )
+  {
+    if( mFixedStack != null ) { 
+      synchronized( mFixedStack ) {
+        final Iterator i = mFixedStack.iterator();
+        while ( i.hasNext() ){
+          final DrawingPath path = (DrawingPath) i.next();
+          path.setPaint( paint );
+        }
+      }
+    }
+  }
+
   /** add a fixed path
    * @param path       path
    * @param selectable whether the path is selectable
@@ -410,7 +462,9 @@ public class DrawingCommandManager
     DrawingLinePath scale_bar = new DrawingLinePath( DrawingBrushPaths.mLineLib.mLineSectionIndex );
     scale_bar.addStartPoint( x0 - 50, y0 );
     scale_bar.addPoint( x0 + 50, y0 );  // 5 meters
-    mCurrentStack.add( scale_bar );
+    synchronized( mCurrentStack ) {
+      mCurrentStack.add( scale_bar );
+    }
   }
 
 
@@ -419,7 +473,10 @@ public class DrawingCommandManager
     // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "addCommand stack size  " + mCurrentStack.size() );
     // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "addCommand path " + path.toString() );
     mRedoStack.clear();
-    mCurrentStack.add( path );
+    
+    synchronized( mCurrentStack ) {
+      mCurrentStack.add( path );
+    }
     synchronized( mSelection ) {
       mSelection.insertPath( path );
     }
@@ -521,8 +578,8 @@ public class DrawingCommandManager
     boolean splays = (mDisplayMode & DISPLAY_SPLAY ) != 0;
     boolean stations = (mDisplayMode & DISPLAY_STATION ) != 0;
 
-    synchronized( mGridStack ) {
-      if( mGridStack != null && ( (mDisplayMode & DISPLAY_GRID) != 0 ) ) {
+    if( mGridStack != null && ( (mDisplayMode & DISPLAY_GRID) != 0 ) ) {
+      synchronized( mGridStack ) {
         final Iterator i = mGridStack.iterator();
         while ( i.hasNext() ){
           final DrawingPath drawingPath = (DrawingPath) i.next();
@@ -532,30 +589,31 @@ public class DrawingCommandManager
       }
     }
 
-    synchronized( mFixedStack ) {
-      if ( mFixedStack != null && (legs || splays) ) {
+    if ( mFixedStack != null && (legs || splays) ) {
+      synchronized( mFixedStack ) {
         final Iterator i = mFixedStack.iterator();
         while ( i.hasNext() ){
-          final DrawingPath drawingPath = (DrawingPath) i.next();
-          if ( ( legs && drawingPath.mType == DrawingPath.DRAWING_PATH_FIXED ) 
-            || ( splays && drawingPath.mType == DrawingPath.DRAWING_PATH_SPLAY ) ) {
-            drawingPath.draw( canvas, mMatrix );
+          final DrawingPath path = (DrawingPath) i.next();
+          if ( legs && path.mType == DrawingPath.DRAWING_PATH_FIXED ) {
+            path.draw( canvas, mMatrix );
+          } else if ( splays && path.mType == DrawingPath.DRAWING_PATH_SPLAY ) {
+            path.draw( canvas, mMatrix );
           }
           //doneHandler.sendEmptyMessage(1);
         }
       }
     }
  
-    synchronized( mStations ) {
-      if ( mStations != null && stations ) {  
+    if ( mStations != null && stations ) {  
+      synchronized( mStations ) {
         for ( DrawingStationName st : mStations ) {
           st.draw( canvas, mMatrix );
         }
       }
     }
 
-    synchronized( mCurrentStack ) {
-      if ( mCurrentStack != null ){
+    if ( mCurrentStack != null ){
+      synchronized( mCurrentStack ) {
         final Iterator i = mCurrentStack.iterator();
         while ( i.hasNext() ){
           final DrawingPath drawingPath = (DrawingPath) i.next();
@@ -624,10 +682,14 @@ public class DrawingCommandManager
 
   boolean hasStationName( String name )
   {
-    for ( DrawingPath p : mCurrentStack ) {
-      if ( p.mType == DrawingPath.DRAWING_PATH_STATION ) {
-        DrawingStationPath sp = (DrawingStationPath)p;
-        if ( sp.mName.equals( name ) ) return true;
+    synchronized( mCurrentStack ) {
+      final Iterator i = mCurrentStack.iterator();
+      while ( i.hasNext() ){
+        final DrawingPath p = (DrawingPath) i.next();
+        if ( p.mType == DrawingPath.DRAWING_PATH_STATION ) {
+          DrawingStationPath sp = (DrawingStationPath)p;
+          if ( sp.mName.equals( name ) ) return true;
+        }
       }
     }
     return false;
@@ -694,7 +756,22 @@ public class DrawingCommandManager
       }
     }
   }
-  
+
+  private float project( LinePoint q, LinePoint p0, LinePoint p1 )
+  {
+    float x01 = p1.mX - p0.mX;
+    float y01 = p1.mY - p0.mY;
+    return ((q.mX-p0.mX)*x01 + (q.mY-p0.mY)*y01) / ( x01*x01 + y01*y01 );
+  }
+    
+  private float distance( LinePoint q, LinePoint p0, LinePoint p1 )
+  {
+    float x01 = p1.mX - p0.mX;
+    float y01 = p1.mY - p0.mY;
+    return (float)( Math.abs((q.mX-p0.mX)*y01 - (q.mY-p0.mY)*x01) / Math.sqrt( x01*x01 + y01*y01 ) );
+  }
+    
+      
   void moveHotItemToNearestPoint()
   {
     SelectionPoint sp = mSelected.mHotItem;
@@ -730,6 +807,196 @@ public class DrawingCommandManager
       }
       sp.shiftBy( x, y );
     }
+  }
+  
+  void snapHotItemToNearestLine()
+  {
+    SelectionPoint sp = mSelected.mHotItem;
+    if ( sp == null ) return;
+    if ( sp.type() != DrawingPath.DRAWING_PATH_AREA ) return;
+    DrawingPath item = sp.mItem;
+    DrawingAreaPath area = (DrawingAreaPath)item;
+    int k0 = 0;
+    LinePoint p0 = sp.mPoint;
+    ArrayList< LinePoint > pts0 = area.mPoints;
+    int size0 = pts0.size();
+    for ( ; k0 < size0; ++k0 ) {
+      if ( pts0.get(k0) == p0 ) break;
+    }
+    if ( k0 == size0 ) return;
+    // area border: ... --> p2 --> p0 --> p1 --> ...
+    int k1 = (k0+1)%size0;
+    int k2 = (k0+size0-1)%size0;
+    LinePoint p1 = area.mPoints.get( k1 );
+    LinePoint p2 = area.mPoints.get( k2 );
+
+    float x = p0.mX;
+    float y = p0.mY;
+    float thr = 10f;
+    float dmin = thr; // require a minimum distance
+    DrawingPointLinePath lmin = null;
+    boolean min_is_area = false;
+    int kk0 = -1;
+    for ( DrawingPath p : mCurrentStack ) {
+      if ( p == item ) continue;
+      if ( p.mType != DrawingPath.DRAWING_PATH_LINE &&
+           p.mType != DrawingPath.DRAWING_PATH_AREA ) continue;
+      DrawingPointLinePath lp = (DrawingPointLinePath)p;
+      ArrayList< LinePoint > pts = lp.mPoints;
+      int size = pts.size();
+      for ( int k=0; k<size; ++k ) {
+        float d = pts.get(k).distance( x, y );
+        if ( d < dmin ) {
+          dmin = d;
+          kk0 = k;
+          lmin = lp;
+          min_is_area = ( p.mType == DrawingPath.DRAWING_PATH_AREA );
+        }
+      }
+    }
+    if ( lmin == null ) return;
+
+    ArrayList< LinePoint > pts1 = lmin.mPoints;
+    LinePoint pp0 = pts1.get( kk0 );
+    int size1 = pts1.size();
+    // try to follow p1 on the line:
+    int kk1 = ( kk0+1 < size1 )? kk0 + 1 : (min_is_area)? 0 : -1;
+    int kk2 = ( kk0 > 0 )? kk0 - 1 : (min_is_area)? size1-1 : -1;
+    int delta1 = 0; 
+    int delta2 = 0;
+    int kk10 = kk0;
+    int kk20 = kk0;
+    LinePoint pp10 = null;
+    LinePoint pp20 = null;
+    LinePoint pp1  = null;
+    LinePoint pp2  = null;
+    LinePoint qq10 = null;
+    LinePoint qq20 = null;
+    LinePoint qq1 = null;
+    LinePoint qq2 = null;
+    boolean reverse = false;
+    int step = 1;
+    if ( kk1 >= 0 ) { // FOLLOW LINE FORWARD
+      pp1  = pts1.get( kk1 );
+      pp10 = pts1.get( kk0 );
+      if ( kk2 >= 0 ) {
+        pp2  = pts1.get( kk2 ); 
+        pp20 = pts1.get( kk0 ); 
+      }
+      if ( pp1.distance( p1 ) < pp1.distance( p2 ) ) {
+        // follow border forward
+        qq1 = p1;
+        qq10 = p0;
+        delta1 = 1;
+        if ( kk2 >= 0 ) {
+          qq2 = p2;
+          qq20 = p0;
+          delta2 = size0-1;
+        }
+      } else {
+        int k = k1; k1 = k2; k2 = k;
+        reverse = true;
+        qq1 = p2;
+        qq10 = p0;
+        delta1 = size0-1;
+        if ( kk2 >= 0 ) {
+          qq2 = p1;
+          qq20 = p0;
+          delta2 = 1;
+        }
+      }
+    } else if ( kk2 >= 0 ) {
+      pp2  = pts1.get( kk2 ); 
+      pp20 = pts1.get( kk0 ); 
+      if ( pp2.distance( p2 ) < pp2.distance( p1 ) ) {
+        qq2 = p2;
+        qq20 = p0;
+        delta2 = size0-1;
+      } else {
+        int k = k1; k1 = k2; k2 = k;
+        reverse = true;
+        qq2 = p1;
+        qq20 = p0;
+        delta2 = 1;
+      }
+    } else {
+      return;
+    }
+
+    if ( qq1 != null ) {
+      // follow line pp10 --> pp1 --> ... using step 1
+      // with border qq10 --> qq1 --> ... using step delta1
+      for (;;) { // try to move qq1 forward
+        float s = project( qq1, pp10, pp1 );
+        while ( s > 1.0 ) {
+          kk1 = ( kk1+1 < size1 )? kk1 + 1 : (min_is_area)? 0 : -1;
+          if ( kk1 == kk0 ) break;
+          pp10 = pp1;
+          pp1 = pts1.get( kk1 );
+          s = project( qq1, pp10, pp1 );
+        }
+        float d1 = distance( qq1, pp10, pp1 );
+        if ( s < 0.0f ) break;
+        if ( d1 > thr || d1 < 0.001f ) break; 
+        qq10 = qq1;
+        k1 = (k1+delta1)%size0;
+        if ( k1 == k0 ) break;
+        qq1 = pts0.get( k1 );
+      }
+    }
+
+    if ( qq2 != null ) {
+      // follow line pp20 --> pp2 --> ... using step size1-1
+      // with border qq20 --> qq2 --> ... using step delta2
+      for (;;) { // try to move qq1 forward
+        float s = project( qq2, pp20, pp2 );
+        while ( s > 1.0 ) {
+          kk2 = ( kk2 > 0 )? kk2 - 1 : (min_is_area)? size1-1 : -1;
+          if ( kk2 == kk0 ) break;
+          pp20 = pp2;
+          pp2 = pts1.get( kk2 );
+          s = project( qq2, pp20, pp2 );
+        }
+        float d2 = distance( qq2, pp20, pp2 );
+        if ( s < 0.0f ) break;
+        if ( d2 > thr || d2 < 0.001f ) break; 
+        qq20 = qq2;
+        k2 = (k2+delta2)%size0;
+        if ( k2 == k0 ) break;
+        qq2 = pts0.get( k2 );
+      }
+    }
+    if ( reverse ) { int k=k1; k1=k2; k2=k; }
+    // k2 and k1 are kept
+    ArrayList< LinePoint > pts2 = new ArrayList< LinePoint >();
+    LinePoint prev = null;
+    for (int k=k1; k!=k2; k=(k+1)%size0 ) {
+      prev = new LinePoint(pts0.get(k), prev);
+      pts2.add( prev );
+    }
+    prev = new LinePoint(pts0.get(k2), prev );
+    pts2.add( prev );
+    if ( reverse ) {
+      for ( int k = (kk1+size1-1)%size1; k != kk2; k = (k+size1-1)%size1 ) {
+        prev = new LinePoint( pts1.get(k), prev );
+        pts2.add( prev );
+      }
+    } else {
+      for ( int k = (kk2+1)%size1; k != kk1; k=(k+1)%size1 ) {
+        prev = new LinePoint( pts1.get(k), prev );
+        pts2.add( prev );
+      }
+    }
+    synchronized( mCurrentStack ) {
+      synchronized( mSelection ) {
+        mSelection.removePath( area );
+        area.mPoints = pts2;
+        area.retracePath();
+        mSelection.insertPath( area );
+      }
+      clearSelected();
+    }
+    
   }
 
   SelectionPoint hotItem()
@@ -782,43 +1049,49 @@ public class DrawingCommandManager
             ymin=10000f, ymax=-10000f,
             umin=10000f, umax=-10000f,
             vmin=10000f, vmax=-10000f;
-      for ( DrawingPath p : mCurrentStack ) {
-        if ( p.mType == DrawingPath.DRAWING_PATH_POINT ) {
-          DrawingPointPath pp = (DrawingPointPath)p;
-          out.write( pp.toTherion() );
-          out.newLine();
-        } else if ( p.mType == DrawingPath.DRAWING_PATH_STATION ) {
-          if ( ! TopoDroidApp.mAutoStations ) {
-            DrawingStationPath st = (DrawingStationPath)p;
-            // Log.v( TopoDroidApp.TAG, "save station to Therion " + st.mName );
-            out.write( st.toTherion() );
+      synchronized( mCurrentStack ) {
+        final Iterator i = mCurrentStack.iterator();
+        while ( i.hasNext() ) {
+          final DrawingPath p = (DrawingPath) i.next();
+          if ( p.mType == DrawingPath.DRAWING_PATH_POINT ) {
+            DrawingPointPath pp = (DrawingPointPath)p;
+            out.write( pp.toTherion() );
+            out.newLine();
+          } else if ( p.mType == DrawingPath.DRAWING_PATH_STATION ) {
+            if ( ! TopoDroidApp.mAutoStations ) {
+              DrawingStationPath st = (DrawingStationPath)p;
+              // Log.v( TopoDroidApp.TAG, "save station to Therion " + st.mName );
+              out.write( st.toTherion() );
+              out.newLine();
+            }
+          } else if ( p.mType == DrawingPath.DRAWING_PATH_LINE ) {
+            DrawingLinePath lp = (DrawingLinePath)p;
+            // TopoDroidApp.Log(  TopoDroidApp.LOG_PLOT, "exportTherion line " + lp.lineType() + "/" + DrawingBrushPaths.mLineLib.mLineWallIndex );
+            ArrayList< LinePoint > pts = lp.mPoints;
+            if ( pts.size() > 1 ) {
+              if ( lp.lineType() == DrawingBrushPaths.mLineLib.mLineWallIndex ) {
+                for ( LinePoint pt : pts ) {
+                  if ( pt.mX < xmin ) xmin = pt.mX;
+                  if ( pt.mX > xmax ) xmax = pt.mX;
+                  if ( pt.mY < ymin ) ymin = pt.mY;
+                  if ( pt.mY > ymax ) ymax = pt.mY;
+                  float u = pt.mX + pt.mY;
+                  float v = pt.mX - pt.mY;
+                  if ( u < umin ) umin = u;
+                  if ( u > umax ) umax = u;
+                  if ( v < vmin ) vmin = v;
+                  if ( v > vmax ) vmax = v;
+                }
+              }
+              out.write( lp.toTherion() );
+              out.newLine();
+            }
+          } else if ( p.mType == DrawingPath.DRAWING_PATH_AREA ) {
+            DrawingAreaPath ap = (DrawingAreaPath)p;
+            // TopoDroidApp.Log(  TopoDroidApp.LOG_PLOT, "exportTherion area " + ap.areaType() );
+            out.write( ap.toTherion() );
             out.newLine();
           }
-        } else if ( p.mType == DrawingPath.DRAWING_PATH_LINE ) {
-          DrawingLinePath lp = (DrawingLinePath)p;
-          // TopoDroidApp.Log(  TopoDroidApp.LOG_PLOT, "exportTherion line " + lp.lineType() + "/" + DrawingBrushPaths.mLineLib.mLineWallIndex );
-          if ( lp.lineType() == DrawingBrushPaths.mLineLib.mLineWallIndex ) {
-            ArrayList< LinePoint > pts = lp.mPoints;
-            for ( LinePoint pt : pts ) {
-              if ( pt.mX < xmin ) xmin = pt.mX;
-              if ( pt.mX > xmax ) xmax = pt.mX;
-              if ( pt.mY < ymin ) ymin = pt.mY;
-              if ( pt.mY > ymax ) ymax = pt.mY;
-              float u = pt.mX + pt.mY;
-              float v = pt.mX - pt.mY;
-              if ( u < umin ) umin = u;
-              if ( u > umax ) umax = u;
-              if ( v < vmin ) vmin = v;
-              if ( v > vmax ) vmax = v;
-            }
-          }
-          out.write( lp.toTherion() );
-          out.newLine();
-        } else if ( p.mType == DrawingPath.DRAWING_PATH_AREA ) {
-          DrawingAreaPath ap = (DrawingAreaPath)p;
-          // TopoDroidApp.Log(  TopoDroidApp.LOG_PLOT, "exportTherion area " + ap.areaType() );
-          out.write( ap.toTherion() );
-          out.newLine();
         }
       }
       out.newLine();
@@ -852,4 +1125,106 @@ public class DrawingCommandManager
     }
   }
 
+  void exportAsCsx( PrintWriter pw )
+  {
+    synchronized( mCurrentStack ) {
+      pw.format("    <layers>\n");
+
+      // LAYER 0: images and sketches
+      pw.format("      <layer name=\"Base\" type=\"0\">\n");
+      pw.format("         <items>\n");
+      pw.format("         </items>\n");
+      pw.format("      </layer>\n");
+
+      // LAYER 1: soil areas
+      pw.format("      <layer name=\"Soil\" type=\"1\">\n");
+      pw.format("        <items>\n");
+      for ( DrawingPath p : mCurrentStack ) {
+        if ( p.mType != DrawingPath.DRAWING_PATH_AREA ) continue;
+        DrawingAreaPath ap = (DrawingAreaPath)p;
+        if ( DrawingBrushPaths.getAreaCsxLayer( ap.mAreaType ) != 1 ) continue;
+        ap.toCsurvey( pw );
+      }
+      pw.format("        </items>\n");
+      pw.format("      </layer>\n");
+
+      // LAYER 2: 
+      pw.format("      <layer name=\"Water and floor morphologies\" type=\"2\">\n");
+      pw.format("        <items>\n");
+      for ( DrawingPath p : mCurrentStack ) {
+        if ( p.mType != DrawingPath.DRAWING_PATH_LINE ) continue;
+        DrawingLinePath lp = (DrawingLinePath)p;
+        if ( DrawingBrushPaths.getLineCsxLayer( lp.mLineType ) != 2 ) continue;
+        lp.toCsurvey( pw );
+      }
+      pw.format("        </items>\n");
+      pw.format("      </layer>\n");
+
+      // LAYER 3
+      pw.format("      <layer name=\"Rocks and concretions\" type=\"3\">\n");
+      pw.format("        <items>\n");
+      for ( DrawingPath p : mCurrentStack ) {
+	if ( p.mType != DrawingPath.DRAWING_PATH_LINE ) continue;
+	DrawingLinePath lp = (DrawingLinePath)p;
+	if ( DrawingBrushPaths.getLineCsxLayer( lp.mLineType ) != 2 ) continue;
+	lp.toCsurvey( pw );
+      }
+      pw.format("        </items>\n");
+      pw.format("      </layer>\n");
+
+      // LAYER 4
+      pw.format("      <layer name=\"Ceiling morphologies\" type=\"4\">\n");
+      pw.format("        <items>\n");
+      for ( DrawingPath p : mCurrentStack ) {
+        if ( p.mType != DrawingPath.DRAWING_PATH_LINE ) continue;
+        DrawingLinePath lp = (DrawingLinePath)p;
+        if ( DrawingBrushPaths.getLineCsxLayer( lp.mLineType ) != 4 ) continue;
+        lp.toCsurvey( pw );
+      }
+      pw.format("        </items>\n");
+      pw.format("      </layer>\n");
+
+      // LAYER 5:
+      pw.format("      <layer name=\"Borders\" type=\"5\">\n");
+      pw.format("        <items>\n");
+      for ( DrawingPath p : mCurrentStack ) {
+        if ( p.mType != DrawingPath.DRAWING_PATH_LINE ) continue;
+        DrawingLinePath lp = (DrawingLinePath)p;
+        if ( DrawingBrushPaths.getLineCsxLayer( lp.mLineType ) != 5 ) continue;
+        lp.toCsurvey( pw );
+
+        // if ( lp.lineType() == DrawingBrushPaths.mLineLib.mLineWallIndex ) {
+        //   // linetype: 0 line, 1 spline, 2 bezier
+        //   pw.format("          <item layer=\"5\" name=\"\" type=\"4\" category=\"1\" linetype=\"0\" mergemode=\"0\">\n");
+        //   pw.format("            <pen type=\"1\" />\n");
+        //   pw.format("            <points data=\"");
+        //   ArrayList< LinePoint > pts = lp.mPoints;
+        //   boolean b = true;
+        //   for ( LinePoint pt : pts ) {
+        //     float x = DrawingActivity.sceneToWorldX( pt.mX );
+        //     float y = DrawingActivity.sceneToWorldY( pt.mY );
+        //     pw.format("%.2f %.2f ", x, y );
+        //     if ( b ) { pw.format("B "); b = false; }
+        //   }
+        //   pw.format("\" />\n");
+        //   pw.format("          </item>\n");
+        // }
+      }
+      pw.format("        </items>\n");
+      pw.format("      </layer>\n");
+
+      // LAYER 6: signs and texts
+      pw.format("      <layer name=\"Signs\" type=\"6\">\n");
+      pw.format("        <items>\n");
+      for ( DrawingPath p : mCurrentStack ) {
+        if ( p.mType != DrawingPath.DRAWING_PATH_POINT ) continue;
+        DrawingPointPath pp = (DrawingPointPath)p;
+        if ( DrawingBrushPaths.getPointCsxLayer( pp.mPointType ) != 6 ) continue;
+        pp.toCsurvey( pw );
+      }
+      pw.format("        </items>\n");
+      pw.format("      </layer>\n");
+      pw.format("    </layers>\n");
+    }
+  }
 }

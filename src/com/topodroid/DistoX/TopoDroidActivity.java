@@ -20,6 +20,7 @@
  * 20131201 button bar new interface. reorganized actions
  * 20140415 commented TdSymbol stuff
  * 20140416 menus: palette options help logs about
+ * 20140526 removed oldSID and oldID from startSurvey 
  */
 package com.topodroid.DistoX;
 
@@ -270,7 +271,7 @@ public class TopoDroidActivity extends Activity
         if ( mStatus == STATUS_SURVEY ) {
           // startSurvey( null, 0, -1, -1 );
           app.setSurveyFromName( null );
-          (new SurveyNewDialog( this, this )).show();
+          (new SurveyNewDialog( this, this, -1, -1 )).show(); // NO SPLIT
         } else {
           if ( app.mDevice != null ) {
             startCalib( null, 0 );
@@ -336,14 +337,22 @@ public class TopoDroidActivity extends Activity
       }
     }
 
-  void startSurvey( String value, int mustOpen, long old_sid, long old_id )
+  // splitSurvey invokes this method with args: null, 0, old_sid, old_id
+  //
+  void startSurvey( String value, int mustOpen ) // , long old_sid, long old_id )
   {
     app.setSurveyFromName( value );
     Intent surveyIntent = new Intent( Intent.ACTION_EDIT ).setClass( this, SurveyActivity.class );
     surveyIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY, mustOpen );
-    surveyIntent.putExtra( TopoDroidApp.TOPODROID_OLDSID, old_sid );
-    surveyIntent.putExtra( TopoDroidApp.TOPODROID_OLDID,  old_id );
+    // surveyIntent.putExtra( TopoDroidApp.TOPODROID_OLDSID, old_sid );
+    // surveyIntent.putExtra( TopoDroidApp.TOPODROID_OLDID,  old_id );
     startActivity( surveyIntent );
+  }
+
+  void startSplitSurvey( long old_sid, long old_id )
+  {
+    app.setSurveyFromName( null );
+    (new SurveyNewDialog( this, this, old_sid, old_id )).show(); // WITH SPLIT
   }
 
   private void startCalib( String value, int mustOpen )
@@ -361,7 +370,7 @@ public class TopoDroidActivity extends Activity
     // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "TopoDroidActivity onItemLongClick() " + item.toString() );
     switch ( mStatus ) {
       case STATUS_SURVEY:
-        startSurvey( item.toString(), 0, -1, -1 );
+        startSurvey( item.toString(), 0 ); // , -1, -1 );
         return true;
       case STATUS_CALIB:
         startCalib( item.toString(), 0 );
@@ -384,7 +393,7 @@ public class TopoDroidActivity extends Activity
     // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "TopoDroidActivity onItemClick() " + item.toString() );
     switch ( mStatus ) {
       case STATUS_SURVEY:
-        // startSurvey( item.toString(), 1, -1, -1 ); // start survey and open it
+        // startSurvey( item.toString(), 1); // , -1, -1 ); // start survey and open it
         app.setSurveyFromName( item.toString() );
         Intent openIntent = new Intent( this, ShotActivity.class );
         startActivity( openIntent );
@@ -406,14 +415,14 @@ public class TopoDroidActivity extends Activity
     {
       long sid = 0;
       try {
-        TherionParser parser = new TherionParser( str[0] );
+        TherionParser parser = new TherionParser( str[0], true ); // apply_declination = true
         ArrayList< ParserShot > shots  = parser.getShots();
         ArrayList< ParserShot > splays = parser.getSplays();
 
         sid = app.setSurveyFromName( str[1] );
-        String date = parser.mDate;
-        String title = parser.mTitle;
-        app.mData.updateSurveyDayAndComment( sid, date, title );
+        app.mData.updateSurveyDayAndComment( sid, parser.mDate, parser.mTitle );
+        app.mData.updateSurveyDeclination( sid, parser.mDeclination );
+
         long id = app.mData.insertShots( sid, 1, shots ); // start id = 1
       } catch ( ParserException e ) {
         // Toast.makeText(this, R.string.file_parse_fail, Toast.LENGTH_SHORT).show();
@@ -498,8 +507,8 @@ public class TopoDroidActivity extends Activity
         String team = "";
 
         long sid = app.setSurveyFromName( name );
-        app.mData.updateSurveyDayAndComment( app.mSID, date, comment );
-        app.mData.updateSurveyTeam( app.mSID, team );
+        app.mData.updateSurveyInfo( app.mSID, date, team, 0.0, comment ); // FIXME declination
+        
         ArrayList< ParserShot > shots = new ArrayList< ParserShot >();
 
         int shot_count = ptfile.shotCount();
@@ -686,10 +695,7 @@ public class TopoDroidActivity extends Activity
     // } else if ( app.mTdSymbol ) {
     //   startTdSymbolDialog();
     }
-    String version = app.mData.getValue( "version" );
-    if ( version == null || ! version.equals( TopoDroidApp.VERSION ) ) {
-      // Log.v( TopoDroidApp.TAG, "found version " + version + " expected " + TopoDroidApp.VERSION );
-      app.mData.setValue( "version", TopoDroidApp.VERSION );
+    if ( app.askSymbolUpdate ) {
       (new TopoDroidVersionDialog(this, app)).show();
     }
 

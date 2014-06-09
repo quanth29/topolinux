@@ -20,6 +20,8 @@
  */
 package com.topodroid.DistoX;
 
+import java.io.PrintWriter;
+
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -174,6 +176,8 @@ public class DrawingPath implements ICanvasCommand
   public void setOrientation( double angle ) { }
 
   public String toTherion() { return new String("FIXME"); }
+
+  public void toCsurvey( PrintWriter pw ) { }
 
   public void undo()
   {

@@ -15,7 +15,7 @@ package com.topodroid.DistoX;
 
 public class NumSurveyPoint
 {
-  public float s; // south Y downward
+  public float s; // south Y downward ( world coordinate )
   public float e; // east X rightward
   public float v; // Z vertical downward
   public float h; // horizontal rightward

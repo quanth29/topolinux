@@ -133,6 +133,30 @@
        android:defaultValue="false"
      />
 
+     <CheckBoxPreference
+       android:key="DISTOX_LOG_CSURVEY"
+       android:title="@string/pref_log_csurvey"
+       android:defaultValue="false"
+     />
+
+     <CheckBoxPreference
+       android:key="DISTOX_LOG_PTOPO"
+       android:title="@string/pref_log_ptopo"
+       android:defaultValue="false"
+     />
+
+     <CheckBoxPreference
+       android:key="DISTOX_LOG_ZIP"
+       android:title="@string/pref_log_zip"
+       android:defaultValue="false"
+     />
+
+     <CheckBoxPreference
+       android:key="DISTOX_LOG_UNITS"
+       android:title="@string/pref_log_units"
+       android:defaultValue="false"
+     />
+
 
 <!--
   static final boolean LOG_NOTE   = false;   // annotation

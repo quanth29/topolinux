@@ -31,7 +31,7 @@
        android:key="DISTOX_UNIT_LOCATION"
        android:summary="@string/pref_unit_location_summary"
        android:title="@string/pref_unit_location_title"
-       android:defaultValue="degrees"
+       android:defaultValue="ddmmss"
        android:entries="@array/unitLocation"
        android:entryValues="@array/unitLocationValue"
      />
@@ -102,11 +102,13 @@
        android:defaultValue="false"
      / -->
 
-     <CheckBoxPreference
-       android:key="DISTOX_SURVEY_STATIONS"
+     <com.topodroid.DistoX.MyListPreference
+       android:key="DISTOX_SURVEY_STATION"
        android:summary="@string/pref_survey_stations_summary"
        android:title="@string/pref_survey_stations_title"
-       android:defaultValue="false"
+       android:defaultValue="0"
+       android:entries="@array/surveyStations"
+       android:entryValues="@array/surveyStationsValue"
      />
 
      <com.topodroid.DistoX.MyEditPreference

@@ -39,6 +39,7 @@ public class MemoryListDialog extends Dialog
 {
   public long mSID;
   DeviceActivity mParent;
+  Context mContext;
 
   // private Button mBtnCancel;
 
@@ -49,6 +50,7 @@ public class MemoryListDialog extends Dialog
   public MemoryListDialog( Context context, DeviceActivity parent, List<MemoryOctet> memory )
   {
     super( context );
+    mContext = context;
     mParent = parent;
     mMemory = memory;
   }
@@ -86,7 +88,7 @@ public class MemoryListDialog extends Dialog
     // mBtnCancel = (Button) findViewById(R.id.button_cancel );
     // mBtnCancel.setOnClickListener( this );
 
-    setTitle( "Memory data: " );
+    setTitle( mContext.getResources().getString( R.string.memory_data ) );
   }
 }
 

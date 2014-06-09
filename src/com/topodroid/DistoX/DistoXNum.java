@@ -15,6 +15,7 @@
  * 20120719 added check whether survey is attached
  * 20120726 TopoDroid log
  * 20130110 loop closure-error compensation
+ * 20140513 barrier
  */
 package com.topodroid.DistoX;
 
@@ -83,6 +84,7 @@ class DistoXNum
   private ArrayList<NumSplay>   mSplays;
   private ArrayList<String>     mClosures;
   private ArrayList<NumNode>    mNodes;
+  private String[] mBarrier; // barrier stations
 
 
   public int stationsNr()  { return mStations.size(); }
@@ -103,14 +105,25 @@ class DistoXNum
   public List<NumSplay> getSplays() { return mSplays; }
   public List<String> getClosures() { return mClosures; }
 
+
+  boolean isBarrier( String b )
+  {
+    for ( int k=0; k<mBarrier.length; ++k ) if ( b.equals( mBarrier[k] ) ) return true;
+    return false;
+  }
+
   // ================================================================================
   /** create the numerical centerline
    * @param data     list of survey data
    * @param start    start station
    */
-  DistoXNum( List<DistoXDBlock> data, String start )
+  DistoXNum( List<DistoXDBlock> data, String start, String view )
   {
-    surveyAttached = computeNum( data, start );
+    if ( view != null ) {
+      surveyAttached = computeNum( data, start, view.split(" ") );
+    } else {
+      surveyAttached = computeNum( data, start, new String[0] );
+    }
     // TopoDroidApp.Log( TopoDroiaApp.LOG_NUM, "DistoXNum cstr length " + mLength + " depth " + mZmin + " " + mZmax );
     // Log.v( TopoDroidApp.TAG, "DistoXNum cstr data " + data.size() + " start " + start );
     // Log.v( TopoDroidApp.TAG, "DistoXNum cstr length " + mLength + " depth " + mZmin + " " + mZmax );
@@ -493,12 +506,15 @@ class DistoXNum
   /** survey data reduction 
    * return true if all shots are attached
    */
-  private boolean computeNum( List<DistoXDBlock> data, String start )
+  private boolean computeNum( List<DistoXDBlock> data, String start, String[] barrier )
   {
-
     resetBBox();
     resetStats();
 
+    mBarrier  = barrier;
+    // for ( int k=0; k<barrier.length; ++k ) {
+    //   Log.v( TopoDroidApp.TAG, "Num Barrier " + k + " <" + barrier[k] + ">" );
+    // }
     mStations = new ArrayList< NumStation >();
     mShots    = new ArrayList< NumShot >();
     mSplays   = new ArrayList< NumSplay >();
@@ -558,13 +574,14 @@ class DistoXNum
         // try to see if any temp-shot station is on the list of stations
         NumStation sf = getStation( ts.from );
         NumStation st = getStation( ts.to );
-        if ( sf != null ) {
-          if ( st != null ) { // close loop
+        if ( sf != null && ! sf.mBarrier ) {
+          if ( st != null && ! st.mBarrier ) { // close loop
             if ( /* TopoDroidApp.mAutoStations || */ ! TopoDroidApp.mLoopClosure ) {
               // keep loop open: new station( id=ts.to, from=sf, ... )
               NumStation st1 = new NumStation( ts.to, sf, ts.d(), ts.b(), ts.c(), ts.extend );
+              if ( isBarrier( ts.to ) ) st1.mBarrier = true;
+
               st1.mDuplicate = true;
-              mStations.add( st1 );
               sh =  makeShotFromTmp( sf, st1, ts );
               addShotToStations( sh, st1, sf );
             } else { // loop-closure
@@ -585,6 +602,8 @@ class DistoXNum
           { // normal shot: from --> to
             // new station( id=ts.to  from=sf 
             st = new NumStation( ts.to, sf, ts.d(), ts.b(), ts.c(), ts.extend );
+            if ( isBarrier( ts.to ) ) st.mBarrier = true;
+
             updateBBox( st );
             addToStats( ts.duplicate, ts.surface, Math.abs(ts.d() ), st.v );
             mStations.add( st );
@@ -595,12 +614,14 @@ class DistoXNum
             repeat = true;
           }
         }
-        else if ( st != null ) 
+        else if ( st != null && ! st.mBarrier ) 
         {  // sf == null: reversed shot only difference is '-' sign in new NumStation, and the new station is sf
            // Log.v( TopoDroidApp.TAG, "reversed shot " + ts.from + " " + ts.to );
           
           // new station( id=ts.from from=st, ... )
           sf = new NumStation( ts.from, st, - ts.d(), ts.b(), ts.c(), ts.extend );
+          if ( isBarrier( ts.from ) ) sf.mBarrier = true;
+
           updateBBox( sf );
           addToStats( ts.duplicate, ts.surface, Math.abs(ts.d() ), sf.v );
           mStations.add( sf );

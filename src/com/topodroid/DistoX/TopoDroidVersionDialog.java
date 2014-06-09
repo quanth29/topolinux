@@ -52,7 +52,7 @@ class TopoDroidVersionDialog extends Dialog
   {
     switch (v.getId()){
       case R.id.version_ok:
-        mApp.installSymbols( false );
+        mApp.installSymbols( true ); // overwrite symbols
         break;
     }
     dismiss();

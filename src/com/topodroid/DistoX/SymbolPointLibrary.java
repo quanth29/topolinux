@@ -155,6 +155,29 @@ class SymbolPointLibrary
     return mPoint.get(k).getOrigPath( );
   }
 
+  int pointCsxLayer( int k )
+  {
+    if ( k < 0 || k >= mPointNr ) return -1;
+    return mPoint.get(k).mCsxLayer;
+  }
+
+  int pointCsxType( int k )
+  {
+    if ( k < 0 || k >= mPointNr ) return -1;
+    return mPoint.get(k).mCsxType;
+  }
+
+  int pointCsxCategory( int k )
+  {
+    if ( k < 0 || k >= mPointNr ) return -1;
+    return mPoint.get(k).mCsxCategory;
+  }
+
+  String pointCsx( int k )
+  {
+    if ( k < 0 || k >= mPointNr ) return "";
+    return mPoint.get(k).mCsx;
+  }
 
   // ========================================================================
 
@@ -166,6 +189,9 @@ class SymbolPointLibrary
     // Log.v(  TopoDroidApp.TAG, "SymbolPointLibrary::loadSystemPoints()" );
     mPointLabelIndex = mPoint.size();
     symbol = new SymbolPoint( res.getString(R.string.thp_label), "label", 0xffffffff, p_label, false, true );
+    symbol.mCsxLayer = 6;
+    symbol.mCsxType  = 8;
+    symbol.mCsxCategory = 81;
     mAnyPoint.add( symbol );
 
     mAnyPointNr = mAnyPoint.size();

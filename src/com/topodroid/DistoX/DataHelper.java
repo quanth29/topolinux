@@ -65,9 +65,9 @@ import java.util.HashMap;
 public class DataHelper extends DataSetObservable
 {
    static String DATABASE_NAME = TopoDroidApp.getDirFile( "distox14.sqlite" );
-   static final int DATABASE_VERSION = 14;
+   static final int DATABASE_VERSION = 15;
    static final int DATABASE_VERSION_MIN = 14;
-   static final String DB_VERSION = "14";
+   static final String DB_VERSION = "15";
 
    private static final String CONFIG_TABLE = "configs";
    private static final String SURVEY_TABLE = "surveys";
@@ -100,12 +100,15 @@ public class DataHelper extends DataSetObservable
    private SQLiteStatement shiftShotsIdStmt;
    private SQLiteStatement transferShotStmt;
    private SQLiteStatement updateSurveyStmt;
+   private SQLiteStatement updateSurveyInfoStmt;
    private SQLiteStatement updateSurveyTeamStmt;
+   private SQLiteStatement updateSurveyDeclinationStmt;
    // private SQLiteStatement updateSurveyNameStmt;
    private SQLiteStatement updateCalibStmt;
    private SQLiteStatement deleteShotStmt;
    private SQLiteStatement undeleteShotStmt;
    private SQLiteStatement updatePlotStmt;
+   private SQLiteStatement updatePlotViewStmt;
    private SQLiteStatement dropPlotStmt;
    private SQLiteStatement deletePlotStmt;
    private SQLiteStatement undeletePlotStmt;
@@ -173,14 +176,17 @@ public class DataHelper extends DataSetObservable
         updateShotCommentStmt = myDB.compileStatement( "UPDATE shots SET comment=? WHERE surveyId=? AND id=?" );
         updateShotAMDRStmt  = myDB.compileStatement( "UPDATE shots SET acceleration=?, magnetic=?, dip=?, roll=? WHERE surveyId=? AND id=?" );
 
+        updateSurveyInfoStmt = myDB.compileStatement( "UPDATE surveys SET day=?, team=?, declination=?, comment=? WHERE id=?" );
         updateSurveyStmt = myDB.compileStatement( "UPDATE surveys SET day=?, comment=? WHERE id=?" );
         updateSurveyTeamStmt = myDB.compileStatement( "UPDATE surveys SET team=? WHERE id=?" );
+        updateSurveyDeclinationStmt = myDB.compileStatement( "UPDATE surveys SET declination=? WHERE id=?" );
         // updateSurveyNameStmt = myDB.compileStatement( "UPDATE surveys SET name=? WHERE id=?" );
         updateCalibStmt = myDB.compileStatement( "UPDATE calibs SET day=?, device=?, comment=? WHERE id=?" );
 
         deleteShotStmt   = myDB.compileStatement( "UPDATE shots set status=1 WHERE surveyId=? AND id=?" );
         undeleteShotStmt = myDB.compileStatement( "UPDATE shots set status=0 WHERE surveyId=? AND id=?" );
         updatePlotStmt   = myDB.compileStatement( "UPDATE plots set xoffset=?, yoffset=?, zoom=? WHERE surveyId=? AND id=?" );
+        updatePlotViewStmt = myDB.compileStatement( "UPDATE plots set view=? WHERE surveyId=? AND id=?" );
         dropPlotStmt     = myDB.compileStatement( "DELETE FROM plots WHERE surveyId=? AND id=?" );
         deletePlotStmt   = myDB.compileStatement( "UPDATE plots set status=1 WHERE surveyId=? AND id=?" );
         undeletePlotStmt = myDB.compileStatement( "UPDATE plots set status=0 WHERE surveyId=? AND id=?" );
@@ -479,6 +485,16 @@ public class DataHelper extends DataSetObservable
      updatePlotStmt.execute();
    }
  
+   public void updatePlotView( long plot_id, long survey_id, String view )
+   {
+     if ( myDB == null ) return;
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "updatePlot: " + plot_id + "/" + survey_id + " view " + view );
+     updatePlotViewStmt.bindString( 1, view );
+     updatePlotViewStmt.bindLong( 2, survey_id );
+     updatePlotViewStmt.bindLong( 3, plot_id );
+     updatePlotViewStmt.execute();
+   }
+
    // FIXME_SKETCH_3D
    // public void updateSketch( long sketch_id, long survey_id, 
    //                           String st1, String st2,
@@ -1393,7 +1409,7 @@ public class DataHelper extends DataSetObservable
    {
      SurveyInfo info = null;
      Cursor cursor = myDB.query( SURVEY_TABLE,
-                                new String[] { "name", "day", "team", "comment" }, // columns
+                                new String[] { "name", "day", "team", "declination", "comment" }, // columns
                                 "id=?",
                                 new String[] { Long.toString(sid) },
                                 null,  // groupBy
@@ -1405,7 +1421,8 @@ public class DataHelper extends DataSetObservable
        info.name    = cursor.getString( 0 );
        info.date    = cursor.getString( 1 );
        info.team    = cursor.getString( 2 );
-       info.comment = cursor.getString( 3 );
+       info.declination = (float)(cursor.getDouble( 3 ));
+       info.comment = cursor.getString( 4 );
      }
      if (cursor != null && !cursor.isClosed()) {
        cursor.close();
@@ -1483,6 +1500,14 @@ public class DataHelper extends DataSetObservable
 
    public void setValue( String key, String value )
    {
+     if ( key == null ) {
+       TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "DataHelper::setValue null key");
+       return;
+     }
+     if ( value == null ) {
+       TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "DataHelper::setValue null value");
+       return;
+     }
      Cursor cursor = myDB.query( CONFIG_TABLE,
                                 new String[] { "value" }, // columns
                                 "key = ?", new String[] { key },
@@ -2081,6 +2106,17 @@ public class DataHelper extends DataSetObservable
      updateFixedStatusStmt.execute();
      return true;
    }
+   
+   public boolean updateSurveyInfo( long id, String date, String team, double decl, String comment )
+   {
+     updateSurveyInfoStmt.bindString( 1, date );
+     updateSurveyInfoStmt.bindString( 2, team );
+     updateSurveyInfoStmt.bindDouble( 3, decl );
+     updateSurveyInfoStmt.bindString( 4, (comment != null)? comment : "" );
+     updateSurveyInfoStmt.bindLong( 5, id );
+     updateSurveyInfoStmt.execute();
+     return true;
+   }
 
    public boolean updateSurveyDayAndComment( String name, String date, String comment )
    {
@@ -2110,6 +2146,15 @@ public class DataHelper extends DataSetObservable
      updateSurveyTeamStmt.bindString( 1, (team != null)? team : "" );
      updateSurveyTeamStmt.bindLong( 2, id );
      updateSurveyTeamStmt.execute();
+     return true;
+   }
+
+   public boolean updateSurveyDeclination( long id, double decl )
+   {
+     // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "updateSurveyDeclination id " + id + " decl. " + decl );
+     updateSurveyDeclinationStmt.bindDouble( 1, decl );
+     updateSurveyDeclinationStmt.bindLong( 2, id );
+     updateSurveyDeclinationStmt.execute();
      return true;
    }
 
@@ -2213,19 +2258,20 @@ public class DataHelper extends DataSetObservable
        FileWriter fw = new FileWriter( filename );
        PrintWriter pw = new PrintWriter( fw );
        Cursor cursor = myDB.query( SURVEY_TABLE, 
-                            new String[] { "name", "day", "team", "comment" },
+                            new String[] { "name", "day", "team", "declination", "comment" },
                             "id=?", new String[] { Long.toString( sid ) },
                             null, null, null );
        if (cursor.moveToFirst()) {
          do {
            pw.format(Locale.ENGLISH,
-                     "INSERT into %s values( %d, \"%s\", \"%s\", \"%s\", \"%s\" );\n",
+                     "INSERT into %s values( %d, \"%s\", \"%s\", \"%s\", %.4f, \"%s\" );\n",
                      SURVEY_TABLE,
                      sid,
                      cursor.getString(0),
                      cursor.getString(1),
                      cursor.getString(2),
-                     cursor.getString(3) );
+                     cursor.getDouble(3),     // declination
+                     cursor.getString(4) );   // comment
          } while (cursor.moveToNext());
        }
        if (cursor != null && !cursor.isClosed()) {
@@ -2496,10 +2542,13 @@ public class DataHelper extends DataSetObservable
          name        = stringValue( v );
          String day  = stringValue( v );
          String team = stringValue( v );
+         double decl = doubleValue( v );
          comment     = stringValue( v );
          sid = setSurvey( name );
-         updateSurveyDayAndComment( sid, day, comment );
-         updateSurveyTeam( sid, team );
+         updateSurveyInfo( sid, day, team, decl, comment );
+         // updateSurveyDayAndComment( sid, day, comment );
+         // updateSurveyTeam( sid, team );
+         // updateSurveyDeclination( sid, decl );
          while ( (line = br.readLine()) != null ) {
            // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "loadFromFile: " + line );
            vals = line.split(" ", 4);
@@ -2635,7 +2684,8 @@ public class DataHelper extends DataSetObservable
              +   " name TEXT, "
              +   " day TEXT, "
              +   " team TEXT, "
-             +   " comment TEXT "
+             +   " comment TEXT, "
+             +   " declination DOUBLE "
              +   ")"
            );
 
@@ -2819,9 +2869,15 @@ public class DataHelper extends DataSetObservable
       public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
       {  
          // FIXME this is called at each start when the database file exists
-         // TopoDroidApp.Log( TopoDroidApp.LOG_DB, "onUpgrade drop tables and recreate.");
-         // db.execSQL("DROP TABLE IF EXISTS " + SHOT_TABLE);
-         // onCreate(db);
+         TopoDroidApp.Log( TopoDroidApp.LOG_DB, "onUpgrade old " + oldVersion + " new " + newVersion );
+         switch ( oldVersion ) {
+           case 14: 
+             db.execSQL( "ALTER TABLE surveys ADD COLUMN declination DOUBLE" );
+           case 15:
+             /* current version */
+           default:
+             break;
+         }
       }
    }
 }

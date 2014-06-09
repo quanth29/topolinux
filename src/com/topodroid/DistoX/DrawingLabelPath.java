@@ -78,5 +78,22 @@ public class DrawingLabelPath extends DrawingPointPath
     return sw.getBuffer().toString();
   }
 
+  @Override
+  public void toCsurvey( PrintWriter pw )
+  { 
+    // int size = mScale - SCALE_XS;
+    // int layer  = 6;
+    // int type   = 8;
+    // int cat    = 81;
+    pw.format("<item layer=\"6\" type=\"8\" category=\"81\" transparency=\"0.00\"" );
+    pw.format(" text=\"%s\" textrotatemode=\"1\" >\n", mText );
+    pw.format("  <pen type=\"10\" />\n");
+    pw.format("  <brush type=\"7\" />\n");
+    float x = DrawingActivity.sceneToWorldX( cx ); // convert to world coords.
+    float y = DrawingActivity.sceneToWorldY( cy );
+    pw.format(Locale.ENGLISH, " <points data=\"%.2f %.2f \" />\n", x, y );
+    pw.format("  <font type=\"0\" />\n");
+    pw.format("</item>\n");
+  }
 }
 

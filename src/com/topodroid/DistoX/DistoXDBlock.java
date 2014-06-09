@@ -235,7 +235,7 @@ public class DistoXDBlock
     // }
   }
 
-  boolean isRecent() { return mId >= ShotActivity.mSecondLastShotId; }
+  boolean isRecent( long id ) { return mId >= id; }
 
 }
 

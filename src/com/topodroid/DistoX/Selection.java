@@ -10,6 +10,7 @@
  * ----------------------------------------------------
  * CHANGES
  * 20130627 SelectionException
+ * 20140527 selection radius cutoff (minimum value)
  */
 package com.topodroid.DistoX;
 
@@ -108,7 +109,7 @@ class Selection
 
   void removePath( DrawingPath path )
   {
-    final Iterator i = mPoints.iterator();
+    // final Iterator i = mPoints.iterator();
     if ( path.mType == DrawingPath.DRAWING_PATH_LINE || path.mType == DrawingPath.DRAWING_PATH_AREA ) {
       DrawingPointLinePath line = (DrawingPointLinePath)path;
       for ( LinePoint lp : line.mPoints ) {
@@ -129,6 +130,18 @@ class Selection
     }
   }
 
+  void removeLinePoint( DrawingPointLinePath path, LinePoint lp )
+  {
+    if ( path.mType != DrawingPath.DRAWING_PATH_LINE && path.mType != DrawingPath.DRAWING_PATH_AREA ) return;
+    // final Iterator i = mPoints.iterator();
+    for ( SelectionPoint sp : mPoints ) {
+      if ( sp.mPoint == lp ) {
+        mPoints.remove( sp );
+        return;
+      }
+    }
+  }
+
   // void removeLinePath( DrawingLinePath path )
   // {
   //   final Iterator i = mPoints.iterator();
@@ -143,7 +156,7 @@ class Selection
 
   void selectAt( float x, float y, float zoom, SelectionSet sel, boolean legs, boolean splays, boolean stations )
   {
-    float radius = TopoDroidApp.mCloseness / zoom;
+    float radius = TopoDroidApp.mCloseCutoff + TopoDroidApp.mCloseness / zoom;
     for ( SelectionPoint sp : mPoints ) {
       if ( !legs && sp.type() == DrawingPath.DRAWING_PATH_FIXED ) continue;
       if ( !splays && sp.type() == DrawingPath.DRAWING_PATH_SPLAY ) continue;

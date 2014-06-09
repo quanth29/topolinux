@@ -17,6 +17,7 @@ class SurveyInfo
   public long id;
   public String name;
   public String date;
-  public String comment;
   public String team;
+  public float  declination;
+  public String comment;
 }

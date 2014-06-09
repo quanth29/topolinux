@@ -165,7 +165,7 @@ public class DeviceActivity extends Activity
     mList.setAdapter( mArrayAdapter );
     mArrayAdapter.clear();
     if ( app.mBTAdapter != null ) {
-      Set<BluetoothDevice> device_set = app.mBTAdapter.getBondedDevices();
+      Set<BluetoothDevice> device_set = app.mBTAdapter.getBondedDevices(); // get paired devices
       if ( device_set.isEmpty() ) {
         // Toast.makeText(this, R.string.no_paired_device, Toast.LENGTH_SHORT).show();
       } else {
@@ -179,8 +179,9 @@ public class DeviceActivity extends Activity
               app.mData.insertDevice( addr, name );
             }
           } else {
-              name = dev.mModel;
+            name = dev.mModel;
           }
+          // TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "device " + name );
           if ( name.startsWith("DistoX-") ) {      // DistoX2 X310
             mArrayAdapter.add( " X310 " + addr );
           } else if ( name.equals("DistoX") ) {    // DistoX A3
@@ -425,19 +426,24 @@ public class DeviceActivity extends Activity
       case REQUEST_DEVICE:
         if ( result == RESULT_OK ) {
           String address = extras.getString( TopoDroidApp.TOPODROID_DEVICE_ACTION );
-          if ( ! address.equals( mDevice.mAddress ) ) {
-            app.setDevice( address );
-            mDevice = app.mDevice;
-            // mAddress = address;
+          if ( address == null ) {
+            TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "onActivityResult REQUEST_DEVICE: null address");
+          } else if ( mDevice == null || ! address.equals( mDevice.mAddress ) ) {
             if ( app.mComm != null ) {
               app.mComm.disconnectRemoteDevice();
             }
+            Toast.makeText(this, R.string.device_pairing, Toast.LENGTH_LONG).show();
+            app.setDevice( address );
+            app.mComm.connectRemoteDevice( address );
+            app.mComm.disconnectRemoteDevice();
+            mDevice = app.mDevice;
+            // mAddress = address;
             setState();
           }
         } else if ( result == RESULT_CANCELED ) {
           // finish(); // back to survey
         }
-        updateList();
+        // updateList();
         break;
       // case REQUEST_ENABLE_BT:
       //   if ( result == Activity.RESULT_OK ) {

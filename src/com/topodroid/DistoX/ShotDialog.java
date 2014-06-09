@@ -65,6 +65,7 @@ public class ShotDialog extends Dialog
   private RadioButton mRadioDup;
   private RadioButton mRadioSurf;
   private CheckBox mCBleg;
+  private Button mButtonReverse;
 
   private RadioButton mRBleft;
   private RadioButton mRBvert;
@@ -185,6 +186,7 @@ public class ShotDialog extends Dialog
     mRadioDup  = (RadioButton) findViewById( R.id.shot_dup );
     mRadioSurf = (RadioButton) findViewById( R.id.shot_surf );
     mCBleg = (CheckBox)  findViewById(R.id.shot_leg );
+    mButtonReverse = (Button)  findViewById(R.id.shot_reverse );
 
     mRBleft   = (RadioButton) findViewById(R.id.left );
     mRBvert   = (RadioButton) findViewById(R.id.vert );
@@ -215,6 +217,7 @@ public class ShotDialog extends Dialog
 
     mButtonPrev.setOnClickListener( this );
     mButtonNext.setOnClickListener( this );
+    mButtonReverse.setOnClickListener( this );
 
     updateView();
   }
@@ -247,7 +250,6 @@ public class ShotDialog extends Dialog
     else if ( mRBright.isChecked() ) { shot_extend = DistoXDBlock.EXTEND_RIGHT; }
     else if ( mRBignore.isChecked() ) { shot_extend = DistoXDBlock.EXTEND_IGNORE; }
 
-    mBlk.setName( shot_from, shot_to );
     mBlk.mFlag = shot_flag;
     mBlk.mExtend = shot_extend;
     if ( shot_leg ) mBlk.mType = DistoXDBlock.BLOCK_SEC_LEG;
@@ -255,6 +257,7 @@ public class ShotDialog extends Dialog
     String comment = mETcomment.getText().toString();
     if ( comment != null ) mBlk.mComment = comment;
 
+    mBlk.setName( shot_from, shot_to );
     mParent.updateShot( shot_from, shot_to, shot_extend, shot_flag, shot_leg, comment, mBlk );
     // mParent.scrollTo( mPos );
   }
@@ -266,6 +269,7 @@ public class ShotDialog extends Dialog
 
     if ( b == mButtonOK ) {
       saveDBlock();
+      mParent.updateBlockViews();
       dismiss();
     } else if ( b == mButtonSave ) {
       saveDBlock();
@@ -296,10 +300,25 @@ public class ShotDialog extends Dialog
       } else {
         TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "NEXT is null" );
       }
+    } else if ( b == mButtonReverse ) {
+      shot_from = mETfrom.getText().toString();
+      shot_from = TopoDroidApp.noSpaces( shot_from );
+      shot_to = mETto.getText().toString();
+      shot_to = TopoDroidApp.noSpaces( shot_to );
+      if ( shot_to.length() > 0 && shot_from.length() > 0 ) {
+        // mBlk.setName( shot_to, shot_from );
+        // mParent.updateShot( shot_to, shot_from, shot_extend, shot_flag, shot_leg, comment, mBlk );
+        String temp = new String( shot_from );
+        shot_from = shot_to;
+        shot_to = temp;
+        mETfrom.setText( shot_from );
+        mETto.setText( shot_to );
+      }
     // } else if ( b == mButtonDrop ) {
     //   mParent.dropShot( mBlk );
     //   dismiss();
     } else if ( b == mButtonBack ) {
+      mParent.updateBlockViews();
       dismiss();
     }
   }

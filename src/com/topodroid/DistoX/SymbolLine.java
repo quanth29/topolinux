@@ -161,6 +161,25 @@ public class SymbolLine extends Symbol
   	    if ( k < s ) {
   	      th_name = vals[k];
   	    }
+          } else if ( vals[k].equals("csurvey") ) {
+            // syntax: 
+            //    csurvey <layer> <type> <category> <pen>
+            ++k; while ( k < s && vals[k].length() == 0 ) ++k;
+            if ( k < s ) {
+              mCsxLayer = Integer.parseInt( vals[k] );
+            }
+            ++k; while ( k < s && vals[k].length() == 0 ) ++k;
+            if ( k < s ) {
+              mCsxType = Integer.parseInt( vals[k] );
+            }
+            ++k; while ( k < s && vals[k].length() == 0 ) ++k;
+            if ( k < s ) {
+              mCsxCategory = Integer.parseInt( vals[k] );
+            }
+            ++k; while ( k < s && vals[k].length() == 0 ) ++k;
+            if ( k < s ) {
+              mCsxPen = Integer.parseInt( vals[k] );
+            }
   	  } else if ( vals[k].equals("color") ) {
   	    ++k; while ( k < s && vals[k].length() == 0 ) ++k;
   	    if ( k < s ) {

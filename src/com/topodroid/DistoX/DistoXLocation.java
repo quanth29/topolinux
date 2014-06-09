@@ -232,7 +232,10 @@ public class DistoXLocation extends Dialog
           return false;
         }
         String str = item.toString();
-        mBtnLoc.setEnabled( str != null && str.length() > 0 );
+           
+        boolean enabled =  ( str != null && str.length() > 0 );
+        mBtnLoc.setEnabled( enabled );
+        mBtnMan.setEnabled( enabled );
       }
     }
     return false;

@@ -15,6 +15,7 @@
  * 20121122 points snow/ice flowstone/moonmilk dig/choke crystal/gypsum
  * 20130829 (re)set orientation
  * 201311   removed the flag for overloaded point symbols
+ * 20140526 point scale bug fix
  */
 
 package com.topodroid.DistoX;
@@ -43,13 +44,12 @@ public class DrawingPointPath extends DrawingPath
   static final int SCALE_L  = 1;
   static final int SCALE_XL = 2;
 
-  // float mXpos;                // scene coords
+  // float mXpos;             // scene coords
   // float mYpos;
   int mPointType;
   protected int mScale;       //! symbol scale
   String mOptions;
   double mOrientation;
-
 
   public DrawingPointPath( int type, float x, float y, int scale, String options )
   {
@@ -102,10 +102,10 @@ public class DrawingPointPath extends DrawingPath
     if ( ! DrawingBrushPaths.pointHasText( mPointType ) ) {
       float f = 1.0f;
       switch ( mScale ) {
-        case SCALE_XS: f = 0.60f;
-        case SCALE_S:  f = 0.77f;
-        case SCALE_L:  f = 1.30f;
-        case SCALE_XL: f = 1.70f;
+        case SCALE_XS: f = 0.50f; break;
+        case SCALE_S:  f = 0.72f; break;
+        case SCALE_L:  f = 1.41f; break;
+        case SCALE_XL: f = 2.00f; break;
       }
       m.postScale(f,f);
     }
@@ -155,6 +155,32 @@ public class DrawingPointPath extends DrawingPath
     double dx = x - cx;
     double dy = y - cy;
     return (float)( Math.sqrt( dx*dx + dy*dy ) );
+  }
+
+  // @Override
+  public void toCsurvey( PrintWriter pw )
+  { 
+    int size = mScale - SCALE_XS;
+    int layer  = DrawingBrushPaths.getPointCsxLayer( mPointType );
+    int type   = DrawingBrushPaths.getPointCsxType( mPointType );
+    int cat    = DrawingBrushPaths.getPointCsxCategory( mPointType );
+    String csx = DrawingBrushPaths.getPointCsx( mPointType );
+    pw.format("<item layer=\"%d\" type=\"%d\" category=\"%d\" transparency=\"0.00\" data=\"", layer, type, cat );
+
+    pw.format("&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;!DOCTYPE svg PUBLIC &quot;-//W3C//DTD SVG 1.1//EN&quot; &quot;http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd&quot;[]&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; xml:space=&quot;preserve&quot; style=&quot;shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;&gt;&lt;defs&gt;&lt;style type=&quot;text/css&quot;&gt;&lt;![CDATA[ .str0 {stroke:#1F1A17;stroke-width:0.2} .fil0 {fill:none} ]]&gt;&lt;/style&gt;&lt;/defs&gt;&lt;g id=&quot;Livello_%d&quot;&gt;", layer );
+    pw.format("%s", csx );
+    pw.format("&lt;/g&gt;&lt;/svg&gt;\" ");
+    pw.format(Locale.ENGLISH, "dataformat=\"0\" signsize=\"%d\" angle=\"%.2f\" >\n", size, mOrientation );
+    pw.format("  <pen type=\"10\" />\n");
+    pw.format("  <brush type=\"7\" />\n");
+    float x = DrawingActivity.sceneToWorldX( cx ); // convert to world coords.
+    float y = DrawingActivity.sceneToWorldY( cy );
+    pw.format(Locale.ENGLISH, " <points data=\"%.2f %.2f \" />\n", x, y );
+    pw.format("  <datarow>\n");
+    pw.format("  </datarow>\n");
+    pw.format("</item>\n");
+
+    // Log.v( TopoDroidApp.TAG, "toCSurevy() Point " + mPointType + " (" + x + " " + y + ") orientation " + mOrientation );
   }
 
   @Override

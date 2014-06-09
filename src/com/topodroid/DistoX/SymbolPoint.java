@@ -31,12 +31,14 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Matrix;
 
-import android.util.Log;
+// import android.util.Log;
 
 class SymbolPoint extends Symbol
                   implements SymbolInterface
 {
   static final float dxfScale = 0.05f;
+  static final float csxScale = 5.00f;
+  static final float csxdxfScale = csxScale * dxfScale;
   public Paint  mPaint;
   public Path   mPath;
   public Path   mOrigPath;
@@ -211,6 +213,19 @@ class SymbolPoint extends Symbol
               color = Integer.decode( vals[k] );
               color |= 0xff000000;
             }
+          } else if ( vals[k].equals("csurvey") ) {
+            ++k; while ( k < s && vals[k].length() == 0 ) ++k;
+            if ( k < s ) {
+              mCsxLayer = Integer.parseInt( vals[k] );
+            }
+            ++k; while ( k < s && vals[k].length() == 0 ) ++k;
+            if ( k < s ) {
+              mCsxType = Integer.parseInt( vals[k] );
+            }
+            ++k; while ( k < s && vals[k].length() == 0 ) ++k;
+            if ( k < s ) {
+              mCsxCategory = Integer.parseInt( vals[k] );
+            }
           } else if ( vals[k].equals("path") ) {
             path = br.readLine();
             if ( path != null ) {
@@ -253,6 +268,7 @@ class SymbolPoint extends Symbol
       // FIXME
     }
     mOrientation = 0.0;
+    // Log.v(  TopoDroidApp.TAG, "SymbolPoint::readFile " + filename + " csurvey " + mCsxLayer );
   }
 
   private void makePath()
@@ -262,6 +278,7 @@ class SymbolPoint extends Symbol
     mDxf  = "  0\nLINE\n  8\nPOINT\n" 
           // + "  100\nAcDbEntity\n  100\nAcDbLine\n"
           + "  10\n0.0\n  20\n0.0\n  30\n0.0\n";
+    mCsx = "";
   }
 
   /* Make the path from its stringn description
@@ -275,8 +292,13 @@ class SymbolPoint extends Symbol
   private void makePath( String path )
   {
     StringWriter sw = new StringWriter();
-    PrintWriter pw  = new PrintWriter( sw );
-    float x00=0, y00=0;  // last drawn point
+    PrintWriter pw  = new PrintWriter( sw ); // DXF writer
+    StringWriter sv1 = new StringWriter();
+    PrintWriter pv1  = new PrintWriter( sv1 ); // CSX path writer
+    StringWriter sv2 = new StringWriter();
+    PrintWriter pv2  = new PrintWriter( sv2 ); // CSX circle writer
+
+    float x00=0, y00=0;  // last drawn point1
 
     float unit = TopoDroidApp.mUnit;
     mPath = new Path();
@@ -293,6 +315,8 @@ class SymbolPoint extends Symbol
           mPath.moveTo( x0*unit, y0*unit );
           x00 = x0 * dxfScale;
           y00 = y0 * dxfScale;
+
+          pv1.format(Locale.ENGLISH, "M %.2f %.2f ", x00*csxScale, y00*csxScale );
         }
       } else if ( "lineTo".equals( vals[k] ) ) {
         ++k; while ( k < s && vals[k].length() == 0 ) ++k;
@@ -305,9 +329,12 @@ class SymbolPoint extends Symbol
           DrawingDxf.printString( pw, 8, "POINT" );
           DrawingDxf.printAcDb( pw, -1, "AcDbEntity", "AcDbLine" );
           DrawingDxf.printXYZ( pw, x00, -y00, 0.0f );
+
           x00 = x0 * dxfScale;
           y00 = y0 * dxfScale;
           DrawingDxf.printXYZ1( pw, x00, -y00, 0.0f );
+          
+          pv1.format(Locale.ENGLISH, "L %.2f %.2f ", x00*csxScale, y00*csxScale );
         }
       } else if ( "cubicTo".equals( vals[k] ) ) {
         // cp1x cp1y cp2x cp2y p2x p2y
@@ -460,6 +487,9 @@ class SymbolPoint extends Symbol
     
           x00 = x2 * dxfScale;
           y00 = y2 * dxfScale;
+
+          pv1.format(Locale.ENGLISH, "C %.2f %.2f %.2f %.2f %.2f %.2f ",
+             x0*csxdxfScale, y0*csxdxfScale, x1*csxdxfScale, y1*csxdxfScale, x2*csxdxfScale, y2*csxdxfScale );
         
           // FIXME
           // DrawingDxf.printString( pw, 0, "LINE" );
@@ -472,24 +502,35 @@ class SymbolPoint extends Symbol
         }
       } else if ( "addCircle".equals( vals[k] ) ) {
         ++k; while ( k < s && vals[k].length() == 0 ) ++k;
-        if ( k < s ) { x0 = Float.parseFloat( vals[k] ); }
+        if ( k < s ) { x0 = Float.parseFloat( vals[k] ); }  // center X coord
         ++k; while ( k < s && vals[k].length() == 0 ) ++k;
-        if ( k < s ) { y0 = Float.parseFloat( vals[k] ); }
+        if ( k < s ) { y0 = Float.parseFloat( vals[k] ); }  // center Y coord
         ++k; while ( k < s && vals[k].length() == 0 ) ++k;
         if ( k < s ) {
-          x1 = Float.parseFloat( vals[k] );
+          x1 = Float.parseFloat( vals[k] );                 // radius
           mPath.addCircle( x0*unit, y0*unit, x1*unit, Path.Direction.CCW );
           DrawingDxf.printString( pw, 0, "CIRCLE" );
           DrawingDxf.printString( pw, 8, "POINT" );
           DrawingDxf.printAcDb( pw, -1, "AcDbEntity", "AcDbCircle" );
           DrawingDxf.printXYZ( pw, x0*dxfScale, -y0*dxfScale, 0.0f );
           DrawingDxf.printFloat( pw, 40, x1*dxfScale );
+
+          pv2.format(Locale.ENGLISH,
+            "&lt;circle cx=&quot;%.2f&quot; cy=&quot;%.2f&quot; r=&quot;%.2f&quot; /&gt;",
+            x0*csxdxfScale, y0*csxdxfScale, x1*csxdxfScale );
         }
       } else if ( "arcTo".equals( vals[k] ) ) {
         // (x0,y0) top-left corner of rect
         // (x1,y1) bottom-right corner of rect
         // x2 start-angle [degrees]
         // y2 sweep angle (clockwise) [degrees]
+        // 
+        //    (x0,y0) +-----=-----+
+        //            |     |     |
+        //            |=====+=====| 0 angle (?)
+        //            |     |     | | sweep direction
+        //            +-----=-----+ V
+        //
         ++k; while ( k < s && vals[k].length() == 0 ) ++k; // RECTANGLE first endpoint
         if ( k < s ) { x0 = Float.parseFloat( vals[k] ); }
         ++k; while ( k < s && vals[k].length() == 0 ) ++k;
@@ -523,13 +564,25 @@ class SymbolPoint extends Symbol
           DrawingDxf.printFloat( pw, 40, x1*dxfScale );                             // RADIUS
           DrawingDxf.printFloat( pw, 50, x2 );                                      // ANGLES
           DrawingDxf.printFloat( pw, 51, x2+y2 );
+
+          float cx = (x1+x0)/2;
+          float cy = (y1+y0)/2;
+          float rx = (x1-x0)/2;
+          float ry = (y1-y0)/2;
     
-          x00 = ((x0+x1)/2 + (x1-x0)/2 * (float)(Math.cos((x2+y2)*TopoDroidUtil.GRAD2RAD)) )* dxfScale;
-          y00 = ((y0+y1)/2 + (y1-y0)/2 * (float)(Math.sin((x2+y2)*TopoDroidUtil.GRAD2RAD)) )* dxfScale;
+          float x0i = (cx + rx * (float)(Math.cos((x2)*TopoDroidUtil.GRAD2RAD)) )* dxfScale; // initial point
+          float y0i = (cy + ry * (float)(Math.sin((x2)*TopoDroidUtil.GRAD2RAD)) )* dxfScale;
+          x00 = (cx + rx * (float)(Math.cos((x2+y2)*TopoDroidUtil.GRAD2RAD)) )* dxfScale;    // final point
+          y00 = (cy + ry * (float)(Math.sin((x2+y2)*TopoDroidUtil.GRAD2RAD)) )* dxfScale;
+          
+          // mode to (x00, y00)
+          pv1.format(Locale.ENGLISH, "M %.2f %.2f ", x0i*csxScale, y0i*csxScale );
+          pv1.format(Locale.ENGLISH, "A %.2f %.2f 0 1 %.2f %.2f ", rx*csxdxfScale, ry*csxdxfScale, x00*csxScale, y00*csxScale );
         }
       }
     }
     mDxf = sw.getBuffer().toString();
+    mCsx = "&lt;path d=&quot;" + sv1.getBuffer().toString() + "&quot; /&gt;" + sv2.getBuffer().toString();
   }
 
   private void makePaint( int color )

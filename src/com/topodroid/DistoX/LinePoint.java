@@ -45,6 +45,19 @@ public class LinePoint extends BezierPoint
       next.mY1 += dy;
     }
   }
+
+  public LinePoint( LinePoint lp, LinePoint prev )
+  { 
+    mX = lp.mX;
+    mY = lp.mY;
+    mX1 = lp.mX1;
+    mY1 = lp.mY1;
+    mX2 = lp.mX2;
+    mY2 = lp.mY2;
+    has_cp = lp.has_cp;
+    next = null;
+    if ( prev != null ) prev.next = this;
+  }
   
   public LinePoint( float x, float y, LinePoint prev )
   {
