@@ -63,6 +63,7 @@ public class SurveyNewDialog extends Dialog
   private EditText mEditName;
   private EditText mEditDate;
   private EditText mEditTeam;
+  private EditText mEditDecl;
   private EditText mEditComment;
 
   private Button mBTsave;
@@ -72,13 +73,18 @@ public class SurveyNewDialog extends Dialog
   private TopoDroidApp app;
   private SurveyInfo info;
 
+  private long mOldSid = -1L;
+  private long mOldId  = -1L;
+
 // -------------------------------------------------------------------
-  public SurveyNewDialog( Context context, TopoDroidActivity parent )
+  public SurveyNewDialog( Context context, TopoDroidActivity parent, long old_sid, long old_id )
   {
     super( context );
     mContext = context;
     mParent  = parent;
     app = (TopoDroidApp) mParent.getApplication();
+    mOldSid = old_sid;
+    mOldId  = old_id;
   }
 
   @Override
@@ -92,6 +98,7 @@ public class SurveyNewDialog extends Dialog
     mEditName    = (EditText) findViewById(R.id.survey_name);
     mEditDate    = (EditText) findViewById(R.id.survey_date);
     mEditTeam    = (EditText) findViewById(R.id.survey_team);
+    mEditDecl    = (EditText) findViewById(R.id.survey_decl);
     mEditComment = (EditText) findViewById(R.id.survey_comment);
 
     SimpleDateFormat sdf = new SimpleDateFormat( "yyyy.MM.dd", Locale.US );
@@ -153,20 +160,25 @@ public class SurveyNewDialog extends Dialog
     String date = mEditDate.getText().toString();
     String team = mEditTeam.getText().toString();
     String comment = mEditComment.getText().toString();
+    double decl = 0.0;
+    if ( mEditDecl.getText().toString() != null ) {
+      decl = Double.parseDouble( mEditDecl.getText().toString() ); 
+    }
+      
     if ( date != null ) { date = date.trim(); }
     if ( team != null ) { team = team.trim(); }
     if ( comment != null ) { comment = comment.trim(); }
 
     app.setSurveyFromName( name );
-    app.mData.updateSurveyDayAndComment( app.mSID, date, comment );
-    if ( team != null ) {
-      app.mData.updateSurveyTeam( app.mSID, team );
-    } 
-    //  if ( oldSid >= 0L && oldId >= 0L ) {
-    //    app.mData.transferShots( app.mSID, oldSid, oldId );
-    //    oldSid = -1L;
-    //    oldId = -1L;
-    //  }
+    
+    if ( team == null ) team = "";
+    app.mData.updateSurveyInfo( app.mSID, date, team, decl, comment );
+
+    if ( mOldSid >= 0L && mOldId >= 0L ) {  // SPLIT_SURVEY
+      app.mData.transferShots( app.mSID, mOldSid, mOldId );
+      mOldSid = -1L;
+      mOldId = -1l;
+    }
     
     return true;
   }

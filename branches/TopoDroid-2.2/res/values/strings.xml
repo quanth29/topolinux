@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="topodroid_man">http://topolinux.googlecode.com/files/TopoDroid-1.1.0.pdf</string>
+    <string name="topodroid_man">https://sites.google.com/site/speleoapps/home/topodroid/docs/TopoDroid-2.2.4.pdf</string>
 
     <string name="app_name">TopoDroid</string>
 
@@ -11,9 +11,11 @@
     <string name="LINE">LINE</string>
     <string name="AREA">AREA</string>
     <string name="HELP">HELP</string>
+    <string name="STATION">STATION </string>
 
     <string name="memoryA3">DistoX A3 memory</string>
     <string name="memoryX310">DistoX X310 memory</string>
+    <string name="memory_data">DistoX data</string>
 
     <string name="td_symbol_text">Do you need to install drawing tools?\nYou can do it later with the app TdSymbol</string>
     <string name="td_symbol_ask">Don\'t ask me again</string>
@@ -39,12 +41,20 @@
     <string name="calib_no_name">You must write the calibration name</string>
     <string name="calib_saved">Saved calibration</string>
     <string name="calib_updated">Updated calibration</string>
+    <string name="calib_compute_groups">Computing calibration data groups ...</string>
+    <string name="calib_compute_coeffs">Computing calibration coefficients ...</string>
+    <string name="calib_read_coeffs">Reading calibration coefficients ...</string>
+    <string name="calib_write_coeffs">Writing calibration coefficients ...</string>
     <string name="connect_failed">Failed connect</string>
     <string name="data"> data</string>
     <string name="using">Using %1$s</string>
+    <string name="calib_error">Error: %1$.4f degrees</string>
+    <string name="calib_max_error">Max. error: %1$.4f degrees</string>
+    <string name="calib_iter">Iterations: %1$d</string>
    
     <string name="device_illegal_addr">Illegal memory address</string>
     <string name="device_none">No DistoX selected</string>
+    <string name="device_pairing">Pairing: check notifications</string>
     <string name="device_reset">Reset DistoX memory</string>
     <string name="bt_reset">Reset bluetooth connection</string>
 
@@ -64,6 +74,8 @@
     <string name="import_wait">Importing file... please wait...</string>
     <string name="import_already">Survey already imported</string>
     <string name="import_none">No file to import</string>
+    <string name="sketch_loading">Loading sketch ... please wait...</string>
+    <string name="sketch_saving">Saving sketch ... please wait...</string>
 
     <string name="head_tail">Memory: </string>
     <string name="head_tail_failed">Failed to read DistoX memory</string>
@@ -104,6 +116,8 @@
     <string name="out">out</string>
     <string name="in">in</string>
     <string name="none">none</string>
+    <string name="barrier_add">Break midline display?</string>
+    <string name="barrier_del">Continue midline display?</string>
 
     <string name="no_calib">No calibration</string>
     <string name="no_calibration">No calibration selected</string>
@@ -112,6 +126,7 @@
     <string name="no_db">No database</string>
     <string name="no_device_address">Device address not selected</string>
     <string name="no_device_found">No device found</string>
+    <string name="no_geomag">Failed to get GeoMag</string>
     <string name="no_gms">Calibration has no data.\nUse Download button</string>
     <string name="no_leg_intersection">Section line does not cross any leg</string>
     <string name="no_paired_device">No paired device.\nScan and pair a DistoX</string>
@@ -127,6 +142,7 @@
 
     <string name="menu_about">About</string>
     <string name="menu_detach">Disconnect</string>
+    <string name="menu_recover">Recover</string>
     <string name="menu_help">Help</string>
     <string name="menu_logs">Logs</string>
     <string name="menu_manual">Manual</string>
@@ -134,6 +150,7 @@
     <string name="menu_palette">Palette</string>
 
     <string name="popup_join_pt">Snap to nearby point</string>
+    <string name="popup_snap_ln">Snap to nearby line</string>
     <string name="popup_split_pt">Split point</string>
     <string name="popup_split_ln">Split line</string>
     <string name="popup_sharp_pt">Sharp corner</string>
@@ -195,6 +212,7 @@
     <string name="shot_leg">repeated leg shot</string>
     <!-- string name="shot_length">length</string -->
     <string name="shot_note">note</string>
+    <string name="shot_reverse">reverse</string>
     <string name="shot_to">to</string>
 
 <!--
@@ -217,7 +235,8 @@
     <string name="survey_exists">Survey name conflict</string>
     <string name="survey_date">yyyy.mm.dd</string>
     <string name="survey_delete">Delete survey   </string>
-    <string name ="survey_not_attached">WARNING: unattached shots</string>
+    <string name="survey_not_attached">WARNING: unattached shots</string>
+    <string name="declination">magnetic declination</string>
     <string name="description">description</string>
     <string name="name">name</string>
     <string name="team">team</string>
@@ -278,6 +297,7 @@
     <string name="button_delete"    >Delete    </string>
     <string name="button_eval"      >Eval      </string>
     <string name="button_eval_cal"  >Eval w. calib.</string>
+    <string name="button_geomag"    >GeoMag    </string>
     <string name="button_gps_start" >GPS       </string>
     <string name="button_gps_stop"  >Stop      </string>
     <string name="button_manual"    >Manual    </string>
@@ -553,8 +573,9 @@
   <string name="pref_log_bt">Bluetooth</string>
   <string name="pref_log_bezier">Bezier curves</string>
   <string name="pref_log_calib">Calibration</string>
-  <string name="pref_log_comm">Communication</string>
-  <string name="pref_log_data">Data</string>
+  <string name="pref_log_comm">BT communication</string>
+  <string name="pref_log_csurvey">cSurvey</string>
+  <string name="pref_log_data">Survey data</string>
   <string name="pref_log_db">Database</string>
   <string name="pref_log_debug">Debug</string>
   <string name="pref_log_device">Device window</string>
@@ -565,12 +586,15 @@
   <string name="pref_log_loc">Location</string>
   <string name="pref_log_num">Data reduction</string>
   <string name="pref_log_photo">Photo</string>
-  <string name="pref_log_plot">Plots</string>
-  <string name="pref_log_proto">Protocol</string>
+  <string name="pref_log_plot">Sketches</string>
+  <string name="pref_log_proto">iDistoX protocol</string>
+  <string name="pref_log_ptopo">PocketTopo</string>
   <string name="pref_log_sensor">Sensors</string>
   <string name="pref_log_shot">Shots</string>
   <string name="pref_log_survey">Surveys</string>
   <string name="pref_log_therion">Therion</string>
+  <string name="pref_log_units">Units</string>
+  <string name="pref_log_zip">ZIP</string>
 
     <string name="welcome_title">Welcome to TopoDroid %1$s</string>
     <string name="welcome_text">

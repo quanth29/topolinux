@@ -69,6 +69,13 @@
         android:layout_height="wrap_content" 
         android:text=""
         />
+
+    <Button
+       android:id="@+id/shot_reverse"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="@string/shot_reverse"
+       />
     </LinearLayout>				  
 
     <EditText android:id="@+id/shot_comment" 

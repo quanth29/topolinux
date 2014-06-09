@@ -62,7 +62,10 @@ public class DrawingLinePath extends DrawingPointLinePath
     setPaint( DrawingBrushPaths.getLinePaint( line_type, mReversed ) );
   }
 
-  boolean splitAt( LinePoint lp0, DrawingLinePath line1, DrawingLinePath line2 ) // x,y scene point
+  /** 
+   * @param exclude whether to exclude splitting-point
+   */
+  boolean splitAt( LinePoint lp0, DrawingLinePath line1, DrawingLinePath line2, boolean exclude ) // x,y scene point
   {
     line1.mOutline  = mOutline;
     line1.mOptions  = mOptions;
@@ -72,11 +75,16 @@ public class DrawingLinePath extends DrawingPointLinePath
     line2.mReversed = mReversed;
 
     int k0 = mPoints.indexOf( lp0 );
-    if ( k0 <= 0 ) return false;
+    int kmax = mPoints.size() - 1;
+    if ( k0 <= 0 || k0 >= kmax ) return false;
+    if ( exclude ) {
+      if ( k0 <= 1 || k0 >= kmax-1 ) return false;
+    } 
 
     LinePoint lp = mPoints.get( 0 );
     line1.addStartPoint( lp.mX, lp.mY );
-    for ( int k=1; k<k0; ++ k ) {
+    int k;
+    for ( k=1; k<k0; ++ k ) {
       lp = mPoints.get(k);
       if ( lp.has_cp ) {
         line1.addPoint3( lp.mX1, lp.mY1, lp.mX2, lp.mY2, lp.mX, lp.mY );
@@ -84,15 +92,20 @@ public class DrawingLinePath extends DrawingPointLinePath
         line1.addPoint( lp.mX, lp.mY );
       }
     }
-    lp = mPoints.get(k0);
-    if ( lp.has_cp ) {
-      line1.addPoint3( lp.mX1, lp.mY1, lp.mX2, lp.mY2, lp.mX, lp.mY );
+    if ( ! exclude ) {
+      lp = mPoints.get(k); // k == k0
+      if ( lp.has_cp ) {
+        line1.addPoint3( lp.mX1, lp.mY1, lp.mX2, lp.mY2, lp.mX, lp.mY );
+      } else {
+        line1.addPoint( lp.mX, lp.mY );
+      }
     } else {
-      line1.addPoint( lp.mX, lp.mY );
+      ++ k;
+      lp = mPoints.get(k); // k == k0+1
     }
-
     line2.addStartPoint( lp.mX, lp.mY );
-    for (int k=k0+1; k < mPoints.size(); ++k ) {
+
+    for ( ++k; k < mPoints.size(); ++k ) {
       lp = mPoints.get(k);
       if ( lp.has_cp ) {
         line2.addPoint3( lp.mX1, lp.mY1, lp.mX2, lp.mY2, lp.mX, lp.mY );
@@ -115,6 +128,29 @@ public class DrawingLinePath extends DrawingPointLinePath
   }
 
   public int lineType() { return mLineType; }
+
+  @Override
+  public void toCsurvey( PrintWriter pw )
+  {
+    int layer  = DrawingBrushPaths.getLineCsxLayer( mLineType );
+    int type   = DrawingBrushPaths.getLineCsxType( mLineType );
+    int cat    = DrawingBrushPaths.getLineCsxCategory( mLineType );
+    int pen    = DrawingBrushPaths.getLineCsxPen( mLineType );
+    // linetype: 0 line, 1 spline, 2 bezier
+    pw.format("          <item layer=\"%d\" name=\"\" type=\"%d\" category=\"%d\" linetype=\"0\" mergemode=\"0\">\n",
+      layer, type, cat );
+    pw.format("            <pen type=\"%d\" />\n", pen);
+    pw.format("            <points data=\"");
+    boolean b = true;
+    for ( LinePoint pt : mPoints ) {
+      float x = DrawingActivity.sceneToWorldX( pt.mX );
+      float y = DrawingActivity.sceneToWorldY( pt.mY );
+      pw.format("%.2f %.2f ", x, y );
+      if ( b ) { pw.format("B "); b = false; }
+    }
+    pw.format("\" />\n");
+    pw.format("          </item>\n");
+  }
 
   @Override
   public String toTherion()

@@ -77,6 +77,16 @@
         android:layout_marginBottom="4dp"
         android:scrollHorizontally="true" />
    		
+    <EditText android:id="@+id/survey_decl" 
+        android:layout_width="wrap_content"
+      	android:ems="25"
+        android:layout_height="wrap_content" 
+        android:singleLine="true"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:inputType="number"
+        android:scrollHorizontally="true" />
+
     <EditText android:id="@+id/survey_comment" 
         android:layout_width="wrap_content"
       	android:ems="25"

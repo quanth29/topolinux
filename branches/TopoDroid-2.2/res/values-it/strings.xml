@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <resources>
-    <string name="topodroid_man">http://topolinux.googlecode.com/files/TopoDroid-1.1.0.pdf</string>
+    <string name="topodroid_man">https://sites.google.com/site/speleoapps/home/topodroid/docs</string>
 
     <string name="app_name">TopoDroid</string>
 
@@ -11,9 +11,11 @@
     <string name="LINE">LINEA</string>
     <string name="AREA">AREA</string>
     <string name="HELP">AIUTO</string>
+    <string name="STATION">CAPOSALDO </string>
 
     <string name="memoryA3">DistoX A3</string>
     <string name="memoryX310">DistoX X310</string>
+    <string name="memory_data">Dati DistoX</string>
 
     <string name="td_symbol_text">Vuoi installare strumenti grafici?\nPuoi farlo anche dopo con l\'app TdSymbol</string>
     <string name="td_symbol_ask">Non chiederlo piú</string>
@@ -39,12 +41,20 @@
     <string name="calib_no_name">Nome della calibrazione mancante</string>
     <string name="calib_saved">Salvata calibrazione</string>
     <string name="calib_updated">Aggiornata calibrazione</string>
+    <string name="calib_compute_groups">Raggruppamento dati in corso</string>
+    <string name="calib_compute_coeffs">Calcolo coefficienti in corso</string>
+    <string name="calib_read_coeffs">Lettura coefficienti in corso</string>
+    <string name="calib_write_coeffs">Scrittura coefficienti in corso</string>
     <string name="connect_failed">Comunicazione DistoX fallita</string>
     <string name="data"> dati</string>
     <string name="using">Usando %1$s</string>
+    <string name="calib_error">Errore %1$s gradi</string>
+    <string name="calib_max_error">Errore massimo %1$.4f gradi</string>
+    <string name="calib_iter">Iterazioni: %1$d</string>
    
     <string name="device_illegal_addr">Indirizzo di memoria illegale</string>
     <string name="device_none">Nessun DistoX selezionato</string>
+    <string name="device_pairing">Pairing: controlla le notifiche</string>
     <string name="device_reset">Resettare la memoria del DistoX</string>
     <string name="bt_reset">Resettare la connessione bluetooth</string>
 
@@ -64,6 +74,8 @@
     <string name="import_wait">Importazione file... attendi...</string>
     <string name="import_already">Rilievo già presente</string>
     <string name="import_none">Nessun file da importare</string>
+    <string name="sketch_loading">Caricamento disegno ... attendi ...</string>
+    <string name="sketch_saving">Salvataggio disegno ... attendi ...</string>
 
     <string name="head_tail">Memoria: </string>
     <string name="head_tail_failed">Lettura memoria DistoX fallita</string>
@@ -104,6 +116,8 @@
     <string name="out">out</string>
     <string name="in">in</string>
     <string name="none">none</string>
+    <string name="barrier_add">Interruzione restituzione?</string>
+    <string name="barrier_del">Continuazione restituzione?</string>
 
     <string name="no_calib">Nessuna calibrazione</string>
     <string name="no_calibration">Nessuna calibrazione selezionata</string>
@@ -112,6 +126,7 @@
     <string name="no_db">Nessun database</string>
     <string name="no_device_address">Dispositivo non selezionato</string>
     <string name="no_device_found">Dispositivo non trovato</string>
+    <string name="no_geomag">Fallita connesione a GeoMag</string>
     <string name="no_gms">Calibrazione senza data.</string>
     <string name="no_leg_intersection">La linea di sezione non interseca alcuna battuta</string>
     <string name="no_paired_device">Nessun DistoX accoppiato.</string>
@@ -127,15 +142,17 @@
 
     <string name="menu_about">Info</string>
     <string name="menu_detach">Sconnetti</string>
+    <string name="menu_recover">Recupera</string>
     <string name="menu_help">Aiuto</string>
     <string name="menu_logs">Logs</string>
     <string name="menu_manual">Manuale</string>
     <string name="menu_options">Opzioni</string>
     <string name="menu_palette">PalettPalettee</string>
 
-    <string name="popup_join_pt">Attacca al punto vicino</string>
+    <string name="popup_join_pt">Sposta al punto vicino</string>
+    <string name="popup_snap_ln">Segui la linea vicina</string>
     <string name="popup_split_pt">Dividi il punto</string>
-    <string name="popup_split_ln">Dividi la linea</string>
+    <string name="popup_split_ln">Taglia la linea</string>
     <string name="popup_sharp_pt">Forma angolo</string>
     <string name="popup_remove_pt">Elimina punto</string>
 
@@ -195,6 +212,7 @@
     <string name="shot_leg">battuta ripetuta</string>
     <!-- string name="shot_length">lunghezza</string -->
     <string name="shot_note">nota</string>
+    <string name="shot_reverse">inverso</string>
     <string name="shot_to">a</string>
 
 <!--
@@ -218,6 +236,7 @@
     <string name="survey_date">aaaa.mm.gg</string>
     <string name="survey_delete">Elimina rilievo   </string>
     <string name ="survey_not_attached">ATTENZIONE: dati scollegati</string>
+    <string name="declination">declinazione magnetica</string>
     <string name="description">descrizione</string>
     <string name="name">nome</string>
     <string name="team">squadra</string>
@@ -279,13 +298,14 @@
     <string name="button_eval"      >Calcola   </string>
     <string name="button_eval_cal"  >Calcola con calibr.</string>
     <string name="button_gps_start" >GPS       </string>
+    <!-- OK string name="button_geomag"    >GeoMag    </string -->
     <string name="button_gps_stop"  >Stop      </string>
     <string name="button_manual"    >Manuale   </string>
     <string name="button_measure"   >Misura    </string>
     <string name="button_ok"        >OK        </string>
     <string name="button_no"        >No        </string>
     <string name="button_read"      >Leggi     </string>
-    <string name="button_dump"     >Scrivi   </string>
+    <string name="button_dump"      >Scrivi   </string>
     <string name="button_reset"     >Resetta   </string>
     <string name="button_save"      >Salva     </string>
     <string name="button_select"    >Seleziona </string>
@@ -571,6 +591,8 @@
   <string name="pref_log_shot">Tiri</string>
   <string name="pref_log_survey">Rilievi</string>
   <string name="pref_log_therion">Therion</string>
+  <string name="pref_log_units">Unità</string>
+  <string name="pref_log_zip">ZIP</string>
 
     <string name="welcome_title">TopoDroid %1$s</string>
     <string name="welcome_text">

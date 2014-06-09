@@ -21,6 +21,14 @@
         android:paddingRight="15dp"
         android:text="@string/btn_therion"
         />
+      <Button android:id="@+id/btn_csx"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:singleLine="true"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:text="@string/btn_csurvey"
+        />
       <Button android:id="@+id/btn_png"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 

@@ -11,6 +11,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20130108 created
+ * 20140526 point scale bug fix
  */
 
 package com.topodroid.DistoX;
@@ -78,10 +79,10 @@ public class DrawingStationPath extends DrawingPath
       // station point does not have text
       float f = 1.0f;
       switch ( mScale ) {
-        case DrawingPointPath.SCALE_XS: f = 0.60f;
-        case DrawingPointPath.SCALE_S:  f = 0.77f;
-        case DrawingPointPath.SCALE_L:  f = 1.30f;
-        case DrawingPointPath.SCALE_XL: f = 1.70f;
+        case DrawingPointPath.SCALE_XS: f = 0.50f; break;
+        case DrawingPointPath.SCALE_S:  f = 0.72f; break;
+        case DrawingPointPath.SCALE_L:  f = 1.41f; break;
+        case DrawingPointPath.SCALE_XL: f = 2.00f; break;
       }
       Matrix m = new Matrix();
       m.postScale(f,f);

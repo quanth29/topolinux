@@ -29,6 +29,21 @@
      <item name="Insecure">1</item>
   </string-array>
 
+  <string-array name="surveyStations">
+     <item name="no">No</item>
+     <item name="for">Splays, forward leg</item>
+     <item name="back">Splays, backward leg</item>
+     <item name="for2">Forward leg, splays</item>
+     <item name="back2">Backward leg, splays</item>
+  </string-array>
+  <string-array name="surveyStationsValue">
+     <item name="no">0</item>
+     <item name="for">1</item>
+     <item name="back">2</item>
+     <item name="for2">3</item>
+     <item name="back2">4</item>
+  </string-array>
+
   <string-array name="pickerType">
      <item name="list">List</item>
      <item name="grid">Grid</item>

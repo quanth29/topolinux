@@ -110,6 +110,31 @@ class SymbolLineLibrary
     if ( k < 0 || k >= mLineNr ) return null;
     return reversed ? mLine.get(k).mRevPaint : mLine.get(k).mPaint;
   }
+
+  int lineCsxLayer( int k )
+  {
+    if ( k < 0 || k >= mLineNr ) return -1;
+    return mLine.get(k).mCsxLayer;
+  }
+
+  int lineCsxType( int k )
+  {
+    if ( k < 0 || k >= mLineNr ) return -1;
+    return mLine.get(k).mCsxType;
+  }
+
+  int lineCsxCategory( int k )
+  {
+    if ( k < 0 || k >= mLineNr ) return -1;
+    return mLine.get(k).mCsxCategory;
+  }
+
+  int lineCsxPen( int k )
+  {
+    if ( k < 0 || k >= mLineNr ) return -1;
+    return mLine.get(k).mCsxPen;
+  }
+
   
   // ========================================================================
 
@@ -117,6 +142,11 @@ class SymbolLineLibrary
   {
     if ( mAnyLine.size() > 0 ) return;
     SymbolLine symbol = new SymbolLine( res.getString( R.string.thl_wall ),  "wall",  0xffff0000, 2 );
+    symbol.mCsxLayer = 5;
+    symbol.mCsxType  = 4;
+    symbol.mCsxCategory = 1;
+    symbol.mCsxPen   = 1;
+    
     mAnyLine.add( symbol );
     mAnyLineNr = mAnyLine.size();
   }

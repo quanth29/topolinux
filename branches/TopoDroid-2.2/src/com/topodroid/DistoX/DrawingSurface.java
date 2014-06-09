@@ -18,6 +18,7 @@
  * 20130828 shift point path (change position of symbol point)
  * 201311   new editing action forwarded to the commandManager
  * 20140328 line-leg intersection (forwarded to CommandManager)
+ * 20140513 export as cSurvey
  */
 package com.topodroid.DistoX;
 
@@ -38,9 +39,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.EOFException;
 
@@ -56,7 +59,7 @@ public class DrawingSurface extends SurfaceView
 {
     private Boolean _run;
     protected DrawThread thread;
-    private Bitmap mBitmap;
+    // BITMAP private Bitmap mBitmap;
     public boolean isDrawing = true;
     public DrawingPath previewPath;
     private SurfaceHolder mHolder; // canvas holder
@@ -104,6 +107,7 @@ public class DrawingSurface extends SurfaceView
       //     }
       //   }
       // );
+      // BITMAP mBitmap = Bitmap.createBitmap (1, 1, Bitmap.Config.ARGB_8888);
     }
 
     void setManager( int type ) 
@@ -164,7 +168,7 @@ public class DrawingSurface extends SurfaceView
 
     void sharpenLine( DrawingLinePath line, boolean reduce ) { commandManager.sharpenLine( line, reduce ); }
 
-    void eraseAt( float x, float y, float zoom ) { commandManager.eraseAt( x, y, zoom ); }
+    int eraseAt( float x, float y, float zoom ) { return commandManager.eraseAt( x, y, zoom ); }
     
     void clearReferences( int type ) 
     {
@@ -179,23 +183,30 @@ public class DrawingSurface extends SurfaceView
     {
       Canvas canvas = null;
       try {
+        // if ( mBitmap == null ) {
+        //   mBitmap = Bitmap.createBitmap (1, 1, Bitmap.Config.ARGB_8888);
+        // }
         canvas = mHolder.lockCanvas();
-        if ( mBitmap == null ) {
-          mBitmap = Bitmap.createBitmap (1, 1, Bitmap.Config.ARGB_8888);
-        }
-        final Canvas c = new Canvas (mBitmap);
-        mWidth  = c.getWidth();
-        mHeight = c.getHeight();
+        // BITMAP if ( mBitmap != null ) {
+          // final Canvas c = new Canvas (mBitmap);
+          // mWidth  = c.getWidth();
+          // mHeight = c.getHeight();
+          // c.drawColor(0, PorterDuff.Mode.CLEAR);
+          // commandManager.executeAll( c, mActivity.zoom(), previewDoneHandler );
+          // if ( previewPath != null ) {
+          //   previewPath.draw(c);
+          // }
+          canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+          // BITMAP canvas.drawBitmap (mBitmap, 0, 0, null);
 
-        c.drawColor(0, PorterDuff.Mode.CLEAR);
-        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-
-        commandManager.executeAll( c, mActivity.zoom(), previewDoneHandler );
-        if ( previewPath != null ) {
-          previewPath.draw(c);
-        }
-      
-        canvas.drawBitmap (mBitmap, 0,  0,null);
+          mWidth  = canvas.getWidth();
+          mHeight = canvas.getHeight();
+          canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+          commandManager.executeAll( canvas, mActivity.zoom(), previewDoneHandler );
+          if ( previewPath != null ) {
+            previewPath.draw(canvas);
+          }
+        // BITMAP }
       } finally {
         if ( canvas != null ) {
           mHolder.unlockCanvasAndPost( canvas );
@@ -233,26 +244,11 @@ public class DrawingSurface extends SurfaceView
         while ( _run ) {
           if ( isDrawing == true ) {
             refresh();
-            // Canvas canvas = null;
-            // try{
-            //   canvas = mSurfaceHolder.lockCanvas(null);
-            //   if(mBitmap == null){
-            //     mBitmap = Bitmap.createBitmap (1, 1, Bitmap.Config.ARGB_8888);
-            //   }
-            //   final Canvas c = new Canvas (mBitmap);
-            //   mWidth  = c.getWidth();
-            //   mHeight = c.getHeight();
-
-            //   c.drawColor(0, PorterDuff.Mode.CLEAR);
-            //   canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-
-            //   commandManager.executeAll(c, mActivity.zoom(), previewDoneHandler);
-            //   previewPath.draw(c);
-            //     
-            //   canvas.drawBitmap (mBitmap, 0,  0,null);
-            // } finally {
-            //   mSurfaceHolder.unlockCanvasAndPost(canvas);
-            // }
+          } else {
+            try {
+              // Log.v( TopoDroidApp.TAG, "drawing thread sleeps ..." );
+              sleep(100);
+            } catch ( InterruptedException e ) { }
           }
         }
       }
@@ -266,6 +262,12 @@ public class DrawingSurface extends SurfaceView
       st.setPaint( DrawingBrushPaths.fixedStationPaint );
       commandManager.addStation( st, selectable );
       return st;
+    }
+
+    void resetFixedPaint( Paint paint )
+    {
+      mCommandManager1.resetFixedPaint( paint );
+      mCommandManager2.resetFixedPaint( paint );
     }
 
     public void addFixedPath( DrawingPath path, boolean selectable )
@@ -357,6 +359,8 @@ public class DrawingSurface extends SurfaceView
     }
 
     void moveHotItemToNearestPoint() { commandManager.moveHotItemToNearestPoint(); }
+    
+    void snapHotItemToNearestLine() { commandManager.snapHotItemToNearestLine(); }
 
     void splitHotItem() { commandManager.splitHotItem(); }
     
@@ -376,14 +380,13 @@ public class DrawingSurface extends SurfaceView
     {
       // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "surfaceChanged " );
       // TODO Auto-generated method stub
-      mBitmap =  Bitmap.createBitmap (width, height, Bitmap.Config.ARGB_8888);;
+      // BITMAP mBitmap =  Bitmap.createBitmap (width, height, Bitmap.Config.ARGB_8888);;
     }
 
 
     public void surfaceCreated(SurfaceHolder mHolder) 
     {
-      // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "surfaceCreated " );
-      // TODO Auto-generated method stub
+      TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "surfaceCreated " );
       if (thread == null ) {
         thread = new DrawThread(mHolder);
       }
@@ -393,8 +396,7 @@ public class DrawingSurface extends SurfaceView
 
     public void surfaceDestroyed(SurfaceHolder mHolder) 
     {
-      // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "surfaceDestroyed " );
-      // TODO Auto-generated method stub
+      TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "surfaceDestroyed " );
       boolean retry = true;
       thread.setRunning(false);
       while (retry) {
@@ -439,9 +441,11 @@ public class DrawingSurface extends SurfaceView
     boolean ret = true;
     if ( filename2 != null ) {
       commandManager = mCommandManager2;
+      commandManager.clearSketchItems();
       ret = ret && doLoadTherion( filename2, missingSymbols );
     }
     commandManager = mCommandManager1;
+    commandManager.clearSketchItems();
     return ret && doLoadTherion( filename1, missingSymbols );
   }
 
@@ -455,6 +459,10 @@ public class DrawingSurface extends SurfaceView
     // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "after reset 0: " + DrawingBrushPaths.mOrientation[0]
     //                      + " 7: " + DrawingBrushPaths.mOrientation[7] );
     try {
+      // File filetmp = new File( filename + "tmp" );
+      // while ( filetmp.exists() ) {
+      //   Thread.yield();
+      // }
       FileReader fr = new FileReader( filename );
       BufferedReader br = new BufferedReader( fr );
       String line = null;
@@ -721,6 +729,52 @@ public class DrawingSurface extends SurfaceView
     }
     // remove repeated names
     return missingSymbols.isOK();
+  }
+
+  void exportAsCsx( PrintWriter pw, long type )
+  {
+    if ( type == PlotInfo.PLOT_EXTENDED ) {
+      mCommandManager2.exportAsCsx( pw );
+    } else if ( type == PlotInfo.PLOT_PLAN ) {
+      mCommandManager1.exportAsCsx( pw );
+    } else { // should never happen
+      pw.format("    <layers>\n");
+      pw.format("      <layer name=\"Base\" type=\"0\">\n");
+      pw.format("         <items />\n");
+      pw.format("      </layer>\n");
+      pw.format("      <layer name=\"Soil\" type=\"1\">\n");
+      pw.format("        <items />\n");
+      pw.format("      </layer>\n");
+      pw.format("      <layer name=\"Water and floor morphologies\" type=\"2\">\n");
+      pw.format("        <items />\n");
+      pw.format("      </layer>\n");
+      pw.format("      <layer name=\"Rocks and concretions\" type=\"3\">\n");
+      pw.format("        <items />\n");
+      pw.format("      </layer>\n");
+      pw.format("      <layer name=\"Ceiling morphologies\" type=\"4\">\n");
+      pw.format("        <items />\n");
+      pw.format("      </layer>\n");
+      pw.format("      <layer name=\"Borders\" type=\"5\">\n");
+      pw.format("        <items>\n");
+//       pw.format("          <item layer=\"5\" name=\"Esempio bezier\" type=\"4\" category=\"1\" linetype=\"2\" mergemode=\"0\">\n");
+//       pw.format("            <pen type="1" />
+//       pw.format("            <points data="-6.69 1.04 B -6.51 1.58 -5.85 2.21 -5.04 2.63 -3.81 2.93 -1.56 2.57 -0.45 2.06 0.00 1.46 0.87 1.31 1.20 -0.17 1.29 -1.13 1.17 -2.24 0.93 -2.75 0.18 -4.85 1.83 -5.09 2.76 -5.78 3.21 -5.93 " />
+//       pw.format("          </item>
+//       pw.format("          <item layer="5" name="Esempio spline" type="4" category="1" linetype="1" mergemode="0">
+//       pw.format("            <pen type="1" />
+//       pw.format("            <points data="-3.30 6.26 B -3.12 6.80 -2.46 7.43 -1.65 7.85 -0.42 8.15 1.83 7.79 2.94 7.28 3.39 6.68 4.26 6.53 4.68 5.08 4.68 4.09 4.56 2.98 4.32 2.47 3.57 0.37 5.22 0.13 6.15 -0.56 6.60 -0.71 " />
+//       pw.format("          </item>
+//       pw.format("          <item layer="5" name="Esempio rette" type="4" category="1" linetype="0" mergemode="0">
+//       pw.format("            <pen type="1" />
+//       pw.format("            <points data="-9.60 -3.47 B -8.97 -2.81 -7.71 -2.27 -6.45 -2.21 -4.92 -2.75 -4.38 -3.11 -3.69 -3.92 -3.45 -4.70 -3.36 -6.80 -2.79 -8.06 -2.34 -8.39 -0.42 -8.93 " />
+//       pw.format("          </item>
+      pw.format("        </items>\n");
+      pw.format("      </layer>\n");
+      pw.format("      <layer name=\"Signs\" type=\"6\">\n");
+      pw.format("        <items />\n");
+      pw.format("      </layer>\n");
+      pw.format("    </layers>\n");
+    }
   }
 
 }

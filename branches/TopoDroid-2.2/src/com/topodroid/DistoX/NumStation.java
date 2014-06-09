@@ -10,6 +10,7 @@
  * --------------------------------------------------------
  * CHANGES
  * 20130108 created fron DistoXNum
+ ( 20140513 added mBarrier field
  */
 package com.topodroid.DistoX;
 
@@ -24,6 +25,7 @@ public class NumStation extends NumSurveyPoint
   NumShot s1;
   NumShot s2;
   NumNode node;
+  boolean mBarrier; // whether thsi station is barrier to data reduction
   
 
   NumStation( String id )
@@ -35,6 +37,7 @@ public class NumStation extends NumSurveyPoint
     s1 = null;
     s2 = null;
     node = null;
+    mBarrier = false;
   }
 
   NumStation( String id, NumStation from, float d, float b, float c, int extend )
@@ -51,5 +54,6 @@ public class NumStation extends NumSurveyPoint
     s1 = null;
     s2 = null;
     node = null;
+    mBarrier = false;
   }
 }

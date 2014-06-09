@@ -11,6 +11,7 @@
  * CHANGES
  * 20120603 created 
  * 20130131 intent: Proj4 coord conversion
+ * 20140609 geomag
  */
 package com.topodroid.DistoX;
 
@@ -34,6 +35,8 @@ import android.view.View;
 import android.view.View.OnKeyListener;
 // import android.view.KeyEvent;
 
+import android.widget.Toast;
+
 import android.util.Log;
 
 
@@ -47,8 +50,10 @@ public class FixedDialog extends Dialog
 
   // private TextView mTVdata;
   private EditText mETstation;
+  private EditText mETdecl;
   private TextView mTVcrs;
   private Button   mButtonDrop;
+  private Button   mButtonGeomag;
   private Button   mButtonOK;
   private Button   mButtonConvert;
   // private Button   mButtonCancel;
@@ -76,9 +81,11 @@ public class FixedDialog extends Dialog
     setContentView(R.layout.fixed_dialog);
     // mTVdata    = (TextView) findViewById(R.id.fix_data );
     mETstation = (EditText) findViewById(R.id.fix_station );
+    mETdecl    = (EditText) findViewById(R.id.fix_decl );
     mTVcrs     = (TextView) findViewById(R.id.fix_crs );
 
     mButtonDrop    = (Button) findViewById(R.id.fix_drop );
+    mButtonGeomag  = (Button) findViewById(R.id.fix_geomag );
     mButtonOK      = (Button) findViewById(R.id.fix_ok );
     mButtonConvert = (Button) findViewById(R.id.fix_convert );
     // mButtonCancel  = (Button) findViewById(R.id.fix_cancel );
@@ -89,8 +96,10 @@ public class FixedDialog extends Dialog
     // mTVdata.setText( mFxd.toLocString() );
     setTitle( mFxd.toLocString() );
     mETstation.setText( mFxd.name );
+  
     mTVcrs.setText( TopoDroidApp.mCRS );
     
+    mButtonGeomag.setOnClickListener( this );
     mButtonDrop.setOnClickListener( this );
     mButtonOK.setOnClickListener( this );
     mButtonConvert.setOnClickListener( this );
@@ -103,6 +112,14 @@ public class FixedDialog extends Dialog
     // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "FixedDialog onClick() button " + b.getText().toString() );
 
     if ( b == mButtonOK ) {
+      if ( mETdecl.getText() != null && mETdecl.getText().toString() != null ) {
+        try {
+          float decl = Float.parseFloat( mETdecl.getText().toString() );
+          mParent.setDeclination( decl );
+        } catch ( NumberFormatException e ) {
+          // TODO
+        }
+      }
       String station = mETstation.getText().toString().trim();
       if ( station.length() == 0 ) {
         String error = mContext.getResources().getString( R.string.error_station_required );
@@ -115,6 +132,14 @@ public class FixedDialog extends Dialog
     } else if ( b == mButtonConvert ) {
       if ( mTVcrs.getText() != null ) {
         mParent.tryProj4( this, mTVcrs.getText().toString(), mFxd );
+      }
+      return;
+    } else if ( b == mButtonGeomag ) {
+      float decl = GeodeticHeight.getGeomag( mFxd );
+      if ( decl > -180 ) {
+        mETdecl.setText( String.format( "%.4f", decl ) );
+      } else {
+        Toast.makeText( mParent, R.string.no_geomag, Toast.LENGTH_SHORT).show();
       }
       return;
     } else if ( b == mButtonDrop ) {

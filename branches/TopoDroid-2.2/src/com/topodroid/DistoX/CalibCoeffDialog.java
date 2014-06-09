@@ -95,18 +95,21 @@ public class CalibCoeffDialog extends Dialog
     pw8.format("aMz  %8.4f %8.4f %8.4f", am.z.x, am.z.y, am.z.z );
     amz = sw8.getBuffer().toString();
 
-    StringWriter swD = new StringWriter();
-    PrintWriter  pwD = new PrintWriter( swD );
-    pwD.format("Error %.4f grad", delta );
-    delta0 = swD.getBuffer().toString();
-    StringWriter swM = new StringWriter();
-    PrintWriter  pwM = new PrintWriter( swM );
-    pwM.format("Max error %8.4f", error );
-    error0 = swM.getBuffer().toString();
-    StringWriter swI = new StringWriter();
-    PrintWriter  pwI = new PrintWriter( swI );
-    pwI.format("Iterations %d", iter );
-    iter0 = swI.getBuffer().toString();
+    // StringWriter swD = new StringWriter();
+    // PrintWriter  pwD = new PrintWriter( swD );
+    // pwD.format("Error %.4f grad", delta );
+    // delta0 = swD.getBuffer().toString();
+    delta0 = String.format( mContext.getResources().getString( R.string.calib_error ), delta );
+    // StringWriter swM = new StringWriter();
+    // PrintWriter  pwM = new PrintWriter( swM );
+    // pwM.format("Max error %8.4f", error );
+    // error0 = swM.getBuffer().toString();
+    error0 = String.format( mContext.getResources().getString( R.string.calib_max_error ), error );
+    // StringWriter swI = new StringWriter();
+    // PrintWriter  pwI = new PrintWriter( swI );
+    // pwI.format("Iterations %d", iter );
+    // iter0 = swI.getBuffer().toString();
+    iter0 = String.format( mContext.getResources().getString( R.string.calib_iter ), iter );
   }
 
 // -------------------------------------------------------------------

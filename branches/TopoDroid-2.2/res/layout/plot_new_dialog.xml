@@ -85,7 +85,7 @@
                 android:singleLine="true"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
-        android:text="@string/button_select"
+        android:text="@string/button_ok"
         />
       <!-- Button android:id="@+id/button_back_plot_name"
         android:layout_width="wrap_content" 

@@ -94,5 +94,11 @@ public class DrawingAreaPath extends DrawingPointLinePath
     return sw.getBuffer().toString();
   }
 
+  @Override
+  public void toCsurvey( PrintWriter pw )
+  {
+    // TODO
+  }
+
 }
 

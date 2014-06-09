@@ -12,7 +12,29 @@
         android:layout_height="wrap_content" 
         android:textSize="18sp"
         / -->
-   					  
+     					  
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_width="fill_parent" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal" 
+      >
+      <EditText android:id="@+id/fix_decl" 
+        android:singleLine="true" 
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:hint="@string/declination"
+        />
+      <Button android:id="@+id/fix_geomag"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="left"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="@string/button_geomag"
+        />
+    </LinearLayout>
+     					  
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
       android:layout_width="fill_parent" 
       android:layout_height="wrap_content"

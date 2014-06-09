@@ -20,6 +20,11 @@ class Symbol // implements View.OnClickListener
 {
   boolean mEnabled;  //!< whether the symbol is enabled in the library
   String  mThName;   // therion name
+  int     mCsxLayer;    // cSurvey layer
+  int     mCsxType;
+  int     mCsxCategory;
+  int     mCsxPen;      // pen (for lines)
+  String  mCsx; // clipart path 
 
   /** default cstr
    */
@@ -27,18 +32,37 @@ class Symbol // implements View.OnClickListener
   {
     mEnabled = true;
     mThName  = null;
+    mCsxLayer = -1;
+    mCsxType  = -1;
+    mCsxCategory = -1;
+    mCsxPen   = 1;     // default pen is "1"
+    mCsx = null;
   }
 
   Symbol( String th_name ) 
   { 
-    mEnabled = true;
-    mThName = th_name;
+    mEnabled  = true;
+    mThName   = th_name;
+    mCsxLayer = -1;
+    mCsxType  = -1;
+    mCsxCategory = -1;
+    mCsxPen   = 1;
+    mCsx = null;
   }
 
   /** cstr 
    * @param enabled  whether the symbol is enabled
    */
-  Symbol(boolean enabled ) { mEnabled = enabled; }
+  Symbol(boolean enabled ) 
+  { 
+    mEnabled  = enabled; 
+    mThName   = null;
+    mCsxLayer = -1;
+    mCsxType  = -1;
+    mCsxCategory = -1;
+    mCsxPen   = 1;
+    mCsx = null;
+  }
 
   boolean isEnabled() { return mEnabled; }
 

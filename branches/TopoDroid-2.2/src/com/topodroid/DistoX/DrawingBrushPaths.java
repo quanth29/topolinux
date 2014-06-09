@@ -74,6 +74,63 @@ public class DrawingBrushPaths
     return mPointLib.pointHasText( index );
   }
 
+  public static int getPointCsxLayer( int index )
+  {
+    return mPointLib.pointCsxLayer( index );
+  }
+
+  public static int getPointCsxType( int index )
+  {
+    return mPointLib.pointCsxType( index );
+  }
+
+  public static int getPointCsxCategory( int index )
+  {
+    return mPointLib.pointCsxCategory( index );
+  }
+
+  public static String getPointCsx( int index )
+  {
+    return mPointLib.pointCsx( index );
+  }
+
+  public static int getLineCsxLayer( int index )
+  {
+    return mLineLib.lineCsxLayer( index );
+  }
+
+  public static int getLineCsxType( int index )
+  {
+    return mLineLib.lineCsxType( index );
+  }
+
+  public static int getLineCsxCategory( int index )
+  {
+    return mLineLib.lineCsxCategory( index );
+  }
+
+  public static int getLineCsxPen( int index )
+  {
+    return mLineLib.lineCsxPen( index );
+  }
+
+
+  public static int getAreaCsxLayer( int index )
+  {
+    return mAreaLib.areaCsxLayer( index );
+  }
+
+  public static int getAreaCsxType( int index )
+  {
+    return mAreaLib.areaCsxType( index );
+  }
+
+  public static int getAreaCsxCategory( int index )
+  {
+    return mAreaLib.areaCsxCategory( index );
+  }
+
+
 
   public static boolean canRotate( int index ) { return mPointLib.canRotate( index ); }
 
@@ -142,6 +199,7 @@ public class DrawingBrushPaths
   public static Paint highlightPaint  = null;
   public static Paint highlightPaint2 = null;
   public static Paint fixedShotPaint  = null;
+  public static Paint fixedBluePaint  = null;
   public static Paint fixedSplayPaint = null;
   public static Paint fixedGridPaint  = null;
   public static Paint fixedGrid10Paint  = null;
@@ -203,6 +261,14 @@ public class DrawingBrushPaths
     fixedShotPaint.setStrokeCap(Paint.Cap.ROUND);
     fixedShotPaint.setStrokeWidth( STROKE_WIDTH_FIXED );
     fixedShotPaint.setColor(0xFFbbbbbb); // light gray
+
+    fixedBluePaint = new Paint();
+    fixedBluePaint.setDither(true);
+    fixedBluePaint.setStyle(Paint.Style.STROKE);
+    fixedBluePaint.setStrokeJoin(Paint.Join.ROUND);
+    fixedBluePaint.setStrokeCap(Paint.Cap.ROUND);
+    fixedBluePaint.setStrokeWidth( STROKE_WIDTH_FIXED );
+    fixedBluePaint.setColor(0xFF9999ff); // light blue
 
     fixedSplayPaint = new Paint();
     fixedSplayPaint.setDither(true);

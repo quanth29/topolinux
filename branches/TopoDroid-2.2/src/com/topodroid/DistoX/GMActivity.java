@@ -379,7 +379,7 @@ public class GMActivity extends Activity
         if ( app.mCID >= 0 ) {
           List< CalibCBlock > list = app.mData.selectAllGMs( app.mCID );
           if ( list.size() >= 16 ) {
-            setTitle( mCalibName + " computing groups" );
+            setTitle( R.string.calib_compute_groups );
             setTitleColor( TopoDroidApp.COLOR_COMPUTE );
             // computeGroups();
             // updateDisplay( );
@@ -407,7 +407,7 @@ public class GMActivity extends Activity
         }
       } else if ( b == mButton1[4] ) { // compute
         if ( app.mCID >= 0 ) {
-          setTitle( mCalibName + " computing calibration" );
+          setTitle( R.string.calib_compute_coeffs );
           setTitleColor( TopoDroidApp.COLOR_COMPUTE );
           new CalibComputer( this, CALIB_COMPUTE_CALIB ).execute();
           // if ( computeCalib() ) {
@@ -427,7 +427,7 @@ public class GMActivity extends Activity
       //   mListView.setAdapter( mButtonView1.mAdapter );
       //   mListView.invalidate();
       } else if ( b == mButton1[5] ) { // read
-        setTitle( "reading calib. coeffiicients ..." );
+        setTitle( R.string.calib_read_coeffs );
         setTitleColor( TopoDroidApp.COLOR_CONNECTED );
         byte[] coeff = new byte[48];
         if ( app.mComm == null || ! app.mComm.readCoeff( app.distoAddress(), coeff ) ) {
@@ -448,7 +448,7 @@ public class GMActivity extends Activity
         if ( app.mCalibration == null ) {
           Toast.makeText(getApplicationContext(), R.string.no_calibration, Toast.LENGTH_SHORT).show();
         } else {
-          setTitle( "writing calib. coeffiicients ..." );
+          setTitle( R.string.calib_write_coeffs );
           setTitleColor( TopoDroidApp.COLOR_CONNECTED );
           byte[] coeff = app.mCalibration.GetCoeff();
           if ( coeff == null ) {

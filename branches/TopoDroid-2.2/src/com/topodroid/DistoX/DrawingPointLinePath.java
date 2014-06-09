@@ -40,7 +40,7 @@ public class DrawingPointLinePath extends DrawingPath
 {
   boolean mVisible; // visible line
   boolean mClosed;
-  ArrayList< LinePoint > mPoints; 
+  ArrayList< LinePoint > mPoints;      // points (scene coordinates)
   private LinePoint mPrevPoint = null; // previous point while constructing the line
 
   public DrawingPointLinePath( int path_type, boolean visible, boolean closed )

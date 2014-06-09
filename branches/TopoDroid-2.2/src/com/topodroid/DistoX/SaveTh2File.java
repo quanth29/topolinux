@@ -12,6 +12,7 @@
  */
 package com.topodroid.DistoX;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
 
@@ -22,6 +23,7 @@ import android.os.AsyncTask;
 // import android.os.Bundle;
 import android.os.Handler;
 
+// import android.util.Log;
 
 class SaveTh2File extends AsyncTask<Intent,Void,Boolean>
 {
@@ -32,7 +34,8 @@ class SaveTh2File extends AsyncTask<Intent,Void,Boolean>
     private String mFullName1;
     private String mFullName2;
 
-    public SaveTh2File( Context context, Handler handler, TopoDroidApp app, DrawingSurface surface, 
+    public SaveTh2File( Context context, Handler handler,
+                        TopoDroidApp app, DrawingSurface surface, 
                         String fullname1, String fullname2 )
     {
        mContext  = context;
@@ -50,31 +53,39 @@ class SaveTh2File extends AsyncTask<Intent,Void,Boolean>
       try {
         if ( mFullName2 != null ) {
           String filename2 = mApp.getTh2FileWithExt( mFullName2 );
-          FileWriter writer2 = new FileWriter( filename2 );
+          File file2 = new File( filename2 + "tmp" );
+          FileWriter writer2 = new FileWriter( file2 );
+          
           BufferedWriter out2 = new BufferedWriter( writer2 );
           mSurface.exportTherion( (int)PlotInfo.PLOT_EXTENDED, out2, mFullName2, PlotInfo.projName[ (int)PlotInfo.PLOT_EXTENDED ] );
           out2.flush();
           out2.close();
+          file2.renameTo( new File( filename2 ) );
+
           String filename1 = mApp.getTh2FileWithExt( mFullName1 );
-          FileWriter writer1 = new FileWriter( filename1 );
+          File file1 = new File( filename1 + "tmp" );
+          FileWriter writer1 = new FileWriter( file1 );
           BufferedWriter out1 = new BufferedWriter( writer1 );
           mSurface.exportTherion( (int)PlotInfo.PLOT_PLAN, out1, mFullName1, PlotInfo.projName[ (int)PlotInfo.PLOT_PLAN ] );
           out1.flush();
           out1.close();
+          file1.renameTo( new File( filename1 ) );
         } else {
           String filename = mApp.getTh2FileWithExt( mFullName1 );
-          FileWriter writer = new FileWriter( filename );
+          File file = new File( filename + "tmp" );
+          FileWriter writer = new FileWriter( file );
           BufferedWriter out = new BufferedWriter( writer );
           mSurface.exportTherion( (int)PlotInfo.PLOT_SECTION, out, mFullName1, PlotInfo.projName[ (int)PlotInfo.PLOT_SECTION ] );
           out.flush();
           out.close();
+          file.renameTo( new File( filename ) );
         }
         return true;
       } catch (Exception e) {
         e.printStackTrace();
       }
       if ( mHandler != null ) {
-        //mHandler.post(completeRunnable);
+        // mHandler.post( completeRunnable );
       }
       return false;
     }

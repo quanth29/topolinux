@@ -53,6 +53,8 @@ public class NumShot
 
   boolean reversed() { return (mDirection == -1); }
 
+  // boolean isRecent( long id ) { return blocks.get(0) != null && blocks.get(0).isRecent( id ); }
+
   void addBlock( DistoXDBlock blk )
   {
     int n = blocks.size();

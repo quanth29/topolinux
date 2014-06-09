@@ -39,6 +39,8 @@ public class TherionParser
   public String mDate = null;  // survey date
   public String mTeam = "";
   public String mTitle = "";
+  public float  mDeclination = 0.0f; // one-survey declination
+  private boolean mApplyDeclination = false;
  
   Stack< TherionParserState > mStates; // states stack (LIFO)
 
@@ -82,12 +84,13 @@ public class TherionParser
   public ArrayList< ParserShot > getSplays() { return splays; }
 
 
-  public TherionParser( String filename ) throws ParserException
+  public TherionParser( String filename, boolean apply_declination ) throws ParserException
   {
     fixes  = new ArrayList< Fix >();
     shots  = new ArrayList< ParserShot >();
     splays = new ArrayList< ParserShot >();
     mStates = new Stack< TherionParserState >();
+    mApplyDeclination = apply_declination;
     TherionParserState state = new TherionParserState();
     readFile( filename, "", state );
   }
@@ -239,6 +242,7 @@ public class TherionParser
                     state.mDeclination *= parseAngleUnit( vals[j+1] );
                     ++j;
                   }
+                  if ( ! mApplyDeclination ) mDeclination = state.mDeclination;
                 } else if ( vals[j].equals("-title") && j+1 < vals_len ) {
                   for ( ++j; j<vals_len; ++j ) {
                     if ( vals[j].length() == 0 ) continue;
@@ -341,6 +345,7 @@ public class TherionParser
                     declination *= parseAngleUnit( vals[2] );
                   }
                   state.mDeclination = declination;
+                  if ( ! mApplyDeclination ) mDeclination = state.mDeclination;
                 }
               } else if ( cmd.equals("infer") ) {
                 // ignore
@@ -477,7 +482,11 @@ public class TherionParser
                 float cln  = Float.parseFloat( vals[jClino] );
 
                 len = state.mZeroLen + (len*state.mUnitLen) / state.mScaleLen;
-                ber = state.mZeroBer + (ber*state.mUnitBer + state.mDeclination) / state.mScaleBer;
+                if ( mApplyDeclination ) {
+                  ber = state.mZeroBer + (ber*state.mUnitBer + state.mDeclination) / state.mScaleBer;
+                } else {
+                  ber = state.mZeroBer + (ber*state.mUnitBer) / state.mScaleBer;
+                }
                 cln = state.mZeroCln + (cln*state.mUnitCln) / state.mScaleCln;
 
                 // TODO add shot

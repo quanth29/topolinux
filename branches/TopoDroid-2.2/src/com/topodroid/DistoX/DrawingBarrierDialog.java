@@ -1,18 +1,16 @@
-/* @file DrawingStationDialog.java
+/* @file DrawingBarrierDialog.java
  *
  * @author marco corvi
  * @date nov 2011
  *
- * @brief TopoDroid drawing: dialog for a station point to the scrap
- *
- * for when station points are not automatically added
+ * @brief TopoDroid drawing: dialog for a barrier station
  *
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
  * --------------------------------------------------------
  * CHANGES
- * 20130108 created
+ * 20140513 created
  */
 package com.topodroid.DistoX;
 
@@ -28,7 +26,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 
-public class DrawingStationDialog extends Dialog 
+public class DrawingBarrierDialog extends Dialog 
                                   implements View.OnClickListener
 {
     private TextView mLabel;
@@ -37,37 +35,43 @@ public class DrawingStationDialog extends Dialog
 
     private Context mContext;
     private DrawingActivity mActivity;
-    private DrawingStationName mStation;
+    private String mStation;
+    private boolean mIsBarrier;
 
-    public DrawingStationDialog( Context context, DrawingActivity activity, DrawingStationName station )
+    public DrawingBarrierDialog( Context context, DrawingActivity activity, String name, boolean is_barrier )
     {
       super(context);
       mContext  = context;
       mActivity = activity;
-      mStation  = station;
+      mStation  = name;
+      mIsBarrier = is_barrier; 
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
       super.onCreate(savedInstanceState);
-      setContentView(R.layout.drawing_station_dialog);
+      setContentView(R.layout.drawing_barrier_dialog);
 
-      mLabel     = (TextView) findViewById(R.id.station_text);
+      mLabel     = (TextView) findViewById(R.id.barrier_text);
       mBtnOK     = (Button) findViewById(R.id.btn_ok);
       // mBtnCancel = (Button) findViewById(R.id.btn_cancel);
+
+      if ( mIsBarrier ) {
+        mLabel.setText( mContext.getResources().getString(R.string.barrier_del) );
+      }
 
       mBtnOK.setOnClickListener( this );
       // mBtnCancel.setOnClickListener( this );
 
-      setTitle( mContext.getResources().getString(R.string.STATION) + mStation.mName ); 
+      setTitle( mContext.getResources().getString(R.string.STATION) + mStation ); 
     }
 
     public void onClick(View view)
     {
-      // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "DrawingStationDialog onClick() " + view.toString() );
+      // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "DrawingBarrierDialog onClick() " + view.toString() );
       if (view.getId() == R.id.btn_ok ) {
-        mActivity.addStationPoint( mStation );
+        mActivity.toggleStationBarrier( mStation, mIsBarrier );
       }
       dismiss();
     }

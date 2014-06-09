@@ -47,7 +47,7 @@ class PlotInfo
   public String name;   // name of the plot
   public int type;      // type of the plot
   public String start;  // base station
-  public String view;   // viewed station
+  public String view;   // viewed station (barrier)
   public float xoffset; // display X-offset
   public float yoffset; // display Y-offset
   public float zoom;    // display zoom

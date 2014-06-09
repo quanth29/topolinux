@@ -104,7 +104,7 @@ public class DistoXComm
       while ( doWork && nReadPackets != toRead ) {
         
         int res = mProto.readPacket( toRead >= 0 );
-        // TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "RFcomm readPacket returns " + res );
+        TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "RFcomm readPacket returns " + res );
 
         if ( res == DistoXProtocol.DISTOX_PACKET_NONE ) {
           doWork = false;
@@ -381,7 +381,7 @@ public class DistoXComm
   }
 
   // -------------------------------------------------------- 
-  /*
+  
   public boolean connectRemoteDevice( String address )
   {
     // TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "connectRemoteDevice address " + address );
@@ -397,7 +397,7 @@ public class DistoXComm
     }
     return false;
   }
-   */
+ 
 
   public void disconnectRemoteDevice( )
   {
