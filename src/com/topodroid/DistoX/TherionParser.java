@@ -31,7 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 
-import android.util.Log;
+// import android.util.Log;
 
 public class TherionParser
 {

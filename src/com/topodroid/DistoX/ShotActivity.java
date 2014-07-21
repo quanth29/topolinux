@@ -58,6 +58,8 @@ import android.os.Parcelable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Debug;
+
 // import android.os.SystemClock;
 // import android.os.PowerManager;
 import android.content.res.Resources;
@@ -88,6 +90,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.app.Dialog;
 import android.widget.Button;
+
+import android.view.WindowManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -103,7 +107,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.net.Uri;
 
-import android.util.Log;
+// import android.util.Log;
 
 public class ShotActivity extends Activity
                           implements OnItemClickListener
@@ -174,10 +178,10 @@ public class ShotActivity extends Activity
 
   // private long mLastExtend; // id of the last-extend-ed splay 
 
-  private static final String LIST_STATE = "listState";
-  private int mFirstPos = -1;  
+  // private static final String LIST_STATE = "listState";
+  // private int mFirstPos = -1;  
   // private int mScroll   = 0;
-  private int mSavePos  = -1;  // shot entry position
+  // private int mSavePos  = -1;  // shot entry position
   private int mShotPos  = -1;  // shot entry position
   private int mPrevPos  = 0;   // prev shot entry position
   private int mNextPos  = 0;   // next shot entry position
@@ -370,9 +374,12 @@ public class ShotActivity extends Activity
     DataHelper data = mApp.mData;
     if ( data != null && mApp.mSID >= 0 ) {
       List<DistoXDBlock> list = data.selectAllShots( mApp.mSID, TopoDroidApp.STATUS_NORMAL );
+      if ( list.size() > 4 ) computeMeans( list );
+
+      List< PhotoInfo > photos = data.selectAllPhotos( mApp.mSID, TopoDroidApp.STATUS_NORMAL );
       // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "updateDisplay() shot list size " + list.size() );
       // Log.v( TopoDroidApp.TAG, "updateDisplay() shot list size " + list.size() );
-      updateShotList( list );
+      updateShotList( list, photos );
       setTitle( mApp.mySurvey );
     } else {
       Toast.makeText( this, R.string.no_survey, Toast.LENGTH_SHORT ).show();
@@ -383,9 +390,9 @@ public class ShotActivity extends Activity
 
   boolean getShowIds() { return mDataAdapter.show_ids; }
 
-  private void updateShotList( List<DistoXDBlock> list )
+  private void updateShotList( List<DistoXDBlock> list, List< PhotoInfo > photos )
   {
-    TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "updateShotList size " + list.size() );
+    TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "updateShotList shots " + list.size() + " photos " + photos.size() );
     mDataAdapter.clear();
     mList.setAdapter( mDataAdapter );
     if ( list.size() == 0 ) {
@@ -400,8 +407,12 @@ public class ShotActivity extends Activity
 
       // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "item " + cur.mLength + " " + cur.mBearing + " " + cur.mClino );
 
-      if ( cur.mType == DistoXDBlock.BLOCK_SEC_LEG
-           || cur.relativeDistance( prev ) < mApp.mCloseDistance ) {
+      if ( cur.mType == DistoXDBlock.BLOCK_SEC_LEG || cur.relativeDistance( prev ) < mApp.mCloseDistance ) {
+
+        if ( cur.mType == DistoXDBlock.BLOCK_BLANK ) {   // FIXME 20140612
+          cur.mType = DistoXDBlock.BLOCK_SEC_LEG;
+          mApp.mData.updateShotLeg( cur.mId, mApp.mSID, 1L ); // cur.mType ); // FIXME 20140616
+        }
 
         // if ( prev != null && prev.mType == DistoXDBlock.BLOCK_BLANK ) prev.mType = DistoXDBlock.BLOCK_BLANK_LEG;
         if ( prev != null ) prev.setTypeBlankLeg();
@@ -448,6 +459,7 @@ public class ShotActivity extends Activity
       // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "adapter add " + cur.mLength + " " + cur.mBearing + " " + cur.mClino );
       mDataAdapter.add( cur );
     }
+    mDataAdapter.reviseBlockWithPhotos( photos );
   }
 
   // ---------------------------------------------------------------
@@ -469,9 +481,9 @@ public class ShotActivity extends Activity
     // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "ShotActivity onItemClick id " + id);
     DistoXDBlock blk = mDataAdapter.get(pos);
 
-    mSavePos = pos;
     mShotPos = pos;
-    mFirstPos = mList.getFirstVisiblePosition();
+    // mSavePos = pos;
+    // mFirstPos = mList.getFirstVisiblePosition();
     // mScroll   = mList.getScrollY();
     // mSaveTextView = (TextView)view;
 
@@ -498,10 +510,18 @@ public class ShotActivity extends Activity
   {
     // mSecondLastShotId = mApp.lastShotId( );
     if ( mApp.mDevice != null && mApp.mBTAdapter.isEnabled() ) {
+      // WindowManager.LayoutParams attr = getWindow().getAttributes();
+      // attr.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+      //       | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+      // attr.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
+      // getWindow().setAttributes(attr);
       setTitleColor( TopoDroidApp.COLOR_CONNECTED );
       // TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "shot menu DOWNLOAD" );
       new DistoXRefresh( mApp, this ).execute();
       // updateDisplay( );
+      // // attr = getWindow().getAttributes();
+      // attr.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+      // getWindow().setAttributes(attr);
     } else {
       if ( mApp.mSID < 0 ) {
         Toast.makeText( this, R.string.no_survey, Toast.LENGTH_SHORT ).show();
@@ -666,7 +686,6 @@ public class ShotActivity extends Activity
     //   mButtonHelp.setVisibility( View.VISIBLE );
     // }
 
-
     int nr_button1 = 7;
     int nr_button2 = 8;
     mButton1 = new Button[ nr_button1 ];
@@ -711,7 +730,6 @@ public class ShotActivity extends Activity
     List<DistoXDBlock> list = mApp.mData.selectAllShots( mApp.mSID, TopoDroidApp.STATUS_NORMAL );
     // mSecondLastShotId = mApp.lastShotId( );
 
-    if ( list.size() > 4 ) computeMeans( list );
     
     updateDisplay( );
   }
@@ -722,26 +740,6 @@ public class ShotActivity extends Activity
     mButton1[3].setEnabled( enabled ); // FIXME SKETCH BUTTON 
     mButton1[3].setBackgroundResource( enabled ? R.drawable.ic_plot : R.drawable.ic_plot_no );
   }
-
-  // void scrollTo ( int pos, DistoXDBlock blk ) 
-  // {
-    // View v = mList.getChildAt(0);
-    // int top = (v == null) ? 0 : v.getTop();
-    // Log.v(TopoDroidApp.TAG, "scrollTo " + pos + " " + mFirstPos + " scrollY " + mScroll );
-    // mList.setSelectionFromTop(mFirstPos, 0);
-    // mList.scrollTo( mFirstPos, 0 );  // not good: this moves the mList inside the container view
-    // mList.setSelection( mFirstPos ); // does not work
-    // mList.smoothScrollToPositionFromTop( mShotPos, 0, 10 ); // API level 11
-
-    // mList.smoothScrollToPosition( mFirstPos );
-    
-    // mList.setSelectionFromTop( pos, 10 );
-    // mList.setScrollY( mScroll ); // Api level 14
-
-  //   mDataAdapter.updateBlockView( blk );
-    // mSaveTextView.requestFocus();
-
-  // }
 
   @Override
   public synchronized void onPause() 
@@ -763,6 +761,20 @@ public class ShotActivity extends Activity
     mApp.registerConnListener( mHandler );
     // setTitleColor( mApp.isConnected() ? TopoDroidApp.COLOR_CONNECTED : TopoDroidApp.COLOR_NORMAL );
   }
+
+  // @Override
+  // public synchronized void onStart() 
+  // {
+  //   super.onStart();
+  //   Debug.startMethodTracing( "distox" );
+  // }
+
+  // @Override
+  // public synchronized void onStop() 
+  // {
+  //   Debug.stopMethodTracing( );
+  //   super.onStop();
+  // }
 
   @Override
   public synchronized void onDestroy() 
@@ -833,6 +845,7 @@ public class ShotActivity extends Activity
     } else if ( b == mButton2[k2++] ) { // mBtnAdd 
       // mSecondLastShotId = mApp.lastShotId( );
       DistoXDBlock last_blk = mApp.mData.selectLastLegShot( mApp.mSID );
+      // Log.v( "DistoX", "last blk: " + last_blk.toString() );
       (new ShotNewDialog( this, mApp, this, last_blk, -1L )).show();
     } else if ( b == mButton2[k2++] ) { // mBtnInfo
       intent = new Intent( this, SurveyActivity.class );
@@ -864,13 +877,6 @@ public class ShotActivity extends Activity
 
   // ------------------------------------------------------------------
 
-  // private void setBTMenus( boolean enabled )
-  // {
-  //   // if ( mBtnDownload != null ) mBtnDownload.setEnabled( enabled );
-  //   mButton1[0].setEnabled( enabled );
-  // }
-
-  // public void makeNewPlot( String name, long type, String start, String view )
   public void makeNewPlot( String name, String start )
   {
     // plot-id -1, status 0, azimuth 0.0f
@@ -879,7 +885,7 @@ public class ShotActivity extends Activity
     long mPIDs = mApp.mData.insertPlot( mApp.mSID, -1L, name+"s",
                  PlotInfo.PLOT_EXTENDED, 0L, start, "", 0, 0, TopoDroidApp.mScaleFactor, 0.0f );
     if ( mPIDp >= 0 ) {
-      startDrawingActivity( start, name+"p", mPIDp, name+"s", mPIDs );
+      startDrawingActivity( start, name+"p", mPIDp, name+"s", mPIDs, PlotInfo.PLOT_PLAN );
     }
     // updateDisplay( );
   }
@@ -915,7 +921,19 @@ public class ShotActivity extends Activity
   //   }
   // }
 
-  public void startExistingPlot( String name, String type ) // name = plot/sketch3d name
+  // public void startPlotDialog( String name, String type ) // name = plot/sketch3d name
+  // {
+  //   // FIXME SKETCH-3D
+  //     PlotInfo plot1 =  mApp.mData.getPlotInfo( mApp.mSID, name+"p" );
+  //     if ( plot1 != null ) {
+  //       PlotInfo plot2 = mApp.mData.getPlotInfo( mApp.mSID, name+"s" );
+  //       ( new PlotDialog( this, this, plot1, plot2 )).show();
+  //       return;
+  //     }
+  //   Toast.makeText(getApplicationContext(), R.string.plot_not_found, Toast.LENGTH_SHORT).show();
+  // }
+
+  public void startExistingPlot( String name, long type ) // name = plot/sketch3d name
   {
     // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "startExistingPlot \"" + name + "\" type " + type + " sid " + mApp.mSID );
 
@@ -930,7 +948,7 @@ public class ShotActivity extends Activity
       PlotInfo plot1 =  mApp.mData.getPlotInfo( mApp.mSID, name+"p" );
       if ( plot1 != null ) {
         PlotInfo plot2 =  mApp.mData.getPlotInfo( mApp.mSID, name+"s" );
-        startDrawingActivity( plot1.start, plot1.name, plot1.id, plot2.name, plot2.id );
+        startDrawingActivity( plot1.start, plot1.name, plot1.id, plot2.name, plot2.id, type );
         return;
       }
     // }
@@ -951,7 +969,7 @@ public class ShotActivity extends Activity
   //   startActivity( sketchIntent );
   // }
 
-  private void startDrawingActivity( String start, String plot1_name, long plot1_id, String plot2_name, long plot2_id )
+  private void startDrawingActivity( String start, String plot1_name, long plot1_id, String plot2_name, long plot2_id, long type )
   {
     if ( mApp.mSID < 0 || plot1_id < 0 || plot2_id < 0 ) {
       Toast.makeText( this, R.string.no_survey, Toast.LENGTH_SHORT ).show();
@@ -962,7 +980,7 @@ public class ShotActivity extends Activity
     drawIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY_ID, mApp.mSID );
     drawIntent.putExtra( TopoDroidApp.TOPODROID_PLOT_NAME, plot1_name );
     drawIntent.putExtra( TopoDroidApp.TOPODROID_PLOT_NAME2, plot2_name );
-    drawIntent.putExtra( TopoDroidApp.TOPODROID_PLOT_TYPE, PlotInfo.PLOT_PLAN );
+    drawIntent.putExtra( TopoDroidApp.TOPODROID_PLOT_TYPE, type );
     drawIntent.putExtra( TopoDroidApp.TOPODROID_PLOT_FROM, start );
     // drawIntent.putExtra( TopoDroidApp.TOPODROID_PLOT_ID, plot1_id ); // not necessary
     // drawIntent.putExtra( TopoDroidApp.TOPODROID_PLOT_ID2, plot2_id ); // not necessary
@@ -970,6 +988,7 @@ public class ShotActivity extends Activity
     startActivity( drawIntent );
   }
 
+  // ---------------------------------------------------------------------------------
   /**
    * @param at   id of the shot before which to insert the new shot (and LRUD)
    *
@@ -1203,8 +1222,6 @@ public class ShotActivity extends Activity
   public void updateShot( String from, String to, long extend, long flag, boolean leg, String comment, DistoXDBlock blk )
   {
     // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "updateShot From >" + from + "< To >" + to + "< comment " + comment );
-    // Log.v( TopoDroidApp.TAG, "updateShot pos " + mShotPos + " From >" + from + "< To >" + to + "< comment " + comment );
-
     int ret = mApp.mData.updateShot( blk.mId, mApp.mSID, from, to, extend, flag, leg?1:0, comment );
     if ( ret == -1 ) {
       Toast.makeText( this, R.string.no_db, Toast.LENGTH_SHORT ).show();
@@ -1217,30 +1234,8 @@ public class ShotActivity extends Activity
         if ( blk1.relativeDistance( blk ) > mApp.mCloseDistance ) break;
         mApp.mData.updateShotLeg( blk1.mId, mApp.mSID, 1L );
       }
-      // if ( mApp.mListRefresh ) {
-      //   // This works but it refreshes the whole list
-      //   mDataAdapter.notifyDataSetChanged();
-      //   // mList.smoothScrollToPosition( mShotPos );
-      //   // mSaveTextView.requestLayout();
-      //   // mSaveTextView.requestFocus();
-      // } else {
-      //   // mSaveTextView.setText( blk.toString(false) );
-      //   // mSaveTextView.setTextColor( blk.color() );
-      //   mDataAdapter.notifyDataSetChanged(); // FIXME
-      // }
-
-      // mDataAdapter.notifyDataSetChanged(); // FIXME FIXME FIXME
     }
-
-    // scrollTo( mShotPos, blk );
     mDataAdapter.updateBlockView( blk );
-  }
-
-  void updateBlockViews()
-  {
-    // mDataAdapter.updateBlockViews( mSavePos-10, mSavePos+10 );
-    // mList.invalidateViews();
-    // mList.smoothScrollToPosition( mFirstPos );
   }
 
   // ------------------------------------------------------------------------
@@ -1305,6 +1300,12 @@ public class ShotActivity extends Activity
       return super.onOptionsItemSelected(item);
     }
     return true;
+  }
+
+  void deletePlot( long pid1, long pid2 )
+  {
+    mApp.mData.deletePlot( pid1, mApp.mSID );
+    mApp.mData.deletePlot( pid2, mApp.mSID );
   }
 
 }

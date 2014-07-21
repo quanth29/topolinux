@@ -37,7 +37,7 @@ import android.view.View.OnKeyListener;
 
 import android.widget.Toast;
 
-import android.util.Log;
+// import android.util.Log;
 
 
 public class FixedDialog extends Dialog

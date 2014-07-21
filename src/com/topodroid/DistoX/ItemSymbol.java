@@ -32,7 +32,7 @@ import android.view.View.OnTouchListener;
 // import android.text.Layout;
 import android.widget.LinearLayout;
 
-import android.util.Log;
+// import android.util.Log;
 
 class ItemSymbol
 {

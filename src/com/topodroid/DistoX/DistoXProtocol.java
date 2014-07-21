@@ -385,11 +385,33 @@ public class DistoXProtocol
   // X310    
   private static int DATA_PER_BLOCK = 56;
   private static int BYTE_PER_DATA  = 18;
+  // note 56*18 = 1008
+  // next there are 16 byte padding for each 1024-byte block (0x400 byte block)
+  //
+  // address space = 0x0000 - 0x7fff
+  // blocks: 0000 - 03ff =    0 -   55
+  //         0400 - 07ff =   56 -  111
+  //         0800 - 0bff =  112 -  167
+  //         0c00 - 0fff =  168 -  223
+  //         1000 - 13ff =  224 -  279
+  //         ...
+  //         2000 - 23ff =  448 -  503
+  //         ...
+  //         3000 - 33ff =  672 -  727
+  //         4000 - 43ff =  896 -  951
+  //         5000 - 53ff = 1120 - 1175
+  //         6000 - 63ff = 1344 - 1399
+  //         7000 - 73ff = 1568 - 1623
+  //         ...
+  //         7c00 - 7fff = 1736 - 1791
+  // 
 
   private int index2addrX310( int index )
   {
+    if ( index < 0 ) index = 0;
+    if ( index > 1792 ) index = 1792;
     int addr = 0;
-    while ( index > DATA_PER_BLOCK ) {
+    while ( index >= DATA_PER_BLOCK ) {
       index -= DATA_PER_BLOCK;
       addr += 0x400;
     }
@@ -414,14 +436,21 @@ public class DistoXProtocol
   // byte 8-15 second packet
   // byte 16   hot-flag for the first packet
   // byte 17   hot-flag for the second packet
+  //
+  // X310 data address space: 0x0000 - 0x7fff
+  // each data takes 18 bytes
+
 
   public int readX310Memory( int start, int end, List< MemoryOctet > data )
   {
+    // Log.v( "DistoX", "start " + start + " end " + end );
     int cnt = 0;
     while ( start < end ) {
       int addr = index2addrX310( start );
+      // Log.v( "DistoX", start + " addr " + addr );
       int endaddr = addr + BYTE_PER_DATA;
       MemoryOctet result = new MemoryOctet( start );
+      // read only bytes 0-7 and 16-17
       int k = 0;
       for ( ; addr < endaddr && k < 8; addr += 4, k+=4 ) {
         mBuffer[0] = (byte)( 0x38 );
@@ -455,7 +484,7 @@ public class DistoXProtocol
         if ( mBuffer[0] != (byte)( 0x38 ) ) break;
         if ( mBuffer[3] == (byte)( 0xff ) ) result.data[0] |= (byte)( 0x80 ); 
         data.add( result );
-        Log.v( TopoDroidApp.TAG, "memory " + result.toString() + " " + mBuffer[3] );
+        // Log.v( TopoDroidApp.TAG, "memory " + result.toString() + " " + mBuffer[3] );
         ++ cnt;
       } else {
         break;

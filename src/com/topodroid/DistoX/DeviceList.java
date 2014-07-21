@@ -21,7 +21,7 @@ import android.os.Bundle;
 
 import android.content.Intent;
 
-import android.util.Log;
+// import android.util.Log;
 
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -117,7 +117,8 @@ public class DeviceList extends Activity
         setTitle( R.string.title_device );
         mArrayAdapter.clear();
         for ( BluetoothDevice device : device_set ) {
-          mArrayAdapter.add( "DistoX " + device.getAddress() );
+          // Log.v("DistoX", "paired device <" + device.getName() + "> " + device.getAddress() );
+          mArrayAdapter.add( "DistoX " + device.getName() + " " + device.getAddress() );
        }
       }
       // TopoDroidApp.Log( TopoDroidApp.LOG_BT, "showPairedDevices n. " + mArrayAdapter.getCount() );
@@ -152,11 +153,13 @@ public class DeviceList extends Activity
           BluetoothDevice device = data.getParcelableExtra( BluetoothDevice.EXTRA_DEVICE );
           // TopoDroidApp.Log(  TopoDroidApp.LOG_BT, "onReceive BT DEVICES FOUND, name " + device.getName() );
           if ( device.getBondState() != BluetoothDevice.BOND_BONDED ) {
-            String name = device.getName();
-            if ( name != null && name.startsWith("DistoX") ) { // DistoX and DistoX2
+            String model = device.getName();
+            if ( model != null && model.startsWith("DistoX") ) { // DistoX and DistoX2
               String device_addr = device.getAddress();
-              app.mData.insertDevice( device_addr, name );
-              mArrayAdapter.add( Device.typeString[ Device.stringToType(name) ] + " " + device_addr );
+              String name = Device.modelToName( model );
+              // Log.v( "DistoX", "scan receiver <" + name + "> " + device_addr ); 
+              app.mData.insertDevice( device_addr, model, name );
+              mArrayAdapter.add( Device.typeString[ Device.stringToType(model) ] + " " + name + " " + device_addr );
             }
           }
         }

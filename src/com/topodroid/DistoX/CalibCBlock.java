@@ -37,6 +37,12 @@ public class CalibCBlock
   public float mClino;    // computed clino
   public float mRoll;     // computed roll
   public float mError;    // error in the calibration algo associated to this data
+  public long mStatus;
+
+  boolean isSaturated()
+  { 
+    return ( mx >= 32768 || my >= 32768 || mz >= 32768 );
+  }
 
   public CalibCBlock()
   {
@@ -82,6 +88,8 @@ public class CalibCBlock
     if ( mGroup <= 0 ) return colors[0];
     return colors[ 1 + (int)(mGroup % 2) ];
   }
+
+  void setStatus( long s ) { mStatus = s; }
 
   public void setData( long gx0, long gy0, long gz0, long mx0, long my0, long mz0 )
   {

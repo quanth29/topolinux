@@ -47,7 +47,7 @@ import android.widget.Button;
 
 import android.widget.Toast;
 
-import android.util.Log;
+// import android.util.Log;
 
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -161,8 +161,11 @@ public class SurveyNewDialog extends Dialog
     String team = mEditTeam.getText().toString();
     String comment = mEditComment.getText().toString();
     double decl = 0.0;
-    if ( mEditDecl.getText().toString() != null ) {
-      decl = Double.parseDouble( mEditDecl.getText().toString() ); 
+    if ( mEditDecl.getText() != null ) {
+      try {
+        decl = Double.parseDouble( mEditDecl.getText().toString() ); 
+      } catch ( NumberFormatException e ) 
+      { }
     }
       
     if ( date != null ) { date = date.trim(); }

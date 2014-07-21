@@ -28,7 +28,7 @@ import android.graphics.Path;
 import android.graphics.Matrix;
 
 // import android.util.FloatMath;
-import android.util.Log;
+// import android.util.Log;
 
 /**
  */

@@ -26,7 +26,7 @@ import java.util.Stack;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
-import android.util.Log;
+// import android.util.Log;
 
 class DistoXNum
 {

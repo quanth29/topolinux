@@ -130,6 +130,16 @@ public class DrawingBrushPaths
     return mAreaLib.areaCsxCategory( index );
   }
 
+  public static int getAreaCsxPen( int index )
+  {
+    return mAreaLib.areaCsxPen( index );
+  }
+
+  public static int getAreaCsxBrush( int index )
+  {
+    return mAreaLib.areaCsxBrush( index );
+  }
+
 
 
   public static boolean canRotate( int index ) { return mPointLib.canRotate( index ); }
@@ -204,6 +214,7 @@ public class DrawingBrushPaths
   public static Paint fixedGridPaint  = null;
   public static Paint fixedGrid10Paint  = null;
   public static Paint fixedStationPaint  = null;
+  public static Paint labelPaint  = null;
   public static Paint duplicateStationPaint = null;
 
   // ===========================================================================
@@ -259,7 +270,7 @@ public class DrawingBrushPaths
     fixedShotPaint.setStyle(Paint.Style.STROKE);
     fixedShotPaint.setStrokeJoin(Paint.Join.ROUND);
     fixedShotPaint.setStrokeCap(Paint.Cap.ROUND);
-    fixedShotPaint.setStrokeWidth( STROKE_WIDTH_FIXED );
+    fixedShotPaint.setStrokeWidth( STROKE_WIDTH_FIXED * TopoDroidApp.mLineThickness );
     fixedShotPaint.setColor(0xFFbbbbbb); // light gray
 
     fixedBluePaint = new Paint();
@@ -267,7 +278,7 @@ public class DrawingBrushPaths
     fixedBluePaint.setStyle(Paint.Style.STROKE);
     fixedBluePaint.setStrokeJoin(Paint.Join.ROUND);
     fixedBluePaint.setStrokeCap(Paint.Cap.ROUND);
-    fixedBluePaint.setStrokeWidth( STROKE_WIDTH_FIXED );
+    fixedBluePaint.setStrokeWidth( STROKE_WIDTH_FIXED * TopoDroidApp.mLineThickness );
     fixedBluePaint.setColor(0xFF9999ff); // light blue
 
     fixedSplayPaint = new Paint();
@@ -275,7 +286,7 @@ public class DrawingBrushPaths
     fixedSplayPaint.setStyle(Paint.Style.STROKE);
     fixedSplayPaint.setStrokeJoin(Paint.Join.ROUND);
     fixedSplayPaint.setStrokeCap(Paint.Cap.ROUND);
-    fixedSplayPaint.setStrokeWidth( STROKE_WIDTH_FIXED );
+    fixedSplayPaint.setStrokeWidth( STROKE_WIDTH_FIXED * TopoDroidApp.mLineThickness );
     fixedSplayPaint.setColor(0xFF666666); // dark gray
 
     fixedGridPaint = new Paint();
@@ -283,7 +294,7 @@ public class DrawingBrushPaths
     fixedGridPaint.setStyle(Paint.Style.STROKE);
     fixedGridPaint.setStrokeJoin(Paint.Join.ROUND);
     fixedGridPaint.setStrokeCap(Paint.Cap.ROUND);
-    fixedGridPaint.setStrokeWidth( STROKE_WIDTH_FIXED );
+    fixedGridPaint.setStrokeWidth( STROKE_WIDTH_FIXED * TopoDroidApp.mLineThickness );
     fixedGridPaint.setColor(0x99666666); // very dark gray
 
     fixedGrid10Paint = new Paint();
@@ -291,7 +302,7 @@ public class DrawingBrushPaths
     fixedGrid10Paint.setStyle(Paint.Style.STROKE);
     fixedGrid10Paint.setStrokeJoin(Paint.Join.ROUND);
     fixedGrid10Paint.setStrokeCap(Paint.Cap.ROUND);
-    fixedGrid10Paint.setStrokeWidth( STROKE_WIDTH_FIXED );
+    fixedGrid10Paint.setStrokeWidth( STROKE_WIDTH_FIXED * TopoDroidApp.mLineThickness );
     fixedGrid10Paint.setColor(0x99999999); // not so dark gray
 
     fixedStationPaint = new Paint();
@@ -300,8 +311,17 @@ public class DrawingBrushPaths
     fixedStationPaint.setStrokeJoin(Paint.Join.ROUND);
     fixedStationPaint.setStrokeCap(Paint.Cap.ROUND);
     fixedStationPaint.setStrokeWidth( STROKE_WIDTH_FIXED );
-    fixedStationPaint.setColor(0xFFFF3333); // very dark red
+    fixedStationPaint.setColor(0xFFFF66cc); // not very dark red
     fixedStationPaint.setTextSize( TopoDroidApp.mStationSize );
+
+    labelPaint = new Paint();
+    labelPaint.setDither(true);
+    labelPaint.setStyle(Paint.Style.FILL);
+    labelPaint.setStrokeJoin(Paint.Join.ROUND);
+    labelPaint.setStrokeCap(Paint.Cap.ROUND);
+    labelPaint.setStrokeWidth( STROKE_WIDTH_FIXED );
+    labelPaint.setColor(0xFFFFFFFF); // white
+    labelPaint.setTextSize( TopoDroidApp.mLabelSize );
 
     duplicateStationPaint = new Paint();
     duplicateStationPaint.setDither(true);
@@ -338,6 +358,12 @@ public class DrawingBrushPaths
     // debugBlue.setStrokeWidth( STROKE_WIDTH_FIXED );
     // debugBlue.setColor(0xFF0000FF); // blue
 
+  }
+
+  public static void resetPaintLabelSize( )
+  {
+    if ( labelPaint != null ) 
+      labelPaint.setTextSize( TopoDroidApp.mLabelSize );
   }
 
   public static void resetPaintStationSize( )

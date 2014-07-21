@@ -113,7 +113,8 @@ public class ShotDialog extends Dialog
 
     shot_from    = blk.mFrom;
     shot_to      = blk.mTo;
-    if ( blk.mType == DistoXDBlock.BLOCK_BLANK && prev != null && prev.type() == DistoXDBlock.BLOCK_MAIN_LEG ) {
+    if ( (blk.mType == DistoXDBlock.BLOCK_BLANK || blk.mType == DistoXDBlock.BLOCK_BLANK_LEG) 
+         && prev != null && prev.type() == DistoXDBlock.BLOCK_MAIN_LEG ) {
       if ( DistoXStationName.isLessOrEqual( prev.mFrom, prev.mTo ) ) {
         shot_from = prev.mTo;
         shot_to   = DistoXStationName.increment( prev.mTo );
@@ -269,7 +270,6 @@ public class ShotDialog extends Dialog
 
     if ( b == mButtonOK ) {
       saveDBlock();
-      mParent.updateBlockViews();
       dismiss();
     } else if ( b == mButtonSave ) {
       saveDBlock();
@@ -318,7 +318,6 @@ public class ShotDialog extends Dialog
     //   mParent.dropShot( mBlk );
     //   dismiss();
     } else if ( b == mButtonBack ) {
-      mParent.updateBlockViews();
       dismiss();
     }
   }

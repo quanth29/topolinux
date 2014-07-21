@@ -23,9 +23,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
 
+import java.util.List;
 import java.util.ArrayList;
 
-import android.util.Log;
+// import android.util.Log;
 
 class DistoXDBlockAdapter extends ArrayAdapter< DistoXDBlock >
 {
@@ -45,6 +46,21 @@ class DistoXDBlockAdapter extends ArrayAdapter< DistoXDBlock >
     this.items    = items;
     this.texts    = texts;
     this.views    = views;
+  }
+
+  
+  void reviseBlockWithPhotos( List< PhotoInfo > photos )
+  {
+    for ( DistoXDBlock b : items ) b.mWithPhoto = false; 
+    for ( PhotoInfo p : photos ) {
+      // mark block with p.shotid
+      for ( DistoXDBlock b : items ) {
+        if ( b.mId == p.shotid ) { 
+          b.mWithPhoto = true;
+          break;
+        }
+      }
+    }
   }
 
   public DistoXDBlock get( int pos ) { return items.get(pos); }
@@ -114,16 +130,6 @@ class DistoXDBlockAdapter extends ArrayAdapter< DistoXDBlock >
       }
     }
   }
-
-  // void updateBlockViews( int k1, int k2 )
-  // {
-  //   if ( k1 < 0 ) k1 = 0;
-  //   if ( k2 > views.size() ) k2 = views.size();
-  //   for ( int k = k1; k < k2; ++k ) {
-  //     View v = views.get( k );
-  //     if ( v != null ) v.invalidate();
-  //   }
-  // }
 
 }
 

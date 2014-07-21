@@ -2,12 +2,14 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <!-- CheckBoxPreference
-    android:key="DISTOX_SAVE_ON_DESTROY"
-    android:summary="Save current survey and calib"
-    android:title="Store preferences"
-    android:defaultValue="true"
-  / -->
+     <com.topodroid.DistoX.MyListPreference
+       android:key="DISTOX_PICKER_TYPE"
+       android:summary="@string/pref_picker_type_summary"
+       android:title="@string/pref_picker_type_title"
+       android:defaultValue="0"
+       android:entries="@array/pickerType"
+       android:entryValues="@array/pickerTypeValue"
+     />
 
      <com.topodroid.DistoX.MyEditPreference
        android:key="DISTOX_DRAWING_UNIT"
@@ -19,6 +21,33 @@
        android:defaultValue="1.2" />
 
      <com.topodroid.DistoX.MyEditPreference
+       android:key="DISTOX_LINE_THICKNESS"
+       android:title="@string/pref_line_thickness_title"
+       android:summary="@string/pref_line_thickness_summary"
+       android:dialogTitle="@string/pref_line_thickness_title"
+       android:dialogMessage="@string/pref_line_thickness_message"
+       android:inputType="numberDecimal"
+       android:defaultValue="1" />
+
+     <com.topodroid.DistoX.MyEditPreference
+       android:key="DISTOX_STATION_SIZE"
+       android:title="@string/pref_station_size_title"
+       android:summary="@string/pref_station_size_summary"
+       android:dialogTitle="@string/pref_station_size_title"
+       android:dialogMessage="@string/pref_station_size_message"
+       android:inputType="numberDecimal"
+       android:defaultValue="14" />
+
+     <com.topodroid.DistoX.MyEditPreference
+       android:key="DISTOX_LABEL_SIZE"
+       android:title="@string/pref_label_size_title"
+       android:summary="@string/pref_label_size_summary"
+       android:dialogTitle="@string/pref_label_size_title"
+       android:dialogMessage="@string/pref_label_size_message"
+       android:inputType="numberDecimal"
+       android:defaultValue="14" />
+
+     <com.topodroid.DistoX.MyEditPreference
        android:key="DISTOX_CLOSENESS"
        android:title="@string/pref_closeness_title"
        android:summary="@string/pref_closeness_summary"
@@ -26,15 +55,6 @@
        android:dialogMessage="@string/pref_closeness_message"
        android:inputType="number"
        android:defaultValue="16" />
-
-     <com.topodroid.DistoX.MyEditPreference
-       android:key="DISTOX_LINE_SEGMENT"
-       android:title="@string/pref_segment_title"
-       android:summary="@string/pref_segment_summary"
-       android:dialogTitle="@string/pref_segment_title"
-       android:dialogMessage="@string/pref_segment_message"
-       android:inputType="number"
-       android:defaultValue="10" />
 
      <com.topodroid.DistoX.MyListPreference
        android:key="DISTOX_LINE_STYLE"
@@ -44,6 +64,15 @@
        android:entries="@array/lineStyle"
        android:entryValues="@array/lineStyleValue"
      />
+
+     <com.topodroid.DistoX.MyEditPreference
+       android:key="DISTOX_LINE_SEGMENT"
+       android:title="@string/pref_segment_title"
+       android:summary="@string/pref_segment_summary"
+       android:dialogTitle="@string/pref_segment_title"
+       android:dialogMessage="@string/pref_segment_message"
+       android:inputType="number"
+       android:defaultValue="5" />
 
      <com.topodroid.DistoX.MyEditPreference
        android:key="DISTOX_LINE_ACCURACY"
@@ -78,26 +107,17 @@
      / -->
 
      <CheckBoxPreference
-       android:key="DISTOX_CHECK_ATTACHED"
-       android:summary="@string/pref_checkAttached_summary"
-       android:title="@string/pref_checkAttached_title"
-       android:defaultValue="false"
-     />
-
-     <CheckBoxPreference
        android:key="DISTOX_AUTO_STATIONS"
        android:summary="@string/pref_autoStations_summary"
        android:title="@string/pref_autoStations_title"
        android:defaultValue="true"
      />
 
-     <com.topodroid.DistoX.MyListPreference
-       android:key="DISTOX_PICKER_TYPE"
-       android:summary="@string/pref_picker_type_summary"
-       android:title="@string/pref_picker_type_title"
-       android:defaultValue="0"
-       android:entries="@array/pickerType"
-       android:entryValues="@array/pickerTypeValue"
+     <CheckBoxPreference
+       android:key="DISTOX_CHECK_ATTACHED"
+       android:summary="@string/pref_checkAttached_summary"
+       android:title="@string/pref_checkAttached_title"
+       android:defaultValue="false"
      />
 
      <com.topodroid.DistoX.MyEditPreference
@@ -109,13 +129,5 @@
        android:inputType="numberDecimal"
        android:defaultValue="60.0" />
 
-     <com.topodroid.DistoX.MyEditPreference
-       android:key="DISTOX_STATION_SIZE"
-       android:title="@string/pref_station_size_title"
-       android:summary="@string/pref_station_size_summary"
-       android:dialogTitle="@string/pref_station_size_title"
-       android:dialogMessage="@string/pref_station_size_message"
-       android:inputType="numberDecimal"
-       android:defaultValue="14" />
 
 </PreferenceScreen>

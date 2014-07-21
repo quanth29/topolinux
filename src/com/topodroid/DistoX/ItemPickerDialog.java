@@ -42,7 +42,7 @@ class ItemPickerDialog extends Dialog
                        // , AdapterView.OnItemClickListener
 {
   private int mItemType; // items type
-  private int mPlotType;
+  private long mPlotType;
 
   private  Button mBTpoint;
   private  Button mBTline;
@@ -73,7 +73,7 @@ class ItemPickerDialog extends Dialog
    * @param parent    DrawingActivity parent
    * @param type      drawing type
    */
-  ItemPickerDialog( Context context, DrawingActivity parent, int type )
+  ItemPickerDialog( Context context, DrawingActivity parent, long type )
   {
     super( context );
     mContext = context;
@@ -202,7 +202,7 @@ class ItemPickerDialog extends Dialog
         break;
       case DrawingActivity.SYMBOL_LINE: 
         // mLinePos = pos;
-        if ( mPlotType != (int)PlotInfo.PLOT_SECTION || pos != DrawingBrushPaths.mLineLib.mLineSectionIndex ) {
+        if ( mPlotType != PlotInfo.PLOT_SECTION || pos != DrawingBrushPaths.mLineLib.mLineSectionIndex ) {
           mParent.mCurrentLine = pos;
           mParent.lineSelected( pos ); // mLineAdapter.getSelectedItem() );
         } else {

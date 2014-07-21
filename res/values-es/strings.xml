@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <resources>
-    <string name="topodroid_man">http://topolinux.googlecode.com/files/TopoDroid-1.1.0.pdf</string>
+    <string name="topodroid_man">https://sites.google.com/site/speleoapps/home/topodroid/docs/TopoDroid-2.2-es.pdf</string>
 
     <string name="app_name">TopoDroid</string>
 
@@ -11,9 +11,11 @@
     <string name="LINE">LÍNEA</string>
     <string name="AREA">ÁREA</string>
     <string name="HELP">AYUDA</string>
+    <string name="STATION">ESTACIÓN </string>
 
     <string name="memoryA3">Memoria DistoX A3</string>
     <string name="memoryX310">Memoria DistoX X310</string>
+    <!-- string name="memory_data">DistoX data</string -->
 
     <string name="td_symbol_text">¿Necesitas instalar los símbolos de dibujo? \ Puede hacerlo más adelante con la aplicación TdSymbol</string>
     <string name="td_symbol_ask">No preguntar de nuevo</string>
@@ -23,30 +25,43 @@
     <string name="thl_wall">Pared</string>
     <string name="tha_water">Agua</string>
 
-    <string name="missing_area">AREA</string>
+    <string name="missing_area">ÁREA</string>
     <string name="missing_hint">Por favor, instale los símbolos con TdSymbol</string>
     <string name="missing_line">LÍNEA</string>
     <string name="missing_point">PUNTO</string>
-    <!-- string name="missing_save">Faltan simbolos.\nno guardado</string -->
+    <!-- string name="missing_save">Faltan símbolos.\nno guardado</string -->
     <string name="missing_station">Falta Estación</string>
     <string name="missing_symbols">Faltan símbolos. \n¿Desea guardar de todos modos?</string>
     <string name="missing_title">Faltan símbolos</string>
     <string name="missing_warning">Faltan los siguientes símbolos en el dibujo.\n</string>
+    <!-- string name="failed_snap_to_line">No close line to snap area border to</string -->
+    <!-- string name="failed_snap_to_point">No close point to snap the point to</string -->
 
     <string name="calib_exists">La calibración ya existe</string>
     <string name="calib_delete">Eliminar calibración </string>
     <string name="calib_device_mismatch">ADVERTENCIA: Desajuste en la calibración del dispositivo</string>
     <string name="calib_no_name">Escriba el nombre de la calibración</string>
+    <!-- string name="calib_gm_undelete">Undelete calibration data?</string -->
     <string name="calib_saved">Guardar calibración</string>
     <string name="calib_updated">Descargar calibración</string>
+    <!-- string name="calib_compute_groups">Cálculo de calibración de lo grupos de datos ...</string -->
+    <!-- string name="calib_compute_coeffs">Cálculo de coeficientes de calibración  ...</string -->
+    <!-- string name="calib_read_coeffs">leer coeficientes de calibración ...</string -->
+    <!-- string name="calib_write_coeffs">Escribir coeficientes de calibración ...</string -->
     <string name="connect_failed">Fallo de conexión</string>
     <string name="data"> Datos</string>
-    <string name="using">Utilizar %1$s</string>
+    <string name="using">Utilizar %1$s %2$s</string>
+    <!-- string name="calib_error">Error: %1$.4f grados</string -->
+    <!-- string name="calib_max_error">Max. error: %1$.4f grados</string -->
+    <!-- string name="calib_iter">Iteraciones: %1$d</string -->
+    <!-- TODO string name="calib_saturated_values">WARNING: %1$d saturated data</string -->
    
     <string name="device_illegal_addr">Dirección de memoria no válida</string>
     <string name="device_none">DistoX no seleccionado</string>
+    <!-- string name="device_pairing">Emparejado. Compruebe notificaciones</string -->
     <string name="device_reset">Reseteo memoria de DistoX </string>
     <string name="bt_reset">Reinicio conexión bluetooth</string>
+    <!-- string name="save_as">save as</string -->
 
     <string name="comment">Comentario</string>
     <string name="duplicate">Duplicada</string>
@@ -54,7 +69,7 @@
     <string name="surface">Superficie</string>
     <string name="extend_ignore">Ninguna</string>
     <string name="extend_left">izq.</string>
-    <string name="extend_right">Drcha.</string>
+    <string name="extend_right">Drch.</string>
     <string name="extend_vert">Vert.</string>
     <string name="external_prompt">Introducir medición</string>
 
@@ -64,9 +79,14 @@
     <string name="import_wait">Importando archivo, espere...</string>
     <string name="import_already">Topografía ya importada</string>
     <string name="import_none">No hay archivo a importar</string>
+    <!-- string name="import_zip_ok">Successfully imported zip file</string -->
+    <!-- string name="import_zip_wait">Imported zip file may take long. Please wait ...</string -->
+    <string name="sketch_loading">Importando dibujo, espere ...</string>
+    <string name="sketch_saving">Exportando dibujo ... espere ...</string>
 
     <string name="head_tail">Memoria: </string>
     <string name="head_tail_failed">Error al leer la memoria DistoX</string>
+    <!-- TODO string name="head_tail_store_failed">Failed to store DistoX memory index</string -->
     <string name="illegal_data_value">Valores de datos no válidos</string>
     <string name="label_title">Texto</string>
     <string name="label_text">Introducir texto en la etiqueta</string>
@@ -87,10 +107,10 @@
     <string name="error_begin_required">Introducir dirección de inicio</string>
     <string name="error_end_required">Introducir dirección final</string>
     <string name="error_from_required">Introducir primera estación</string>
-    <!-- TODO string name="error_group_required">Group number is required</string -->
-    <!-- TODO string name="error_alt_required">Altitude is required</string -->
-    <!-- TODO string name="error_lat_required">Latitude is required</string -->
-    <!-- TODO string name="error_long_required">Longitude is required</string -->
+    <string name="error_group_required">Se requiere un número de grupo</string>
+    <string name="error_alt_required">Se requiere Altitud</string>
+    <string name="error_lat_required">Se requiere Latitud</string>
+    <string name="error_long_required">Se requiere Longitud</string>
     <string name="error_name_required">Introducir nombre</string>
     <string name="error_start_required">Introducir referencia de estación</string>
     <string name="error_station_required">Introducir estación</string>
@@ -104,6 +124,8 @@
     <string name="out">Fuera</string>
     <string name="in">Dentro</string>
     <string name="none">Nada</string>
+    <!-- string name="barrier_add">Dividir  la visualización de la línea central?</string -->
+    <!-- string name="barrier_del">Continúe la visualización de la línea central?</string -->
 
     <string name="no_calib">No hay calibración</string>
     <string name="no_calibration">Calibración no seleccionada</string>
@@ -112,6 +134,7 @@
     <string name="no_db">No hay base de datos</string>
     <string name="no_device_address">Dispositivo no seleccionado</string>
     <string name="no_device_found">No se encuentra dispositivos</string>
+    <!-- string name="no_geomag">No se pudo obtener Geomag</string -->
     <string name="no_gms">Calibración no tiene datos.\nUse botón Descargar</string>
     <string name="no_leg_intersection">La línea de la sección no atraviesa ninguna visual</string>
     <string name="no_paired_device">Dispositivo no emparejado.\nEscanee y empareje DistoX</string>
@@ -127,13 +150,16 @@
 
     <string name="menu_about">Acerca de</string>
     <string name="menu_detach">Desconectar</string>
+    <!-- TODO string name="menu_display">Display</string -->
+    <string name="menu_recover">Registro</string>
     <string name="menu_help">Ayuda</string>
     <string name="menu_logs">Registros</string>
-    <!-- TODO string name="menu_manual">Manual</string -->
+    <string name="menu_manual">Manual</string>
     <string name="menu_options">Opciones</string>
     <string name="menu_palette">Paleta</string>
 
     <string name="popup_join_pt">Unir al punto más cercano</string>
+    <!-- string name="popup_snap_ln">Ajustar a la línea más cercana</string -->
     <string name="popup_split_pt">Añadir punto</string>
     <string name="popup_split_ln">Separar línea</string>
     <string name="popup_sharp_pt">Ángulo agudo</string>
@@ -195,10 +221,11 @@
     <string name="shot_leg">Toma repetida</string>
     <!-- string name="shot_length">Longitud</string -->
     <string name="shot_note">Nota</string>
+    <string name="shot_reverse">Inversa</string>
     <string name="shot_to">Hasta</string>
 
 <!--
-    <string name="make_surface">Ya existe en superficie. ¿Reemplazar?</string>
+    <string name="make_surface">Ya existe en superficie ¿Reemplazar?</string>
 
     <string name="sketch3d_name">Nombre</string>
     <string name="sketch3d_new">Nuevo dibujo 3D</string>
@@ -213,11 +240,12 @@
     <string name="station_ask">¿Insertar estación?</string>
     <string name="station_base">Estación referencia</string>
     <!-- string name="station_next">Siguiente estación</string -->
-    <string name="station_viewed">Estación Vista</string>
+    <string name="station_viewed">Vista de estación </string>
     <string name="survey_exists">Conflicto Nombre Topografía</string>
     <string name="survey_date">yyyy.mm.dd</string>
     <string name="survey_delete">Eliminar Topografía </string>
     <string name ="survey_not_attached">ADVERTENCIA: Medidas no insertadas</string>
+    <string name="declination">Declinación magnética </string>
     <string name="description">Descripción</string>
     <string name="name">Nombre</string>
     <string name="team">Equipo</string>
@@ -278,6 +306,7 @@
     <string name="button_eval"      >Eval      </string>
     <string name="button_eval_cal"  >Eval w. calib.</string>
     <string name="button_gps_start" >GPS       </string>
+    <!-- string name="button_geomag"    >GeoMag    </string -->
     <string name="button_gps_stop"  >Stop      </string>
     <string name="button_manual"    >Manual    </string>
     <string name="button_measure"   >Medida   </string>
@@ -374,12 +403,13 @@
     <string name="help_loc">Posicionamiento GPS</string>
     <string name="help_delete_survey">Eliminar Topografía</string>
     <string name="help_delete_calib">Eliminar calibración</string>
-    <!-- TODO string name="help_detach">Clear current DistoX choice</string -->
+    <string name="help_detach">Clear current DistoX choice</string>
     <string name="help_toggle">Cambiar DistoX a modo: Calibración/normal</string>
     <string name="help_sdcard">Funciones de memoria DistoX</string>
     <string name="help_read">Leer coeficientes de calibración DistoX</string>
     <string name="help_scan">Buscando nuevos dispositivos DistoX</string>
     <string name="help_open_calib">Abrir la calibración</string>
+    <!-- TODO string name="help_export_calib">Export calibration</string -->
     <string name="help_group">Asignar automáticamente números grupo</string>
     <string name="help_cover">Distribución del ángulo de visualización de los datos de calibración</string>
     <string name="help_compute">Cálculo de calibración</string>
@@ -415,6 +445,7 @@
     <string name="title_stats">Estadísticas</string>
     <string name="title_survey">Info Topografía</string>
     <string name="title_survey_export">Exportar Topografías</string>
+    <!-- TODO string name="title_calib_export">Export calibration as</string -->
     <!-- string name="title_zoom">Zoom</string -->
 
   <string name="pref_cat_survey">Opciones Topografía</string>
@@ -446,7 +477,7 @@
   <string name="pref_base_path_title">Directorio principal</string>
   <string name="pref_base_path_summary">Directorio principal TopoDroid</string>
   <string name="pref_base_path_message">Introducir el directorio principal TopoDroid</string>
-  <string name="pref_text_size_title">Tamaño de texto</string>
+  <string name="pref_text_size_title">Tamaño del texto de la lista</string>
   <string name="pref_text_size_summary">Tamaño del texto de las visuales</string>
   <string name="pref_text_size_message">Tamaño del texto de la lista</string>
   <string name="pref_closeness_title">Selección radio</string>
@@ -456,7 +487,7 @@
   <string name="pref_altitude_summary">Seleccione el tipo de exportación</string>
   <string name="pref_list_refresh_title">Actualizar lista</string>
   <string name="pref_list_refresh_summary">Forzar Actualización lista</string>
-  <string name="pref_survey_stations_title">Estaciones topográficas</string>
+  <string name="pref_survey_stations_title">Sentido de las estaciones topográficas</string>
   <string name="pref_survey_stations_summary">Estaciones topográficas automáticas</string>
   <string name="pref_accel_thr_title">Precisión Aceleración</string>
   <string name="pref_accel_thr_summary">Precisión sobre las mediciones aceleración</string>
@@ -480,7 +511,7 @@
   <string name="pref_hthr_title">Tolerancia de las secciones Transversales</string>
   <string name="pref_hthr_summary">Tolerancia de las secciones transversales horizontales</string>
   <string name="pref_hthr_message">toma de inclinación sobre las secciones transversales horizontales</string>
-  <string name="pref_drawing_unit_title">Escala de simbolos</string>
+  <string name="pref_drawing_unit_title">Tamaño de los símbolo</string>
   <string name="pref_drawing_unit_summary">Escala de símbolos del dibujo</string>
   <string name="pref_drawing_unit_message">Escala de los símbolos del dibujo en la pantalla[restart the app after change]</string>
   <string name="pref_segment_title">Precisión de la línea</string>
@@ -507,6 +538,12 @@
   <string name="pref_iter_summary">Número máximo de iteraciones</string>
   <string name="pref_iter_dialogtitle">Calibración de iteraciones</string>
   <string name="pref_iter_message">Calibración de iteraciones</string>
+  <string name="pref_label_size_title">Tamaño del texto</string>
+  <string name="pref_label_size_summary">Tamaño del texto</string>
+  <string name="pref_label_size_message">Tamaño del texto</string>
+  <string name="pref_line_thickness_title">Grosor de la linea</string>
+  <string name="pref_line_thickness_summary">Grosor de la linea</string>
+  <string name="pref_line_thickness_message">Grosor de la linea</string>
   <string name="pref_device_title">Dispositivo</string>
   <string name="pref_device_summary">Nombre dirección DistoX</string>
   <string name="pref_device_message">Nombre dirección DistoX</string>
@@ -518,7 +555,7 @@
   <string name="pref_autoStations_summary">Añadir estación automáticamente</string>
   <string name="pref_loopClosure_title">Cierre de bucle</string>
   <string name="pref_loopClosure_summary">Error en cierre de bucle</string>
-<string name="pref_picker_type_title">Selector de símbolos</string>
+  <string name="pref_picker_type_title">Selector de símbolos</string>
   <string name="pref_picker_type_summary">Tipo de selector de símbolos</string>
   <string name="pref_station_size_title">Tamaño de la etiqueta de la estación</string>
   <string name="pref_station_size_summary">Tamaño de la etiqueta de la estación</string>
@@ -570,6 +607,8 @@
   <string name="pref_log_shot">Toma</string>
   <string name="pref_log_survey">Topografía</string>
   <string name="pref_log_therion">Therion</string>
+  <string name="pref_log_units">Unidades</string>
+  <string name="pref_log_zip">ZIP</string>
 
     <string name="welcome_title">Bienvenido a TopoDroid 2.2</string>
     <string name="welcome_text">

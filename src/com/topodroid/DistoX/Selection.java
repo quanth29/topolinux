@@ -17,7 +17,7 @@ package com.topodroid.DistoX;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import android.util.Log;
+// import android.util.Log;
 
 class Selection
 {

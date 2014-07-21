@@ -28,7 +28,7 @@ import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.KeyEvent;
 
-import android.util.Log;
+// import android.util.Log;
 
 public class PhotoCommentDialog extends Dialog
                          implements View.OnClickListener

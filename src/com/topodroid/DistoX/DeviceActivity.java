@@ -15,6 +15,7 @@
  * 20120726 TopoDroid log
  * 20121121 bug-fix check that device is "DistoX" to put it on the list
  * 20131201 button bar new interface. reorganized actions
+ * 20140719 write memory dump to file (X310 only)
  */
 package com.topodroid.DistoX;
 
@@ -22,9 +23,14 @@ package com.topodroid.DistoX;
 import java.util.Set;
 import java.util.ArrayList;
 
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.IOException;
+
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.AsyncTask;
 
 import android.content.Intent;
 import android.content.DialogInterface;
@@ -98,7 +104,7 @@ public class DeviceActivity extends Activity
     boolean cntd = app.isConnected();
     if ( mDevice != null ) { // mAddress.length() > 0 ) {
       mTvAddress.setTextColor( 0xffffffff );
-      mTvAddress.setText( String.format( getResources().getString( R.string.using ), mDevice.mAddress ) );
+      mTvAddress.setText( String.format( getResources().getString( R.string.using ), mDevice.mName, mDevice.mAddress ) );
     } else {
       mTvAddress.setTextColor( 0xffff0000 );
       mTvAddress.setText( R.string.no_device_address );
@@ -171,21 +177,20 @@ public class DeviceActivity extends Activity
       } else {
         setTitle( R.string.title_device );
         for ( BluetoothDevice device : device_set ) {
-          String name = device.getName();
-          String addr = device.getAddress();
+          String model = device.getName();
+          String addr  = device.getAddress();
+          String name  = Device.modelToName( model );
           Device dev = app.mData.getDevice( addr );
           if ( dev == null ) {
-            if ( name.startsWith( "DistoX", 0 ) ) {
-              app.mData.insertDevice( addr, name );
+            if ( model.startsWith( "DistoX", 0 ) ) {
+              app.mData.insertDevice( addr, model, name );
             }
-          } else {
-            name = dev.mModel;
           }
           // TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "device " + name );
-          if ( name.startsWith("DistoX-") ) {      // DistoX2 X310
-            mArrayAdapter.add( " X310 " + addr );
-          } else if ( name.equals("DistoX") ) {    // DistoX A3
-            mArrayAdapter.add( " A3 " + addr );
+          if ( model.startsWith("DistoX-") ) {      // DistoX2 X310
+            mArrayAdapter.add( " X310 " + name + " " + addr );
+          } else if ( model.equals("DistoX") ) {    // DistoX A3
+            mArrayAdapter.add( " A3 " + name + " " + addr );
           } else {
             // do not add
           } 
@@ -245,40 +250,33 @@ public class DeviceActivity extends Activity
     if (  b == mButton1[k++] ) {  // toggle
       if ( mDevice == null ) { // mAddress.length() < 1 ) {
         Toast.makeText(getApplicationContext(), R.string.no_device_address, Toast.LENGTH_SHORT).show();
-      } else if ( ! comm.toggleCalibMode( mDevice.mAddress, mDevice.mType ) ) {
-        Toast.makeText(getApplicationContext(), R.string.toggle_failed, Toast.LENGTH_SHORT).show();
       } else {
-        Toast.makeText(getApplicationContext(), R.string.toggle_ok, Toast.LENGTH_SHORT).show();
+        mButton1[0].setEnabled( false );
+        mButton1[0].setBackgroundResource(  R.drawable.ic_toggle_no );
+        setTitleColor( TopoDroidApp.COLOR_CONNECTED );
+        new CalibToggleTask( this, mButton1[0], app ).execute();
       }
-
     } else if (  b == mButton1[k++] ) { // memory
       if ( mDevice == null ) { // mAddress.length() < 1 ) {
         Toast.makeText(getApplicationContext(), R.string.no_device_address, Toast.LENGTH_SHORT).show();
-      } else if ( mDevice.mType == Device.DISTO_A3 ) {
-        new DeviceA3MemoryDialog( this, this ).show();
-      } else if ( mDevice.mType == Device.DISTO_X310 ) {
-        new DeviceX310MemoryDialog( this, this ).show();
       } else {
-        Toast.makeText(getApplicationContext(), "Unknown DistoX type " + mDevice.mType, Toast.LENGTH_SHORT).show();
+        if ( mDevice.mType == Device.DISTO_A3 ) {
+          new DeviceA3MemoryDialog( this, this ).show();
+        } else if ( mDevice.mType == Device.DISTO_X310 ) {
+          new DeviceX310MemoryDialog( this, this ).show();
+        } else {
+          Toast.makeText(getApplicationContext(), "Unknown DistoX type " + mDevice.mType, Toast.LENGTH_SHORT).show();
+        }
       }
     } else if ( b == mButton1[k++] ) { // read
       if ( mDevice == null ) { // mAddress.length() < 1 ) {
         Toast.makeText(getApplicationContext(), R.string.no_device_address, Toast.LENGTH_SHORT).show();
       } else {
-        // TopoDroidApp.Log( TopoDroidApp.LOG_DEVICE, "onClick mBtnRead. Is connected " + app.isConnected() );
-        byte[] coeff = new byte[48];
-        if ( ! comm.readCoeff( mDevice.mAddress, coeff ) ) {
-          Toast.makeText(getApplicationContext(), R.string.read_failed, Toast.LENGTH_SHORT).show();
-        } else {
-          String[] items = new String[8];
-          Vector bg = new Vector();
-          Matrix ag = new Matrix();
-          Vector bm = new Vector();
-          Matrix am = new Matrix();
-          Calibration.coeffToG( coeff, bg, ag );
-          Calibration.coeffToM( coeff, bm, am );
-          (new CalibCoeffDialog( this, bg, ag, bm, am, 0.0f, 0.0f, 0 ) ).show();
-        } 
+        mButton1[2].setEnabled( false );
+        mButton1[2].setBackgroundResource(  R.drawable.ic_read_no );
+        setTitleColor( TopoDroidApp.COLOR_CONNECTED );
+
+        new CalibReadTask( this, mButton1[2], app ).execute();
       }
     } else if ( b == mButton1[k++] ) { // scan
       Intent scanIntent = new Intent( Intent.ACTION_EDIT ).setClass( this, DeviceList.class );
@@ -286,11 +284,10 @@ public class DeviceActivity extends Activity
       startActivityForResult( scanIntent, REQUEST_DEVICE );
       Toast.makeText(this, R.string.wait_scan, Toast.LENGTH_LONG).show();
 
-    } else if ( b == mButton1[k++] ) { // reset comm state
+    } else if ( b == mButton1[k++] ) { // reset comm state [this is fast]
       app.resetComm();
       setState();
       Toast.makeText(this, R.string.bt_reset, Toast.LENGTH_SHORT).show();
-
     // } else if ( b == mButton1[k++] ) { // options
     //   Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
     //   optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_DEVICE );
@@ -343,7 +340,9 @@ public class DeviceActivity extends Activity
   void storeDeviceHeadTail( int[] head_tail )
   {
     // Log.v(TopoDroidApp.TAG, "store HeadTail " + mDevice.mAddress + " : " + head_tail[0] + " " + head_tail[1] );
-    app.mData.updateDeviceHeadTail( mDevice.mAddress, head_tail );
+    if ( ! app.mData.updateDeviceHeadTail( mDevice.mAddress, head_tail ) ) {
+      Toast.makeText(getApplicationContext(), getString(R.string.head_tail_store_failed), Toast.LENGTH_SHORT).show();
+    }
   }
 
   void retrieveDeviceHeadTail( int[] head_tail )
@@ -352,15 +351,34 @@ public class DeviceActivity extends Activity
     app.mData.getDeviceHeadTail( mDevice.mAddress, head_tail );
   }
 
-  void readX310Memory( final int[] head_tail )
+  private void writeMemoryDumpToFile( String dumpfile, ArrayList< MemoryOctet > memory )
+  {
+    if ( dumpfile == null ) return;
+    dumpfile.trim();
+    if ( dumpfile.length() == 0 ) return;
+    try { 
+      FileWriter fw = new FileWriter( TopoDroidApp.getDumpFile( dumpfile ) );
+      PrintWriter pw = new PrintWriter( fw );
+      for ( MemoryOctet m : memory ) {
+        m.printHexString( pw );
+        pw.format(" " + m.toString() + "\n");
+      }
+      fw.flush();
+      fw.close();
+    } catch ( IOException e ) {
+    }
+  }
+
+  void readX310Memory( final int[] head_tail, String dumpfile )
   {
     ArrayList< MemoryOctet > memory = new ArrayList< MemoryOctet >();
     int n = app.mComm.readX310Memory( mDevice.mAddress, head_tail[0], head_tail[1], memory );
     if ( n <= 0 ) return;
+    writeMemoryDumpToFile( dumpfile, memory );
     (new MemoryListDialog(this, this, memory)).show();
   }
 
-  void readA3Memory( final int[] head_tail )
+  void readA3Memory( final int[] head_tail, String dumpfile )
   {
     if ( head_tail[0] < 0 || head_tail[0] >= 0x8000 || head_tail[1] < 0 || head_tail[1] >= 0x8000 ) {
       Toast.makeText(this, R.string.device_illegal_addr, Toast.LENGTH_SHORT).show();
@@ -375,8 +393,8 @@ public class DeviceActivity extends Activity
       Toast.makeText(this, "no data", Toast.LENGTH_SHORT).show();
       return;
     } 
-    Toast.makeText(this, "read " + n + " data", Toast.LENGTH_SHORT).show();
-
+    // Toast.makeText(this, "read " + n + " data", Toast.LENGTH_SHORT).show();
+    writeMemoryDumpToFile( dumpfile, memory );
     (new MemoryListDialog(this, this, memory)).show();
 
   }
@@ -443,7 +461,7 @@ public class DeviceActivity extends Activity
         } else if ( result == RESULT_CANCELED ) {
           // finish(); // back to survey
         }
-        // updateList();
+        updateList();
         break;
       // case REQUEST_ENABLE_BT:
       //   if ( result == Activity.RESULT_OK ) {

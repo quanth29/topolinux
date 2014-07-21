@@ -13,6 +13,7 @@
  * 20120715 per-category preferences
  * 20121124 check device-calibration consistency before download and write
  * 20131201 button bar new interface. reorganized actions
+ * 20140609 enableWrite: two state write button
  */
 package com.topodroid.DistoX;
 
@@ -26,16 +27,20 @@ import java.util.ArrayList;
 // import java.lang.reflect.Method;
 // import java.lang.reflect.InvocationTargetException;
 
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Application;
 import android.app.Activity;
 // import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.os.AsyncTask;
 // import android.os.Handler;
 // import android.os.Message;
 // import android.os.Parcelable;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.DialogInterface;
 
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
@@ -50,23 +55,25 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import android.util.Log;
+// import android.util.Log;
 
 public class GMActivity extends Activity
                         implements OnItemClickListener, ILister
                         , OnClickListener
 {
-  private TopoDroidApp app;
+  private TopoDroidApp mApp;
 
   private String mSaveData;                // saved GM text representation
   private TextView mSaveTextView;          // view of the saved GM
   private CalibCBlock mSaveCBlock = null;  // data of the saved GM
   private long mCIDid = -1;    // id of the GM
+  private int mBlkStatus = 0;   // min display Group (can be either 1 [only active] or 0 [all])
 
   private ListView mList;                  // display list
 
 
   private MenuItem mMIoptions;
+  private MenuItem mMIdisplay;
   private MenuItem mMIhelp;
 
   private CalibCBlockAdapter mDataAdapter;  // adapter for the list of GM's
@@ -109,13 +116,13 @@ public class GMActivity extends Activity
    */
   int computeCalib()
   {
-    long cid = app.mCID;
+    long cid = mApp.mCID;
     if ( cid < 0 ) return -2;
-    List<CalibCBlock> list = app.mData.selectAllGMs( cid );
+    List<CalibCBlock> list = mApp.mData.selectAllGMs( cid, 0 ); 
     if ( list.size() < 16 ) {
       return -1;
     }
-    Calibration calibration = app.mCalibration;
+    Calibration calibration = mApp.mCalibration;
 
     calibration.Reset( list.size() );
     for ( CalibCBlock item : list ) {
@@ -127,7 +134,7 @@ public class GMActivity extends Activity
       float max_error = 0.0f;
       int k = 0;
       for ( CalibCBlock cb : list ) {
-        app.mData.updateGMError( cb.mId, cid, errors[k] );
+        mApp.mData.updateGMError( cb.mId, cid, errors[k] );
         // cb.setError( errors[k] );
         if ( errors[k] > max_error ) max_error = errors[k];
         ++k;
@@ -140,21 +147,24 @@ public class GMActivity extends Activity
 
   void handleComputeCalibResult( int result )
   {
-    setTitleColor( TopoDroidApp.COLOR_NORMAL );
+    resetTitle( );
     // ( result == -2 ) not handled
     if ( result == -1 ) {
       Toast.makeText( this, R.string.few_data, Toast.LENGTH_SHORT ).show();
       return;
     } else if ( result > 0 ) {
-      Calibration calibration = app.mCalibration;
+      enableWrite( true );
+      Calibration calibration = mApp.mCalibration;
       Vector bg = calibration.GetBG();
       Matrix ag = calibration.GetAG();
       Vector bm = calibration.GetBM();
       Matrix am = calibration.GetAM();
 
       float error = calibration.mMaxError * TopoDroidUtil.RAD2GRAD;
+      // (new CalibCoeffDialog( getApplicationContext(), bg, ag, bm, am, calibration.Delta(), error, result ) ).show();
       (new CalibCoeffDialog( this, bg, ag, bm, am, calibration.Delta(), error, result ) ).show();
     } else {
+      // Toast.makeText( getApplicationContext(), R.string.few_data, Toast.LENGTH_SHORT ).show();
       Toast.makeText( this, R.string.few_data, Toast.LENGTH_SHORT ).show();
       return;
     }
@@ -163,10 +173,10 @@ public class GMActivity extends Activity
 
   void computeGroups( )
   {
-    long cid = app.mCID;
+    long cid = mApp.mCID;
     if ( cid < 0 ) return;
-    float thr = (float)Math.cos( app.mGroupDistance * TopoDroidUtil.GRAD2RAD);
-    List<CalibCBlock> list = app.mData.selectAllGMs( cid );
+    float thr = (float)Math.cos( mApp.mGroupDistance * TopoDroidUtil.GRAD2RAD);
+    List<CalibCBlock> list = mApp.mData.selectAllGMs( cid, 0 );
     if ( list.size() < 4 ) {
       Toast.makeText( this, R.string.few_data, Toast.LENGTH_SHORT ).show();
       return;
@@ -175,7 +185,7 @@ public class GMActivity extends Activity
     int cnt = 0;
     float b = 0.0f;
     float c = 0.0f;
-    switch ( app.mGroupBy ) {
+    switch ( mApp.mGroupBy ) {
       case TopoDroidApp.GROUP_BY_DISTANCE:
         for ( CalibCBlock item : list ) {
           if ( group == 0 || item.isFarFrom( b, c, thr ) ) {
@@ -184,7 +194,7 @@ public class GMActivity extends Activity
             c = item.mClino;
           }
           item.setGroup( group );
-          app.mData.updateGMName( item.mId, item.mCalibId, Long.toString(group) );
+          mApp.mData.updateGMName( item.mId, item.mCalibId, Long.toString(group) );
           // N.B. item.calibId == cid
         }
         break;
@@ -193,7 +203,7 @@ public class GMActivity extends Activity
         group = 1;
         for ( CalibCBlock item : list ) {
           item.setGroup( group );
-          app.mData.updateGMName( item.mId, item.mCalibId, Long.toString(group) );
+          mApp.mData.updateGMName( item.mId, item.mCalibId, Long.toString(group) );
           ++ cnt;
           if ( (cnt%4) == 0 ) {
             ++group;
@@ -205,7 +215,7 @@ public class GMActivity extends Activity
         group = 1;
         for ( CalibCBlock item : list ) {
           item.setGroup( group );
-          app.mData.updateGMName( item.mId, item.mCalibId, Long.toString(group) );
+          mApp.mData.updateGMName( item.mId, item.mCalibId, Long.toString(group) );
           ++ cnt;
           if ( (cnt%4) == 0 || cnt >= 16 ) ++group;
         }
@@ -217,7 +227,7 @@ public class GMActivity extends Activity
   public void refreshDisplay( int nr, boolean toast )
   {
     // Log.v( TopoDroidApp.TAG, "refreshDisplay nr " + nr );
-    setTitleColor( TopoDroidApp.COLOR_NORMAL );
+    resetTitle( );
     if ( nr >= 0 ) {
       if ( nr > 0 ) updateDisplay( );
       if ( toast ) {
@@ -226,19 +236,19 @@ public class GMActivity extends Activity
     } else if ( nr < 0 ) {
       if ( toast ) {
         // Toast.makeText( this, getString(R.string.read_fail_with_code) + nr, Toast.LENGTH_SHORT ).show();
-        Toast.makeText( this, app.DistoXConnectionError[ -nr ], Toast.LENGTH_SHORT ).show();
+        Toast.makeText( this, mApp.DistoXConnectionError[ -nr ], Toast.LENGTH_SHORT ).show();
       }
     }
   }
     
   public void updateDisplay( )
   {
-    // Log.v( TopoDroidApp.TAG, "updateDisplay CID " + app.mCID );
-    setTitleColor( TopoDroidApp.COLOR_NORMAL );
+    // Log.v( TopoDroidApp.TAG, "updateDisplay CID " + mApp.mCID );
+    resetTitle( );
     mDataAdapter.clear();
-    DataHelper data = app.mData;
-    if ( data != null && app.mCID >= 0 ) {
-      List<CalibCBlock> list = data.selectAllGMs( app.mCID );
+    DataHelper data = mApp.mData;
+    if ( data != null && mApp.mCID >= 0 ) {
+      List<CalibCBlock> list = data.selectAllGMs( mApp.mCID, mBlkStatus );
       // Log.v( TopoDroidApp.TAG, "updateDisplay GMs " + list.size() );
       updateGMList( list );
       setTitle( mCalibName );
@@ -247,14 +257,21 @@ public class GMActivity extends Activity
 
   private void updateGMList( List<CalibCBlock> list )
   {
+    int nr_saturated_values = 0;
     if ( list.size() == 0 ) {
       Toast.makeText( this, R.string.no_gms, Toast.LENGTH_SHORT ).show();
       return;
     }
     for ( CalibCBlock item : list ) {
+      if ( item.isSaturated() ) ++ nr_saturated_values;
       mDataAdapter.add( item );
     }
     // mList.setAdapter( mDataAdapter );
+    if ( nr_saturated_values > 0 ) {
+      Toast.makeText( this, 
+        String.format( getResources().getString( R.string.calib_saturated_values ), nr_saturated_values ),
+        Toast.LENGTH_LONG ).show();
+    }
   }
 
 
@@ -276,17 +293,44 @@ public class GMActivity extends Activity
     // }
     mSaveCBlock   = mDataAdapter.get( pos );
     mSaveTextView = (TextView) view;
-    startGMDialog( );
+    String msg = mSaveTextView.getText().toString();
+    String[] st = msg.split( " ", 3 );
+    mCIDid    = Long.parseLong(st[0]);
+    // String name = st[1];
+    mSaveData = st[2];
+    if ( mSaveCBlock.mStatus == 0 ) {
+      startGMDialog( st[1] );
+    } else { // FIXME TODO ask whether to undelete
+      AlertDialog.Builder alert = new AlertDialog.Builder( this );
+      // alert.setTitle( R.string.delete );
+      alert.setMessage( getResources().getString( R.string.calib_gm_undelete ) );
+    
+      alert.setPositiveButton( R.string.button_ok, 
+        new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick( DialogInterface dialog, int btn ) {
+            // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "calib delite" );
+            deleteGM( false );
+          }
+      } );
+
+      alert.setNegativeButton( R.string.button_cancel, 
+        new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick( DialogInterface dialog, int btn ) { }
+      } );
+      alert.show();
+    }
   }
  
-  public void startGMDialog( )
+  private void startGMDialog( String name  )
   {
-     String msg = mSaveTextView.getText().toString();
-     String[] st = msg.split( " ", 3 );
-     // TopoDroidApp.Log(  TopoDroidApp.LOG_CALIB, "TextItem: (" + st[0] + ") (" + st[1] + ") (" + st[2] + ")" );
-     mCIDid    = Long.parseLong(st[0]);
-     String name = st[1];
-     mSaveData = st[2];
+     // String msg = mSaveTextView.getText().toString();
+     // String[] st = msg.split( " ", 3 );
+     // // TopoDroidApp.Log(  TopoDroidApp.LOG_CALIB, "TextItem: (" + st[0] + ") (" + st[1] + ") (" + st[2] + ")" );
+     // mCIDid    = Long.parseLong(st[0]);
+     // String name = st[1];
+     // mSaveData = st[2];
      int end = name.length() - 1;
      name = name.substring(1,end);
      (new CalibGMDialog( this, this, name, mSaveData )).show();
@@ -299,13 +343,16 @@ public class GMActivity extends Activity
   HorizontalListView mListView;
   HorizontalButtonView mButtonView1;
   // private Button mButtonHelp;
+  boolean mEnableWrite;
   
   @Override
   public void onCreate(Bundle savedInstanceState)
   {
     super.onCreate( savedInstanceState );
     setContentView(R.layout.gm_activity);
-    app = (TopoDroidApp) getApplication();
+    mApp = (TopoDroidApp) getApplication();
+
+    mEnableWrite = false;
 
     mDataAdapter  = new CalibCBlockAdapter( this, R.layout.row, new ArrayList<CalibCBlock>() );
 
@@ -323,7 +370,7 @@ public class GMActivity extends Activity
     mList.setOnItemClickListener( this );
     mList.setDividerHeight( 2 );
 
-    mHandler = new ConnHandler( app, this );
+    mHandler = new ConnHandler( mApp, this );
 
     int nr_button1 = 8;
     mButton1 = new Button[ nr_button1 ];
@@ -341,7 +388,7 @@ public class GMActivity extends Activity
     mButton1[k1++].setBackgroundResource(  R.drawable.ic_cover );
     mButton1[k1++].setBackgroundResource(  R.drawable.ic_compute );
     mButton1[k1++].setBackgroundResource(  R.drawable.ic_read );
-    mButton1[k1++].setBackgroundResource(  R.drawable.ic_write );
+    mButton1[k1++].setBackgroundResource(  R.drawable.ic_write_no );  // number 6
     mButton1[k1++].setBackgroundResource(  R.drawable.ic_disto );
     // mButton1[k1++].setBackgroundResource(  R.drawable.ic_pref );
     // mButton1[k1++].setBackgroundResource(  R.drawable.ic_help );
@@ -351,33 +398,49 @@ public class GMActivity extends Activity
     mListView = (HorizontalListView) findViewById(R.id.listview);
     mListView.setAdapter( mButtonView1.mAdapter );
 
-    mCalibName = app.myCalib;
+    mCalibName = mApp.myCalib;
     // updateDisplay();
+  }
+
+  private void resetTitle()
+  {
+    setTitle( mCalibName );
+    if ( mBlkStatus == 0 ) {
+      setTitleColor( TopoDroidApp.COLOR_NORMAL );
+    } else {
+      setTitleColor( TopoDroidApp.COLOR_NORMAL2 );
+    }
+  }
+
+  private void enableWrite( boolean enable ) 
+  {
+    if ( enable ) {
+      mButton1[6].setBackgroundResource(  R.drawable.ic_write );
+    } else {
+      mButton1[6].setBackgroundResource(  R.drawable.ic_write_no );
+    }
+    mEnableWrite = enable;
   }
 
     public void onClick(View view)
     {
       Button b = (Button)view;
       if ( b == mButton1[0] ) { // download
-        if ( ! app.checkCalibrationDeviceMatch() ) {
+        if ( ! mApp.checkCalibrationDeviceMatch() ) {
           Toast.makeText( this, R.string.calib_device_mismatch, Toast.LENGTH_LONG ).show();
         } else {
+          enableWrite( false );
           setTitleColor( TopoDroidApp.COLOR_CONNECTED );
-          new DistoXRefresh( app, this ).execute();
+          new DistoXRefresh( mApp, this ).execute();
         }
       } else if ( b == mButton1[1] ) { // toggle
+        mButton1[1].setEnabled( false );
+        mButton1[1].setBackgroundResource( R.drawable.ic_toggle_no );
         setTitleColor( TopoDroidApp.COLOR_CONNECTED );
-        setTitle( R.string.toggle_device );
-        if ( app.mComm == null || ! app.mComm.toggleCalibMode( app.distoAddress(), app.distoType() ) ) {
-          Toast.makeText(getApplicationContext(), R.string.toggle_failed, Toast.LENGTH_SHORT).show();
-        } else {
-          Toast.makeText(getApplicationContext(), R.string.toggle_ok, Toast.LENGTH_SHORT).show();
-        }
-        setTitle( mCalibName );
-        setTitleColor( TopoDroidApp.COLOR_COMPUTE );
+        new CalibToggleTask( this, mButton1[1], mApp ).execute();
       } else if ( b == mButton1[2] ) { // group
-        if ( app.mCID >= 0 ) {
-          List< CalibCBlock > list = app.mData.selectAllGMs( app.mCID );
+        if ( mApp.mCID >= 0 ) {
+          List< CalibCBlock > list = mApp.mData.selectAllGMs( mApp.mCID, 0 );
           if ( list.size() >= 16 ) {
             setTitle( R.string.calib_compute_groups );
             setTitleColor( TopoDroidApp.COLOR_COMPUTE );
@@ -385,18 +448,17 @@ public class GMActivity extends Activity
             // updateDisplay( );
             new CalibComputer( this, CALIB_COMPUTE_GROUPS ).execute();
           } else {
-            setTitleColor( TopoDroidApp.COLOR_NORMAL );
+            resetTitle( );
             Toast.makeText( this, R.string.few_data, Toast.LENGTH_SHORT ).show();
           }
         } else {
-          setTitle( mCalibName );
-          setTitleColor( TopoDroidApp.COLOR_NORMAL );
+          resetTitle( );
           Toast.makeText( this, R.string.no_calibration, Toast.LENGTH_SHORT ).show();
         }
       } else if ( b == mButton1[3] ) { // cover
-        Calibration calib = app.mCalibration;
+        Calibration calib = mApp.mCalibration;
         if ( calib != null ) {
-          List< CalibCBlock > list = app.mData.selectAllGMs( app.mCID );
+          List< CalibCBlock > list = mApp.mData.selectAllGMs( mApp.mCID, 0 );
           if ( list.size() >= 16 ) {
             ( new CalibCoverage( this, list, calib ) ).show();
           } else {
@@ -406,17 +468,10 @@ public class GMActivity extends Activity
           Toast.makeText( this, R.string.no_calibration, Toast.LENGTH_SHORT ).show();
         }
       } else if ( b == mButton1[4] ) { // compute
-        if ( app.mCID >= 0 ) {
+        if ( mApp.mCID >= 0 ) {
           setTitle( R.string.calib_compute_coeffs );
           setTitleColor( TopoDroidApp.COLOR_COMPUTE );
           new CalibComputer( this, CALIB_COMPUTE_CALIB ).execute();
-          // if ( computeCalib() ) {
-          //   updateDisplay( );
-          // } else {
-          //   setTitle( mCalibName );
-          //   setTitleColor( TopoDroidApp.COLOR_NORMAL );
-          //   Toast.makeText( this, R.string.compute_failed, Toast.LENGTH_SHORT ).show();
-          // }
         } else {
           Toast.makeText( this, R.string.no_calibration, Toast.LENGTH_SHORT ).show();
         }
@@ -427,45 +482,35 @@ public class GMActivity extends Activity
       //   mListView.setAdapter( mButtonView1.mAdapter );
       //   mListView.invalidate();
       } else if ( b == mButton1[5] ) { // read
-        setTitle( R.string.calib_read_coeffs );
+        enableWrite( false );
+        mButton1[5].setEnabled( false );
+        mButton1[5].setBackgroundResource( R.drawable.ic_read_no );
         setTitleColor( TopoDroidApp.COLOR_CONNECTED );
-        byte[] coeff = new byte[48];
-        if ( app.mComm == null || ! app.mComm.readCoeff( app.distoAddress(), coeff ) ) {
-          Toast.makeText(getApplicationContext(), R.string.read_failed, Toast.LENGTH_SHORT).show();
-        } else {
-          String[] items = new String[8];
-          Vector bg = new Vector();
-          Matrix ag = new Matrix();
-          Vector bm = new Vector();
-          Matrix am = new Matrix();
-          Calibration.coeffToG( coeff, bg, ag );
-          Calibration.coeffToM( coeff, bm, am );
-          (new CalibCoeffDialog( this, bg, ag, bm, am, 0.0f, 0.0f, 0 ) ).show();
-        } 
-        setTitle( mCalibName );
-        setTitleColor( TopoDroidApp.COLOR_NORMAL );
+        new CalibReadTask( this, mButton1[5], mApp ).execute();
+
       } else if ( b == mButton1[6] ) { // write
-        if ( app.mCalibration == null ) {
-          Toast.makeText(getApplicationContext(), R.string.no_calibration, Toast.LENGTH_SHORT).show();
-        } else {
-          setTitle( R.string.calib_write_coeffs );
-          setTitleColor( TopoDroidApp.COLOR_CONNECTED );
-          byte[] coeff = app.mCalibration.GetCoeff();
-          if ( coeff == null ) {
-            Toast.makeText(getApplicationContext(), R.string.no_calibration, Toast.LENGTH_SHORT).show();
+        if ( mEnableWrite ) {
+          if ( mApp.mCalibration == null ) {
+            Toast.makeText( this, R.string.no_calibration, Toast.LENGTH_SHORT).show();
           } else {
-            if ( ! app.checkCalibrationDeviceMatch() ) {
-              Toast.makeText( this, R.string.calib_device_mismatch, Toast.LENGTH_LONG ).show();
+            setTitle( R.string.calib_write_coeffs );
+            setTitleColor( TopoDroidApp.COLOR_CONNECTED );
+            byte[] coeff = mApp.mCalibration.GetCoeff();
+            if ( coeff == null ) {
+              Toast.makeText( this, R.string.no_calibration, Toast.LENGTH_SHORT).show();
             } else {
-              if ( app.mComm == null || ! app.mComm.writeCoeff( app.distoAddress(), coeff ) ) {
-                Toast.makeText(getApplicationContext(), R.string.write_failed, Toast.LENGTH_SHORT).show();
+              if ( ! mApp.checkCalibrationDeviceMatch() ) {
+                Toast.makeText( this, R.string.calib_device_mismatch, Toast.LENGTH_LONG ).show();
               } else {
-                Toast.makeText(getApplicationContext(), R.string.write_ok, Toast.LENGTH_SHORT).show();
+                if ( mApp.mComm == null || ! mApp.mComm.writeCoeff( mApp.distoAddress(), coeff ) ) {
+                  Toast.makeText( this, R.string.write_failed, Toast.LENGTH_SHORT).show();
+                } else {
+                  Toast.makeText( this, R.string.write_ok, Toast.LENGTH_SHORT).show();
+                }
               }
             }
+            resetTitle( );
           }
-          setTitle( mCalibName );
-          setTitleColor( TopoDroidApp.COLOR_NORMAL );
         }
       } else if ( b == mButton1[7] ) { // disto
         Intent deviceIntent = new Intent( Intent.ACTION_EDIT ).setClass( this, DeviceActivity.class );
@@ -491,25 +536,25 @@ public class GMActivity extends Activity
   public void onStart()
   {
     super.onStart();
-    // setBTMenus( app.mBTAdapter.isEnabled() );
+    // setBTMenus( mApp.mBTAdapter.isEnabled() );
   }
 
   @Override
   public synchronized void onResume() 
   {
     super.onResume();
-    // if ( app.mComm != null ) { app.mComm.resume(); }
+    // if ( mApp.mComm != null ) { mApp.mComm.resume(); }
     // Log.v( TopoDroidApp.TAG, "onResume ");
     updateDisplay( );
-    app.registerConnListener( mHandler );
+    mApp.registerConnListener( mHandler );
   }
 
   @Override
   protected synchronized void onPause() 
   { 
     super.onPause();
-    app.unregisterConnListener( mHandler );
-    // if ( app.mComm != null ) { app.mComm.suspend(); }
+    mApp.unregisterConnListener( mHandler );
+    // if ( mApp.mComm != null ) { mApp.mComm.suspend(); }
   }
 
 
@@ -529,9 +574,9 @@ public class GMActivity extends Activity
 
   public int downloadData()
   {
-    // TopoDroidApp.Log(  TopoDroidApp.LOG_CALIB, "downloadData() device " + app.distoAddress() );
-    if ( app.mComm != null && app.mDevice != null ) {
-      return app.mComm.downloadData( app.distoAddress() );
+    // TopoDroidApp.Log(  TopoDroidApp.LOG_CALIB, "downloadData() device " + mApp.distoAddress() );
+    if ( mApp.mComm != null && mApp.mDevice != null ) {
+      return mApp.mComm.downloadData( mApp.distoAddress() );
     }
     return 0;
   }
@@ -540,20 +585,20 @@ public class GMActivity extends Activity
   // {
   //   long id = setCalibFromName( name );
   //   if ( id > 0 ) {
-  //     app.mData.updateCalibDayAndComment( id, date, comment );
+  //     mApp.mData.updateCalibDayAndComment( id, date, comment );
   //     setStatus( STATUS_GM );
   //     // updateDisplay( true );
   //   }
   // }
  
-  public void updateGM( long value, String name )
+  void updateGM( long value, String name )
   {
-    app.mData.updateGMName( mCIDid, app.mCID, name );
+    mApp.mData.updateGMName( mCIDid, mApp.mCID, name );
     String id = (new Long(mCIDid)).toString();
-    // CalibCBlock blk = app.mData.selectGM( mCIDid, app.mCID );
+    // CalibCBlock blk = mApp.mData.selectGM( mCIDid, mApp.mCID );
     mSaveCBlock.setGroup( value );
 
-    // if ( app.mListRefresh ) {
+    // if ( mApp.mListRefresh ) {
     //   mDataAdapter.notifyDataSetChanged();
     // } else {
       mSaveTextView.setText( id + " <" + name + "> " + mSaveData );
@@ -561,6 +606,12 @@ public class GMActivity extends Activity
       // mSaveTextView.invalidate();
       // updateDisplay( true ); // FIXME
     // }
+  }
+
+  void deleteGM( boolean delete )
+  {
+    mApp.mData.deleteGM( mApp.mCID, mCIDid, delete );
+    updateDisplay();
   }
 
   // ---------------------------------------------------------
@@ -572,9 +623,11 @@ public class GMActivity extends Activity
     super.onCreateOptionsMenu( menu );
 
     mMIoptions = menu.add( R.string.menu_options );
+    mMIdisplay = menu.add( R.string.menu_display );
     mMIhelp    = menu.add( R.string.menu_help  );
 
     mMIoptions.setIcon( R.drawable.ic_pref );
+    mMIdisplay.setIcon( R.drawable.ic_logs );
     mMIhelp.setIcon( R.drawable.ic_help );
 
     return true;
@@ -589,6 +642,9 @@ public class GMActivity extends Activity
       Intent intent = new Intent( this, TopoDroidPreferences.class );
       intent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_CALIB );
       startActivity( intent );
+    } else if ( item == mMIdisplay  ) { // DISPLAY
+      mBlkStatus = 1 - mBlkStatus;       // 0 --> 1;  1 --> 0
+      updateDisplay();
     } else if ( item == mMIhelp  ) { // HELP DIALOG
       (new HelpDialog(this, icons, help_texts ) ).show();
     } else {

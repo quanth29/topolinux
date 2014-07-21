@@ -36,6 +36,14 @@
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
         />
+      <Button android:id="@+id/gm_delete"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:text="@string/button_delete"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+        />
    		
       <!-- Button android:id="@+id/gm_cancel"
         android:layout_width="wrap_content" 

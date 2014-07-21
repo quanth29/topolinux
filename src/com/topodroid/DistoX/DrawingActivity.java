@@ -100,7 +100,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.util.Log;
+// import android.util.Log;
 
 // import android.view.MenuInflater;
 // import android.support.v7.app.ActionBar;
@@ -261,7 +261,7 @@ public class DrawingActivity extends Activity // ActionBarActivity
     private long mPid1; // plot id
     private long mPid2; // plot id
     private long mPid;  // current plot id
-    private int mType;  // current plot type
+    private long mType;  // current plot type
     private String mFrom;
     private float mAzimuth = 0.0f;
 
@@ -906,7 +906,7 @@ public class DrawingActivity extends Activity // ActionBarActivity
         TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "nr shots at " + mFrom + " = " + mList.size() );
       }
 
-      loadFiles(); // override mType
+      loadFiles( mType );
 
       if ( mType == PlotInfo.PLOT_SECTION || mType == PlotInfo.PLOT_H_SECTION ) {
         addGrid( -10, 10, -10, 10, 0.0f, 0.0f );
@@ -932,7 +932,7 @@ public class DrawingActivity extends Activity // ActionBarActivity
       }
     }
 
-    private void loadFiles( )
+    private void loadFiles( long type )
     {
       // Log.v( TopoDroidApp.TAG, "load " + mName1 + " " + mName2 );
       mPlot1 = mApp.mData.getPlotInfo( mSid, mName1 );
@@ -987,6 +987,10 @@ public class DrawingActivity extends Activity // ActionBarActivity
 
       // resetZoom();
       resetReference( mPlot1 );
+
+      if ( type == PlotInfo.PLOT_EXTENDED ) {
+        switchPlotType();
+      }
    }
 
    private void saveReference( PlotInfo plot, long pid )
@@ -1532,7 +1536,7 @@ public class DrawingActivity extends Activity // ActionBarActivity
         } else {
           view = view + " " + name;
         }
-        Log.v( TopoDroidApp.TAG, "addStationBarrier " + name + " view <" + view + ">" );
+        // Log.v( TopoDroidApp.TAG, "addStationBarrier " + name + " view <" + view + ">" );
         mData.updatePlotView( mPid1, mSid, view );
         mData.updatePlotView( mPid2, mSid, view );
         mPlot1.view = view;
@@ -1624,6 +1628,7 @@ public class DrawingActivity extends Activity // ActionBarActivity
 
     private void makePopup( View b )
     {
+        final Context context = this;
         popup_layout = new LinearLayout(this);
         popup_layout.setOrientation(LinearLayout.VERTICAL);
         int lHeight = LinearLayout.LayoutParams.WRAP_CONTENT;
@@ -1639,7 +1644,9 @@ public class DrawingActivity extends Activity // ActionBarActivity
             if ( mHotItemType == DrawingPath.DRAWING_PATH_POINT ||
                  mHotItemType == DrawingPath.DRAWING_PATH_LINE ||
                  mHotItemType == DrawingPath.DRAWING_PATH_AREA ) { // move to nearest point POINT/LINE/AREA
-              mDrawingSurface.moveHotItemToNearestPoint();
+              if ( ! mDrawingSurface.moveHotItemToNearestPoint() ) {
+                Toast.makeText( context, R.string.failed_snap_to_point, Toast.LENGTH_SHORT ).show();
+              }
             }
             dismissPopup();
           }
@@ -1652,7 +1659,10 @@ public class DrawingActivity extends Activity // ActionBarActivity
         myTextView6.setOnClickListener( new View.OnClickListener( ) {
           public void onClick(View v) {
             if ( mHotItemType == DrawingPath.DRAWING_PATH_AREA ) { // snap to nearest line
-              mDrawingSurface.snapHotItemToNearestLine();
+              if ( ! mDrawingSurface.snapHotItemToNearestLine() ) { 
+                // FIXME failed: tell the user
+                Toast.makeText( context, R.string.failed_snap_to_line, Toast.LENGTH_SHORT ).show();
+              }
             }
             dismissPopup();
           }
@@ -1741,6 +1751,27 @@ public class DrawingActivity extends Activity // ActionBarActivity
       }
     }
 
+    private void switchPlotType()
+    {
+      if ( mType == PlotInfo.PLOT_PLAN ) {
+        saveReference( mPlot1, mPid1 );
+        mPid  = mPid2;
+        mName = mName2;
+        mType = (int)PlotInfo.PLOT_EXTENDED;
+        mButton1[ PLOT_BUTTON ].setBackgroundResource(  R.drawable.ic_extended ); 
+        mDrawingSurface.setManager( mType );
+        resetReference( mPlot2 );
+      } else if ( mType == PlotInfo.PLOT_EXTENDED ) {
+        saveReference( mPlot2, mPid2 );
+        mPid  = mPid1;
+        mName = mName1;
+        mType = (int)PlotInfo.PLOT_PLAN;
+        mButton1[ PLOT_BUTTON ].setBackgroundResource(  R.drawable.ic_plan ); 
+        mDrawingSurface.setManager( mType );
+        resetReference( mPlot1 );
+      }
+    }
+  
     public void onClick(View view)
     {
       // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "DrawingActivity onClick() " + view.toString() );
@@ -1782,26 +1813,9 @@ public class DrawingActivity extends Activity // ActionBarActivity
         (new DistoXAnnotations( this, mData.getSurveyFromId(mSid) )).show();
       } else if ( b == mButton1[5] ) { // toggle
         if ( mType != PlotInfo.PLOT_SECTION && mType != PlotInfo.PLOT_H_SECTION ) {
-          
           immediateSaveTh2( ); 
           // mDrawingSurface.clearDrawing();
-          if ( mType == PlotInfo.PLOT_PLAN ) {
-            saveReference( mPlot1, mPid1 );
-            mPid  = mPid2;
-            mName = mName2;
-            mType = (int)PlotInfo.PLOT_EXTENDED;
-            mButton1[ PLOT_BUTTON ].setBackgroundResource(  R.drawable.ic_extended ); 
-            mDrawingSurface.setManager( mType );
-            resetReference( mPlot2 );
-          } else if ( mType == PlotInfo.PLOT_EXTENDED ) {
-            saveReference( mPlot2, mPid2 );
-            mPid  = mPid1;
-            mName = mName1;
-            mType = (int)PlotInfo.PLOT_PLAN;
-            mButton1[ PLOT_BUTTON ].setBackgroundResource(  R.drawable.ic_plan ); 
-            mDrawingSurface.setManager( mType );
-            resetReference( mPlot1 );
-          }
+          switchPlotType();
         }
       } else if ( b == mButton1[6] ) { // more
         mListView.setAdapter( mButtonView4.mAdapter );
@@ -2021,11 +2035,11 @@ public class DrawingActivity extends Activity // ActionBarActivity
         private Context mContext;
         private DrawingCommandManager mCommand;
         private DistoXNum mNum;
-        private int mType;
+        private long mType;
         private Handler mHandler;
         private String mFullName;
 
-        public ExportDxfToFile( Context context, Handler handler, DrawingCommandManager command, DistoXNum num, int type, String name )
+        public ExportDxfToFile( Context context, Handler handler, DrawingCommandManager command, DistoXNum num, long type, String name )
         {
            mContext  = context;
            mCommand  = command;
@@ -2075,7 +2089,7 @@ public class DrawingActivity extends Activity // ActionBarActivity
       }
     }
 
-    void doSavePng( int type, final String filename )
+    void doSavePng( long type, final String filename )
     {
       final Activity currentActivity  = this;
       Handler saveHandler = new Handler(){
@@ -2107,12 +2121,12 @@ public class DrawingActivity extends Activity // ActionBarActivity
       if ( mType == PlotInfo.PLOT_SECTION || mType == PlotInfo.PLOT_H_SECTION ) {
         doSaveDxf( mType, mFullName1 ); // FIXME
       } else {
-        doSaveDxf( (int)PlotInfo.PLOT_PLAN, mFullName1 ); // FIXME
-        doSaveDxf( (int)PlotInfo.PLOT_EXTENDED, mFullName2 );
+        doSaveDxf( PlotInfo.PLOT_PLAN, mFullName1 ); // FIXME
+        doSaveDxf( PlotInfo.PLOT_EXTENDED, mFullName2 );
       }
     }
 
-    void doSaveDxf( int type, final String filename )
+    void doSaveDxf( long type, final String filename )
     {
       final Activity currentActivity  = this;
       Handler saveHandler = new Handler(){
@@ -2137,10 +2151,10 @@ public class DrawingActivity extends Activity // ActionBarActivity
     void saveTh2()
     {
       TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "saveTh2 back up " + mFullName1 + " " + mFullName2 );
-      String filename1 = mApp.getTh2FileWithExt( mFullName1 );
+      String filename1 = mApp.getTh2FileWithExt( mFullName1 ) + ".bck";
       String filename2 = null;
       if ( mFullName2 != null ) {
-        filename2 = mApp.getTh2FileWithExt( mFullName2 );
+        filename2 = mApp.getTh2FileWithExt( mFullName2 ) + ".bck";
       }
       doSaveTh2( ! mAllSymbols );
     }

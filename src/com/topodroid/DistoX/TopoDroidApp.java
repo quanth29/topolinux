@@ -62,6 +62,7 @@
  * 20140515 lastShotId and secondLastShotId
  * 20140520 LOG_PTOPO
  * 20140606 auto-station option: splays before or after the shot
+ * 20140719 dump directory
  */
 package com.topodroid.DistoX;
 
@@ -202,6 +203,7 @@ public class TopoDroidApp extends Application
   static final int STATUS_DELETED = 1;  
 
   static final int COLOR_NORMAL    = 0xffcccccc; // title colors
+  static final int COLOR_NORMAL2   = 0xffffcc99; // title color nr. 2
   static final int COLOR_CONNECTED = 0xffff6666; 
   static final int COLOR_COMPUTE   = 0xffff33cc;
 
@@ -305,6 +307,7 @@ public class TopoDroidApp extends Application
 
   static boolean mLoopClosure;  // whether to do loop closure
   static float mStationSize;
+  static float mLabelSize;
   
   // conversion factor from internal units (m) to user units
   public static float mUnitLength = 1.0f;
@@ -329,6 +332,7 @@ public class TopoDroidApp extends Application
   static int mLineStyle;       // line style: BEZIER, NONE, TWO, THREE
   static int mLineType;        // line type:  1       1     2    3
   static int mPickerType = 0;
+  static float mLineThickness = 1;
 
   static final float LEN_THR    = 20.0f; // corner detection length
   static final float TO_THERION = 5.0f;  // therion export scale-factor
@@ -393,21 +397,24 @@ public class TopoDroidApp extends Application
 
   private static String APP_BASE_PATH; //  = Environment.getExternalStorageDirectory() + "/TopoDroid/";
   // private static String APP_TLX_PATH ; //  = APP_BASE_PATH + "tlx/";
-  private static String APP_DAT_PATH ; //  = APP_BASE_PATH + "dat/";
-  private static String APP_SVX_PATH ; //  = APP_BASE_PATH + "svx/";
+
   private static String APP_CSV_PATH ; //  = APP_BASE_PATH + "csv/";
   private static String APP_CSX_PATH ; //  = APP_BASE_PATH + "csx/";
-  private static String APP_TOP_PATH ; //  = APP_BASE_PATH + "top/";
+  private static String APP_DAT_PATH ; //  = APP_BASE_PATH + "dat/";
+  private static String APP_DUMP_PATH ; //  = APP_BASE_PATH + "dump/";
+  private static String APP_DXF_PATH ; //  = APP_BASE_PATH + "dxf/";
+  private static String APP_FOTO_PATH; //  = APP_BASE_PATH + "photo/";
+  private static String APP_IMPORT_PATH; //  = APP_BASE_PATH + "import/";
+  private static String APP_NOTE_PATH; //  = APP_BASE_PATH + "note/";
+  private static String APP_PNG_PATH; //  = APP_BASE_PATH + "png/";
+  private static String APP_SVX_PATH ; //  = APP_BASE_PATH + "svx/";
   private static String APP_TH_PATH  ; //  = APP_BASE_PATH + "th/";
   private static String APP_TH2_PATH ; //  = APP_BASE_PATH + "th2/";
   private static String APP_TH3_PATH ; //  = APP_BASE_PATH + "th3/";
-  private static String APP_DXF_PATH ; //  = APP_BASE_PATH + "dxf/";
+  private static String APP_TOP_PATH ; //  = APP_BASE_PATH + "top/";
   private static String APP_TRO_PATH ; //  = APP_BASE_PATH + "tro/";
-  private static String APP_PNG_PATH; //  = APP_BASE_PATH + "png/";
-  private static String APP_NOTE_PATH; //  = APP_BASE_PATH + "note/";
-  private static String APP_FOTO_PATH; //  = APP_BASE_PATH + "photo/";
-  private static String APP_IMPORT_PATH; //  = APP_BASE_PATH + "import/";
   private static String APP_ZIP_PATH; //  = APP_BASE_PATH + "zip/";
+
   static String APP_SYMBOL_PATH;
   static String APP_SYMBOL_SAVE_PATH;
   static String APP_POINT_PATH; //  = APP_BASE_PATH + "symbol/point/";
@@ -450,6 +457,10 @@ public class TopoDroidApp extends Application
 
     APP_CSX_PATH    = APP_BASE_PATH + "csx/";
     dir = new File( APP_CSX_PATH );
+    if ( ! dir.exists() ) dir.mkdirs( );
+
+    APP_DUMP_PATH    = APP_BASE_PATH + "dump/";
+    dir = new File( APP_DUMP_PATH );
     if ( ! dir.exists() ) dir.mkdirs( );
 
     APP_TOP_PATH    = APP_BASE_PATH + "top/";
@@ -579,13 +590,15 @@ public class TopoDroidApp extends Application
     "DISTOX_PICKER_TYPE",         // 34
     "DISTOX_HTHRESHOLD",          // 35
     "DISTOX_STATION_SIZE",        // 36
+    "DISTOX_LABEL_SIZE",          // 37
+    "DISTOX_LINE_THICKNESS",      // 38
 
-    // "DISTOX_SKETCH_USES_SPLAYS",  // 37
+    // "DISTOX_SKETCH_USES_SPLAYS",  // 39
     // "DISTOX_SKETCH_LINE_STEP",
     // "DISTOX_SKETCH_BERDER_STEP",
-    // "DISTOX_SKETCH_SECTION_STEP", // 40
-    // "DISTOX_DELTA_EXTRUDE",       // 41
-    // "DISTOX_COMPASS_READINGS",    // 42
+    // "DISTOX_SKETCH_SECTION_STEP", // 42
+    // "DISTOX_DELTA_EXTRUDE",       // 43
+    // "DISTOX_COMPASS_READINGS",    // 44
   };
 
   public static final String[] log_key = {
@@ -653,7 +666,7 @@ public class TopoDroidApp extends Application
   public static final  boolean CHECK_BT      = true;
   public static final  boolean CHECK_ATTACHED = false;
   // public static final  boolean LIST_REFRESH  = false;
-  public static final  String SURVEY_STATION = "0"; 
+  public static final  String SURVEY_STATION = "1"; 
   public static final  boolean AUTO_STATIONS = true;
   public static final  boolean LOOP_CLOSURE  = false;
   public static final  String UNIT_LENGTH    = "meters";
@@ -866,6 +879,7 @@ public class TopoDroidApp extends Application
     // } catch ( SettingNotFoundException e ) {
     // }
 
+
     // Log.v(TAG, "onCreate app");
     this.prefs = PreferenceManager.getDefaultSharedPreferences( this );
     this.prefs.registerOnSharedPreferenceChangeListener( this );
@@ -979,7 +993,15 @@ public class TopoDroidApp extends Application
       String[] ver = line.split("\\.");
       int major = Integer.parseInt( ver[0] );
       int minor = Integer.parseInt( ver[1] );
-      int sub   = Integer.parseInt( ver[2] );
+      int sub   = 0;
+      int k = 0;
+      while ( k < ver[2].length() ) {
+        char ch = ver[2].charAt(k);
+        if ( ch < '0' || ch > '9' ) break;
+        sub = 10 * sub + (int)(ch - '0');
+        ++k;
+      }
+      // Log.v( "DistoX", "Version " + major + " " + minor + " " + sub );
       if (    ( major < MAJOR_MIN )
            || ( major == MAJOR_MIN && minor < MINOR_MIN )
            || ( major == MAJOR_MIN && minor == MINOR_MIN && sub < SUB_MIN ) ) {
@@ -995,6 +1017,7 @@ public class TopoDroidApp extends Application
       line = br.readLine().trim();
       if ( ! line.equals( surveyname ) ) return -4;
       fr.close();
+    } catch ( NumberFormatException e ) {
     } catch ( FileNotFoundException e ) {
     } catch ( IOException e ) {
     }
@@ -1018,6 +1041,7 @@ public class TopoDroidApp extends Application
   static String getSvxFile( String name )    { return APP_SVX_PATH + name; }
   static String getCsvFile( String name )    { return APP_CSV_PATH + name; }
   static String getCsxFile( String name )    { return APP_CSX_PATH + name; }
+  static String getDumpFile( String name )   { return APP_DUMP_PATH + name; }
   static String getTopFile( String name )    { return APP_TOP_PATH + name; }
   static String getTroFile( String name )    { return APP_TRO_PATH + name; }
   static String getPngFile( String name )    { return APP_PNG_PATH + name; }
@@ -1175,6 +1199,7 @@ public class TopoDroidApp extends Application
     mSurveyStations= Integer.parseInt( prefs.getString( key[k++], SURVEY_STATION ) ); // DISTOX_SURVEY_STATION 6
     mShotAfterSplays = ( mSurveyStations <= 2 );
     if ( mSurveyStations > 2 ) mSurveyStations -= 2;
+    Log.v("DistoX", "mSurveyStations " + mSurveyStations + " mShotAfterSplays " + mShotAfterSplays );
 
     mUnitLength    = prefs.getString( key[k++], UNIT_LENGTH ).equals(UNIT_LENGTH) ?  1.0f : M2FT;
     mUnitAngle     = prefs.getString( key[k++], UNIT_ANGLE ).equals(UNIT_ANGLE) ?  1.0f : DEG2GRAD;
@@ -1220,6 +1245,8 @@ public class TopoDroidApp extends Application
     mPickerType    = Integer.parseInt( prefs.getString( key[k++], "0" ) );           // DISTOX_PICKER_TYPE
     mHThreshold    = Float.parseFloat( prefs.getString( key[k++], "60" ) );          // DISTOX_HTHRESHOLD
     mStationSize   = Float.parseFloat( prefs.getString( key[k++], "14" ) );          // DISTOX_STATION_SIZE 36
+    mLabelSize     = Float.parseFloat( prefs.getString( key[k++], "14" ) );          // DISTOX_LABEL_SIZE 
+    mLineThickness = Float.parseFloat( prefs.getString( key[k++], "1" ) );           // DISTOX_LINE_THICKNESS
 
     // ------------------- SKETCH PREFERENCES
     // mSketchUsesSplays  = prefs.getBoolean( key[k++], false );
@@ -1287,6 +1314,7 @@ public class TopoDroidApp extends Application
       mSurveyStations = Integer.parseInt( sp.getString( k, SURVEY_STATION ) ); // DISTOX_SURVEY_STATION 6
       mShotAfterSplays = ( mSurveyStations <= 2 );
       if ( mSurveyStations > 2 ) mSurveyStations -= 2;
+      Log.v("DistoX", "mSurveyStations " + mSurveyStations + " mShotAfterSplays " + mShotAfterSplays );
     } else if ( k.equals( key[ nk++ ] ) ) {
       mUnitLength    = sp.getString( k, UNIT_LENGTH ).equals(UNIT_LENGTH) ?  1.0f : M2FT;
       Log( LOG_UNITS, "mUnitLength changed " + mUnitLength );
@@ -1355,9 +1383,17 @@ public class TopoDroidApp extends Application
     } else if ( k.equals( key[ nk++ ] ) ) {
       mHThreshold = Float.parseFloat( prefs.getString( k, "60" ) );  // DISTOX_HTHRESHOLD 35
     } else if ( k.equals( key[ nk++ ] ) ) {
-      mStationSize   = Float.parseFloat( prefs.getString( k, "10" ) ); // DISTOX_STATION_SIZE
+      mStationSize   = Float.parseFloat( prefs.getString( k, "14" ) ); // DISTOX_STATION_SIZE
       DrawingBrushPaths.resetPaintStationSize( );
-
+    } else if ( k.equals( key[ nk++ ] ) ) {
+      mLabelSize   = Float.parseFloat( prefs.getString( k, "14" ) ); // DISTOX_LABEL_SIZE
+      DrawingBrushPaths.resetPaintLabelSize( );
+    } else if ( k.equals( key[ nk++ ] ) ) {
+      float line_thickness = Float.parseFloat( prefs.getString( k, "1" ) );  // DISTOX_LINE_THICKNESS
+      if ( line_thickness != mLineThickness ) {
+        mLineThickness = line_thickness;
+        DrawingBrushPaths.doMakePaths();
+      }
     // } else if ( k.equals( key[ nk++ ] ) ) {
     //   mSketchUsesSplays = sp.getBoolean( k, false );
     // } else if ( k.equals( key[ nk++ ] ) ) { 
@@ -1451,12 +1487,13 @@ public class TopoDroidApp extends Application
   // -------------------------------------------------------------
   // DATA DOWNLOAD
 
-  public int downloadData()
+  public int downloadData( )
   {
     mSecondLastShotId = lastShotId();
     // Log.v( TAG, "downloadData() device " + mDevice + " comm " + mComm.toString() );
+    int ret = 0;
     if ( mComm != null && mDevice != null ) {
-      int ret = mComm.downloadData( mDevice.mAddress );
+      ret = mComm.downloadData( mDevice.mAddress );
       // Log.v( TAG, "TopoDroidApp.downloadData() result " + ret );
 
       if ( ret > 0 && mSurveyStations > 0 ) {
@@ -1465,7 +1502,7 @@ public class TopoDroidApp extends Application
         DistoXDBlock prev = null;
         String from = (mSurveyStations == 1 )? "0" : "1";
         String to   = (mSurveyStations == 1 )? "1" : "0";
-        String station = from;  // splays station
+        String station = mShotAfterSplays? from : "";  // splays station
 
         boolean atStation = false;
         for ( DistoXDBlock blk : list ) {
@@ -1480,13 +1517,14 @@ public class TopoDroidApp extends Application
                   prev.mFrom = from;
                   prev.mTo   = to;
                   mData.updateShotName( prev.mId, mSID, from, to );
-                  station = from;
                   if ( mSurveyStations == 1 ) {
+                    station = mShotAfterSplays ? to : from;
                     from = to;
                     to   = DistoXStationName.increment( from );
                   } else {
                     to   = from;
                     from = DistoXStationName.increment( to );
+                    station = mShotAfterSplays ? from : to;
                   }
                   atStation = true;
                 } else {
@@ -1501,13 +1539,14 @@ public class TopoDroidApp extends Application
             }
           } else { // blk.mFrom.length > 0
             if ( blk.mTo.length() > 0 ) {
-              station = blk.mFrom;
               if ( mSurveyStations == 1 ) {
+                station = mShotAfterSplays ? to : from;
                 from = blk.mTo;
                 to   = DistoXStationName.increment( from );
               } else {
                 to   = blk.mFrom;
                 from = DistoXStationName.increment( from );
+                station = mShotAfterSplays ? from : to;
               }
               atStation = true;
             } else {
@@ -1517,11 +1556,10 @@ public class TopoDroidApp extends Application
           }
         }
       }
-      return ret;
     } else {
       Log( LOG_ERR, "Comm or Device is null ");
     }
-    return 0;
+    return ret;
   }
 
   // =======================================================================
@@ -1567,6 +1605,8 @@ public class TopoDroidApp extends Application
   {
     String filename = ( sketch == null )? getSurveyCsxFile() : getSurveyCsxFile(sketch.mName1);
 
+    String cave = mySurvey.toUpperCase();
+
     List<DistoXDBlock> list = mData.selectAllShots( mSID, STATUS_NORMAL );
     List< FixedInfo > fixed = mData.selectAllFixed( mSID, STATUS_NORMAL );
     List< PlotInfo > plots  = mData.selectAllPlots( mSID, STATUS_NORMAL );
@@ -1592,7 +1632,7 @@ public class TopoDroidApp extends Application
    // ============== SESSIONS
       pw.format("    <sessions>\n");
       pw.format("      <session date=\"%s\" ", info.date); // FIXME yyyy-mm-dd
-      pw.format(         "description=\"%s\" ", mySurvey ); // title
+      pw.format(         "description=\"%s\" ", cave ); // title
       if ( info.team != null && info.team.length() > 0 ) {
         pw.format(" team=\"%s\" ", info.team );
       }
@@ -1603,7 +1643,7 @@ public class TopoDroidApp extends Application
 
    // ============== CAVE INFOS and BRANCHES
       pw.format("    <caveinfos>\n");
-      pw.format("      <caveinfo name=\"%s\"", mySurvey );
+      pw.format("      <caveinfo name=\"%s\"", cave );
       // pw.format( " color=\"\"");
       if ( info.comment != null && info.comment.length() > 0 ) {
         pw.format( " comment=\"%s\"\n", info.comment );
@@ -1625,6 +1665,7 @@ public class TopoDroidApp extends Application
 
       // optional attrs of "segment": id cave branch session
 
+      int cntSplay = 0;     // splay counter (index)
       long extend = 0;      // current extend
       boolean dup = false;  // duplicate
       boolean sur = false;  // surface
@@ -1649,7 +1690,7 @@ public class TopoDroidApp extends Application
           } else { // only TO station
             if ( n > 0 ) {
               b = TopoDroidUtil.in360( b/n );
-              pw.format("<segment id=\"\" cave=\"%s\" from=\"%s\" to=\"%s\"", mySurvey, f, t );
+              pw.format("<segment id=\"\" cave=\"%s\" from=\"%s-%s\" to=\"%s-%s\"", cave, cave, f, cave, t );
               if ( extend == -1 ) pw.format(" direction=\"1\"");
               if ( dup || sur ) {
                 pw.format(" exclude=\"1\"");
@@ -1670,7 +1711,9 @@ public class TopoDroidApp extends Application
             if ( item.mExtend != extend ) {
               extend = item.mExtend;
             }
-            pw.format("<segment id=\"\" cave=\"%s\" from=\"\" to=\"%s\"", mySurvey, to );
+            pw.format("<segment id=\"\" cave=\"%s\" from=\"%s-%s(%d)\" to=\"%s-%s\"", cave, cave, to, cntSplay, cave, to );
+            ++ cntSplay;
+            pw.format(" splay=\"1\" exclude=\"1\"");
             if ( extend == -1 ) pw.format(" direction=\"1\"");
             pw.format(Locale.ENGLISH, " distance=\"%.2f\" bearing=\"%.1f\" inclination=\"%.1f\"",
                item.mLength, item.mBearing, item.mClino );
@@ -1683,7 +1726,7 @@ public class TopoDroidApp extends Application
           if ( to == null || to.length() == 0 ) { // ONLY FROM STATION : splay shot
             if ( n > 0 ) { // finish writing previous leg shot
               b = TopoDroidUtil.in360( b/n );
-              pw.format("<segment id=\"\" cave=\"%s\" from=\"%s\" to=\"%s\"", mySurvey, f, t );
+              pw.format("<segment id=\"\" cave=\"%s\" from=\"%s-%s\" to=\"%s-%s\"", cave, cave, f, cave, t );
               if ( extend == -1 ) pw.format(" direction=\"1\"");
               if ( dup || sur ) {
                 pw.format(" exclude=\"1\"");
@@ -1704,7 +1747,9 @@ public class TopoDroidApp extends Application
             if ( item.mExtend != extend ) {
               extend = item.mExtend;
             }
-            pw.format("<segment id=\"\" cave=\"%s\" from=\"%s\" to=\"\"", mySurvey, from );
+            pw.format("<segment id=\"\" cave=\"%s\" from=\"%s-%s\" to=\"%s-%s(%d)\"", cave, cave, from, cave, from, cntSplay );
+            ++cntSplay;
+            pw.format(" splay=\"1\" exclude=\"1\"");
             if ( extend == -1 ) pw.format(" direction=\"1\"");
             pw.format(Locale.ENGLISH, " distance=\"%.2f\" bearing=\"%.1f\" inclination=\"%.1f\"",
                item.mLength, item.mBearing, item.mClino );
@@ -1715,7 +1760,7 @@ public class TopoDroidApp extends Application
           } else { // BOTH FROM AND TO STATIONS
             if ( n > 0 ) {
               b = TopoDroidUtil.in360( b/n );
-              pw.format("<segment id=\"\" cave=\"%s\" from=\"%s\" to=\"%s\" ", mySurvey, f, t );
+              pw.format("<segment id=\"\" cave=\"%s\" from=\"%s-%s\" to=\"%s-%s\" ", cave, cave, f, cave, t );
               if ( extend == -1 ) pw.format(" direction=\"1\"");
               if ( dup || sur ) {
                 pw.format(" exclude=\"1\"");
@@ -1752,7 +1797,7 @@ public class TopoDroidApp extends Application
       }
       if ( n > 0 ) {
         b = TopoDroidUtil.in360( b/n );
-        pw.format("<segment id=\"\" cave=\"%s\" from=\"%s\" to=\"%s\" ", mySurvey, f, t );
+        pw.format("<segment id=\"\" cave=\"%s\" from=\"%s-%s\" to=\"%s-%s\" ", cave, cave, f, cave, t );
         if ( extend == -1 ) pw.format(" direction=\"1\"");
         if ( dup || sur ) {
            pw.format(" exclude=\"1\"");
@@ -1772,9 +1817,9 @@ public class TopoDroidApp extends Application
       pw.format("  <trigpoints>\n");
       if ( fixed.size() > 0 ) {
         for ( FixedInfo fix : fixed ) {
-          pw.format("     <trigpoint name=\"%s\">\n", fix.name );
-          pw.format("       <coordinate latv=\"%.7f\" longv=\"%.7f\" altv=\"%.2f\" format=\"dd.ddddddd N\"/>\n", fix.lat, fix.lng, fix.alt );
-          // latv="0.0000000" longv="0.0000000" altv="100.00" lat="0° 0' 0,00&quot; N" long="0° 0' 0,00&quot; E" format="dd mm ss.ss N" alt="100"
+          pw.format("     <trigpoint name=\"%s\" labelsymbol\"0\" >\n", fix.name );
+          pw.format("       <coordinate latv=\"%.7f\" longv=\"%.7f\" altv=\"%.2f\" lat=\"%.7f N\" long=\"%.7f E\" format=\"dd.ddddddd N\" alt=\"%.2f\" />\n",
+             fix.lat, fix.lng, fix.alt, fix.lat, fix.lng, fix.alt );
           pw.format("     </trigpoint>\n");
         }
       }
@@ -1908,7 +1953,7 @@ public class TopoDroidApp extends Application
         pw.format("    # team %s \n", info.team );
       }
 
-      pw.format("    declination %.4f\n", info.declination );
+      pw.format("    declination %.2f degrees\n", info.declination );
 
       pw.format("    data normal from to length compass clino\n");
 
@@ -2088,7 +2133,7 @@ public class TopoDroidApp extends Application
       pw.format("  *units tape meters\n");
       pw.format("  *units compass degrees\n");
       pw.format("  *units clino degrees\n");
-      pw.format("  *calibrate declination %.f\n", info.declination );
+      pw.format("  *calibrate declination %.2f\n", info.declination );
       pw.format("; %s \n\n", mData.getSurveyComment( mSID ) );
       pw.format("  *date %s \n", mData.getSurveyDate( mSID ) );
       pw.format("  ; *team \"%s\" \n", info.team );
@@ -2949,6 +2994,39 @@ public class TopoDroidApp extends Application
       return null;
     }
   }
+
+  public String exportCalibAsCsv()
+  {
+    if ( mCID < 0 ) return null;
+    CalibInfo ci = mData.selectCalibInfo( mCID );
+    if ( ci == null ) return null;
+    String filename = getCsvFile( ci.name );
+    try {
+      FileWriter fw = new FileWriter( filename );
+      PrintWriter pw = new PrintWriter( fw );
+
+      SimpleDateFormat sdf = new SimpleDateFormat( "yyyy.MM.dd", Locale.US );
+      pw.format("# %s created by TopoDroid v %s\n\n", sdf.format( new Date() ), VERSION );
+
+      pw.format("# %s\n", ci.name );
+      pw.format("# %s\n", ci.date );
+      pw.format("# %s\n", ci.device );
+      pw.format("# %s\n", ci.comment );
+
+      List<CalibCBlock> list = mData.selectAllGMs( mCID, 1 ); // status 1 --> all shots
+      for ( CalibCBlock b : list ) {
+        b.computeBearingAndClino();
+        pw.format("%d, %d, %d, %d, %d, %d, %d, %d, %.2f, %.2f, %.2f, %.4f, %d\n",
+          b.mId, b.gx, b.gy, b.gz, b.mx, b.my, b.mz, b.mGroup, b.mBearing, b.mClino, b.mRoll, b.mError, b.mStatus );
+      }
+      fw.flush();
+      fw.close();
+      return filename;
+    } catch ( IOException e ) {
+      return null;
+    }
+  }
+
 
   // -------------------------------------------------------------
   // SYMBOLS

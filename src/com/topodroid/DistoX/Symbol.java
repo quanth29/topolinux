@@ -24,6 +24,7 @@ class Symbol // implements View.OnClickListener
   int     mCsxType;
   int     mCsxCategory;
   int     mCsxPen;      // pen (for lines)
+  int     mCsxBrush;    // brush type (for areas)
   String  mCsx; // clipart path 
 
   /** default cstr
@@ -36,6 +37,7 @@ class Symbol // implements View.OnClickListener
     mCsxType  = -1;
     mCsxCategory = -1;
     mCsxPen   = 1;     // default pen is "1"
+    mCsxBrush = 1;     // default brush is "1"
     mCsx = null;
   }
 
@@ -47,6 +49,7 @@ class Symbol // implements View.OnClickListener
     mCsxType  = -1;
     mCsxCategory = -1;
     mCsxPen   = 1;
+    mCsxBrush = 1; 
     mCsx = null;
   }
 
@@ -61,6 +64,7 @@ class Symbol // implements View.OnClickListener
     mCsxType  = -1;
     mCsxCategory = -1;
     mCsxPen   = 1;
+    mCsxBrush = 1; 
     mCsx = null;
   }
 

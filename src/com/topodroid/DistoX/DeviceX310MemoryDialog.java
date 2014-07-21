@@ -11,6 +11,7 @@
  * CHANGES
  * 201312   created to distinguish from A3 memory dialog
  * 20140416 setError for required EditText inputs
+ * 20140719 save dump to file
  */
 package com.topodroid.DistoX;
 
@@ -48,6 +49,8 @@ class DeviceX310MemoryDialog extends Dialog
   // private EditText mETto;
   private EditText mETdumpfrom;
   private EditText mETdumpto;
+  private EditText mETdumpfile;
+
   // private TextView mTVshead;
   // private TextView mTVstail;
   // private TextView mTVrhead;
@@ -87,6 +90,7 @@ class DeviceX310MemoryDialog extends Dialog
     // mETto    = (EditText) findViewById( R.id.et_to );
     mETdumpfrom  = (EditText) findViewById( R.id.et_dumpfrom );
     mETdumpto    = (EditText) findViewById( R.id.et_dumpto );
+    mETdumpfile  = (EditText) findViewById( R.id.et_dumpfile );
 
     // mBtnStore = (Button) findViewById(R.id.button_store);
     // mBtnRead  = (Button) findViewById(R.id.button_read );
@@ -119,6 +123,8 @@ class DeviceX310MemoryDialog extends Dialog
   //   t.setText( swt.getBuffer().toString() );
   // }
 
+  static final int MAX_ADDRESS_X310 = 1064;
+
   @Override
   public void onClick( View view )
   {
@@ -145,12 +151,18 @@ class DeviceX310MemoryDialog extends Dialog
           mETdumpto.setError( error );
           return;
         }
-        ht[0] = Integer.parseInt( from );
-        ht[1] = Integer.parseInt( to );
-        if ( ht[0] < 0 ) ht[0] = 0;
-        if ( ht[1] > 56*18 )  ht[1] = 56*18;
-        if ( ht[0] < ht[1] ) {
-          mParent.readX310Memory( ht );
+        try {
+          ht[0] = Integer.parseInt( from );
+          ht[1] = Integer.parseInt( to );
+          if ( ht[0] < 0 ) ht[0] = 0;
+          if ( ht[1] > MAX_ADDRESS_X310 )  ht[1] = MAX_ADDRESS_X310;
+          if ( ht[0] < ht[1] ) {
+            String file = null;
+            if ( mETdumpfile.getText() != null ) file = mETdumpfile.getText().toString();
+            mParent.readX310Memory( ht, file );
+          }
+        } catch ( NumberFormatException e ) {
+          // FIXME
         }
         break;
       // case R.id.button_read:

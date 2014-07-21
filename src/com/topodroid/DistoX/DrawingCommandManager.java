@@ -53,7 +53,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.text.SimpleDateFormat;
 
-import android.util.Log;
+// import android.util.Log;
 
 /**
  */
@@ -772,10 +772,10 @@ public class DrawingCommandManager
   }
     
       
-  void moveHotItemToNearestPoint()
+  boolean moveHotItemToNearestPoint()
   {
     SelectionPoint sp = mSelected.mHotItem;
-    if ( sp == null ) return;
+    if ( sp == null ) return false;
     float x = 0.0f;
     float y = 0.0f;
     if ( sp.type() == DrawingPath.DRAWING_PATH_POINT ) {
@@ -785,7 +785,7 @@ public class DrawingCommandManager
       x = sp.mPoint.mX;
       y = sp.mPoint.mY;
     } else {
-      return;
+      return false;
     }
     float dmin = 10f; // require a minimum distance
     SelectionPoint spmin = null;
@@ -807,13 +807,14 @@ public class DrawingCommandManager
       }
       sp.shiftBy( x, y );
     }
+    return true;
   }
   
-  void snapHotItemToNearestLine()
+  boolean snapHotItemToNearestLine()
   {
     SelectionPoint sp = mSelected.mHotItem;
-    if ( sp == null ) return;
-    if ( sp.type() != DrawingPath.DRAWING_PATH_AREA ) return;
+    if ( sp == null ) return false;
+    if ( sp.type() != DrawingPath.DRAWING_PATH_AREA ) return false;
     DrawingPath item = sp.mItem;
     DrawingAreaPath area = (DrawingAreaPath)item;
     int k0 = 0;
@@ -823,12 +824,12 @@ public class DrawingCommandManager
     for ( ; k0 < size0; ++k0 ) {
       if ( pts0.get(k0) == p0 ) break;
     }
-    if ( k0 == size0 ) return;
+    if ( k0 == size0 ) return false;
     // area border: ... --> p2 --> p0 --> p1 --> ...
     int k1 = (k0+1)%size0;
     int k2 = (k0+size0-1)%size0;
-    LinePoint p1 = area.mPoints.get( k1 );
-    LinePoint p2 = area.mPoints.get( k2 );
+    LinePoint p1 = area.mPoints.get( k1 ); // next point on the area border
+    LinePoint p2 = area.mPoints.get( k2 ); // prev point on the area border
 
     float x = p0.mX;
     float y = p0.mY;
@@ -837,6 +838,8 @@ public class DrawingCommandManager
     DrawingPointLinePath lmin = null;
     boolean min_is_area = false;
     int kk0 = -1;
+
+    // find drawing path with minimal distance from (x,y)
     for ( DrawingPath p : mCurrentStack ) {
       if ( p == item ) continue;
       if ( p.mType != DrawingPath.DRAWING_PATH_LINE &&
@@ -854,22 +857,24 @@ public class DrawingCommandManager
         }
       }
     }
-    if ( lmin == null ) return;
+    if ( lmin == null ) return false;
 
     ArrayList< LinePoint > pts1 = lmin.mPoints;
     LinePoint pp0 = pts1.get( kk0 );
     int size1 = pts1.size();
+
     // try to follow p1 on the line:
-    int kk1 = ( kk0+1 < size1 )? kk0 + 1 : (min_is_area)? 0 : -1;
-    int kk2 = ( kk0 > 0 )? kk0 - 1 : (min_is_area)? size1-1 : -1;
+    int kk1 = ( kk0+1 < size1 )? kk0 + 1 : (min_is_area)? 0 : -1; // index of next point
+    int kk2 = ( kk0 > 0 )? kk0 - 1 : (min_is_area)? size1-1 : -1; // index of prev point
     int delta1 = 0; 
     int delta2 = 0;
     int kk10 = kk0;
     int kk20 = kk0;
-    LinePoint pp10 = null;
-    LinePoint pp20 = null;
-    LinePoint pp1  = null;
-    LinePoint pp2  = null;
+
+    LinePoint pp10 = null; // current point forward
+    LinePoint pp20 = null; // current point backward
+    LinePoint pp1  = null; // next point forward
+    LinePoint pp2  = null; // prev point backwrad
     LinePoint qq10 = null;
     LinePoint qq20 = null;
     LinePoint qq1 = null;
@@ -884,8 +889,7 @@ public class DrawingCommandManager
         pp20 = pts1.get( kk0 ); 
       }
       if ( pp1.distance( p1 ) < pp1.distance( p2 ) ) {
-        // follow border forward
-        qq1 = p1;
+        qq1  = p1; // follow border forward
         qq10 = p0;
         delta1 = 1;
         if ( kk2 >= 0 ) {
@@ -896,7 +900,7 @@ public class DrawingCommandManager
       } else {
         int k = k1; k1 = k2; k2 = k;
         reverse = true;
-        qq1 = p2;
+        qq1  = p2; // follow border backward
         qq10 = p0;
         delta1 = size0-1;
         if ( kk2 >= 0 ) {
@@ -919,8 +923,8 @@ public class DrawingCommandManager
         qq20 = p0;
         delta2 = 1;
       }
-    } else {
-      return;
+    } else {  // nothing to follow
+      return false;
     }
 
     if ( qq1 != null ) {
@@ -930,7 +934,7 @@ public class DrawingCommandManager
         float s = project( qq1, pp10, pp1 );
         while ( s > 1.0 ) {
           kk1 = ( kk1+1 < size1 )? kk1 + 1 : (min_is_area)? 0 : -1;
-          if ( kk1 == kk0 ) break;
+          if ( kk1 < 0 || kk1 == kk0 ) break;
           pp10 = pp1;
           pp1 = pts1.get( kk1 );
           s = project( qq1, pp10, pp1 );
@@ -952,7 +956,7 @@ public class DrawingCommandManager
         float s = project( qq2, pp20, pp2 );
         while ( s > 1.0 ) {
           kk2 = ( kk2 > 0 )? kk2 - 1 : (min_is_area)? size1-1 : -1;
-          if ( kk2 == kk0 ) break;
+          if ( kk2 < 0 || kk2 == kk0 ) break;
           pp20 = pp2;
           pp2 = pts1.get( kk2 );
           s = project( qq2, pp20, pp2 );
@@ -996,7 +1000,7 @@ public class DrawingCommandManager
       }
       clearSelected();
     }
-    
+    return true;
   }
 
   SelectionPoint hotItem()
@@ -1140,10 +1144,11 @@ public class DrawingCommandManager
       pw.format("      <layer name=\"Soil\" type=\"1\">\n");
       pw.format("        <items>\n");
       for ( DrawingPath p : mCurrentStack ) {
-        if ( p.mType != DrawingPath.DRAWING_PATH_AREA ) continue;
-        DrawingAreaPath ap = (DrawingAreaPath)p;
-        if ( DrawingBrushPaths.getAreaCsxLayer( ap.mAreaType ) != 1 ) continue;
-        ap.toCsurvey( pw );
+        if ( p.mType == DrawingPath.DRAWING_PATH_AREA ) {
+          DrawingAreaPath ap = (DrawingAreaPath)p;
+          if ( DrawingBrushPaths.getAreaCsxLayer( ap.mAreaType ) != 1 ) continue;
+          ap.toCsurvey( pw );
+        }
       }
       pw.format("        </items>\n");
       pw.format("      </layer>\n");
@@ -1152,10 +1157,15 @@ public class DrawingCommandManager
       pw.format("      <layer name=\"Water and floor morphologies\" type=\"2\">\n");
       pw.format("        <items>\n");
       for ( DrawingPath p : mCurrentStack ) {
-        if ( p.mType != DrawingPath.DRAWING_PATH_LINE ) continue;
-        DrawingLinePath lp = (DrawingLinePath)p;
-        if ( DrawingBrushPaths.getLineCsxLayer( lp.mLineType ) != 2 ) continue;
-        lp.toCsurvey( pw );
+        if ( p.mType == DrawingPath.DRAWING_PATH_LINE ) {
+          DrawingLinePath lp = (DrawingLinePath)p;
+          if ( DrawingBrushPaths.getLineCsxLayer( lp.mLineType ) != 2 ) continue;
+          lp.toCsurvey( pw );
+        } else if ( p.mType == DrawingPath.DRAWING_PATH_AREA ) {
+          DrawingAreaPath ap = (DrawingAreaPath)p;
+          if ( DrawingBrushPaths.getAreaCsxLayer( ap.mAreaType ) != 2 ) continue;
+          ap.toCsurvey( pw );
+        } 
       }
       pw.format("        </items>\n");
       pw.format("      </layer>\n");
@@ -1164,10 +1174,11 @@ public class DrawingCommandManager
       pw.format("      <layer name=\"Rocks and concretions\" type=\"3\">\n");
       pw.format("        <items>\n");
       for ( DrawingPath p : mCurrentStack ) {
-	if ( p.mType != DrawingPath.DRAWING_PATH_LINE ) continue;
-	DrawingLinePath lp = (DrawingLinePath)p;
-	if ( DrawingBrushPaths.getLineCsxLayer( lp.mLineType ) != 2 ) continue;
-	lp.toCsurvey( pw );
+	if ( p.mType == DrawingPath.DRAWING_PATH_LINE ) {
+	  DrawingLinePath lp = (DrawingLinePath)p;
+	  if ( DrawingBrushPaths.getLineCsxLayer( lp.mLineType ) != 2 ) continue;
+	  lp.toCsurvey( pw );
+        }
       }
       pw.format("        </items>\n");
       pw.format("      </layer>\n");
@@ -1176,10 +1187,11 @@ public class DrawingCommandManager
       pw.format("      <layer name=\"Ceiling morphologies\" type=\"4\">\n");
       pw.format("        <items>\n");
       for ( DrawingPath p : mCurrentStack ) {
-        if ( p.mType != DrawingPath.DRAWING_PATH_LINE ) continue;
-        DrawingLinePath lp = (DrawingLinePath)p;
-        if ( DrawingBrushPaths.getLineCsxLayer( lp.mLineType ) != 4 ) continue;
-        lp.toCsurvey( pw );
+        if ( p.mType == DrawingPath.DRAWING_PATH_LINE ) {
+          DrawingLinePath lp = (DrawingLinePath)p;
+          if ( DrawingBrushPaths.getLineCsxLayer( lp.mLineType ) != 4 ) continue;
+          lp.toCsurvey( pw );
+        }
       }
       pw.format("        </items>\n");
       pw.format("      </layer>\n");
@@ -1188,11 +1200,11 @@ public class DrawingCommandManager
       pw.format("      <layer name=\"Borders\" type=\"5\">\n");
       pw.format("        <items>\n");
       for ( DrawingPath p : mCurrentStack ) {
-        if ( p.mType != DrawingPath.DRAWING_PATH_LINE ) continue;
-        DrawingLinePath lp = (DrawingLinePath)p;
-        if ( DrawingBrushPaths.getLineCsxLayer( lp.mLineType ) != 5 ) continue;
-        lp.toCsurvey( pw );
-
+        if ( p.mType == DrawingPath.DRAWING_PATH_LINE ) {
+          DrawingLinePath lp = (DrawingLinePath)p;
+          if ( DrawingBrushPaths.getLineCsxLayer( lp.mLineType ) != 5 ) continue;
+          lp.toCsurvey( pw );
+        }
         // if ( lp.lineType() == DrawingBrushPaths.mLineLib.mLineWallIndex ) {
         //   // linetype: 0 line, 1 spline, 2 bezier
         //   pw.format("          <item layer=\"5\" name=\"\" type=\"4\" category=\"1\" linetype=\"0\" mergemode=\"0\">\n");
@@ -1217,10 +1229,11 @@ public class DrawingCommandManager
       pw.format("      <layer name=\"Signs\" type=\"6\">\n");
       pw.format("        <items>\n");
       for ( DrawingPath p : mCurrentStack ) {
-        if ( p.mType != DrawingPath.DRAWING_PATH_POINT ) continue;
-        DrawingPointPath pp = (DrawingPointPath)p;
-        if ( DrawingBrushPaths.getPointCsxLayer( pp.mPointType ) != 6 ) continue;
-        pp.toCsurvey( pw );
+        if ( p.mType == DrawingPath.DRAWING_PATH_POINT ) {
+          DrawingPointPath pp = (DrawingPointPath)p;
+          if ( DrawingBrushPaths.getPointCsxLayer( pp.mPointType ) != 6 ) continue;
+          pp.toCsurvey( pw );
+        }
       }
       pw.format("        </items>\n");
       pw.format("      </layer>\n");
