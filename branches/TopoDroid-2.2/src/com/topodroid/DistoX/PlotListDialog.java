@@ -29,16 +29,19 @@ import android.view.View.OnClickListener;
 
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.GridView;
 import android.widget.Button;
 
 import android.widget.TextView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+// import android.widget.AdapterView.OnItemLongClickListener;
 
 import android.widget.Toast;
 
 public class PlotListDialog extends Dialog
                         implements OnItemClickListener
+                                // , OnItemLongClickListener
                                 , View.OnClickListener
 {
   private Context mContext;
@@ -55,7 +58,8 @@ public class PlotListDialog extends Dialog
 
   int mMode; // 0 normal 1 sections
 
-  private ListView mList;
+  // private ListView mList;
+  private GridView mList;
 
   public PlotListDialog( Context context, ShotActivity parent, TopoDroidApp _app )
   {
@@ -73,10 +77,11 @@ public class PlotListDialog extends Dialog
     setContentView(R.layout.plot_list_dialog );
     mArrayAdapter = new ArrayAdapter<String>( mContext, R.layout.message );
 
-    mList = (ListView) findViewById(R.id.list);
+    mList = (GridView) findViewById(R.id.list);
     mList.setAdapter( mArrayAdapter );
     mList.setOnItemClickListener( this );
-    mList.setDividerHeight( 2 );
+    // mList.setDividerHeight( 2 );
+    mList.setHorizontalSpacing( 2 );
 
     mBtnPlotNew     = (Button) findViewById(R.id.plot_new);
     // mBtnPlotNormal  = (Button) findViewById(R.id.plot_normal);
@@ -125,13 +130,17 @@ public class PlotListDialog extends Dialog
       if ( mMode == 0 ) {
         for ( PlotInfo item : list ) {
           if ( item.type == PlotInfo.PLOT_PLAN /* || item.type == PlotInfo.PLOT_EXTENDED */ ) {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw  = new PrintWriter(sw);
-
             String name = item.name.substring( 0, item.name.length() - 1 );
 
-            pw.format("%d <%s> %s", item.id, name, item.getTypeString() );
-            mArrayAdapter.add( sw.getBuffer().toString() );
+            StringWriter sw1 = new StringWriter();
+            PrintWriter pw1  = new PrintWriter(sw1);
+            pw1.format("<%s> %s", name, PlotInfo.plotType[ (int)PlotInfo.PLOT_PLAN ] );
+            mArrayAdapter.add( sw1.getBuffer().toString() );
+
+            StringWriter sw2 = new StringWriter();
+            PrintWriter pw2  = new PrintWriter(sw2);
+            pw2.format("<%s> %s", name, PlotInfo.plotType[ (int)PlotInfo.PLOT_EXTENDED ] );
+            mArrayAdapter.add( sw2.getBuffer().toString() );
             // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "Data " + result );
           }
         }
@@ -142,8 +151,9 @@ public class PlotListDialog extends Dialog
              ) {
             StringWriter sw = new StringWriter();
             PrintWriter pw  = new PrintWriter(sw);
-            pw.format("%d <%s> %s", item.id, item.name, item.getTypeString() );
+            pw.format("<%s> %s", item.name, item.getTypeString() );
             mArrayAdapter.add( sw.getBuffer().toString() );
+            mArrayAdapter.add( "" );
             // TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "Data " + result );
           }
         }
@@ -188,6 +198,21 @@ public class PlotListDialog extends Dialog
   // ---------------------------------------------------------------
   // list items click
 
+  // @Override 
+  // public boolean onItemLongClick(AdapterView<?> parent, View view, int pos, long id)
+  // {
+  //   CharSequence item = ((TextView) view).getText();
+  //   String value = item.toString();
+  //   // String[] st = value.split( " ", 3 );
+  //   int from = value.indexOf('<');
+  //   int to = value.lastIndexOf('>');
+  //   String plot_name = value.substring( from+1, to );
+  //   String plot_type = value.substring( to+2 );
+  //   mParent.startPlotDialog( plot_name, plot_type ); // context of current SID
+  //   dismiss();
+  //   return true;
+  // }
+
   @Override 
   public void onItemClick(AdapterView<?> parent, View view, int position, long id)
   {
@@ -195,13 +220,12 @@ public class PlotListDialog extends Dialog
     String value = item.toString();
     // TopoDroidApp.Log(  TopoDroidApp.LOG_INPUT, "PlotListDialog onItemClick() " + value );
 
-    // String[] st = value.split( " ", 3 );
     int from = value.indexOf('<');
+    if ( from < 0 ) return;
     int to = value.lastIndexOf('>');
     String plot_name = value.substring( from+1, to );
-    String plot_type = value.substring( to+2 );
-    // int end = st[1].length() - 1;
-    // String plot_name = st[1].substring( 1, end );
+    String type = value.substring( to+2 );
+    long plot_type = PlotInfo.toPlotType( type );
     mParent.startExistingPlot( plot_name, plot_type ); // context of current SID
     dismiss();
   }

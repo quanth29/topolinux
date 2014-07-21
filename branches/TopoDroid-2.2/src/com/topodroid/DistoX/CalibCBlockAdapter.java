@@ -16,6 +16,7 @@ import android.content.Context;
 
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.AdapterView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
@@ -38,6 +39,9 @@ class CalibCBlockAdapter extends ArrayAdapter< CalibCBlock >
   CalibCBlock get( int pos ) { return items.get(pos); }
  
   @Override
+  public int getItemViewType(int pos) { return AdapterView.ITEM_VIEW_TYPE_IGNORE; }
+ 
+  @Override
   public View getView( int pos, View convertView, ViewGroup parent )
   {
     View v = convertView;
@@ -51,6 +55,9 @@ class CalibCBlockAdapter extends ArrayAdapter< CalibCBlock >
       TextView tw = (TextView) v.findViewById( R.id.row_text );
       tw.setText( b.toString() );
       tw.setTextColor( b.color() );
+      if ( b.mStatus != 0 ) {
+        tw.setBackgroundColor( 0xff993333 ); // reddish
+      }
     }
     return v;
   }

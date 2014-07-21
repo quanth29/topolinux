@@ -32,7 +32,7 @@ import android.widget.AdapterView;
 // import android.widget.TextView;
 import android.widget.ListView;
 
-import android.util.Log;
+// import android.util.Log;
 
 class SymbolEnableDialog extends Dialog
                          implements View.OnClickListener

@@ -40,6 +40,7 @@ public class CalibGMDialog extends Dialog
   private TextView mTextView;
   private EditText mEditText;  // group number
   private Button   mButtonOK;
+  private Button   mButtonDelete;
   // private Button   mButtonCancel;
 
   /**
@@ -79,11 +80,13 @@ public class CalibGMDialog extends Dialog
     //   }
     // );
     mButtonOK     = (Button) findViewById(R.id.gm_ok );
+    mButtonDelete = (Button) findViewById(R.id.gm_delete );
     // mButtonCancel = (Button) findViewById(R.id.gm_cancel );
 
     mTextView.setText( mData );
     mEditText.setHint( mGroup );
     mButtonOK.setOnClickListener( this );
+    mButtonDelete.setOnClickListener( this );
     // mButtonCancel.setOnClickListener( this );
   }
 
@@ -106,6 +109,8 @@ public class CalibGMDialog extends Dialog
           TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "Error: non-integer group name" );
         }
       }
+    } else if ( b == mButtonDelete ) {
+      mParent.deleteGM( true );
     }
     dismiss();
   }

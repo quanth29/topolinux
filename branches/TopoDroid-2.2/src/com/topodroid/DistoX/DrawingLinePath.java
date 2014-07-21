@@ -29,7 +29,7 @@ import java.util.Iterator;
 import java.util.ArrayList;
 
 import android.util.FloatMath;
-import android.util.Log;
+// import android.util.Log;
 
 /**
  */

@@ -22,7 +22,7 @@ import java.io.File;
 import android.graphics.Paint;
 import android.content.res.Resources;
 
-import android.util.Log;
+// import android.util.Log;
 
 class SymbolLineLibrary
 {

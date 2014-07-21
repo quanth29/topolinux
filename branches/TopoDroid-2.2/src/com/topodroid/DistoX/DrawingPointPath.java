@@ -96,10 +96,10 @@ public class DrawingPointPath extends DrawingPath
   private void resetPath( int off )
   {
     Matrix m = new Matrix();
-    if ( DrawingBrushPaths.canRotate( mPointType ) ) {
-      m.postRotate( (float)mOrientation + off );
-    }
     if ( ! DrawingBrushPaths.pointHasText( mPointType ) ) {
+      if ( DrawingBrushPaths.canRotate( mPointType ) ) {
+        m.postRotate( (float)mOrientation + off );
+      }
       float f = 1.0f;
       switch ( mScale ) {
         case SCALE_XS: f = 0.50f; break;
@@ -107,10 +107,8 @@ public class DrawingPointPath extends DrawingPath
         case SCALE_L:  f = 1.41f; break;
         case SCALE_XL: f = 2.00f; break;
       }
-      m.postScale(f,f);
+      makePath( DrawingBrushPaths.getPointOrigPath( mPointType ), m, cx, cy );
     }
-
-    makePath( DrawingBrushPaths.getPointOrigPath( mPointType ), m, cx, cy );
   }
       
 

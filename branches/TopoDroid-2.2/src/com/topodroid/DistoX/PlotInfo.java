@@ -37,6 +37,14 @@ class PlotInfo
     "SKETCH-3D"
   };
 
+  static long toPlotType( String type ) 
+  {
+    for ( int k=0; k<7; ++k ) {
+      if ( type.equals( plotType[k] ) ) return k;
+    }
+    return PLOT_PLAN;
+  }
+
   static final String[] projName = { // therion projection names
     "none", "plan", "extended", "none", "none", "none", "sketch_3d"
   };

@@ -25,7 +25,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 import android.util.FloatMath;
-import android.util.Log;
+// import android.util.Log;
 
 class DrawingDxf
 {
@@ -154,7 +154,7 @@ class DrawingDxf
     // printString( pw2, 390, "F" );
   }
 
-  static void write( BufferedWriter out, DistoXNum num, DrawingCommandManager plot, int type )
+  static void write( BufferedWriter out, DistoXNum num, DrawingCommandManager plot, long type )
   {
     int handle = 0;
     float xmin=10000f, xmax=-10000f, 

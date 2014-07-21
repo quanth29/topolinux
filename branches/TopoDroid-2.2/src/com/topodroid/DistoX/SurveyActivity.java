@@ -64,7 +64,7 @@ import android.content.Intent;
 
 import android.widget.Toast;
 
-import android.util.Log;
+// import android.util.Log;
 
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -494,7 +494,7 @@ public class SurveyActivity extends Activity
           List<DistoXDBlock> list = mApp.mData.selectAllShots( mApp.mSID, TopoDroidApp.STATUS_NORMAL );
           DistoXDBlock blk = list.get( 0 );
           if ( blk != null ) {
-            Log.v( TopoDroidApp.TAG, "DISTOX_EXPORT_DXF from " + blk.mFrom );
+            // Log.v( TopoDroidApp.TAG, "DISTOX_EXPORT_DXF from " + blk.mFrom );
             DistoXNum num = new DistoXNum( list, blk.mFrom, null );
             filename = mApp.exportSurveyAsDxf( num );
           }

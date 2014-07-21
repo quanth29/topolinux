@@ -26,7 +26,7 @@ import java.io.IOException;
 import android.graphics.Paint;
 import android.graphics.Path;
 
-import android.util.Log;
+// import android.util.Log;
 
 class SymbolArea extends Symbol
                  implements SymbolInterface
@@ -122,17 +122,22 @@ class SymbolArea extends Symbol
   	      th_name = vals[k];
   	    }
           } else if ( vals[k].equals("csurvey") ) {
+            // csurvey <layer> <category> <pen_type> <brush_type>
             ++k; while ( k < s && vals[k].length() == 0 ) ++k;
             if ( k < s ) {
               mCsxLayer = Integer.parseInt( vals[k] );
             }
             ++k; while ( k < s && vals[k].length() == 0 ) ++k;
             if ( k < s ) {
-              mCsxType = Integer.parseInt( vals[k] );
+              mCsxCategory = Integer.parseInt( vals[k] );
             }
             ++k; while ( k < s && vals[k].length() == 0 ) ++k;
             if ( k < s ) {
-              mCsxCategory = Integer.parseInt( vals[k] );
+              mCsxPen = Integer.parseInt( vals[k] );
+            }
+            ++k; while ( k < s && vals[k].length() == 0 ) ++k;
+            if ( k < s ) {
+              mCsxBrush = Integer.parseInt( vals[k] );
             }
   	  } else if ( vals[k].equals("color") ) {
   	    ++k; while ( k < s && vals[k].length() == 0 ) ++k;

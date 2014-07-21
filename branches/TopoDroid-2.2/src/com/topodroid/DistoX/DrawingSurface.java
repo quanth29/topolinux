@@ -50,7 +50,7 @@ import java.io.EOFException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.util.Log;
+// import android.util.Log;
 
 /**
  */
@@ -110,7 +110,7 @@ public class DrawingSurface extends SurfaceView
       // BITMAP mBitmap = Bitmap.createBitmap (1, 1, Bitmap.Config.ARGB_8888);
     }
 
-    void setManager( int type ) 
+    void setManager( long type ) 
     {
       // Log.v( TopoDroidApp.TAG, " set manager type " + PlotInfo.plotType[type] );
       if ( type == PlotInfo.PLOT_EXTENDED ) {
@@ -317,7 +317,7 @@ public class DrawingSurface extends SurfaceView
       return commandManager.hasStationName( name );
     }
 
-    public Bitmap getBitmap( int type )
+    public Bitmap getBitmap( long type )
     {
       if ( type == PlotInfo.PLOT_EXTENDED ) {
         return mCommandManager2.getBitmap();
@@ -358,9 +358,9 @@ public class DrawingSurface extends SurfaceView
       return commandManager.getItemsAt( x, y, zoom );
     }
 
-    void moveHotItemToNearestPoint() { commandManager.moveHotItemToNearestPoint(); }
+    boolean moveHotItemToNearestPoint() { return commandManager.moveHotItemToNearestPoint(); }
     
-    void snapHotItemToNearestLine() { commandManager.snapHotItemToNearestLine(); }
+    boolean snapHotItemToNearestLine() { return commandManager.snapHotItemToNearestLine(); }
 
     void splitHotItem() { commandManager.splitHotItem(); }
     

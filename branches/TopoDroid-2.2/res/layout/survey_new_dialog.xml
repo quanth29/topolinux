@@ -51,7 +51,7 @@
         android:layout_height="wrap_content" 
         android:singleLine="true"
         android:hint="@string/declination"
-        android:inputType="number"
+        android:inputType="numberDecimal"
         android:scrollHorizontally="true" />
    		
     <EditText android:id="@+id/survey_comment" 

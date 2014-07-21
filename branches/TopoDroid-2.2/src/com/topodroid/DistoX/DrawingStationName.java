@@ -20,7 +20,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Matrix;
 
-import android.util.Log;
+// import android.util.Log;
 
 /**
  */

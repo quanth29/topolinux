@@ -12,7 +12,7 @@ package com.topodroid.DistoX;
 
 import android.os.Build;
 import android.view.MotionEvent;
-import android.util.Log;
+// import android.util.Log;
 
 public class WrapMotionEvent 
 {
@@ -27,10 +27,10 @@ public class WrapMotionEvent
    {
       // Use Build.VERSION.SDK_INT if you don't have to support Cupcake
       if (Integer.parseInt(Build.VERSION.SDK) >= Build.VERSION_CODES.ECLAIR) {
-         Log.d("WrapMotionEvent", "Using Eclair version");
+         // Log.d("WrapMotionEvent", "Using Eclair version");
          return new EclairMotionEvent(event);
       } else {
-         Log.d("WrapMotionEvent", "Using Cupcake/Donut version");
+         // Log.d("WrapMotionEvent", "Using Cupcake/Donut version");
          return new WrapMotionEvent(event);
       }
    }

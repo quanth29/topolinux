@@ -48,6 +48,7 @@ class DeviceA3MemoryDialog extends Dialog
   private EditText mETto;
   private EditText mETdumpfrom;
   private EditText mETdumpto;
+  private EditText mETdumpfile;
   private TextView mTVshead;
   private TextView mTVstail;
   private TextView mTVrhead;
@@ -76,6 +77,7 @@ class DeviceA3MemoryDialog extends Dialog
     mETto    = (EditText) findViewById( R.id.et_to );
     mETdumpfrom  = (EditText) findViewById( R.id.et_dumpfrom );
     mETdumpto    = (EditText) findViewById( R.id.et_dumpto );
+    mETdumpfile  = (EditText) findViewById( R.id.et_dumpfile );
     mBtnStore = (Button) findViewById(R.id.button_store);
     mBtnRead  = (Button) findViewById(R.id.button_read );
     mBtnDump  = (Button) findViewById(R.id.button_dump );
@@ -134,7 +136,9 @@ class DeviceA3MemoryDialog extends Dialog
         }
         ht[0] = Integer.parseInt( from ) * 8;
         ht[1] = Integer.parseInt( to ) * 8;
-        mParent.readA3Memory( ht );
+        String dumpfile = null;
+        if ( mETdumpfile.getText() != null ) dumpfile = mETdumpfile.getText().toString();
+        mParent.readA3Memory( ht, dumpfile );
         break;
       case R.id.button_read:
         mParent.readDeviceHeadTail( ht );

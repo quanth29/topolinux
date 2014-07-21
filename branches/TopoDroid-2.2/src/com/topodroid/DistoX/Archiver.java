@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.content.Intent;
 
-import android.util.Log;
+// import android.util.Log;
 
 
 public class Archiver
@@ -112,6 +112,12 @@ public class Archiver
         if ( dxf2 != null && dxf2.exists() ) {
           addEntry( zos, dxf2 );
         }
+        if ( plt.type == PlotInfo.PLOT_PLAN ) {
+          File csx2 = new File( app.getSurveyCsxFile( plt.name ) );
+          if ( csx2 != null && csx2.exists() ) {
+            addEntry( zos, csx2 );
+          }
+        }
       }
       plots  = app.mData.selectAllPlots( app.mSID, TopoDroidApp.STATUS_DELETED );
       for ( PlotInfo plt : plots ) {
@@ -146,6 +152,11 @@ public class Archiver
         addEntry( zos, vtopo );
       }
 
+      File ptopo = new File( app.getSurveyTopFile( ) );
+      if ( ptopo != null && ptopo.exists() ) {
+        addEntry( zos, ptopo );
+      }
+
       File survex = new File( app.getSurveySvxFile( ) );
       if ( survex != null && survex.exists() ) {
         addEntry( zos, survex );
@@ -154,6 +165,11 @@ public class Archiver
       File csv = new File( app.getSurveyCsvFile( ) );
       if ( csv != null && csv.exists() ) {
         addEntry( zos, csv );
+      }
+
+      File csurvex = new File( app.getSurveyCsxFile( ) );
+      if ( csurvex != null && csurvex.exists() ) {
+        addEntry( zos, csurvex );
       }
 
       File compass = new File( app.getSurveyDatFile( ) );
@@ -251,8 +267,12 @@ public class Archiver
               pathname = TopoDroidApp.getSvxFile( ze.getName() );
             } else if ( ze.getName().endsWith( ".csv" ) ) {
               pathname = TopoDroidApp.getCsvFile( ze.getName() );
+            } else if ( ze.getName().endsWith( ".csx" ) ) {
+              pathname = TopoDroidApp.getCsxFile( ze.getName() );
             } else if ( ze.getName().endsWith( ".tro" ) ) {
               pathname = TopoDroidApp.getTroFile( ze.getName() );
+            } else if ( ze.getName().endsWith( ".top" ) ) {
+              pathname = TopoDroidApp.getTopFile( ze.getName() );
 
             } else if ( ze.getName().endsWith( ".th2" ) ) {
               pathname = TopoDroidApp.getTh2File( ze.getName() );

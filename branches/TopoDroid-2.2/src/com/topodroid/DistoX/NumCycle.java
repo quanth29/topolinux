@@ -15,7 +15,7 @@ package com.topodroid.DistoX;
 
 import java.util.ArrayList;
 
-import android.util.Log;
+// import android.util.Log;
 
 public class NumCycle 
 {

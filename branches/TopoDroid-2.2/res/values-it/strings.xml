@@ -34,29 +34,34 @@
     <string name="missing_symbols">Mancano alcuni prototipi grafici.\nSalvare ugualmente?</string>
     <string name="missing_title">PROTOTIPI MANCANTI</string>
     <string name="missing_warning">Mancano i seguenti prototipi grafici.\n</string>
+    <string name="failed_snap_to_line">Nessuna linea su cui deformare il bordo area</string>
+    <string name="failed_snap_to_point">Nessun punto vicino su cui muovere il punto</string>
 
     <string name="calib_exists">Calibrazione già presente</string>
     <string name="calib_delete">Eliminare calibrazione </string>
     <string name="calib_device_mismatch">ATTENZIONE. Discrepanza tra calibrazione e dispositivo</string>
     <string name="calib_no_name">Nome della calibrazione mancante</string>
+    <string name="calib_gm_undelete">Ripristina dato calibrazione?</string>
     <string name="calib_saved">Salvata calibrazione</string>
     <string name="calib_updated">Aggiornata calibrazione</string>
     <string name="calib_compute_groups">Raggruppamento dati in corso</string>
     <string name="calib_compute_coeffs">Calcolo coefficienti in corso</string>
-    <string name="calib_read_coeffs">Lettura coefficienti in corso</string>
+    <!-- string name="calib_read_coeffs">Lettura coefficienti in corso</string -->
     <string name="calib_write_coeffs">Scrittura coefficienti in corso</string>
     <string name="connect_failed">Comunicazione DistoX fallita</string>
     <string name="data"> dati</string>
-    <string name="using">Usando %1$s</string>
+    <string name="using">Usando %1$s %2$s</string>
     <string name="calib_error">Errore %1$s gradi</string>
     <string name="calib_max_error">Errore massimo %1$.4f gradi</string>
     <string name="calib_iter">Iterazioni: %1$d</string>
+    <string name="calib_saturated_values">ATTENZIONE: %1$d dati saturati</string>
    
     <string name="device_illegal_addr">Indirizzo di memoria illegale</string>
     <string name="device_none">Nessun DistoX selezionato</string>
     <string name="device_pairing">Pairing: controlla le notifiche</string>
     <string name="device_reset">Resettare la memoria del DistoX</string>
     <string name="bt_reset">Resettare la connessione bluetooth</string>
+    <string name="save_as">salva come</string>
 
     <string name="comment">commento</string>
     <string name="duplicate">duplicato</string>
@@ -74,11 +79,14 @@
     <string name="import_wait">Importazione file... attendi...</string>
     <string name="import_already">Rilievo già presente</string>
     <string name="import_none">Nessun file da importare</string>
+    <string name="import_zip_ok">ZIP importato con successo</string>
+    <string name="import_zip_wait">Importare uno ZIP richiede tempo. Attendi...</string>
     <string name="sketch_loading">Caricamento disegno ... attendi ...</string>
     <string name="sketch_saving">Salvataggio disegno ... attendi ...</string>
 
     <string name="head_tail">Memoria: </string>
     <string name="head_tail_failed">Lettura memoria DistoX fallita</string>
+    <string name="head_tail_store_failed">Memorizzazione memoria DistoX fallita</string>
     <string name="illegal_data_value">Dati illegali</string>
     <string name="label_title">TESTO</string>
     <string name="label_text">Scrivi il testo</string>
@@ -142,6 +150,7 @@
 
     <string name="menu_about">Info</string>
     <string name="menu_detach">Sconnetti</string>
+    <string name="menu_display">Display</string>
     <string name="menu_recover">Recupera</string>
     <string name="menu_help">Aiuto</string>
     <string name="menu_logs">Logs</string>
@@ -240,7 +249,7 @@
     <string name="description">descrizione</string>
     <string name="name">nome</string>
     <string name="team">squadra</string>
-    <string name="toggle_device">Attiva modo calibrazione</string>
+    <!-- string name="toggle_device">Attiva modo calibrazione</string -->
     <string name="toggle_failed">Attivazione modo calibrazione fallita</string>
     <string name="toggle_ok">DistoX in modo calibrazione</string>
     <string name="undelete_text">Seleziona oggetto da recuoperare</string>
@@ -401,6 +410,7 @@
     <string name="help_read">Leggi la calibrazione dal DistoX</string>
     <string name="help_scan">Cerca dispositivi DistoX</string>
     <string name="help_open_calib">Apri calibrazione</string>
+    <string name="help_export_calib">Esporta calibrazione</string>
     <string name="help_group">Assegna gruppi automaticamente</string>
     <string name="help_cover">Distribuzione angolare dati calibrazione</string>
     <string name="help_compute">Calcola calibrazione</string>
@@ -436,6 +446,7 @@
     <string name="title_stats">Statistiche</string>
     <string name="title_survey">Info rilievo</string>
     <string name="title_survey_export">Esporta rilievo come </string>
+    <string name="title_calib_export">Esporta calibrazione come </string>
     <!-- string name="title_zoom">Zoom</string -->
 
   <string name="pref_cat_survey">Opzioni rilievo</string>
@@ -528,6 +539,12 @@
   <string name="pref_iter_summary">Massimo numero iterazioni</string>
   <string name="pref_iter_dialogtitle">Iterazioni calibrazione</string>
   <string name="pref_iter_message">Massimo numero iterazioni</string>
+  <string name="pref_label_size_title">Dimensione scritte</string>
+  <string name="pref_label_size_summary">Dimensione delle scritte</string>
+  <string name="pref_label_size_message">Dimensione delle scritte</string>
+  <string name="pref_line_thickness_title">Spessore linee</string>
+  <string name="pref_line_thickness_summary">Spessore linee disegno</string>
+  <string name="pref_line_thickness_message">Spessore linee disegno</string>
   <string name="pref_device_title">Dispositivo</string>
   <string name="pref_device_summary">Indirizzo BT del DistoX</string>
   <string name="pref_device_message">Indirizzo BT del DistoX</string>
@@ -535,7 +552,7 @@
   <string name="pref_checkBT_summary">Attiva/disattiva bluetooth</string>
   <string name="pref_checkAttached_title">Controllo poligonale</string>
   <string name="pref_checkAttached_summary">Controlla se ci sono capisaldi scollegati</string>
-  <string name="pref_autoStations_title">Capisaldi disegno</string>
+  <string name="pref_autoStations_title">Punti th2 station</string>
   <string name="pref_autoStations_summary">Aggiungi capisaldi automaticamente</string>
   <string name="pref_loopClosure_title">Chiusura anelli</string>
   <string name="pref_loopClosure_summary">Compensazione errore nella chiusura anelli</string>

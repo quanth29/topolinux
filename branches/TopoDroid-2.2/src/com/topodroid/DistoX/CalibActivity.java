@@ -58,12 +58,14 @@ public class CalibActivity extends Activity
 {
   private static int icons[] = { R.drawable.ic_save,
                         R.drawable.ic_open,
+                        R.drawable.ic_export,
                         R.drawable.ic_close,
                         R.drawable.ic_pref,
                         R.drawable.ic_help
                      };
   private static int help_texts[] = { R.string.help_save,
                         R.string.help_open_calib,
+                        R.string.help_export_calib,
                         R.string.help_delete_calib,
                         R.string.help_prefs,
                         R.string.help_help
@@ -77,7 +79,7 @@ public class CalibActivity extends Activity
   private MenuItem mMIoptions;
   private MenuItem mMIhelp;
 
-  private TopoDroidApp app;
+  private TopoDroidApp mApp;
   private CalibInfo info;
   private boolean isSaved;
 
@@ -121,7 +123,7 @@ public class CalibActivity extends Activity
     // }
 
 
-    int nr_button1 = 3;
+    int nr_button1 = 4;
     mButton1 = new Button[ nr_button1 ];
     for ( int k=0; k<nr_button1; ++k ) {
       mButton1[k] = new Button( this );
@@ -135,18 +137,18 @@ public class CalibActivity extends Activity
     mListView = (HorizontalListView) findViewById(R.id.listview);
     mListView.setAdapter( mButtonView1.mAdapter );
 
-    app     = (TopoDroidApp)getApplication();
-    // TopoDroidApp.Log( TopoDroidApp.LOG_CALIB, "app mCID " + app.mCID );
-    setNameEditable( app.mCID >= 0 );
+    mApp     = (TopoDroidApp)getApplication();
+    // TopoDroidApp.Log( TopoDroidApp.LOG_CALIB, "app mCID " + mApp.mCID );
+    setNameEditable( mApp.mCID >= 0 );
     if ( isSaved ) {
-      info = app.getCalibInfo();
+      info = mApp.getCalibInfo();
       mEditName.setText( info.name );
       // mEditName.setEditable( false );
       mEditDate.setText( info.date );
       if ( info.device != null && info.device.length() > 0 ) {
         mEditDevice.setText( info.device );
-      } else if ( app.distoAddress() != null ) {
-        mEditDevice.setText( app.distoAddress() );
+      } else if ( mApp.distoAddress() != null ) {
+        mEditDevice.setText( mApp.distoAddress() );
       }
       if ( info.comment != null && info.comment.length() > 0 ) {
         mEditComment.setText( info.comment );
@@ -157,7 +159,7 @@ public class CalibActivity extends Activity
       mEditName.setHint( R.string.name );
       SimpleDateFormat sdf = new SimpleDateFormat( "yyyy.MM.dd", Locale.US );
       mEditDate.setText( sdf.format( new Date() ) );
-      mEditDevice.setText( app.distoAddress() );
+      mEditDevice.setText( mApp.distoAddress() );
       mEditComment.setHint( R.string.description );
     }
 
@@ -178,14 +180,16 @@ public class CalibActivity extends Activity
     if ( b == mButton1[0] ) {
       doSave();
     } else if ( b == mButton1[1] ) {
-      if ( ! app.checkCalibrationDeviceMatch() ) {
+      if ( ! mApp.checkCalibrationDeviceMatch() ) {
         // FIXME use alert dialog
         Toast.makeText( this, R.string.calib_device_mismatch, Toast.LENGTH_LONG ).show();
       }
       doOpen();
-    } else if ( b == mButton1[2] ) {
+    } else if ( b == mButton1[2] ) { // export
+      new CalibExportDialog( this, this ).show();
+    } else if ( b == mButton1[3] ) {
       askDelete();
-    // } else if ( b == mButton1[3] ) {
+    // } else if ( b == mButton1[4] ) {
     //   doExport();
     // } else if ( b == mButton1[*] ) {
     //   Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
@@ -200,7 +204,7 @@ public class CalibActivity extends Activity
   {
     AlertDialog.Builder alert = new AlertDialog.Builder( this );
     // alert.setTitle( R.string.delete );
-    alert.setMessage( getResources().getString( R.string.calib_delete ) + " " + app.myCalib + " ?" );
+    alert.setMessage( getResources().getString( R.string.calib_delete ) + " " + mApp.myCalib + " ?" );
     
     alert.setPositiveButton( R.string.button_ok, 
       new DialogInterface.OnClickListener() {
@@ -242,16 +246,16 @@ public class CalibActivity extends Activity
     if ( comment != null ) { comment = comment.trim(); }
 
     if ( isSaved ) { // calib already saved
-      app.mData.updateCalibInfo( app.mCID, date, device, comment );
+      mApp.mData.updateCalibInfo( mApp.mCID, date, device, comment );
       Toast.makeText( this, R.string.calib_updated, Toast.LENGTH_SHORT ).show();
     } else { // new calib
       name = TopoDroidApp.noSpaces( name );
       if ( name != null && name.length() > 0 ) {
-        if ( app.hasCalibName( name ) ) { // name already exists
+        if ( mApp.hasCalibName( name ) ) { // name already exists
           Toast.makeText( this, R.string.calib_exists, Toast.LENGTH_SHORT ).show();
         } else {
-          app.setCalibFromName( name );
-          app.mData.updateCalibInfo( app.mCID, date, device, comment );
+          mApp.setCalibFromName( name );
+          mApp.mData.updateCalibInfo( mApp.mCID, date, device, comment );
           setNameEditable( true );
           Toast.makeText( this, R.string.calib_saved, Toast.LENGTH_SHORT ).show();
         }
@@ -277,9 +281,9 @@ public class CalibActivity extends Activity
 
   public void doDelete()
   {
-    if ( app.mCID < 0 ) return;
-    app.mData.doDeleteCalib( app.mCID );
-    app.setCalibFromName( null );
+    if ( mApp.mCID < 0 ) return;
+    mApp.mData.doDeleteCalib( mApp.mCID );
+    mApp.setCalibFromName( null );
     finish();
   }
 
@@ -317,4 +321,25 @@ public class CalibActivity extends Activity
     return true;
   }
 
+  void doExport( int exportType, boolean warn )
+  {
+    if ( mApp.mCID < 0 ) {
+      if ( warn ) {
+        Toast.makeText( this, R.string.no_calibration, Toast.LENGTH_SHORT).show();
+      }
+    } else {
+      String filename = null;
+      switch ( exportType ) {
+        case TopoDroidApp.DISTOX_EXPORT_CSV:
+          filename = mApp.exportCalibAsCsv();
+      }
+      if ( warn ) { 
+        if ( filename != null ) {
+          Toast.makeText( this, getString(R.string.saving_) + filename, Toast.LENGTH_SHORT).show();
+        } else {
+          Toast.makeText( this, R.string.saving_file_failed, Toast.LENGTH_SHORT).show();
+        }
+      }
+    }
+  }
 }

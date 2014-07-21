@@ -29,7 +29,7 @@ import android.view.View.OnClickListener;
 // import android.text.Layout;
 import android.widget.LinearLayout;
 
-import android.util.Log;
+// import android.util.Log;
 
 class EnableSymbol implements View.OnClickListener
 {

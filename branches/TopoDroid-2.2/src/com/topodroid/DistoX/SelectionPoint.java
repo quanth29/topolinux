@@ -14,7 +14,7 @@
 package com.topodroid.DistoX;
 
 import android.util.FloatMath;
-import android.util.Log;
+// import android.util.Log;
 
 
 class SelectionPoint

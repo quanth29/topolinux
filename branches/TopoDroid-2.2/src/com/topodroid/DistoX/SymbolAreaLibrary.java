@@ -131,6 +131,18 @@ class SymbolAreaLibrary
     return mArea.get(k).mCsxCategory;
   }
 
+  int areaCsxPen( int k )
+  {
+    if ( k < 0 || k >= mAreaNr ) return -1;
+    return mArea.get(k).mCsxPen;
+  }
+
+  int areaCsxBrush( int k )
+  {
+    if ( k < 0 || k >= mAreaNr ) return -1;
+    return mArea.get(k).mCsxBrush;
+  }
+
   // ========================================================================
 
   private void loadSystemAreas( Resources res )
@@ -139,9 +151,11 @@ class SymbolAreaLibrary
     if ( mAnyArea.size() > 0 ) return;
 
     SymbolArea symbol = new SymbolArea( res.getString( R.string.tha_water ),  "water",  0x660000ff );
-    symbol.mCsxLayer = 1;
-    symbol.mCsxType  = 1;    // FIXME
-    symbol.mCsxCategory = 1; // FIXME
+    symbol.mCsxLayer = 2;
+    symbol.mCsxType  = 3;   
+    symbol.mCsxCategory = 46;
+    symbol.mCsxPen   = 1;
+    symbol.mCsxBrush = 2;
 
     mAnyArea.add( symbol );
     mAnyAreaNr = mAnyArea.size();

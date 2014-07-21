@@ -72,6 +72,14 @@ class MemoryOctet
     data  = new byte[8];
   }
 
+  public void printHexString( PrintWriter pw ) 
+  {
+    boolean hot  = (int)( data[0] & 0x80 ) == 0x80; // test hot bit
+    pw.format( "%4d %c %02x %02x %02x %02x %02x %02x %02x %02x",
+               index, hot? '?' : '>',
+               data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] );
+  }
+
   public String toString() 
   {
     StringWriter sw = new StringWriter();
@@ -113,9 +121,7 @@ class MemoryOctet
           pw.format("%4d %c %d %d %.2f %02x", index, hot? 'V' : 'v', acc, mag, dip, data[7] );
           break;
         default:
-          pw.format( "%4d %c %02x %02x %02x %02x %02x %02x %02x %02x",
-                     index, hot? '?' : '>',
-                     data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7] );
+          printHexString( pw );
           break;
       }
     }

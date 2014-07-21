@@ -7,6 +7,8 @@
  * --------------------------------------------------------
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
+ * 
+ * 20140610 label size
  */
 package com.topodroid.DistoX;
 
@@ -41,7 +43,7 @@ public class DrawingLabelPath extends DrawingPointPath
     // paint.setStrokeCap(Paint.Cap.ROUND);
     // paint.setStrokeWidth( STROKE_WIDTH_CURRENT );
 
-    makeStraightPath( 0, 0, 20*mText.length(), 0, off_x, off_y );
+    makeStraightPath( 0, 0, 20*mText.length(), 0, cx, cy );
   }
 
   @Override
@@ -65,6 +67,24 @@ public class DrawingLabelPath extends DrawingPointPath
 
   @Override
   public void setText( String text ) { mText = text; }
+
+  @Override
+  public void setScale( int scale )
+  {
+    if ( scale != mScale ) {
+      mScale = scale;
+      float f = 1.0f;
+      switch ( mScale ) {
+        case SCALE_XS: f = 0.50f; break;
+        case SCALE_S:  f = 0.72f; break;
+        case SCALE_L:  f = 1.41f; break;
+        case SCALE_XL: f = 2.00f; break;
+      }
+      mPaint = new Paint( DrawingBrushPaths.labelPaint );
+      mPaint.setTextSize( TopoDroidApp.mLabelSize * f );
+      makeStraightPath( 0, 0, 20*f*mText.length(), 0, cx, cy );
+    }
+  }
 
 
   @Override

@@ -2,12 +2,56 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <!-- CheckBoxPreference
-    android:key="DISTOX_SAVE_ON_DESTROY"
-    android:summary="Save current survey and calib"
-    android:title="Store preferences"
-    android:defaultValue="true"
-  / -->
+
+     <com.topodroid.DistoX.MyListPreference
+       android:key="DISTOX_SURVEY_STATION"
+       android:summary="@string/pref_survey_stations_summary"
+       android:title="@string/pref_survey_stations_title"
+       android:defaultValue="1"
+       android:entries="@array/surveyStations"
+       android:entryValues="@array/surveyStationsValue"
+     />
+
+     <com.topodroid.DistoX.MyEditPreference
+       android:key="DISTOX_CLOSE_DISTANCE"
+       android:title="@string/pref_leg_title"
+       android:summary="@string/pref_leg_summary"
+       android:dialogTitle="@string/pref_leg_title"
+       android:dialogMessage="@string/pref_leg_message"
+       android:inputType="numberDecimal"
+       android:defaultValue="0.1" />
+
+     <com.topodroid.DistoX.MyEditPreference
+       android:key="DISTOX_EXTEND_THR2"
+       android:title="@string/pref_ethr_title"
+       android:summary="@string/pref_ethr_summary"
+       android:dialogTitle="@string/pref_ethr_title"
+       android:dialogMessage="@string/pref_ethr_message"
+       android:inputType="numberDecimal"
+       android:defaultValue="0.2" />
+
+     <com.topodroid.DistoX.MyEditPreference
+       android:key="DISTOX_VTHRESHOLD"
+       android:title="@string/pref_vthr_title"
+       android:summary="@string/pref_vthr_summary"
+       android:dialogTitle="@string/pref_vthr_title"
+       android:dialogMessage="@string/pref_vthr_message"
+       android:inputType="numberDecimal"
+       android:defaultValue="80.0" />
+
+     <CheckBoxPreference
+       android:key="DISTOX_LOOP_CLOSURE"
+       android:summary="@string/pref_loopClosure_summary"
+       android:title="@string/pref_loopClosure_title"
+       android:defaultValue="false"
+     />
+
+     <!-- CheckBoxPreference
+       android:key="DISTOX_LIST_REFRESH"
+       android:summary="@string/pref_list_refresh_summary"
+       android:title="@string/pref_list_refresh_title"
+       android:defaultValue="false"
+     / -->
 
      <com.topodroid.DistoX.MyListPreference
        android:key="DISTOX_UNIT_LENGTH"
@@ -25,6 +69,13 @@
        android:defaultValue="degrees"
        android:entries="@array/unitAngle"
        android:entryValues="@array/unitAngleValue"
+     />
+
+     <CheckBoxPreference
+        android:key="DISTOX_GPS_AVERAGING"
+        android:title="@string/pref_gps_averaging_title"
+        android:summary="@string/pref_gps_averaging_summary"
+        android:defaultValue="false"
      />
 
      <com.topodroid.DistoX.MyListPreference
@@ -51,15 +102,8 @@
        android:summary="@string/pref_crs_summary"
        android:dialogTitle="@string/pref_crs_title"
        android:dialogMessage="@string/pref_crs_message"
-       android:defaultValue="Long-Lat"
        android:enabled="false"
-     />
-
-     <CheckBoxPreference
-        android:key="DISTOX_GPS_AVERAGING"
-        android:title="@string/pref_gps_averaging_title"
-        android:summary="@string/pref_gps_averaging_summary"
-        android:defaultValue="false"
+       android:defaultValue="Long-Lat"
      />
 
      <!-- com.topodroid.DistoX.MyListPreference
@@ -70,46 +114,6 @@
        android:entries="@array/exportType"
        android:entryValues="@array/exportTypeValue"
      / -->
-     <com.topodroid.DistoX.MyEditPreference
-       android:key="DISTOX_CLOSE_DISTANCE"
-       android:title="@string/pref_leg_title"
-       android:summary="@string/pref_leg_summary"
-       android:dialogTitle="@string/pref_leg_title"
-       android:dialogMessage="@string/pref_leg_message"
-       android:inputType="numberDecimal"
-       android:defaultValue="0.1" />
-
-     <com.topodroid.DistoX.MyEditPreference
-       android:key="DISTOX_VTHRESHOLD"
-       android:title="@string/pref_vthr_title"
-       android:summary="@string/pref_vthr_summary"
-       android:dialogTitle="@string/pref_vthr_title"
-       android:dialogMessage="@string/pref_vthr_message"
-       android:inputType="numberDecimal"
-       android:defaultValue="80.0" />
-
-     <CheckBoxPreference
-       android:key="DISTOX_LOOP_CLOSURE"
-       android:summary="@string/pref_loopClosure_summary"
-       android:title="@string/pref_loopClosure_title"
-       android:defaultValue="false"
-     />
-
-     <!-- CheckBoxPreference
-       android:key="DISTOX_LIST_REFRESH"
-       android:summary="@string/pref_list_refresh_summary"
-       android:title="@string/pref_list_refresh_title"
-       android:defaultValue="false"
-     / -->
-
-     <com.topodroid.DistoX.MyListPreference
-       android:key="DISTOX_SURVEY_STATION"
-       android:summary="@string/pref_survey_stations_summary"
-       android:title="@string/pref_survey_stations_title"
-       android:defaultValue="0"
-       android:entries="@array/surveyStations"
-       android:entryValues="@array/surveyStationsValue"
-     />
 
      <com.topodroid.DistoX.MyEditPreference
        android:key="DISTOX_ACCEL_THR"

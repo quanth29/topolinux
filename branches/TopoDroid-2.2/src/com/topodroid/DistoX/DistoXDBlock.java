@@ -24,7 +24,7 @@ package com.topodroid.DistoX;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
-import android.util.Log;
+// import android.util.Log;
 
 public class DistoXDBlock
 {
@@ -55,6 +55,7 @@ public class DistoXDBlock
   long   mExtend;
   long   mFlag;     
   int    mType;    // shot type
+  boolean mWithPhoto;
 
   public static final int BLOCK_BLANK      = 0;
   public static final int BLOCK_MAIN_LEG   = 1; // primary leg shot
@@ -92,6 +93,7 @@ public class DistoXDBlock
     mExtend = EXTEND_RIGHT;
     mFlag   = BLOCK_SURVEY;
     mType   = BLOCK_BLANK;
+    mWithPhoto = false;
   }
 
   public void setId( long shot_id, long survey_id )
@@ -163,6 +165,7 @@ public class DistoXDBlock
 
   public int color()
   {
+    // Log.v( "DistoX", "block " + mId + " type " + mType );
     return colors[ mType ];
   }
 
@@ -201,8 +204,9 @@ public class DistoXDBlock
       pw.format( "-" );
     }
     if ( mComment != null && mComment.length() > 0 ) {
-      pw.format("N");
+      pw.format(" N");
     } 
+    if ( mWithPhoto ) { pw.format(" #"); }
     TopoDroidApp.Log( TopoDroidApp.LOG_DATA, sw.getBuffer().toString() );
     return sw.getBuffer().toString();
   }

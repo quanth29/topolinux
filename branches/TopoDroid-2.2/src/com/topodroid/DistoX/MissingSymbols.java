@@ -24,7 +24,7 @@ import java.io.PrintWriter;
 
 import android.content.res.Resources;
 
-import android.util.Log;
+// import android.util.Log;
 
 /**
  */

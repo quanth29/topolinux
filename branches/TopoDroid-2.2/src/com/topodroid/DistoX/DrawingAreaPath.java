@@ -29,7 +29,7 @@ import java.util.Iterator;
 // import java.util.List;
 import java.util.ArrayList;
 
-import android.util.Log;
+// import android.util.Log;
 
 /**
  */
@@ -97,7 +97,27 @@ public class DrawingAreaPath extends DrawingPointLinePath
   @Override
   public void toCsurvey( PrintWriter pw )
   {
-    // TODO
+    int layer  = DrawingBrushPaths.getAreaCsxLayer( mAreaType );
+    int type   = 3;
+    int cat    = DrawingBrushPaths.getAreaCsxCategory( mAreaType );
+    int pen    = DrawingBrushPaths.getAreaCsxPen( mAreaType );
+    int brush  = DrawingBrushPaths.getAreaCsxBrush( mAreaType );
+
+    // linetype: 0 line, 1 spline, 2 bezier
+    pw.format("          <item layer=\"%d\" name=\"\" type=\"3\" category=\"%d\" linetype=\"1\" mergemode=\"0\">\n",
+      layer, cat );
+    pw.format("            <pen type=\"%d\" />\n", pen);
+    pw.format("            <brush type=\"%d\" />\n", brush);
+    pw.format("            <points data=\"");
+    boolean b = true;
+    for ( LinePoint pt : mPoints ) {
+      float x = DrawingActivity.sceneToWorldX( pt.mX );
+      float y = DrawingActivity.sceneToWorldY( pt.mY );
+      pw.format("%.2f %.2f ", x, y );
+      if ( b ) { pw.format("B "); b = false; }
+    }
+    pw.format("\" />\n");
+    pw.format("          </item>\n");
   }
 
 }

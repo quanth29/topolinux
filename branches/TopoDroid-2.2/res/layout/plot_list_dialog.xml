@@ -17,18 +17,6 @@
        android:layout_marginLeft="10dp"
        android:background="@drawable/ic_add"
     />
-    <!-- Button android:id="@+id/plot_normal"
-       android:layout_width="wrap_content"
-       android:layout_height="match_parent"
-       android:layout_marginLeft="10dp"
-       android:background="@drawable/ic_plot"
-    / -->
-    <!-- Button android:id="@+id/plot_section"
-       android:layout_width="wrap_content"
-       android:layout_height="match_parent"
-       android:layout_marginLeft="10dp"
-       android:background="@drawable/ic_more"
-    / -->
     <!-- Button android:id="@+id/sketch3d_new"
        android:layout_width="wrap_content"
        android:layout_height="match_parent"
@@ -52,12 +40,13 @@
       </LinearLayout -->
     </LinearLayout>
    
-    <ListView android:id="@+id/list"
+    <GridView android:id="@+id/list"
        android:layout_width="match_parent"
        android:layout_height="match_parent"
        android:stackFromBottom="false"
        android:transcriptMode="alwaysScroll"
        android:layout_weight="1"
        android:textSize="12sp"
+       android:numColumns="2"
     />  
 </LinearLayout>

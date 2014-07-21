@@ -55,7 +55,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.database.sqlite.SQLiteException;
 
-import android.util.Log;
+// import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,9 +65,9 @@ import java.util.HashMap;
 public class DataHelper extends DataSetObservable
 {
    static String DATABASE_NAME = TopoDroidApp.getDirFile( "distox14.sqlite" );
-   static final int DATABASE_VERSION = 15;
+   static final int DATABASE_VERSION = 16;
    static final int DATABASE_VERSION_MIN = 14;
-   static final String DB_VERSION = "15";
+   static final String DB_VERSION = "16";
 
    private static final String CONFIG_TABLE = "configs";
    private static final String SURVEY_TABLE = "surveys";
@@ -122,6 +122,8 @@ public class DataHelper extends DataSetObservable
 
    private SQLiteStatement updateFixedStationStmt;
    private SQLiteStatement updateFixedStatusStmt;
+
+   private SQLiteStatement deleteGMStmt;
 
    private SQLiteStatement doDeleteGMStmt;
    private SQLiteStatement doDeleteCalibStmt;
@@ -203,6 +205,8 @@ public class DataHelper extends DataSetObservable
  
         updateFixedStationStmt = myDB.compileStatement( "UPDATE fixeds set station=? WHERE surveyId=? AND id=?" );
         updateFixedStatusStmt = myDB.compileStatement( "UPDATE fixeds set status=? WHERE surveyId=? AND id=?" );
+
+        deleteGMStmt = myDB.compileStatement( "UPDATE gms set status=? WHERE calibID=? AND id=?" );
 
         doDeleteGMStmt    = myDB.compileStatement( "DELETE FROM gms where calibId=?" );
         doDeleteCalibStmt = myDB.compileStatement( "DELETE FROM calibs where id=?" );
@@ -737,6 +741,15 @@ public class DataHelper extends DataSetObservable
      return id;
    }
 
+   void deleteGM( long cid, long id, boolean delete )
+   {
+     if ( myDB == null ) return;
+     deleteGMStmt.bindLong( 1, delete? 1 : 0 );
+     deleteGMStmt.bindLong( 2, cid );
+     deleteGMStmt.bindLong( 3, id );
+     deleteGMStmt.execute();
+   }
+
    public void doDeleteCalib( long cid ) 
    {
      if ( myDB == null ) return;
@@ -800,6 +813,7 @@ public class DataHelper extends DataSetObservable
      cv.put( "mz", mz );
      cv.put( "grp", 0 );
      cv.put( "error", 0.0 );
+     cv.put( "status", 0 );
      long ret= myDB.insert( GM_TABLE, null, cv );
      return ret;
    }
@@ -1344,11 +1358,11 @@ public class DataHelper extends DataSetObservable
      return list;
    }
 
-   public List<CalibCBlock> selectAllGMs( long cid )
+   public List<CalibCBlock> selectAllGMs( long cid, int status )
    {
      List< CalibCBlock > list = new ArrayList< CalibCBlock >();
      Cursor cursor = myDB.query(GM_TABLE,
-                                new String[] { "id", "gx", "gy", "gz", "mx", "my", "mz", "grp", "error" }, // columns
+                                new String[] { "id", "gx", "gy", "gz", "mx", "my", "mz", "grp", "error", "status" }, // columns
                                 "calibId=?",
                                 new String[] { Long.toString(cid) },
                                 null,  // groupBy
@@ -1356,18 +1370,22 @@ public class DataHelper extends DataSetObservable
                                 "id" ); // order by
      if (cursor.moveToFirst()) {
        do {
-         CalibCBlock block = new CalibCBlock();
-         block.setId( cursor.getLong(0), cid );
-         block.setData( 
-           cursor.getLong(1),
-           cursor.getLong(2),
-           cursor.getLong(3),
-           cursor.getLong(4),
-           cursor.getLong(5),
-           cursor.getLong(6) );
-         block.setGroup( cursor.getLong(7) );
-         block.setError( (float)( cursor.getDouble(8) ) );
-         list.add( block );
+         if ( status >= (int)cursor.getLong(9) ) { // status == 0 --> only good shots
+                                                   // status == 1 --> all shots
+           CalibCBlock block = new CalibCBlock();
+           block.setId( cursor.getLong(0), cid );
+           block.setData( 
+             cursor.getLong(1),
+             cursor.getLong(2),
+             cursor.getLong(3),
+             cursor.getLong(4),
+             cursor.getLong(5),
+             cursor.getLong(6) );
+           block.setGroup( cursor.getLong(7) );
+           block.setError( (float)( cursor.getDouble(8) ) );
+           block.setStatus( cursor.getLong(9) );
+           list.add( block );
+         }
        } while (cursor.moveToNext());
      }
      if (cursor != null && !cursor.isClosed()) {
@@ -1380,7 +1398,7 @@ public class DataHelper extends DataSetObservable
    {
      CalibCBlock block = null;
      Cursor cursor = myDB.query(GM_TABLE,
-                                new String[] { "id", "gx", "gy", "gz", "mx", "my", "mz", "grp", "error" }, // columns
+                                new String[] { "id", "gx", "gy", "gz", "mx", "my", "mz", "grp", "error", "status" }, // columns
                                 "calibId=? and id=?", 
                                 new String[] { Long.toString(cid), Long.toString(id) },
                                 null,  // groupBy
@@ -1398,6 +1416,7 @@ public class DataHelper extends DataSetObservable
          cursor.getLong(6) );
        block.setGroup( cursor.getLong(7) );
        block.setError( (float)( cursor.getDouble(8) ) );
+       block.setStatus( cursor.getLong(9) );
      }
      if (cursor != null && !cursor.isClosed()) {
        cursor.close();
@@ -1973,14 +1992,16 @@ public class DataHelper extends DataSetObservable
   {
     ArrayList<Device> ret = new ArrayList<Device>();
 
-    Cursor cursor = myDB.query( DEVICE_TABLE, new String[] { "address", "model", "head", "tail" }, 
+    Cursor cursor = myDB.query( DEVICE_TABLE, new String[] { "address", "model", "head", "tail", "name" }, 
                                 null, null, null, null, null );
     if ( cursor.moveToFirst() ) {
       do {
         ret.add( new Device( cursor.getString(0), 
                              cursor.getString(1),
                              (int)cursor.getLong(2),
-                             (int)cursor.getLong(3) ) );
+                             (int)cursor.getLong(3),
+                             cursor.getString(4)
+                ) );
       } while (cursor.moveToNext());
     }
     if (cursor != null && !cursor.isClosed()) {
@@ -1992,13 +2013,15 @@ public class DataHelper extends DataSetObservable
   public Device getDevice( String addr )
   {
     Device ret = null;
-    Cursor cursor = myDB.query( DEVICE_TABLE, new String[] { "address", "model", "head", "tail" }, 
+    Cursor cursor = myDB.query( DEVICE_TABLE, new String[] { "address", "model", "head", "tail", "name" }, 
                                 "address=?", new String[] { addr }, null, null, null );
     if ( cursor.moveToFirst() ) {
       ret = new Device( cursor.getString(0), 
                         cursor.getString(1),
                         (int)cursor.getLong(2),
-                        (int)cursor.getLong(3) );
+                        (int)cursor.getLong(3),
+                        cursor.getString(4)
+                      );
     }
     if (cursor != null && !cursor.isClosed()) {
       cursor.close();
@@ -2036,7 +2059,7 @@ public class DataHelper extends DataSetObservable
     return ret;
   }
 
-  boolean insertDevice( String address, String model )
+  boolean insertDevice( String address, String model, String name )
   {
     boolean ret = true;
     Cursor cursor = myDB.query( DEVICE_TABLE, new String[] { "model" },
@@ -2052,25 +2075,28 @@ public class DataHelper extends DataSetObservable
       cv.put( "model",   model );
       cv.put( "head",    0 );
       cv.put( "tail",    0 );
+      cv.put( "name",    name );
       myDB.insert( DEVICE_TABLE, null, cv );
     }
     if (cursor != null && !cursor.isClosed()) { cursor.close(); }
     return ret;
   }
 
-  private void insertDeviceHeadTail( String address, String model, int[] head_tail )
+  private void insertDeviceHeadTail( String address, String model, int[] head_tail, String name )
   {
     ContentValues cv = new ContentValues();
     cv.put( "address", address );
     cv.put( "model",   model );
     cv.put( "head",    head_tail[0] );
     cv.put( "tail",    head_tail[1] );
+    cv.put( "name",    name );
     myDB.insert( DEVICE_TABLE, null, cv );
   }
 
-  public void updateDeviceHeadTail( String address, int[] head_tail )
+  public boolean updateDeviceHeadTail( String address, int[] head_tail )
   {
-    if ( myDB == null ) return;
+    if ( myDB == null ) return false;
+    boolean ret = false;
     Cursor cursor = myDB.query( DEVICE_TABLE, new String[] { "head" },
                          "address=?", 
                          new String[] { address },
@@ -2083,10 +2109,12 @@ public class DataHelper extends DataSetObservable
       updateDeviceHeadTailStmt.bindLong( 2, tail );
       updateDeviceHeadTailStmt.bindString( 3, address );
       updateDeviceHeadTailStmt.execute();
+      ret = true;
     } else {
-      insertDeviceHeadTail( address, "DistoX", head_tail );
+      // insertDeviceHeadTail( address, "DistoX", head_tail, name ); // FIXME name ?
     }
     if (cursor != null && !cursor.isClosed()) { cursor.close(); }
+    return ret;
   }
 
    public boolean updateFixedStation( long id, long sid, String station )
@@ -2748,7 +2776,8 @@ public class DataHelper extends DataSetObservable
              +   " my INTEGER, "
              +   " mz INTEGER, "
              +   " grp INTEGER, "
-             +   " error REAL "
+             +   " error REAL, "
+             +   " status INTEGER "
              // +   " calibId REFERENCES " + CALIB_TABLE + "(id)"
              // +   " ON DELETE CASCADE "
              +   ")"
@@ -2835,7 +2864,8 @@ public class DataHelper extends DataSetObservable
              + " ( address TEXT, "
              +   " model TEXT, "
              +   " head INTEGER, "
-             +   " tail INTEGER  "
+             +   " tail INTEGER, "
+             +   " name TEXT "
              +   ")"
            );
 
@@ -2873,7 +2903,10 @@ public class DataHelper extends DataSetObservable
          switch ( oldVersion ) {
            case 14: 
              db.execSQL( "ALTER TABLE surveys ADD COLUMN declination DOUBLE" );
+             db.execSQL( "ALTER TABLE gms ADD COLUMN status INTEGER" );
            case 15:
+             db.execSQL( "ALTER TABLE devices ADD COLUMN name TEXT" );
+           case 16:
              /* current version */
            default:
              break;
