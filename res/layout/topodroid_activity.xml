@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:orientation="vertical"
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent"
+      >
+  <RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+  >
+    <LinearLayout
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_toLeftOf="@+id/right"
+    >
+    <com.topodroid.DistoX.HorizontalListView android:id="@+id/listview"
+        android:layout_width="fill_parent"
+        android:layout_height="42dp"
+    />
+    </LinearLayout>
+   
+    <!-- LinearLayout android:id="@+id/right"
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentRight="true"
+    >
+    <Button android:id="@+id/help"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:background="@drawable/ic_help"
+    />
+    </LinearLayout -->
+  </RelativeLayout>
+     
+
+   <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:orientation="horizontal"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      >
+      <Button android:id="@+id/btn_surveys"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:singleLine="true"
+          android:paddingLeft="25dp"
+          android:paddingRight="25dp"
+          android:text="@string/surveys"
+      />
+      <Button android:id="@+id/btn_calibs"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:singleLine="true"
+          android:paddingLeft="25dp"
+          android:paddingRight="25dp"
+          android:text="@string/calibs"
+      />
+   </LinearLayout>
+
+   <ListView android:id="@+id/td_list"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:stackFromBottom="false"
+          android:transcriptMode="alwaysScroll"
+          android:layout_weight="1"
+          android:paddingTop="25dp"
+          android:textSize="12sp"
+    />  
+  </LinearLayout>
+

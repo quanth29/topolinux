@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+  <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/id"
+    android:layout_weight="125"
+    android:layout_width="0dip"
+    android:layout_height="wrap_content"
+    android:textSize="14sp"
+    android:typeface="monospace"
+    android:padding="5dp"
+  />
+
+  <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/from"
+    android:layout_weight="100"
+    android:layout_width="0dip"
+    android:layout_height="wrap_content"
+    android:textSize="14sp"
+    android:typeface="monospace"
+    android:padding="5dp"
+  />
+
+  <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/to"
+    android:layout_weight="100"
+    android:layout_width="0dip"
+    android:layout_height="wrap_content"
+    android:textSize="14sp"
+    android:typeface="monospace"
+    android:padding="5dp"
+  />
+
+  <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/length"
+    android:layout_weight="200"
+    android:layout_width="0dip"
+    android:layout_height="wrap_content"
+    android:textSize="14sp"
+    android:typeface="monospace"
+    android:padding="5dp"
+    android:gravity="right"
+  />
+
+  <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/compass"
+    android:layout_weight="180"
+    android:layout_width="0dip"
+    android:layout_height="wrap_content"
+    android:textSize="14sp"
+    android:typeface="monospace"
+    android:padding="5dp"
+    android:gravity="right"
+  />
+
+  <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/clino"
+    android:layout_weight="180"
+    android:layout_width="0dip"
+    android:layout_height="wrap_content"
+    android:textSize="14sp"
+    android:typeface="monospace"
+    android:padding="5dp"
+    android:gravity="right"
+  />
+
+  <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/note"
+    android:layout_weight="240"
+    android:layout_width="0dip"
+    android:layout_height="wrap_content"
+    android:textSize="14sp"
+    android:typeface="monospace"
+    android:padding="5dp"
+  />
+
+</LinearLayout>

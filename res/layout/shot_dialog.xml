@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp"
+    android:paddingBottom="3dp">
+
+    <!-- LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal" 
+      >
+      <Button android:id="@+id/btn_prev"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="left"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+        android:text="@string/button_prev"
+        />
+      <Button android:id="@+id/btn_next"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="right"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+        android:text="@string/button_next"
+        />
+    </LinearLayout -->
+
+    <TextView android:id="@+id/shot_data"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:textSize="18sp"
+        android:text="@string/shot_info"
+        />
+
+    <TextView android:id="@+id/shot_extra"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:textSize="18sp"
+        android:text="@string/shot_info"
+        />
+   					  
+   					  
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal" 
+      >
+      <EditText android:id="@+id/shot_from" 
+        android:singleLine="true" 
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+        android:width="100dp"
+        android:layout_height="wrap_content" 
+        android:text=""
+        android:nextFocusDown="@+id/shot_to"
+        />
+      <EditText android:id="@+id/shot_to" 
+        android:singleLine="true" 
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+        android:width="100dp"
+        android:layout_height="wrap_content" 
+        android:text=""
+        />
+
+    <Button
+       android:id="@+id/shot_reverse"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="@string/shot_reverse"
+       />
+    </LinearLayout>				  
+
+    <EditText android:id="@+id/shot_comment" 
+        android:maxLines="1" 
+        android:layout_marginTop="2dp"
+        android:layout_width="fill_parent"
+      	android:ems="25"
+        android:layout_height="wrap_content" 
+        android:scrollHorizontally="true"
+        android:autoText="false"
+        android:singleLine="true"
+        android:hint="@string/shot_note"
+        />
+
+    <CheckBox
+       android:id="@+id/shot_leg"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="@string/shot_leg"
+       />
+
+    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal" 
+      >
+      <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/extend_left" />
+      <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/vert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/extend_vert" />
+      <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/extend_right" />
+      <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/ignore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/extend_ignore" />
+    </RadioGroup>
+
+    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal" 
+      >
+      <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/shot_reg"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content"
+        android:text="@string/regular"
+        />
+
+      <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/shot_dup"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content"
+        android:text="@string/duplicate"
+        />
+
+      <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/shot_surf"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content"
+        android:text="@string/surface"
+        />
+    </RadioGroup>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_width="fill_parent" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal" 
+      >
+
+      <Button android:id="@+id/btn_prev"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="left"
+        android:background="@drawable/ic_back"
+        android:layout_marginRight="20dip"
+        />
+
+      <Button android:id="@+id/btn_ok"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="left"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+        android:text="@string/button_ok"
+        />
+      <Button android:id="@+id/btn_save"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="left"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+        android:text="@string/button_save"
+        />
+      <Button android:id="@+id/btn_back"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="left"
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+        android:text="@string/button_back"
+        />
+
+      <!-- LinearLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="right"
+        >
+      <Button android:id="@+id/btn_drop"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+                android:singleLine="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+        android:text="@string/button_drop"
+        android:layout_marginLeft="10dip"
+        />
+      </LinearLayout -->
+
+      <Button android:id="@+id/btn_next"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="right"
+        android:background="@drawable/ic_forw"
+        android:layout_marginLeft="20dip"
+        />
+    </LinearLayout>
+   		
+</LinearLayout>
