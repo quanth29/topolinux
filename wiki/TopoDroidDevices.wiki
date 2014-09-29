@@ -11,9 +11,9 @@ Problems of bluetooth communication between DistoX and Android are no longer bei
 
 From the Google Play stats the most used devices are 
 - Google Nexus 7
-- Samsung S3 mini, Tab2 7.0, Nexus 7, S2 GT-I9100, S4, S5, S3, and Note3
+- Samsung S3 mini, Tab2 7.0, S2 GT-I9100, S4, S5, S3, and Note3
 - Motorola MotoG
-However this covers only 1/4 of all devices running TopoDroid. 
+However this covers less than 1/4 of all devices running TopoDroid. 
 Therefore it is very likely that TopoDroid+DistoX will work on your device.
 If that is not the case, please send me an email.
 
