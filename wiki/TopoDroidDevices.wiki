@@ -5,7 +5,21 @@
 This page collects the list of the devices where TopoDroid works,
 and those where users experienced problems.
 
-It is compiled from the users' feedback, and I cannot
+This list is kind of out-of-date.
+Android has got better and TopoDroid run on "all" Android version 2.2 or above.
+Problems of bluetooth communication between DistoX and Android are no longer being reported.
+
+From the Google Play stats the most used devices are 
+- Google Nexus 7
+- Samsung S3 mini, Tab2 7.0, Nexus 7, S2 GT-I9100, S4, S5, S3, and Note3
+- Motorola MotoG
+However this covers only 1/4 of all devices running TopoDroid. 
+Therefore it is very likely that TopoDroid+DistoX will work on your device.
+If that is not the case, please send me an email.
+
+----
+
+The following list is compiled from the users' feedback, and I cannot
 guarantee that the information is correct. In particular a reported bluetooth failure does not mean that TopoDroid will not work on that device.
 
 If a version of TopoDroid works on a device, it is likely that more recent versions will work too, although some features of the program might not be supported. 
