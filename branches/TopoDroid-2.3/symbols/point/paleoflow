@@ -1,7 +1,9 @@
 symbol point
 name paleoflow
+name-it paleoflusso
 name-es paleoflujo
 name-fr écoulement_fossile
+name-de ehemaliges_Gerinne
 th_name paleoflow
 orientation yes
 color 0x3333ff

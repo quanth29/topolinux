@@ -29,7 +29,7 @@ public class ShotDisplayDialog extends Dialog
                                // implements View.OnClickListener
 {
     private CheckBox mCBids;      // whether to hide ids
-    // private CheckBox mCBsplay;    // whether to hide splays
+    private CheckBox mCBsplay;    // whether to hide splays
     private CheckBox mCBblank;    // whether to hide blank
     private CheckBox mCBleg;      // whether to hide repeated leg 
     // private Button mBtnOK;
@@ -51,7 +51,7 @@ public class ShotDisplayDialog extends Dialog
         setContentView(R.layout.shot_display_dialog);
 
         mCBids   = (CheckBox) findViewById(R.id.cb_mode_ids);
-        // mCBsplay = (CheckBox) findViewById(R.id.cb_mode_splay);
+        mCBsplay = (CheckBox) findViewById(R.id.cb_mode_splay);
         mCBblank = (CheckBox) findViewById(R.id.cb_mode_blank);
         mCBleg   = (CheckBox) findViewById(R.id.cb_mode_leg);
 
@@ -63,10 +63,10 @@ public class ShotDisplayDialog extends Dialog
         // mBtnRefresh.setOnClickListener( this );
         // mBtnCancel.setOnClickListener( this );
 
-        mCBids.setChecked( ! mParent.getShowIds() );
-        // mCBsplay.setChecked( mParent.mSplay );
-        mCBblank.setChecked( mParent.mBlank );
-        mCBleg.setChecked( mParent.mLeg );
+        mCBids.setChecked(     mParent.getShowIds() );
+        mCBsplay.setChecked( ! mParent.mSplay );
+        mCBblank.setChecked( ! mParent.mBlank );
+        mCBleg.setChecked(   ! mParent.mLeg );
 
         setTitle( R.string.title_mode );
     }
@@ -95,10 +95,10 @@ public class ShotDisplayDialog extends Dialog
     @Override
     public void onBackPressed ()
     {
-      mParent.setShowIds( ! mCBids.isChecked() );
-      // mParent.mSplay = mCBsplay.isChecked();
-      mParent.mBlank = mCBblank.isChecked();
-      mParent.mLeg   = mCBleg.isChecked();
+      mParent.setShowIds( mCBids.isChecked() );
+      mParent.mSplay = ! mCBsplay.isChecked();
+      mParent.mBlank = ! mCBblank.isChecked();
+      mParent.mLeg   = ! mCBleg.isChecked();
       mParent.updateDisplay( );
       cancel();
     }

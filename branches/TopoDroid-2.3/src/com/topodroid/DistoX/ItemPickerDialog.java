@@ -35,7 +35,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.GridView;
 
-// import android.util.Log;
+import android.util.Log;
 
 class ItemPickerDialog extends Dialog
                        implements View.OnClickListener, IItemPicker
@@ -64,7 +64,6 @@ class ItemPickerDialog extends Dialog
   private boolean mUseText = false;
   private ItemAdapter mAdapter = null;
 
-  // static int mPointPos;
   // static int mLinePos;
   // static int mAreaPos;
 
@@ -139,17 +138,26 @@ class ItemPickerDialog extends Dialog
     SymbolPointLibrary point_lib = DrawingBrushPaths.mPointLib;
     SymbolLineLibrary line_lib = DrawingBrushPaths.mLineLib;
     SymbolAreaLibrary area_lib = DrawingBrushPaths.mAreaLib;
-    int np = point_lib.mPointNr;
-    int nl = line_lib.mLineNr;
-    int na = area_lib.mAreaNr;
+    int np = point_lib.mAnyPointNr;
+    int nl = line_lib.mAnyLineNr;
+    int na = area_lib.mAnyAreaNr;
     for ( int i=0; i<np; ++i ) {
-      mPointAdapter.add( new ItemSymbol( mContext, this, DrawingActivity.SYMBOL_POINT, i, point_lib.getPoint( i ), mUseText ) );
+      SymbolPoint p = point_lib.getAnyPoint( i );
+      if ( p.isEnabled() ) {
+        mPointAdapter.add( new ItemSymbol( mContext, this, DrawingActivity.SYMBOL_POINT, i, p, mUseText ) );
+      }
     }
     for ( int j=0; j<nl; ++j ) {
-      mLineAdapter.add( new ItemSymbol( mContext, this, DrawingActivity.SYMBOL_LINE, j, line_lib.getLine( j ), mUseText ) );
+      SymbolLine l = line_lib.getAnyLine( j );
+      if ( l.isEnabled() ) {
+        mLineAdapter.add( new ItemSymbol( mContext, this, DrawingActivity.SYMBOL_LINE, j, l, mUseText ) );
+      }
     }
     for ( int k=0; k<na; ++k ) {
-      mAreaAdapter.add( new ItemSymbol( mContext, this, DrawingActivity.SYMBOL_AREA, k, area_lib.getArea( k ), mUseText ) );
+      SymbolArea a = area_lib.getAnyArea( k );
+      if ( a.isEnabled() ) {
+        mAreaAdapter.add( new ItemSymbol( mContext, this, DrawingActivity.SYMBOL_AREA, k, a, mUseText ) );
+      }
     }
 
     mPointAdapter.setSelectedItem( mParent.mCurrentPoint );
@@ -194,27 +202,51 @@ class ItemPickerDialog extends Dialog
   public void setTypeAndItem( int pos )
   {
     // Log.v( TopoDroidApp.TAG, "setTypeAndItem type " + mItemType  + " item " + pos );
+    ItemSymbol is;
     switch ( mItemType ) {
       case DrawingActivity.SYMBOL_POINT: 
-        // mPointPos = pos;
-        mParent.mCurrentPoint = pos;
-        mParent.pointSelected( pos ); // mPointAdapter.getSelectedItem() );
+        is = mPointAdapter.get( pos );
+        // Log.v( TopoDroidApp.TAG, "setTypeAndItem type point pos " + pos + " index " + is.mIndex );
+        mParent.mCurrentPoint = is.mIndex;
+        mParent.pointSelected( is.mIndex ); // mPointAdapter.getSelectedItem() );
         break;
       case DrawingActivity.SYMBOL_LINE: 
         // mLinePos = pos;
-        if ( mPlotType != PlotInfo.PLOT_SECTION || pos != DrawingBrushPaths.mLineLib.mLineSectionIndex ) {
-          mParent.mCurrentLine = pos;
-          mParent.lineSelected( pos ); // mLineAdapter.getSelectedItem() );
+        is = mLineAdapter.get( pos );
+        if ( mPlotType != PlotInfo.PLOT_SECTION || is.mIndex != DrawingBrushPaths.mLineLib.mLineSectionIndex ) {
+          mParent.mCurrentLine = is.mIndex;
+          mParent.lineSelected( is.mIndex ); // mLineAdapter.getSelectedItem() );
         } else {
         }
         break;
       case DrawingActivity.SYMBOL_AREA: 
         // mAreaPos = pos;
-        mParent.mCurrentArea = pos;
-        mParent.areaSelected( pos ); // mAreaAdapter.getSelectedItem() );
+        is = mAreaAdapter.get( pos );
+        mParent.mCurrentArea = is.mIndex;
+        mParent.areaSelected( is.mIndex ); // mAreaAdapter.getSelectedItem() );
         break;
     }
     // cancel();
+  }
+
+  private void setTypeFromCurrent( )
+  {
+    // Log.v( TopoDroidApp.TAG, "setTypeFromCurrent type " + mItemType  );
+    switch ( mItemType ) {
+      case DrawingActivity.SYMBOL_POINT: 
+        // mParent.mCurrentPoint = posx;
+        mParent.pointSelected( mParent.mCurrentPoint );
+        break;
+      case DrawingActivity.SYMBOL_LINE: 
+        if ( mPlotType != PlotInfo.PLOT_SECTION ) {
+          mParent.lineSelected( mParent.mCurrentLine );
+        } else {
+        }
+        break;
+      case DrawingActivity.SYMBOL_AREA: 
+        mParent.areaSelected( mParent.mCurrentArea );
+        break;
+    }
   }
 
   void rotatePoint( int angle )
@@ -230,7 +262,6 @@ class ItemPickerDialog extends Dialog
     // Log.v( TopoDroidApp.TAG, "onBackPressed type " + mItemType );
     switch ( mItemType ) {
       case DrawingActivity.SYMBOL_POINT: 
-        // mParent.pointSelected( mPointPos );
         mParent.pointSelected( mParent.mCurrentPoint );
         break;
       case DrawingActivity.SYMBOL_LINE: 
@@ -254,21 +285,21 @@ class ItemPickerDialog extends Dialog
         if ( mItemType != DrawingActivity.SYMBOL_POINT ) {
           mItemType = DrawingActivity.SYMBOL_POINT;
           updateList();
-          setTypeAndItem( mParent.mCurrentPoint );
+          setTypeFromCurrent( );
         }
         break;
       case R.id.item_line:
         if ( mItemType != DrawingActivity.SYMBOL_LINE ) {
           mItemType = DrawingActivity.SYMBOL_LINE;
           updateList();
-          setTypeAndItem( mParent.mCurrentLine );
+          setTypeFromCurrent( );
         }
         break;
       case R.id.item_area:
         if ( mItemType != DrawingActivity.SYMBOL_AREA ) {
           mItemType = DrawingActivity.SYMBOL_AREA;
           updateList();
-          setTypeAndItem( mParent.mCurrentArea );
+          setTypeFromCurrent( );
         }
         break;
       case R.id.item_left:
@@ -281,7 +312,7 @@ class ItemPickerDialog extends Dialog
       //   dismiss();
       //   break;
       // case R.id.item_ok:
-      //   setTypeAndItem();
+      //   setTypeFromCurrent();
       //   break;
       default: 
         // if ( mAdapter != null ) mAdapter.doClick( view );

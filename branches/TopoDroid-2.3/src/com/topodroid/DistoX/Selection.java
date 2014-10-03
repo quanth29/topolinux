@@ -19,7 +19,7 @@ package com.topodroid.DistoX;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-// import android.util.Log;
+import android.util.Log;
 
 class Selection
 {
@@ -28,17 +28,20 @@ class Selection
 
   Selection( )
   {
+    // Log.v("DistoX", "Selection cstr" );
     // mPoints = new LinkedList< SelectionPoint >();
     mPoints = new ArrayList< SelectionPoint >();
   }
 
-  void clear()
+  void clearPoints()
   {
+    // Log.v("DistoX", "Selection clear" );
     mPoints.clear();
   }
 
   void insertStationName( DrawingStationName st )
   {
+    // Log.v("DistoX", "Selection insert station name" );
     insertItem( st, null );
   }
 
@@ -49,6 +52,7 @@ class Selection
    */
   SelectionPoint insertPathPoint( DrawingPointLinePath path, LinePoint pt )
   {
+    // Log.v("DistoX", "Selection insert path point" );
     SelectionPoint sp = new SelectionPoint( path, pt );
     mPoints.add( sp );
     return sp;
@@ -56,6 +60,7 @@ class Selection
   
   void insertLinePath( DrawingLinePath path )
   {
+    // Log.v("DistoX", "Selection insert line path" );
     // for (int k = 0; k < path.mPoints.size(); ++k ) {
     //   LinePoint p2 = path.mPoints.get(k);
     //   // Log.v(TopoDroidApp.TAG, "sel. insert " + p2.mX + " " + p2.mY );
@@ -68,6 +73,7 @@ class Selection
 
   void insertPath( DrawingPath path )
   {
+    // Log.v("DistoX", "Selection insert path" );
     // LinePoint p1;
     LinePoint p2;
     switch ( path.mType ) {
@@ -110,6 +116,7 @@ class Selection
 
   void resetDistances()
   {
+    // Log.v("DistoX", "Selection reset distances" );
     for ( SelectionPoint pt : mPoints ) {
       pt.mDistance = 0.0f;
     }
@@ -118,6 +125,7 @@ class Selection
   private void insertItem( DrawingPath path, LinePoint pt )
   {
     mPoints.add( new SelectionPoint( path, pt ) );
+    // Log.v("DistoX", "selection inserted path type " + path.mType + " pts " + mPoints.size() );
   }
 
   SelectionPoint getNearestPoint( SelectionPoint sp, float x, float y, float dmin )
@@ -139,6 +147,7 @@ class Selection
 
   void removePoint( SelectionPoint sp )
   {
+    // Log.v("DistoX", "Selection remove point" );
     mPoints.remove( sp ); 
     // final ListIterator it = mPoints.listIterator(0);
     // while( it.hasNext() ) {
@@ -151,6 +160,7 @@ class Selection
 
   void removePath( DrawingPath path )
   {
+    // Log.v("DistoX", "Selection remove path" );
     if ( path.mType == DrawingPath.DRAWING_PATH_LINE || path.mType == DrawingPath.DRAWING_PATH_AREA ) {
       DrawingPointLinePath line = (DrawingPointLinePath)path;
       // for ( LinePoint lp : line.mPoints ) 
@@ -187,6 +197,7 @@ class Selection
 
   void removeLinePoint( DrawingPointLinePath path, LinePoint lp )
   {
+    // Log.v("DistoX", "Selection remove line point" );
     if ( path.mType != DrawingPath.DRAWING_PATH_LINE && path.mType != DrawingPath.DRAWING_PATH_AREA ) return;
     // final Iterator i = mPoints.iterator();
     for ( SelectionPoint sp : mPoints ) {
@@ -212,11 +223,13 @@ class Selection
   void selectAt( float x, float y, float zoom, SelectionSet sel, boolean legs, boolean splays, boolean stations )
   {
     float radius = TopoDroidApp.mCloseCutoff + TopoDroidApp.mCloseness / zoom;
+    // Log.v( "DistoX", "selection select at " + x + " " + y + " pts " + mPoints.size() + " " + legs + " " + splays + " " + stations + " radius " + radius );
     for ( SelectionPoint sp : mPoints ) {
       if ( !legs && sp.type() == DrawingPath.DRAWING_PATH_FIXED ) continue;
       if ( !splays && sp.type() == DrawingPath.DRAWING_PATH_SPLAY ) continue;
       if ( !stations && ( sp.type() == DrawingPath.DRAWING_PATH_STATION || sp.type() == DrawingPath.DRAWING_PATH_NAME ) ) continue;
       sp.mDistance = sp.distance(x, y);
+      // Log.v("DistoX", "sp " + sp.name() + " distance " + sp.mDistance );
       if ( sp.mDistance < radius ) {
         sel.addPoint( sp );
       }

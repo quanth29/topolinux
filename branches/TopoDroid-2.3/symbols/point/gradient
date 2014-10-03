@@ -4,6 +4,7 @@ name-es inclinación
 name-pt linhas_gradiente
 name-it pendenza
 name-fr pente
+name-de Gefälle
 th_name gradient
 orientation yes
 color 0x33ff66

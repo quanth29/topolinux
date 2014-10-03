@@ -130,7 +130,8 @@ public class DrawingCommandManager
     }
     clearSelected();
     synchronized( mSelection ) {
-      mSelection.clear();
+      // Log.v("DistoX", "clear selection");
+      mSelection.clearPoints();
     }
   }
 
@@ -139,6 +140,7 @@ public class DrawingCommandManager
     mGridStack.clear();
     mFixedStack.clear();
     mStations.clear();
+    mSelection.clearPoints();
     clearSketchItems();
   }
 
@@ -146,8 +148,6 @@ public class DrawingCommandManager
   {
     mCurrentStack.clear();
     mRedoStack.clear();
-
-    mSelection.clear();
     mSelected.clear();
     mDisplayPoints = false;
   }
@@ -453,7 +453,7 @@ public class DrawingCommandManager
     }
   }
 
-  /** add a fixed path
+  /** add a fixed path (called by DrawingSurface::addFixedPath)
    * @param path       path
    * @param selectable whether the path is selectable
    */
@@ -462,6 +462,9 @@ public class DrawingCommandManager
     mFixedStack.add( path );
     if ( selectable ) {
       synchronized( mSelection ) {
+        if ( path.mBlock != null ) {
+          // Log.v( "DistoX", "selection add fixed path " + path.mBlock.mFrom + " " + path.mBlock.mTo );
+        }
         mSelection.insertPath( path );
       }
     }
@@ -471,12 +474,14 @@ public class DrawingCommandManager
   {
     mGridStack.add( path );
   }
-
+ 
+  // called by DrawingSurface::addStation
   public void addStation( DrawingStationName st, boolean selectable )
   {
     mStations.add( st );
     if ( selectable ) {
       synchronized( mSelection ) {
+        // Log.v( "DistoX", "selection add station " + st.mName );
         mSelection.insertStationName( st );
       }
     }
@@ -769,6 +774,7 @@ public class DrawingCommandManager
     boolean stations = (mDisplayMode & DISPLAY_STATION ) != 0;
     synchronized ( mSelected ) {
       mSelected.clear();
+      // Log.v( "DistoX", "getItemAt " + x + " " + y + " zoom " + zoom + " selection pts " + mSelection.mPoints.size() );
       mSelection.selectAt( x, y, zoom, mSelected, legs, splays, stations );
       if ( mSelected.mPoints.size() > 0 ) {
         mSelected.nextHotItem();

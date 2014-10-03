@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.topodroid.DistoX"
-      android:versionCode="203000"
-      android:versionName="2.3.0" 
+      android:versionCode="203008"
+      android:versionName="2.3.0h" 
     >
     <uses-sdk
        android:minSdkVersion="8"
@@ -101,6 +101,16 @@
         </activity>
 
         <activity android:name=".SketchActivity"
+                  android:theme="@style/Theme.FullScreen"
+                  android:screenOrientation="portrait"
+                  android:label="@string/app_name">
+           <intent-filter>
+              <action android:name="android.intent.action.VIEW" />
+              <category android:name="android.intent.category.DEFAULT" />
+           </intent-filter>
+        </activity>
+
+        <activity android:name=".DistoXManualDialog"
                   android:theme="@style/Theme.FullScreen"
                   android:screenOrientation="portrait"
                   android:label="@string/app_name">

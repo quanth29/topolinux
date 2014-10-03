@@ -28,7 +28,7 @@ import android.graphics.Path;
 import android.graphics.Matrix;
 
 // import android.util.FloatMath;
-// import android.util.Log;
+import android.util.Log;
 
 /**
  */
@@ -135,6 +135,7 @@ public class DrawingPath implements ICanvasCommand
     if ( mBlock == null ) return 1000.0f; // a large number
     double dx = x - cx;
     double dy = y - cy;
+    // Log.v("DistoX", "distance from block " + dx + " " + dy );
     return (float)( Math.sqrt( dx*dx + dy*dy ) );
   }
 

@@ -164,7 +164,7 @@ public class ShotActivity extends Activity
   // private static final int REQUEST_DEVICE = 1;
   private static final int REQUEST_ENABLE_BT = 2;
 
-  // FIXME SPLAY boolean mSplay = true;  //!< whether to hide splay shots
+  boolean mSplay = true;  //!< whether to hide splay shots
   boolean mLeg   = true;  //!< whether to hide leg extra shots
   boolean mBlank = false; //!< whether to hide blank shots
   // private Bundle mSavedState = null;
@@ -384,17 +384,26 @@ public class ShotActivity extends Activity
       // TopoDroidApp.Log( TopoDroidApp.LOG_SHOT, "updateDisplay() shot list size " + list.size() );
       // Log.v( TopoDroidApp.TAG, "updateDisplay() shot list size " + list.size() );
       updateShotList( list, photos );
+      
       setTitle( mApp.mySurvey );
     } else {
       Toast.makeText( this, R.string.no_survey, Toast.LENGTH_SHORT ).show();
     }
   }
 
+  boolean isCurrentStationName( String st ) { return mApp.isCurrentStationName( st ); }
+  void setCurrentStationName( String st ) 
+  { 
+    mSkipItemClick = true;
+    mApp.setCurrentStationName( st ); 
+    updateDisplay( );
+  }
+
   // add a block to the adapter
   @Override
   public void updateBlockList( DistoXDBlock blk )
   {
-    Log.v( "DistoX", "updateDisplay blk " + blk.mLength + " " + blk.mBearing + " " + blk.mClino );
+    // Log.v( "DistoX", "updateDisplay blk " + blk.mLength + " " + blk.mBearing + " " + blk.mClino );
     if ( mDataAdapter != null ) {
       mDataAdapter.addBlock( blk );
       mApp.assignStations( mDataAdapter.mItems );
@@ -476,12 +485,13 @@ public class ShotActivity extends Activity
           if ( mBlank ) continue;
         } else if ( t == DistoXDBlock.BLOCK_SPLAY ) {
           prev = null;
-          boolean skip = true;
-          for ( String st : mShowSplay ) {
-            if ( st.equals( cur.mFrom ) ) { skip = false; break; }
+          if ( mSplay ) { // do hide splays, except those that are shown.
+            boolean skip = true;
+            for ( String st : mShowSplay ) {
+              if ( st.equals( cur.mFrom ) ) { skip = false; break; }
+            }
+            if ( skip ) continue;
           }
-          // FIXME SPLAY if ( mSplay ) continue; // hide splay
-          if ( skip ) continue;
         } else { // t == DistoXDBlock.BLOCK_MAIN_LEG
           prev = cur;
         }
@@ -504,9 +514,15 @@ public class ShotActivity extends Activity
     return true;
   }
 
+  private boolean mSkipItemClick = false;
+
   @Override 
   public void onItemClick(AdapterView<?> parent, View view, int pos, long id)
   {
+    if ( mSkipItemClick ) {
+      mSkipItemClick = false;
+      return;
+    }
     // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "ShotActivity onItemClick id " + id);
     DistoXDBlock blk = mDataAdapter.get(pos);
 
@@ -727,7 +743,7 @@ public class ShotActivity extends Activity
     mApp = (TopoDroidApp) getApplication();
     mApp.mShotActivity = this; // FIXME
     mDataDownloader = new DataDownloader( this, mApp, this );
-  
+
     mShowSplay   = new ArrayList< String >();
     mDataAdapter = new DistoXDBlockAdapter( this, this, R.layout.row, new ArrayList<DistoXDBlock>() );
 
@@ -790,13 +806,12 @@ public class ShotActivity extends Activity
     mList.setDividerHeight( 2 );
     // mList.setSmoothScrollbarEnabled( true );
 
-    restoreInstanceFromData();
-
+    // restoreInstanceFromData();
     // mLastExtend = mApp.mData.getLastShotId( mApp.mSID );
     List<DistoXDBlock> list = mApp.mData.selectAllShots( mApp.mSID, TopoDroidApp.STATUS_NORMAL );
     // mSecondLastShotId = mApp.lastShotId( );
 
-    updateDisplay( );
+    // updateDisplay( );
   }
 
   void enableSketchButton( boolean enabled )
@@ -810,7 +825,8 @@ public class ShotActivity extends Activity
   public synchronized void onPause() 
   {
     super.onPause();
-    // Log.v( TopoDroidApp.TAG, "onPause()" );
+    Log.v( TopoDroidApp.TAG, "onPause()" );
+    saveInstanceToData();
     // mApp.unregisterConnListener( mHandler );
     // if ( mApp.mComm != null ) { mApp.mComm.suspend(); }
   }
@@ -821,6 +837,8 @@ public class ShotActivity extends Activity
     super.onResume();
 
     // if ( mApp.mComm != null ) { mApp.mComm.resume(); }
+    Log.v( TopoDroidApp.TAG, "onResume()" );
+    restoreInstanceFromData();
     updateDisplay( );
 
     // mApp.registerConnListener( mHandler );
@@ -837,26 +855,27 @@ public class ShotActivity extends Activity
   // @Override
   // public synchronized void onStop() 
   // {
-  //   Debug.stopMethodTracing( );
+  //   // Debug.stopMethodTracing( );
   //   super.onStop();
   // }
 
-  @Override
-  public synchronized void onDestroy() 
-  {
-    super.onDestroy();
-    saveInstanceToData();
-  }
+  // @Override
+  // public synchronized void onDestroy() 
+  // {
+  //   super.onDestroy();
+  //   saveInstanceToData();
+  // }
 
   private void restoreInstanceFromData()
   { 
     String shots = mApp.mData.getValue( "DISTOX_SHOTS" );
     if ( shots != null ) {
       String[] vals = shots.split( " " );
-      // FIXME SPLAY mSplay  = vals[0].equals("1");
+      mSplay  = vals[0].equals("1");
       mLeg    = vals[1].equals("1");
       mBlank  = vals[2].equals("1");
       setShowIds( vals[3].equals("1") );
+      // Log.v("DistoX", "restore from data mSplay " + mSplay );
     }
   }
     
@@ -864,9 +883,9 @@ public class ShotActivity extends Activity
   {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter( sw );
-    // FIXME SPLAY pw.format("%d %d %d %d", mSplay?1:0, mLeg?1:0, mBlank?1:0, getShowIds()?1:0 );
-    pw.format("%d %d %d %d", 0, mLeg?1:0, mBlank?1:0, getShowIds()?1:0 );
+    pw.format("%d %d %d %d", mSplay?1:0, mLeg?1:0, mBlank?1:0, getShowIds()?1:0 );
     mApp.mData.setValue( "DISTOX_SHOTS", sw.getBuffer().toString() );
+    // Log.v("DistoX", "save to data mSplay " + mSplay );
   }
 
 

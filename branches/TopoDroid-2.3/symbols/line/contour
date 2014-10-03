@@ -4,6 +4,7 @@ symbol line
   name-pt contorno
   name-it curva_di_livello
   name-fr courbe_de_niveau
+  name-de Höhenlinie
   th_name contour
   color 0x33cc66 0xff
   width 1

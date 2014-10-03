@@ -3,6 +3,7 @@ symbol line
   name-es contorno_estimado
   name-it parete_stimata
   name-fr supposé
+  name-de Wand_geschätzt
   th_name wall:presumed
   color 0xff0000 0xff
   width 1

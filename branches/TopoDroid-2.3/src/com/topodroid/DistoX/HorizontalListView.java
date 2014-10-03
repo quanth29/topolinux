@@ -202,6 +202,7 @@ public class HorizontalListView extends AdapterView<ListAdapter>
         }
       });
     }
+    setBackgroundColor( 0x33cccccc );
   }
  
   private void fillList(final int dx) 

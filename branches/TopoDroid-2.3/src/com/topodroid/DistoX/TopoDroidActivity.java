@@ -132,12 +132,12 @@ public class TopoDroidActivity extends Activity
   private ArrayAdapter<String> mArrayAdapter;
 
   private Button[] mButton1;
-  private Button[] mButton2;
+  // private Button[] mButton2;
   private static int icons[] = { R.drawable.ic_disto,
                           R.drawable.ic_add,
                           R.drawable.ic_import,
-                          R.drawable.ic_more,
-                          R.drawable.ic_less,
+                          // R.drawable.ic_more,
+                          // R.drawable.ic_less,
                           R.drawable.ic_therion,
                           R.drawable.ic_database,
                           R.drawable.ic_symbol,
@@ -149,8 +149,8 @@ public class TopoDroidActivity extends Activity
   private static int help_texts[] = { R.string.help_device,
                           R.string.help_add_topodroid,
                           R.string.help_import,
-                          R.string.help_more,
-                          R.string.help_less,
+                          // R.string.help_more,
+                          // R.string.help_less,
                           R.string.help_therion,
                           R.string.help_database,
                           R.string.help_symbol,
@@ -288,13 +288,15 @@ public class TopoDroidActivity extends Activity
           // TODO CALIB IMPORT
           Toast.makeText( this, R.string.not_implemented, Toast.LENGTH_SHORT ).show();
         }
-      } else if ( b == mButton1[k1++] ) {  // MORE
-        mListView.setAdapter( mButtonView2.mAdapter );
-        mListView.invalidate();
-      } else if ( b == mButton2[k2++] ) {  // LESS
-        mListView.setAdapter( mButtonView1.mAdapter );
-        mListView.invalidate();
-      } else if ( b == mButton2[k2++] ) {  // THERION MANAGER ThManager
+
+      // } else if ( b == mButton1[k1++] ) {  // MORE
+      //   mListView.setAdapter( mButtonView2.mAdapter );
+      //   mListView.invalidate();
+      // } else if ( b == mButton2[k2++] ) {  // LESS
+      //   mListView.setAdapter( mButtonView1.mAdapter );
+      //   mListView.invalidate();
+
+      } else if ( b == mButton1[k1++] ) {  // THERION MANAGER ThManager
         try {
           intent = new Intent( "ThManager.intent.action.Launch" );
           // intent.putExtra( "survey", mApp.getSurveyThFile() );
@@ -302,7 +304,7 @@ public class TopoDroidActivity extends Activity
         } catch ( ActivityNotFoundException e ) {
           Toast.makeText( this, R.string.no_thmanager, Toast.LENGTH_SHORT ).show();
         }
-      } else if ( b == mButton2[k2++] ) {  // DATABASE
+      } else if ( b == mButton1[k1++] ) {  // DATABASE
         try {
           intent = new Intent(Intent.ACTION_VIEW, Uri.parse("file://" + DataHelper.DATABASE_NAME ) );
           intent.addCategory("com.kokufu.intent.category.APP_DB_VIEWER");
@@ -615,7 +617,7 @@ public class TopoDroidActivity extends Activity
  
   HorizontalListView mListView;
   HorizontalButtonView mButtonView1;
-  HorizontalButtonView mButtonView2;
+  // HorizontalButtonView mButtonView2;
   
   @Override
   public void onCreate(Bundle savedInstanceState)
@@ -647,10 +649,10 @@ public class TopoDroidActivity extends Activity
     //   mButtonHelp.setVisibility( View.VISIBLE );
     // }
 
-    int nr_button1 = 4;
-    int nr_button2 = 3;
+    int nr_button1 = 3 + ( ( TopoDroidApp.mExtraButtons )? 2 : 0 );
+    // int nr_button2 = 3;
     mButton1 = new Button[nr_button1];
-    mButton2 = new Button[nr_button2];
+    // mButton2 = new Button[nr_button2];
     int k;
     for (k=0; k<nr_button1; ++k ) {
       mButton1[k] = new Button( this );
@@ -658,15 +660,15 @@ public class TopoDroidActivity extends Activity
       mButton1[k].setOnClickListener( this );
       mButton1[k].setBackgroundResource(  icons[k] );
     }
-    for (k=0; k<nr_button2; ++k ) {
-      mButton2[k] = new Button( this );
-      mButton2[k].setPadding(0,0,0,0);
-      mButton2[k].setOnClickListener( this );
-      mButton2[k].setBackgroundResource(  icons[k+nr_button1] );
-    }
+    // for (k=0; k<nr_button2; ++k ) {
+    //   mButton2[k] = new Button( this );
+    //   mButton2[k].setPadding(0,0,0,0);
+    //   mButton2[k].setOnClickListener( this );
+    //   mButton2[k].setBackgroundResource(  icons[k+nr_button1] );
+    // }
 
     mButtonView1 = new HorizontalButtonView( mButton1 );
-    mButtonView2 = new HorizontalButtonView( mButton2 );
+    // mButtonView2 = new HorizontalButtonView( mButton2 );
     mListView = (HorizontalListView) findViewById(R.id.listview);
     mListView.setAdapter( mButtonView1.mAdapter );
 
@@ -948,13 +950,24 @@ public class TopoDroidActivity extends Activity
       intent = new Intent( this, TopoDroidPreferences.class );
       intent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_LOG );
       startActivity( intent );
-    } else if ( item == mMImanual ) { // ABOUT DIALOG
-      try {
-        // TopoDroidHelp.show( this, R.string.help_topodroid );
-        Intent pdf = new Intent( Intent.ACTION_VIEW, Uri.parse( TopoDroidApp.mManual ) );
-        startActivity( pdf );
-      } catch ( ActivityNotFoundException e ) {
-        Toast.makeText( this, "No pdf viewer mApp", Toast.LENGTH_SHORT ).show();
+    } else if ( item == mMImanual ) { // USER MANUAL DIALOG
+      boolean do_dialog = true;
+      if ( TopoDroidApp.mManual.startsWith("http") ) {
+        try {
+          // TopoDroidHelp.show( this, R.string.help_topodroid );
+          startActivity(
+            new Intent( Intent.ACTION_VIEW, Uri.parse( TopoDroidApp.mManual )));
+          do_dialog = false;
+        } catch ( ActivityNotFoundException e ) {
+          Toast.makeText( this, "No pdf viewer mApp", Toast.LENGTH_SHORT ).show();
+        }
+      }
+      if ( do_dialog ) {
+        startActivity(
+          new Intent( Intent.ACTION_VIEW ).setClass( this, DistoXManualDialog.class ) );
+   
+        // String man_file = TopoDroidApp.getManFile( TopoDroidApp.mManual );
+        // (new DistoXManualDialog(this, man_file )).show();
       }
     } else if ( item == mMIabout ) { // ABOUT DIALOG
       (new TopoDroidAbout( this )).show();

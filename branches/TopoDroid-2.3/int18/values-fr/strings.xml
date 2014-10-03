@@ -83,6 +83,7 @@
     <string name="extend_right">Droite</string>
     <string name="extend_vert">Vert.</string>
     <string name="external_prompt">Saisir mesure</string>
+    <!-- TODO string name="splay_at_to">LRUD at To station</string -->
 
     <string name="few_data">Pas assez de données</string>
 
@@ -261,6 +262,7 @@
 
     <string name="station">station</string>
     <string name="station_ask">Insérer station ?</string>
+    <!-- TODO string name="station_set">Continue survey from here?</string -->
     <string name="station_base">Station de référence</string>
     <!-- string name="station_next">next station</string -->
     <string name="station_viewed">station consultée</string>
@@ -300,10 +302,10 @@
     <string name="stat_surface">Surface des visées %1$d %2$.1f</string>
     <string name="stat_wens">W %1$.0f  E %2$.0f  N %3$.0f  S %4$.0f"</string>
 
-    <string name="hide_blank">Masquer les visées non définies</string>
-    <string name="hide_leg">Masquer les visées de cheminement répétées</string>
-    <string name="hide_ids">Masquer les ID de visées</string>
-    <string name="hide_splay">Masquer les visées latérales</string>
+    <string name="hide_blank">Visées non définies</string>
+    <string name="hide_leg">Visées de cheminement répétées</string>
+    <string name="hide_ids">ID de visées</string>
+    <string name="hide_splay">Visées latérales</string>
 
     <string name="surveys">RELEVES</string>
     <string name="calibs">ETALONNAGES</string>
@@ -438,6 +440,7 @@
     <string name="help_delete_survey">Supprime le relevé</string>
     <string name="help_delete_calib">Supprime l\'étalonnage</string>
     <string name="help_detach">Supprime le choix du DistoX courrant</string>
+    <!-- TODO string name="help_firmware">DistoX2 firmware updater</string -->
     <string name="help_toggle">Bascule le DistoX en mode étalonnage/normal</string>
     <string name="help_sdcard">Fonction mémoire du DistoX</string>
     <string name="help_read">Lit les coefficients de d\'étalonnage du DistoX</string>
@@ -625,6 +628,8 @@
   <string name="pref_unit_location_title">Unité de localisation</string>
   <string name="pref_unit_location_summary">Afficher les unités de localisation</string>
 
+  <!-- TODO string name="pref_log_stream_summary">Log output stream</string -->
+  <!-- TODO string name="pref_log_stream_title">Log stream</string -->
   <string name="pref_log_bt">Bluetooth</string>
   <string name="pref_log_bezier">Courbe de Bézier</string>
   <string name="pref_log_calib">Etalonnage</string>

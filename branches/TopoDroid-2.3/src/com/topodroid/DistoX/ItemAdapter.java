@@ -37,6 +37,11 @@ class ItemAdapter extends ArrayAdapter< ItemSymbol >
   private IItemPicker mParent;
   private int mPos;    
 
+  ItemSymbol get( int k )
+  { 
+    return ( k < mItems.size() ) ? mItems.get(k) : null ;
+  }
+
   public ItemAdapter( Context ctx, IItemPicker parent, int id, ArrayList< ItemSymbol > items )
   {
     super( ctx, id, items );
@@ -106,26 +111,30 @@ class ItemAdapter extends ArrayAdapter< ItemSymbol >
     try {
       CheckBox cb = (CheckBox)v;
       if ( cb != null ) {
+        int pos = 0;
         for ( ItemSymbol item : mItems ) {
           if ( cb == item.mCheckBox ) {
-            mPos = item.mIndex;
+            mPos = pos; // item.mIndex;
             mParent.setTypeAndItem( mPos );
             item.setChecked( true );
           } else {
             item.setChecked( false );
           }
+          ++ pos;
         }
       }
     } catch ( ClassCastException e ) {
+      int pos = 0;
       ItemButton ib = (ItemButton)v;
       for ( ItemSymbol item : mItems ) {
         if ( ib == item.mButton ) {
-          mPos = item.mIndex;
+          mPos = pos; // item.mIndex;
           mParent.setTypeAndItem( mPos );
           item.setChecked( true );
         } else {
           item.setChecked( false );
         }
+        ++ pos;
       }
     }
   }

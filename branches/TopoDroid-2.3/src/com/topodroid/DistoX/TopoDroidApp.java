@@ -71,6 +71,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.io.PrintStream;
 import java.io.FileWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -152,6 +153,8 @@ public class TopoDroidApp extends Application
   // ---------------------------------------------------------
   // DEBUG: logcat flags
 
+  static int mLogStream = 0;    // log stream
+  static PrintWriter mLog = null;
   static boolean LOG_BEZIER = false;
   static boolean LOG_BT     = false;   // bluetooth
   static boolean LOG_CALIB  = false;
@@ -187,7 +190,12 @@ public class TopoDroidApp extends Application
   static void Log( boolean flag, String msg )
   {
     if ( flag ) {
-      Log.v( TAG, msg );
+      if ( mLogStream == 0 ) {
+        Log.v( TAG, msg );
+      } else {
+        mLog.format( "%s\n", msg );
+        // mLog.flush(); // autoflush ?
+      }
     }
   }
 
@@ -215,8 +223,8 @@ public class TopoDroidApp extends Application
 
   String[] DistoXConnectionError;
   BluetoothAdapter mBTAdapter = null;     // BT connection
-  private DistoXComm mComm = null;                // BT communication
-  static DataHelper mData = null;                // database 
+  private DistoXComm mComm = null;        // BT communication
+  static DataHelper mData = null;         // database 
 
   SurveyActivity mSurveyActivity = null;
   ShotActivity mShotActivity  = null;
@@ -254,6 +262,7 @@ public class TopoDroidApp extends Application
   // boolean mTdSymbol;       // whether to ask TdSymbol
   // boolean mStartTdSymbol;  // whether to start TdSymbol (result "yes" of TdSymbolDialog)
   static String  mManual;  // manual url
+  static boolean mExtraButtons = false;
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   // LOCATION
@@ -306,7 +315,10 @@ public class TopoDroidApp extends Application
   static float mHThreshold;  // horizontal plot threshold
   boolean mCheckAttached;    // whether to check is there are shots non-attached
   private int     mSurveyStations;   // automatic survey stations: 0 no, 1 forward-after-splay, 2 backward-after-splay
-  boolean mShotAfterSplays;  //                                  3 forward-before-splay, 4 backward-before-splay
+  boolean mShotAfterSplays;  //                                          3 forward-before-splay, 4 backward-before-splay
+
+  boolean isSurveyForward() { return (mSurveyStations%2) == 1; }
+  boolean isSurveyBackward() { return mSurveyStations>0 && (mSurveyStations%2) == 0; }
 
   static boolean mLoopClosure;  // whether to do loop closure
   static float mStationSize;
@@ -402,17 +414,18 @@ public class TopoDroidApp extends Application
   private static String APP_BASE_PATH; //  = Environment.getExternalStorageDirectory() + "/TopoDroid/";
   // private static String APP_TLX_PATH ; //  = APP_BASE_PATH + "tlx/";
 
-  private static String APP_BIN_PATH ; //  = APP_BASE_PATH + "bin/";
-  private static String APP_CSV_PATH ; //  = APP_BASE_PATH + "csv/";
-  private static String APP_CSX_PATH ; //  = APP_BASE_PATH + "csx/";
-  private static String APP_DAT_PATH ; //  = APP_BASE_PATH + "dat/";
-  private static String APP_DUMP_PATH ; //  = APP_BASE_PATH + "dump/";
+  private static String APP_BIN_PATH ; //  = APP_BASE_PATH + "bin/";   // Firmwares  
+  private static String APP_CSV_PATH ; //  = APP_BASE_PATH + "csv/";   // CSV text
+  private static String APP_CSX_PATH ; //  = APP_BASE_PATH + "csx/";   // cSurvey
+  private static String APP_DAT_PATH ; //  = APP_BASE_PATH + "dat/";   // Compass
+  private static String APP_DUMP_PATH ; //  = APP_BASE_PATH + "dump/"; // DistoX memopry dumps
   private static String APP_DXF_PATH ; //  = APP_BASE_PATH + "dxf/";
   private static String APP_FOTO_PATH; //  = APP_BASE_PATH + "photo/";
   private static String APP_IMPORT_PATH; //  = APP_BASE_PATH + "import/";
-  private static String APP_NOTE_PATH; //  = APP_BASE_PATH + "note/";
-  private static String APP_PNG_PATH; //  = APP_BASE_PATH + "png/";
-  private static String APP_SVX_PATH ; //  = APP_BASE_PATH + "svx/";
+  private static String APP_MAN_PATH;    //  = APP_BASE_PATH + "man/";
+  private static String APP_NOTE_PATH;   //  = APP_BASE_PATH + "note/";
+  private static String APP_PNG_PATH;    //  = APP_BASE_PATH + "png/";
+  private static String APP_SVX_PATH ;   //  = APP_BASE_PATH + "svx/";
   private static String APP_TH_PATH  ; //  = APP_BASE_PATH + "th/";
   private static String APP_TH2_PATH ; //  = APP_BASE_PATH + "th2/";
   private static String APP_TH3_PATH ; //  = APP_BASE_PATH + "th3/";
@@ -445,109 +458,85 @@ public class TopoDroidApp extends Application
     // Log.v(TAG, "Base Path \"" + APP_BASE_PATH + "\"" );
 
     APP_BIN_PATH    = APP_BASE_PATH + "bin/";
-    dir = new File( APP_BIN_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_BIN_PATH );
+
+    APP_MAN_PATH    = APP_BASE_PATH + "man/";
+    checkDirs( APP_MAN_PATH );
 
     // APP_TLX_PATH    = APP_BASE_PATH + "tlx/";
-    // dir = new File( APP_TLX_PATH );
-    // if ( ! dir.exists() ) dir.mkdirs( );
+    // checkDirs( APP_TLX_PATH );
 
     APP_DAT_PATH    = APP_BASE_PATH + "dat/";
-    dir = new File( APP_DAT_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_DAT_PATH );
 
     APP_SVX_PATH    = APP_BASE_PATH + "svx/";
-    dir = new File( APP_SVX_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_SVX_PATH );
 
     APP_CSV_PATH    = APP_BASE_PATH + "csv/";
-    dir = new File( APP_CSV_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_CSV_PATH );
 
     APP_CSX_PATH    = APP_BASE_PATH + "csx/";
-    dir = new File( APP_CSX_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_CSX_PATH );
 
     APP_DUMP_PATH    = APP_BASE_PATH + "dump/";
-    dir = new File( APP_DUMP_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_DUMP_PATH );
 
     APP_TOP_PATH    = APP_BASE_PATH + "top/";
-    dir = new File( APP_TOP_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_TOP_PATH );
 
     APP_TH_PATH     = APP_BASE_PATH + "th/";
-    dir = new File( APP_TH_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_TH_PATH );
 
     APP_TH2_PATH    = APP_BASE_PATH + "th2/";
-    dir = new File( APP_TH2_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_TH2_PATH );
 
     APP_TH3_PATH    = APP_BASE_PATH + "th3/";
-    dir = new File( APP_TH3_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_TH3_PATH );
 
     APP_DXF_PATH    = APP_BASE_PATH + "dxf/";
-    dir = new File( APP_DXF_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_DXF_PATH );
 
     APP_TRO_PATH    = APP_BASE_PATH + "tro/";
-    dir = new File( APP_TRO_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_TRO_PATH );
 
     APP_PNG_PATH   = APP_BASE_PATH + "png/";
-    dir = new File( APP_PNG_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_PNG_PATH );
 
     APP_NOTE_PATH   = APP_BASE_PATH + "note/";
-    dir = new File( APP_NOTE_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_NOTE_PATH );
 
     APP_FOTO_PATH   = APP_BASE_PATH + "photo/";
-    dir = new File( APP_FOTO_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_FOTO_PATH );
 
     APP_IMPORT_PATH = APP_BASE_PATH + "import/";
-    dir = new File( APP_IMPORT_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_IMPORT_PATH );
 
     APP_ZIP_PATH    = APP_BASE_PATH + "zip/";
-    dir = new File( APP_ZIP_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_ZIP_PATH );
 
     APP_SYMBOL_PATH  = APP_BASE_PATH + "symbol/";
-    dir = new File( APP_SYMBOL_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_SYMBOL_PATH );
 
     APP_SYMBOL_SAVE_PATH  = APP_BASE_PATH + "symbol/save/";
-    dir = new File( APP_SYMBOL_SAVE_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_SYMBOL_SAVE_PATH );
 
     APP_POINT_PATH  = APP_BASE_PATH + "symbol/point/";
-    dir = new File( APP_POINT_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_POINT_PATH );
 
     APP_LINE_PATH   = APP_BASE_PATH + "symbol/line/";
-    dir = new File( APP_LINE_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_LINE_PATH );
 
     APP_AREA_PATH   = APP_BASE_PATH + "symbol/area/";
-    dir = new File( APP_AREA_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_AREA_PATH );
 
     APP_SAVE_POINT_PATH  = APP_BASE_PATH + "symbol/save/point/";
-    dir = new File( APP_POINT_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_POINT_PATH );
 
     APP_SAVE_LINE_PATH   = APP_BASE_PATH + "symbol/save/line/";
-    dir = new File( APP_LINE_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
+    checkDirs( APP_LINE_PATH );
 
     APP_SAVE_AREA_PATH   = APP_BASE_PATH + "symbol/save/area/";
-    dir = new File( APP_AREA_PATH );
-    if ( ! dir.exists() ) dir.mkdirs( );
-
+    checkDirs( APP_AREA_PATH );
   }
 
   // ---------------------------------------------------------
@@ -611,6 +600,8 @@ public class TopoDroidApp extends Application
     // "DISTOX_SKETCH_SECTION_STEP", // 45
     // "DISTOX_DELTA_EXTRUDE",       // 46
     // "DISTOX_COMPASS_READINGS",    // 47
+
+    "DISTOX_EXTRA_BUTTONS",          // 42 TODO move to general options
   };
 
   public static final String[] log_key = {
@@ -949,7 +940,9 @@ public class TopoDroidApp extends Application
 
     mEnableZip = true; // true: can save
 
+    installManual( );  // must come before installSymbols
     installSymbols( false );
+    installFirmware( false );
 
     loadPreferences();
 
@@ -995,8 +988,20 @@ public class TopoDroidApp extends Application
     mScaleFactor   = (mDisplayHeight / 320.0f) * density;
     // Log.v( TAG, "display " + mDisplayWidth + " " + mDisplayHeight + " scale " + mScaleFactor );
 
+
+    if ( mLog == null ) {
+      try {
+        File log_file = new File( APP_BASE_PATH + "/log.txt" );
+        FileWriter fw = new FileWriter( log_file );
+        mLog = new PrintWriter( fw, true ); // true = autoflush
+      } catch ( IOException e ) {
+        Log.e("DistoX", "cannot create log file" );
+      }
+    }
     loadLogPreferences();
   }
+
+// -----------------------------------------------------------------
 
   // called by GMActivity and by CalibCoeffDialog 
   void uploadCalibCoeff( Context context, byte[] coeff )
@@ -1154,6 +1159,7 @@ public class TopoDroidApp extends Application
   static String getPngFile( String name )    { return APP_PNG_PATH + name; }
 
   static String getBinFile( String name )    { return APP_BIN_PATH + name; }
+  static String getManFile( String name )    { return APP_MAN_PATH + name; }
 
   static String getNoteFile( String name )   { return APP_NOTE_PATH + name; }
 
@@ -1168,8 +1174,7 @@ public class TopoDroidApp extends Application
 
   private static String getFile( String directory, String name, String ext ) 
   {
-    File dir = new File( directory );
-    if (!dir.exists()) dir.mkdirs();
+    checkDirs( directory );
     return directory + name + "." + ext;
   }
 
@@ -1495,6 +1500,9 @@ public class TopoDroidApp extends Application
       mLineThickness = 1.0f;
     }
 
+    // DISTOX_EXTRA_BUTTONS
+    mExtraButtons = prefs.getBoolean( key[k++], false );
+
     // ------------------- SKETCH PREFERENCES
     // mSketchUsesSplays  = prefs.getBoolean( key[k++], false );
     // mSketchLineStep    = Float.parseFloat( prefs.getString( key[k++], "0.5f") );
@@ -1507,6 +1515,9 @@ public class TopoDroidApp extends Application
   void loadLogPreferences() // ---------------------- LOG PREFERENCES
   {
     int lk = 0;
+    
+    mLogStream  = Integer.parseInt( prefs.getString("DISTOX_LOG_STREAM", "0") );
+    
     LOG_DEBUG   = prefs.getBoolean( log_key[lk++], false );
     LOG_ERR     = prefs.getBoolean( log_key[lk++], true );
     LOG_INPUT   = prefs.getBoolean( log_key[lk++], false );
@@ -1761,6 +1772,11 @@ public class TopoDroidApp extends Application
           DrawingBrushPaths.doMakePaths();
         }
 
+      } else if ( k.equals( key[ nk++ ] ) ) {
+        // DISTOX_EXTRA_BUTTONS
+        mExtraButtons = prefs.getBoolean( k, false );
+
+
       // } else if ( k.equals( key[ nk++ ] ) ) {
       //   mSketchUsesSplays = sp.getBoolean( k, false );
       // } else if ( k.equals( key[ nk++ ] ) ) { 
@@ -1775,6 +1791,9 @@ public class TopoDroidApp extends Application
       //   mCompassReadings = Integer.parseInt( sp.getString( k, "4" ) );
 
     // ---------------------- LOG PREFERENCES
+    } else if ( k.equals( "DISTOX_LOG_STREAM" ) ) { // "DISTOX_LOG_STREAM",
+      mLogStream = Integer.parseInt( sp.getString(k, "0") );
+
     } else if ( k.equals( log_key[ lk++ ] ) ) { // "DISTOX_LOG_DEBUG",
       LOG_DEBUG = sp.getBoolean( k, false );
     } else if ( k.equals( log_key[ lk++ ] ) ) { // "DISTOX_LOG_ERR",
@@ -1872,6 +1891,21 @@ public class TopoDroidApp extends Application
     return ret;
   }
 
+  private String mCurrentStationName = null;
+
+  void setCurrentStationName( String name ) 
+  { 
+    if ( name.equals(mCurrentStationName) ) {
+      mCurrentStationName = null; // clear
+    } else {
+      mCurrentStationName = name;
+    }
+  }
+
+  String getCurrentStationName() { return mCurrentStationName; }
+
+  boolean isCurrentStationName( String name ) { return name.equals(mCurrentStationName); }
+
   public void assignStations( List<DistoXDBlock> list )
   { 
     if ( mSurveyStations <= 0 ) return;
@@ -1891,18 +1925,28 @@ public class TopoDroidApp extends Application
         } else {
           if ( prev.relativeDistance( blk ) < mCloseDistance ) {
             if ( ! atStation ) {
-              prev.mFrom = from;
+              // checkCurrentStationName
+              if ( mCurrentStationName != null ) {
+                if ( mSurveyStations == 1 ) { // forward-shot
+                  from = mCurrentStationName;
+                } else if ( mSurveyStations == 2 ) {
+                  to = mCurrentStationName;
+                }
+                mCurrentStationName = null;
+              }
+              prev.mFrom = from;                             // forward-shot from--to
               prev.mTo   = to;
               mData.updateShotName( prev.mId, mSID, from, to );
-              if ( mSurveyStations == 1 ) {
-                station = mShotAfterSplays ? to : from;
-                from = to;
-                to   = DistoXStationName.increment( from );
-              } else {
-                to   = from;
-                from = DistoXStationName.increment( to );
-                station = mShotAfterSplays ? from : to;
-              }
+              if ( mSurveyStations == 1 ) {                  // forward-shot
+                station = mShotAfterSplays ? to : from;      // splay-station = this-shot-to if splays before shot
+                                                             //                 thsi-shot-from if splays after shot
+                from = to;                                   // next-shot-from = this-shot-to
+                to   = DistoXStationName.increment( from );  // next-shot-to   = increment next-shot-from
+              } else {                                       // backward-shot 
+                to   = from;                                 // next-shot-to   = this-shot-from
+                from = DistoXStationName.increment( to );    // next-shot-from = increment this-shot-from
+                station = mShotAfterSplays ? from : to;      // splay-station  = next-shot-from if splay before shot
+              }                                              //                = thsi-shot-from if splay after shot
               atStation = true;
             } else {
               /* nothing: centerline extra shot */
@@ -3429,6 +3473,20 @@ public class TopoDroidApp extends Application
     }
   }
 
+  void installFirmware( boolean overwrite )
+  {
+    InputStream is = getResources().openRawResource( R.raw.firmware );
+    firmwareUncompress( is, overwrite );
+  }
+
+  void installManual( )
+  {
+    String version = mData.getValue( "version" );
+    if ( version != null || ( ! version.equals(VERSION) ) ) {
+      InputStream is = getResources().openRawResource( R.raw.manual );
+      manualUncompress( is );
+    }
+  }
 
   // -------------------------------------------------------------
   // SYMBOLS
@@ -3457,21 +3515,20 @@ public class TopoDroidApp extends Application
 
   // final static String symbol_urlstr = "http://sites/google.com/speleoapps/home/tdsymbol/TopoDroid-symbol-1.2.zip";
 
-  private void symbolsCheckDirs()
+  private static void checkDirs( String path )
   {
-    File f1;
-    f1 = new File( APP_POINT_PATH );
+    File f1 = new File( path );
     if ( ! f1.exists() ) f1.mkdirs( );
-    f1 = new File( APP_LINE_PATH );
-    if ( ! f1.exists() ) f1.mkdirs( );
-    f1 = new File( APP_AREA_PATH );
-    if ( ! f1.exists() ) f1.mkdirs( );
-    f1 = new File( APP_SAVE_POINT_PATH );
-    if ( ! f1.exists() ) f1.mkdirs( );
-    f1 = new File( APP_SAVE_LINE_PATH );
-    if ( ! f1.exists() ) f1.mkdirs( );
-    f1 = new File( APP_SAVE_AREA_PATH );
-    if ( ! f1.exists() ) f1.mkdirs( );
+  }
+
+  private static void symbolsCheckDirs()
+  {
+    checkDirs( APP_POINT_PATH );
+    checkDirs( APP_LINE_PATH );
+    checkDirs( APP_AREA_PATH );
+    checkDirs( APP_SAVE_POINT_PATH );
+    checkDirs( APP_SAVE_LINE_PATH );
+    checkDirs( APP_SAVE_AREA_PATH );
   }
   
   /** download symbol zip from internet and store files in save/dirs
@@ -3550,13 +3607,75 @@ public class TopoDroidApp extends Application
     return cnt;
   }
 
+  private int firmwareUncompress( InputStream fis, boolean overwrite )
+  {
+    int cnt = 0;
+    // Log.v(TAG, "firmware uncompress ...");
+    checkDirs( APP_BIN_PATH );
+    try {
+      // byte buffer[] = new byte[36768];
+      byte buffer[] = new byte[4096];
+      ZipEntry ze = null;
+      ZipInputStream zin = new ZipInputStream( fis );
+      while ( ( ze = zin.getNextEntry() ) != null ) {
+        String filepath = ze.getName();
+        if ( ze.isDirectory() ) continue;
+        if ( ! filepath.endsWith("bin") ) continue;
+        String pathname =  APP_BIN_PATH + filepath;
+        File file = new File( pathname );
+        if ( overwrite || ! file.exists() ) {
+          ++cnt;
+          FileOutputStream fout = new FileOutputStream( pathname );
+          int c;
+          while ( ( c = zin.read( buffer ) ) != -1 ) {
+            fout.write(buffer, 0, c); // offset 0 in buffer
+          }
+          fout.close();
+        }
+        zin.closeEntry();
+      }
+      zin.close();
+    } catch ( FileNotFoundException e ) {
+    } catch ( IOException e ) {
+    }
+    return cnt;
+  }
+
+  private void manualUncompress( InputStream fis )
+  {
+    // Log.v(TAG, "manual uncompress ...");
+    checkDirs( APP_MAN_PATH );
+    try {
+      byte buffer[] = new byte[4096];
+      ZipEntry ze = null;
+      ZipInputStream zin = new ZipInputStream( fis );
+      while ( ( ze = zin.getNextEntry() ) != null ) {
+        String filepath = ze.getName();
+        if ( ze.isDirectory() ) continue;
+        String pathname =  APP_MAN_PATH + filepath;
+        
+        File file = new File( pathname );
+        FileOutputStream fout = new FileOutputStream( pathname );
+        int c;
+        while ( ( c = zin.read( buffer ) ) != -1 ) {
+          fout.write(buffer, 0, c); // offset 0 in buffer
+        }
+        fout.close();
+        zin.closeEntry();
+      }
+      zin.close();
+    } catch ( FileNotFoundException e ) {
+    } catch ( IOException e ) {
+    }
+  }
 
   /**
    * @param at   id of the shot before which to insert the new shot (and LRUD)
    */
   public DistoXDBlock makeNewShot( long at, String from, String to,
                            float distance, float bearing, float clino, long extend,
-                           String left, String right, String up, String down )
+                           String left, String right, String up, String down,
+                           String splay_station )
   {
     mSecondLastShotId = lastShotId();
     DistoXDBlock ret = null;
@@ -3603,7 +3722,7 @@ public class TopoDroidApp extends Application
                 id = mData.insertShot( mSID, -1L, l, b, 0.0f, 0.0f );
               }
             }
-            mData.updateShotName( id, mSID, from, "" );
+            mData.updateShotName( id, mSID, splay_station, "" );
             if ( at >= 0L ) ++at;
           }
         } 
@@ -3630,7 +3749,7 @@ public class TopoDroidApp extends Application
                 id = mData.insertShot( mSID, -1L, r, b, 0.0f, 0.0f );
               }
             }
-            mData.updateShotName( id, mSID, from, "" );
+            mData.updateShotName( id, mSID, splay_station, "" );
             if ( at >= 0L ) ++at;
           }
         }
@@ -3655,7 +3774,7 @@ public class TopoDroidApp extends Application
                 id = mData.insertShot( mSID, -1L, u, 0.0f, 90.0f, 0.0f );
               }
             }
-            mData.updateShotName( id, mSID, from, "" );
+            mData.updateShotName( id, mSID, splay_station, "" );
             if ( at >= 0L ) ++at;
           }
         }
@@ -3680,7 +3799,7 @@ public class TopoDroidApp extends Application
                 id = mData.insertShot( mSID, -1L, d, 0.0f, -90.0f, 0.0f );
               }
             }
-            mData.updateShotName( id, mSID, from, "" );
+            mData.updateShotName( id, mSID, splay_station, "" );
             if ( at >= 0L ) ++at;
           }
         }
@@ -3729,6 +3848,11 @@ public class TopoDroidApp extends Application
   void setX310Laser( int what ) // 0: off, 1: on, 2: measure
   {
     mComm.setX310Laser( mDevice.mAddress, what );
+  }
+
+  int readFirmwareHardware()
+  {
+    return mComm.readFirmwareHardware( mDevice.mAddress );
   }
 
   int dumpFirmware( String filename )

@@ -3,6 +3,7 @@ symbol line
   name-es techo_meandro
   name-it meandro_a_soffitto
   name-fr méandre_au_plafond
+  name-de Deckenmäander
   th_name ceiling-meander
   color 0xcc00cc 0xff
   width 1

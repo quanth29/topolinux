@@ -1,9 +1,10 @@
 symbol line
-  name chimeney 
+  name chimney 
   name-es chimenea
   name-pt chaminé
   name-it camino
   name-fr cheminée
+  name-de Schlot
   th_name chimney
   color 0xcc00cc 0xff
   width 1

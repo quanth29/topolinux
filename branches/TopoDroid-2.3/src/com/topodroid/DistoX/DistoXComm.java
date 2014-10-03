@@ -27,6 +27,7 @@ import java.util.UUID;
 import java.util.List;
 // import java.Thread;
 
+
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
@@ -37,6 +38,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
+import android.os.AsyncTask;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -99,11 +101,13 @@ public class DistoXComm
         // } else if ( BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals( action ) ) {
         // } else if ( BluetoothDevice.ACTION_FOUND.equals( action ) ) {
         if ( BluetoothDevice.ACTION_ACL_CONNECTED.equals( action ) ) {
-          Log.v("DistoX", "ACL_CONNECTED");
+          TopoDroidApp.Log( TopoDroidApp.LOG_BT, "ACL_CONNECTED");
         } else if ( BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED.equals( action ) ) {
-          Log.v("DistoX", "ACL_DISCONNECT_REQUESTED");
+          TopoDroidApp.Log( TopoDroidApp.LOG_BT, "ACL_DISCONNECT_REQUESTED");
+          closeSocket( true );
         } else if ( BluetoothDevice.ACTION_ACL_DISCONNECTED.equals( action ) ) {
-          Log.v("DistoX", "ACL_DISCONNECTED");
+          TopoDroidApp.Log( TopoDroidApp.LOG_BT, "ACL_DISCONNECTED");
+          closeSocket( true );
         }
       }
     };
@@ -133,6 +137,51 @@ public class DistoXComm
   int nReadPackets;   // number of received data-packet
   long mLastShotId;   // last shot id
   boolean doWork = true;
+
+/* ************
+  private class CommandThread extends AsyncTask< String, Integer, Integer >
+  {
+    private DistoXProtocol mProto;
+    private int mJob;
+    private byte[] mData;
+
+    CommandThread( DistoXProtocol proto, int job, byte[] data )
+    {
+      mProto = proto;
+      mJob   = job;
+      mData  = data;
+    }
+
+    @Override
+    protected Integer doInBackground( String... statuses )
+    {  
+      int ret = 0;
+      switch ( job ) {
+        case READ_CALIBRATION: 
+          boolean ret = mProto.readCalibration( mData );
+          // TODO return result
+          break;
+        case WRITE_CALIBRATION: 
+          boolean ret = mProto.writeCalibration( mData );
+          // TODO return result
+          break;
+      }
+      return ret;
+    }
+
+    @Override
+    protected void onProgressUpdate( Integer... values)
+    {
+      // super.onProgressUpdate( values );
+    }
+
+    @Override
+    protected void onPostExecute( Integer res )
+    {
+    }
+
+  };
+************* */
 
   private class RfcommThread extends Thread
   {
@@ -316,6 +365,7 @@ public class DistoXComm
     mBTConnected = false;
     mBTSocket = null;
     mProtocol = null;
+    resetBTReceiver();
   }
 
 
@@ -512,6 +562,7 @@ public class DistoXComm
   }
 
   /**
+   * nothing to read (only write) --> no AsyncTask
    */
   void setX310Laser( String address, int what )
   {
@@ -533,6 +584,7 @@ public class DistoXComm
 
   /** send the set/unset calib-mode command
    * @note called within connectSocket()
+   * nothing to read (only write) --> no AsyncTask
    */
   private boolean setX310CalibMode( boolean turn_on )
   {
@@ -563,10 +615,11 @@ public class DistoXComm
     }
     boolean ret = false;
     if ( connectSocket( address ) ) {
+      setupBTReceiver();
       switch ( type ) {
         case Device.DISTO_A3:
           byte[] result = new byte[4];
-          if ( ! mProtocol.read8000( result ) ) {
+          if ( ! mProtocol.read8000( result ) ) { // FIXME ASYNC
             TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "toggleCalibMode failed read8000" );
             destroySocket( true );
             return false;
@@ -599,7 +652,9 @@ public class DistoXComm
       mCoeff = coeff;
       // createSocket( address );
       if ( connectSocket( address ) ) {
+        setupBTReceiver();
         ret = mProtocol.writeCalibration( mCoeff );
+        // FIXME ASYNC new CommandThread( mProtocol, WRITE_CALIBRATION, mCoeff );
         destroySocket( true );
       }
     }
@@ -616,8 +671,11 @@ public class DistoXComm
     if ( coeff != null ) {
       // createSocket( address );
       if ( connectSocket( address ) ) {
+        setupBTReceiver();
         ret = mProtocol.readCalibration( coeff );
+        // FIXME ASYNC new CommandThread( mProtocol, READ_CALIBRATION, coeff );
         destroySocket( true );
+
         // int k;
         // for ( k=0; k<48; k+=8 ) {
         //   StringWriter sw = new StringWriter();
@@ -641,7 +699,9 @@ public class DistoXComm
       {
         // createSocket( address );
         if ( connectSocket( address ) ) {
+          setupBTReceiver();
           String result = mProtocol.readHeadTailA3( head_tail );
+          // FIXME ASYNC new CommandThread( mProtocol, READ_HEAD_TAIL, haed_tail ); NOTE int[] instead of byte[]
           destroySocket( true );
           TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "readHeadTail() result " + result );
           return result; 
@@ -660,6 +720,7 @@ public class DistoXComm
   //   }
   //   int n = 0;
   //   if ( connectSocket( address ) ) {
+  //     setupBTReceiver();
   //     n = mProtocol.resetX310Memory( from, to );
   //     destroySocket( true );
   //   }
@@ -673,7 +734,9 @@ public class DistoXComm
     }
     int n = 0;
     if ( connectSocket( address ) ) {
+      setupBTReceiver();
       n = mProtocol.readX310Memory( from, to, memory );
+      // FIXME ASYNC new CommandThread( mProtocol, READ_X310_MEMORY, memory ) Note...
       destroySocket( true );
     }
     return n;
@@ -689,9 +752,13 @@ public class DistoXComm
     if ( from >= 0x8000 ) from = 0;
     if ( to >= 0x8000 ) to &= 0x8000;
     int n = 0;
-    if ( from < to && connectSocket( address ) ) {
-      n = mProtocol.readMemory( from, to, memory );
-      destroySocket( true );
+    if ( from < to ) {
+      if ( connectSocket( address ) ) {
+        setupBTReceiver();
+        n = mProtocol.readMemory( from, to, memory );
+        // FIXME ASYNC new CommandThread( mProtocol, READ_MEMORY, memory ) Note...
+        destroySocket( true );
+      }
     }
     return n;
   }
@@ -701,13 +768,15 @@ public class DistoXComm
   {
     byte[] ret = null;
     if ( connectSocket( address ) ) {
+      setupBTReceiver();
       ret = mProtocol.readMemory( addr );
+      // FIXME ASYNC new CommandThread( mProtocol, READ_MEMORY_LOWLEVEL, addr ) Note...
       destroySocket( true );
     }
     return ret;
   }
 
-  /** swap hot bit in the range [from, to)
+  /** swap hot bit in the range [from, to) [only A3]
    */
   public int swapHotBit( String address, int from, int to )
   {
@@ -721,19 +790,24 @@ public class DistoXComm
     if ( to >= 0x8000 ) to &= 0x8000;
 
     int n = 0;
-    if ( from != to && connectSocket( address ) ) {
-      do {
-        if ( to == 0 ) {
-          to = 0x8000 - 8;
-        } else {
-          to -= 8;
-        }
-        // Log.v( TopoDroidApp.TAG, "comm swap hot bit at addr " + to/8 );
-        if ( ! mProtocol.swapHotBit( to ) ) break;
-        ++ n;
-      } while ( to != from );
-      destroySocket( true );
-      TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "swapHotBit swapped " + n + "data" );
+    if ( from != to ) {
+      if ( connectSocket( address ) ) {
+        setupBTReceiver();
+        do {
+          if ( to == 0 ) {
+            to = 0x8000 - 8;
+          } else {
+            to -= 8;
+          }
+          // Log.v( TopoDroidApp.TAG, "comm swap hot bit at addr " + to/8 );
+          if ( ! mProtocol.swapHotBit( to ) ) break;
+          ++ n;
+        } while ( to != from );
+        // FIXME ASYNC new CommandThread( mProtocol, SWAP_HOT_BITS, from, to ) Note...
+        
+        destroySocket( true );
+        TopoDroidApp.Log( TopoDroidApp.LOG_COMM, "swapHotBit swapped " + n + "data" );
+      }
     }
     return n;
   }
@@ -829,6 +903,16 @@ public class DistoXComm
     return -1; // failure
   }
 
+  int readFirmwareHardware( String address )
+  {
+    int ret = 0;
+    if ( connectSocket( address ) ) {
+      ret = mProtocol.readFirmwareAddress( );
+      destroySocket( true );
+    }
+    return ret;
+  }
+    
   int dumpFirmware( String address, String filepath )
   {
     int ret = 0;

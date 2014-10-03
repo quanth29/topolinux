@@ -164,11 +164,11 @@ public class DeviceList extends Activity
             }
           }
         } else if ( BluetoothDevice.ACTION_ACL_CONNECTED.equals( action ) ) {
-          Log.v("DistoX", "ACL_CONNECTED");
+          TopoDroidApp.Log( TopoDroidApp.LOG_BT, "ACL_CONNECTED");
         } else if ( BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED.equals( action ) ) {
-          Log.v("DistoX", "ACL_DISCONNECT_REQUESTED");
+          TopoDroidApp.Log( TopoDroidApp.LOG_BT, "ACL_DISCONNECT_REQUESTED");
         } else if ( BluetoothDevice.ACTION_ACL_DISCONNECTED.equals( action ) ) {
-          Log.v("DistoX", "ACL_DISCONNECTED");
+          TopoDroidApp.Log( TopoDroidApp.LOG_BT, "ACL_DISCONNECTED");
         }
       }
     };

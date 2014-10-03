@@ -83,6 +83,7 @@
     <string name="extend_right">Dx</string>
     <string name="extend_vert">Vert.</string>
     <string name="external_prompt">Scrivi i dati</string>
+    <string name="splay_at_to">LRUD al caposaldo di arrivo</string>
 
     <string name="few_data">Dati insufficienti</string>
 
@@ -261,6 +262,7 @@
 
     <string name="station">caposaldo</string>
     <string name="station_ask">Inserisci caposaldo ?</string>
+    <string name="station_set">Prosegui rilievo da qui?</string>
     <string name="station_base">caposaldo di riferimento</string>
     <!-- string name="station_next">prossimo caposaldo</string -->
     <string name="station_viewed">caposaldo puntato</string>
@@ -299,10 +301,10 @@
     <string name="stat_surface">Tiri di superficie %1$d %2$.1f</string>
     <string name="stat_wens">W %1$.0f  E %2$.0f  N %3$.0f  S %4$.0f"</string>
 
-    <string name="hide_blank">Nascondi dati bianchi</string>
-    <string name="hide_leg">Nascondi batture ripetute</string>
-    <string name="hide_ids">Nascondi ID tiri</string>
-    <string name="hide_splay">Nascondi tiri splay</string>
+    <string name="hide_blank">Dati bianchi</string>
+    <string name="hide_leg">Batture ripetute</string>
+    <string name="hide_ids">ID misure</string>
+    <string name="hide_splay">Misure laterali</string>
 
     <string name="surveys">RILIEVI</string>
     <string name="calibs">CALIBRAZ.</string>
@@ -437,6 +439,7 @@
     <string name="help_delete_survey">Elimina rilievo</string>
     <string name="help_delete_calib">Elimina calibrazione</string>
     <string name="help_detach">Rimuovi selezione DistoX</string>
+    <!-- OK string name="help_firmware">DistoX2 firmware updater</string -->
     <string name="help_toggle">Cambia modalità DistoX calibrazione/normal</string>
     <string name="help_sdcard">Funzioni memoria DistoX</string>
     <string name="help_read">Leggi la calibrazione dal DistoX</string>
@@ -624,6 +627,8 @@
   <string name="pref_unit_location_title">Unità posizioni</string>
   <string name="pref_unit_location_summary">Unità posizioni</string>
 
+  <!-- OK string name="pref_log_stream_summary">Log output stream</string -->
+  <!-- OK string name="pref_log_stream_title">Log stream</string -->
   <string name="pref_log_bt">Bluetooth</string>
   <string name="pref_log_bezier">Curve Bezier</string>
   <string name="pref_log_calib">Calibrazione</string>
@@ -651,7 +656,7 @@
     <string name="welcome_title">TopoDroid %1$s</string>
     <string name="welcome_text">
 \nTopoDroid è una app Android open-source per fare rilievi di grotta con il DistoX
-\nUsandola sollevi l\'autore da ogni responsabilità per qualsiasi perdita di dati o danno che ne possano conseguire.
+\nNessuna garanzia: usandola sollevi l\'autore da ogni responsabilità per qualsiasi perdita di dati o danno che ne possano conseguire.
 \n\nDocumentazione e app complementari http://sites.google.com/site/speleoapps
 \nInvia commenti, segnalazioni bug, richieste a marco.corvi@gmail.com
 \n

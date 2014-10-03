@@ -15,12 +15,12 @@
         android:text="@string/hide_ids"
         />
    					  
-    <!-- CheckBox android:id="@+id/cb_mode_splay"
+    <CheckBox android:id="@+id/cb_mode_splay"
         android:layout_marginTop="2dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
         android:text="@string/hide_splay"
-        / -->
+        />
    					  
     <CheckBox android:id="@+id/cb_mode_blank"
         android:layout_marginTop="2dp"

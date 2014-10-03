@@ -59,18 +59,18 @@ public class DrawingPointLinePath extends DrawingPath
     mSize = 1;
     for ( LinePoint p = mFirst.mNext; p != null; p = p.mNext ) {
       if ( p == mFirst ) break;
-      Log.v( "DistoX", "[>] " + p.mX + " " + p.mY );
+      // Log.v( "DistoX", "[>] " + p.mX + " " + p.mY );
       if ( ++ mSize > 100 ) break;;
     }
     // CHECK;
     int size = 1;
     for ( LinePoint p = mLast.mPrev; p != null; p = p.mPrev ) {
       if ( p == mLast ) break;
-      Log.v( "DistoX", "[<] " + p.mX + " " + p.mY );
+      // Log.v( "DistoX", "[<] " + p.mX + " " + p.mY );
       if ( ++ size > 100 ) break;;
     }
     if ( size != mSize ) {
-      Log.e( "DistoX", "recount size mismatch " + mSize + " " + size );
+      TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "recount size mismatch " + mSize + " " + size );
       // throw new Exception("size mismatch");
     }
   }

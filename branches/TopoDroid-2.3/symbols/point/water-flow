@@ -4,6 +4,7 @@ name-es curso_activo
 name-pt fluxo_água
 name-it flusso_d'acqua
 name-fr circulation_d'eau
+name-de Gerinne
 th_name water-flow
 orientation yes
 color 0x0000ff

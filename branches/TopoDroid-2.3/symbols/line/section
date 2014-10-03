@@ -3,6 +3,7 @@ symbol line
   name-es sección 
   name-it sezione
   name-fr section
+  name-de Schnitt
   th_name section
   color 0xffffff 0x99
   width 1

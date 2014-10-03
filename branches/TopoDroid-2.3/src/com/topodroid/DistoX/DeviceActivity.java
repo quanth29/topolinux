@@ -77,6 +77,7 @@ public class DeviceActivity extends Activity
                         R.drawable.ic_remote,
                         R.drawable.ic_scan,
                         R.drawable.ic_detach,
+                        R.drawable.ic_logs,
                         R.drawable.ic_pref,
                         R.drawable.ic_help
                      };
@@ -88,6 +89,7 @@ public class DeviceActivity extends Activity
                         R.string.help_remote,
                         R.string.help_scan,
                         R.string.help_detach,
+                        R.string.help_firmware,
                         R.string.help_prefs,
                         R.string.help_help
                       };
