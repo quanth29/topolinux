@@ -8,13 +8,6 @@
     android:paddingBottom="3dp">
    					  
 
-    <TextView android:id="@+id/station_text"
-        android:layout_marginTop="2dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" 
-        android:text="@string/station_ask"
-        />
-   					  
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
       android:layout_width="fill_parent" 
       android:layout_height="wrap_content"
@@ -28,18 +21,34 @@
         android:layout_marginRight="10dp"
       />
 
-      <!-- LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
-        android:layout_width="fill_parent" 
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
+      <TextView android:id="@+id/station_text"
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:text="@string/station_ask"
+      />
+   					  
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+      android:layout_width="fill_parent" 
+      android:layout_height="wrap_content"
+      android:orientation="horizontal" 
       >
-        <Button android:id="@+id/btn_cancel"
+
+      <Button android:id="@+id/btn_set"
           android:layout_width="wrap_content" 
           android:layout_height="wrap_content" 
-          android:background="@drawable/ic_cancel"
+          android:background="@drawable/ic_gps"
           android:layout_marginRight="20dp"
-        />
-      </LinearLayout -->
+      />
+
+      <TextView android:id="@+id/station_set"
+        android:layout_marginTop="2dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:text="@string/station_set"
+      />
 
     </LinearLayout>
 

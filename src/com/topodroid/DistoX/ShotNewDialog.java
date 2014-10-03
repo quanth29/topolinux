@@ -61,6 +61,7 @@ public class ShotNewDialog extends Dialog
   private EditText mETright;
   private EditText mETup;
   private EditText mETdown;
+  private CheckBox mCBsplayAtTo;
   private Button   mBtnOk;
   private Button   mBtnSave;
   private Button   mBtnBack;
@@ -92,6 +93,7 @@ public class ShotNewDialog extends Dialog
     mETright    = (EditText) findViewById(R.id.shot_right );
     mETup       = (EditText) findViewById(R.id.shot_up );
     mETdown     = (EditText) findViewById(R.id.shot_down );
+    mCBsplayAtTo = (CheckBox) findViewById( R.id.splay_at_to );
 
     mETfrom.setRawInputType( InputType.TYPE_CLASS_NUMBER );
     mETto.setRawInputType( InputType.TYPE_CLASS_NUMBER );
@@ -188,6 +190,7 @@ public class ShotNewDialog extends Dialog
         DistoXDBlock blk = null;
         try {
           if ( shot_to.length() > 0 ) {
+            String splay_station = mCBsplayAtTo.isChecked() ? shot_to : shot_from;
             blk = mApp.makeNewShot( mAt, shot_from, shot_to,
                                Float.parseFloat(distance),
                                Float.parseFloat(bearing),
@@ -196,14 +199,15 @@ public class ShotNewDialog extends Dialog
                                mETleft.getText().toString(),
                                mETright.getText().toString(),
                                mETup.getText().toString(),
-                               mETdown.getText().toString() );
+                               mETdown.getText().toString(),
+                               splay_station );
           } else {
             blk = mApp.makeNewShot( mAt, shot_from, shot_to,
                                Float.parseFloat(distance),
                                Float.parseFloat(bearing),
                                Float.parseFloat(clino),
                                shot_extend,
-                               null, null, null, null );
+                               null, null, null, null, null );
           }
         } catch ( NumberFormatException e ) {
           TopoDroidApp.Log( TopoDroidApp.LOG_ERR,

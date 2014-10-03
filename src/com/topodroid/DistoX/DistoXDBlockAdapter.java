@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 import android.util.Log;
 
 class DistoXDBlockAdapter extends ArrayAdapter< DistoXDBlock >
-                          implements OnClickListener
+                          implements OnClickListener, OnLongClickListener
 {
   private Context mContext;
   private ShotActivity mParent;
@@ -125,6 +126,8 @@ class DistoXDBlockAdapter extends ArrayAdapter< DistoXDBlock >
 
     holder.tvFrom.setOnClickListener( this );
     holder.tvTo.setOnClickListener( this );
+    holder.tvFrom.setOnLongClickListener( this );
+    holder.tvTo.setOnLongClickListener( this );
 
     if ( holder.tvFrom.getTextSize() != TopoDroidApp.mTextSize ) {
       holder.tvId.setTextSize( TopoDroidApp.mTextSize );
@@ -144,6 +147,13 @@ class DistoXDBlockAdapter extends ArrayAdapter< DistoXDBlock >
     }
     holder.tvFrom.setTextColor( b.color() );
     holder.tvTo.setTextColor( b.color() );
+    if ( b.mType == DistoXDBlock.BLOCK_MAIN_LEG ) {
+      if ( mParent.isCurrentStationName( b.mFrom ) ) {
+        holder.tvFrom.setTextColor( 0xff00ff00 );
+      } else if ( mParent.isCurrentStationName( b.mTo ) ) {
+        holder.tvTo.setTextColor( 0xff00ff00 );
+      }
+    }
     holder.tvLength.setTextColor( b.color() );
     holder.tvCompass.setTextColor( b.color() );
     holder.tvClino.setTextColor( b.color() );
@@ -192,6 +202,16 @@ class DistoXDBlockAdapter extends ArrayAdapter< DistoXDBlock >
       String st = tv.getText().toString();
       mParent.recomputeItems( st );
     }
+  }
+
+  public boolean onLongClick( View view ) 
+  {
+    TextView tv = (TextView) view;
+    if ( tv != null ) {
+      String st = tv.getText().toString();
+      mParent.setCurrentStationName( st );
+    }
+    return true;
   }
 
 }

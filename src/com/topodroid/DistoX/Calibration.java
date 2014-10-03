@@ -571,7 +571,7 @@ public class Calibration
     float ca = 0.0f;
     float invNum = 0.0f;
     for (int i=0; i<nn; ++i ) {
-      if ( group[i] != 0 ) {
+      if ( group[i] > 0 ) {
         invNum += 1.0f;
         sa += ( g[i].cross( m[i] )).Length(); // cross product
         ca += g[i].dot( m[i] );               // dor product
@@ -644,7 +644,7 @@ public class Calibration
             // group must be positive integer
             // group == 0 means to skip
             //
-            if ( group[i] != 0 ) {
+            if ( group[i] > 0 ) {
               TurnVectors( gr[i], mr[i], gr[first], mr[first], i<4 ); // output ==> gxt, mxt
               // if ( i < 4 ) {
               //   LogVectors( "GR ", i, gr[i], mr[i] );
@@ -684,7 +684,7 @@ public class Calibration
       Matrix sumGxG = new Matrix();
       Matrix sumMxM = new Matrix();
       for (int i=0; i<nn; ++i ) {
-        if ( group[i] != 0 ) {
+        if ( group[i] > 0 ) {
           avGx.add( gx[i] );
           avMx.add( mx[i] );
           if ( mNonLinear ) {
@@ -717,14 +717,15 @@ public class Calibration
         Matrix psum = new Matrix();
         Vector qsum = new Vector();
         for (int ii = 0; ii < nn; ii++) {
-          if ( group[ii] <= 0 ) continue;
-          Matrix p = aG.timesM( gs[ii] );
-          Vector q = ( gx[ii].minus( aG.timesV( g[ii] ) ) ).minus( bG );
-          Matrix pt = p.Transposed();
+          if ( group[ii] > 0 ) {
+            Matrix p = aG.timesM( gs[ii] );
+            Vector q = ( gx[ii].minus( aG.timesV( g[ii] ) ) ).minus( bG );
+            Matrix pt = p.Transposed();
 
-          // psum = (P^t * P) N.B. psum^t = psum
-          psum.add( pt.timesT( pt ) ); // psum.add( pt.timesM( p ) ); 
-          qsum.add( pt.timesV( q ) );
+            // psum = (P^t * P) N.B. psum^t = psum
+            psum.add( pt.timesT( pt ) ); // psum.add( pt.timesM( p ) ); 
+            qsum.add( pt.timesV( q ) );
+          }
         }
         nL = ( psum.InverseT()).timesV( qsum );
         saturate( nL );
@@ -732,11 +733,12 @@ public class Calibration
         sumG  = new Vector();
         sumG2 = new Matrix();
         for (int ii = 0; ii < nn; ii++) {
-          if ( group[ii] <= 0 ) continue;
-          gl[ii] = g[ii].plus( gs[ii].timesV( nL ) );
-          // sum up g and g^2
-          sumG.add( gl[ii] );
-          sumG2.add( new Matrix(gl[ii], gl[ii]) ); // outer product
+          if ( group[ii] > 0 ) {
+            gl[ii] = g[ii].plus( gs[ii].timesV( nL ) );
+            // sum up g and g^2
+            sumG.add( gl[ii] );
+            sumG2.add( new Matrix(gl[ii], gl[ii]) ); // outer product
+          }
         }
         avG  = sumG.mult( invNum ); // average g
         invG = (sumG2.minus( new Matrix(sumG, avG)) ).InverseT(); // inverse of the transposed
@@ -751,12 +753,14 @@ public class Calibration
 
     mDelta = 0.0f;
     for ( int i=0; i<nn; ++i ) {
-      if ( mNonLinear ) { 
-        gr[i] = bG.plus( aG.timesV(gl[i]) );
-      } else {
-        gr[i] = bG.plus( aG.timesV(g[i]) );
+      if ( group[i] > 0 ) {
+        if ( mNonLinear ) { 
+          gr[i] = bG.plus( aG.timesV(gl[i]) );
+        } else {
+          gr[i] = bG.plus( aG.timesV(g[i]) );
+        }
+        mr[i] = bM.plus( aM.timesV(m[i]) );
       }
-      mr[i] = bM.plus( aM.timesV(m[i]) );
     }
     long group0 = -1;
     long cnt = 0;
@@ -802,7 +806,7 @@ public class Calibration
     EnforceMax2( bM, aM );
 
     // for (int i=0; i<nn; ++i ) {
-    //   if ( group[i] != 0 ) {
+    //   if ( group[i] > 0 ) {
     //     Vector dg = gx[i].minus( gr[i] );
     //     Vector dm = mx[i].minus( mr[i] );
     //     err[i] = dg.dot(dg) + dm.dot(dm);

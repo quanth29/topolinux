@@ -50,11 +50,27 @@ class SelectionPoint
     mMin = 0;
   }
 
-  // float X() 
-  // {
-  //   if ( mPoint != null ) return mPoint.mX;
-  //   return mItem.cx;
-  // }
+  String name()
+  {
+    if ( mItem.mBlock != null ) {
+      return mItem.mBlock.mFrom + " " + mItem.mBlock.mTo + " " + X() + " " + Y();
+    } else {
+      return X() + " " + Y();
+    }
+  }
+
+
+  float X() 
+  {
+    if ( mPoint != null ) return mPoint.mX;
+    return mItem.cx;
+  }
+
+  float Y() 
+  {
+    if ( mPoint != null ) return mPoint.mY;
+    return mItem.cy;
+  }
 
   // distance from a scene point (xx, yy)
   float distance( float xx, float yy )

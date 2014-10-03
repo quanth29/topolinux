@@ -16,6 +16,9 @@
 package com.topodroid.DistoX;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
 // import java.io.StringWriter;
 // import java.io.PrintWriter;
 
@@ -152,22 +155,92 @@ class FirmwareDialog extends Dialog
             TopoDroidApp.Log( TopoDroidApp.LOG_ERR, "inexistent upload firmware file " + filename );
             return;    
           }
-          askUpload( filename );
+          int fw = readFirmwareFirmware( fp );
+          int hw = mApp.readFirmwareHardware();
+          // Log.v( "DistoX", "HW " + hw + " FW " + fw );
+          // Toast.makeText( mParent, "HARDWARE " + hw, Toast.LENGTH_LONG ).show();
+
+          askUpload( filename, areCompatible(hw,fw) );
         }
         break;
     }
   }
 
-  void askUpload( final String filename )
+  static final byte[] signature = {
+    (byte)0x03, (byte)0x48, (byte)0x85, (byte)0x46, (byte)0x03, (byte)0xf0, (byte)0x34, (byte)0xf8,
+    (byte)0x00, (byte)0x48, (byte)0x00, (byte)0x47, (byte)0xf5, (byte)0x08, (byte)0x00, (byte)0x08,
+    (byte)0x40, (byte)0x0c, (byte)0x00, (byte)0x20, (byte)0x00, (byte)0x23, (byte)0x02, (byte)0xe0,
+    (byte)0x01, (byte)0x23, (byte)0x00, (byte)0x22, (byte)0xc0, (byte)0x46, (byte)0xf0, (byte)0xb5,
+    (byte)0xdb, (byte)0x07, (byte)0x27, (byte)0x4e, (byte)0x00, (byte)0xf0, (byte)0x3b, (byte)0xf8,
+    (byte)0x00, (byte)0x1b, (byte)0x49, (byte)0x1b, (byte)0x25, (byte)0x4e, (byte)0x00, (byte)0xf0,
+    (byte)0x35, (byte)0xf8, (byte)0x00, (byte)0xf0, (byte)0x34, (byte)0xf8, (byte)0x24, (byte)0x4e,
+    (byte)0x00, (byte)0xf0, (byte)0x30, (byte)0xf8, (byte)0x00, (byte)0x1b, (byte)0x49, (byte)0x1b
+  };
+  //                                    2.1    2.2    2.3
+  // signatures differ in bytes 6-7    f834   f83a   f990
+  //                           16-17   0c40   0c40   0c50
+
+  private int readFirmwareFirmware( File fp )
+  {
+    try {
+      FileInputStream fis = new FileInputStream( fp );
+      DataInputStream dis = new DataInputStream( fis );
+      if ( dis.skipBytes( 2048 ) != 2048 ) {
+        // Log.v("DistoX", "failed skip");
+        return 0; // skip 8 bootloader blocks
+      }
+      byte[] buf = new byte[64];
+      if ( dis.read( buf, 0, 64 ) != 64 ) {
+        // Log.v("DistoX", "failed read");
+        return 0;
+      }
+      for ( int k=0; k<64; ++k ) {
+        // Log.v("DistoX", "byte " + k + " " + buf[k] + " sign " + signature[k] );
+        if ( k==6 || k==7 || k==16 || k==17 ) continue;
+        if ( buf[k] != signature[k] ) return 0;
+      }
+      if ( buf[7] == (byte)0xf8 ) {
+        if ( buf[6] == (byte)0x34 ) {
+          return 21;
+        } else if ( buf[6] == (byte)0x3a ) {
+          return 22;
+        }
+      } else if ( buf[7] == (byte)0xf9 ) {
+        if ( buf[6] == (byte)0x90 ) {
+          return 23;
+        }
+      }
+    } catch ( IOException e ) {
+    }
+    return 0;
+  }
+
+  private boolean areCompatible( int hw, int fw )
+  {
+    switch ( hw ) {
+      case 10:
+        return fw == 21 || fw == 22 || fw == 23;
+    }
+    // default:
+    return false;
+  }
+    
+
+  void askUpload( final String filename, final boolean compatible )
   {
     AlertDialog.Builder alert = new AlertDialog.Builder( mParent );
     // alert.setTitle( R.string.delete );
-    alert.setMessage( mParent.getResources().getString( R.string.ask_upload ) );
-    
+    if ( compatible ) {
+      alert.setMessage( mParent.getResources().getString( R.string.ask_upload ) );
+    } else {
+      alert.setMessage( mParent.getResources().getString( R.string.ask_upload_not_compatible ) );
+    }
+
     alert.setPositiveButton( R.string.button_ok, 
       new DialogInterface.OnClickListener() {
         @Override
         public void onClick( DialogInterface dialog, int btn ) {
+        
           int ret = mApp.uploadFirmware( filename );
           Toast.makeText( mParent, 
             String.format( mParent.getResources().getString(R.string.firmware_file_uploaded), filename, ret ),

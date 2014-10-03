@@ -6,6 +6,16 @@
      android:title="@string/pref_cat_log"
      android:key="log_category">
 
+
+     <com.topodroid.DistoX.MyListPreference
+       android:key="DISTOX_LOG_STREAM"
+       android:summary="@string/pref_log_stream_summary"
+       android:title="@string/pref_log_stream_title"
+       android:defaultValue="0"
+       android:entries="@array/logStream"
+       android:entryValues="@array/logStreamValue"
+     />
+
      <CheckBoxPreference
        android:key="DISTOX_LOG_DEBUG"
        android:title="@string/pref_log_debug"

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="topodroid_man">https://sites.google.com/site/speleoapps/home/topodroid/docs/TopoDroid-2.2.4.pdf</string>
+    <string name="topodroid_man">topodroid.txt</string>
+    <!-- manual>https://sites.google.com/site/speleoapps/home/topodroid/docs/TopoDroid-2.2.4.pdf</manual -->
 
     <string name="app_name">TopoDroid</string>
 
-    <string name="version_ask">You are updating to a new version of TopoDroid.\nDo you want to reinstall drawing items?</string>
+    <string name="version_ask">Updating to a new version of TopoDroid.\nDo you want to reinstall drawing items?</string>
     <string name="version_title">Version update</string>
 
     <string name="POINT">POINT</string>
@@ -20,9 +21,12 @@
     <string name="td_symbol_text">Do you need to install drawing tools?\nYou can do it later with the app TdSymbol</string>
     <string name="td_symbol_ask">Don\'t ask me again</string>
 
+    <string name="thp_user">user</string>
     <string name="thp_label">label</string>
     <!-- string name="thp_danger">danger</string -->
+    <string name="thl_user">user</string>
     <string name="thl_wall">wall</string>
+    <string name="tha_user">user</string>
     <string name="tha_water">water</string>
 
     <string name="missing_area">AREA</string>
@@ -40,7 +44,7 @@
     <string name="calib_exists">Calibration already exists</string>
     <string name="calib_delete">Delete calibration </string>
     <string name="calib_device_mismatch">WARNING: Calibration-Device mismatch</string>
-    <string name="calib_no_name">You must write the calibration name</string>
+    <string name="calib_no_name">The name is mandatory</string>
     <string name="calib_gm_undelete">Undelete calibration data?</string>
     <string name="calib_saved">Saved calibration</string>
     <string name="calib_updated">Updated calibration</string>
@@ -60,7 +64,7 @@
     <string name="linear">linear</string>
     <string name="non_linear">non-linear</string>
    
-    <string name="device_algo_failed">Auto-determination of algorithm failed\nUsing linear algorithm</string>
+    <string name="device_algo_failed">Algorithm auto-determination failed\nUsing linear algorithm</string>
     <string name="device_busy">Device busy</string>
     <string name="device_illegal_addr">Illegal memory address</string>
     <string name="device_info">Device info</string>
@@ -83,6 +87,7 @@
     <string name="extend_right">Right</string>
     <string name="extend_vert">Vert</string>
     <string name="external_prompt">Enter measurement</string>
+    <string name="splay_at_to">LRUD at TO station</string>
 
     <string name="few_data">Not enough data</string>
 
@@ -112,26 +117,26 @@
     <string name="loop_none">no loop</string>
     <!-- string name="line_delete">Delete line</string -->
 
-    <string name="error_azimuth_required">Azimuth is required</string>
-    <string name="error_length_required">Length is required</string>
-    <string name="error_clino_required">Clino is required</string>
-    <string name="error_begin_required">Start address is required</string>
+    <string name="error_azimuth_required">Azimuth required</string>
+    <string name="error_length_required">Length required</string>
+    <string name="error_clino_required">Clino required</string>
+    <string name="error_begin_required">Start address required</string>
     <string name="error_declination_number">Declination must be a number</string>
-    <string name="error_end_required">Final address is required</string>
-    <string name="error_from_required">First station is required</string>
-    <string name="error_group_required">Group number is required</string>
+    <string name="error_end_required">Final address required</string>
+    <string name="error_from_required">First station required</string>
+    <string name="error_group_required">Group number required</string>
     <string name="error_group_non_integer">Group must be integer number</string>
-    <string name="error_alt_required">Altitude is required</string>
+    <string name="error_alt_required">Altitude required</string>
     <string name="error_invalid_number">Invalid number</string>
-    <string name="error_lat_required">Latitude is required</string>
-    <string name="error_long_required">Longitude is required</string>
-    <string name="error_name_required">Name is required</string>
-    <string name="error_start_required">Reference station is required</string>
+    <string name="error_lat_required">Latitude required</string>
+    <string name="error_long_required">Longitude required</string>
+    <string name="error_name_required">Name required</string>
+    <string name="error_start_required">Reference station required</string>
     <string name="error_station_already_fixed">Station already with coordinates</string>
-    <string name="error_station_required">Station is required</string>
+    <string name="error_station_required">Station required</string>
     <string name="error_station_non_existing">Non existing station</string>
-    <string name="error_sensor_required">Sensor is required</string>
-    <string name="error_value_required">Value is required</string>
+    <string name="error_sensor_required">Sensor required</string>
+    <string name="error_value_required">Value required</string>
 
     <string name="scale">scale</string>
     <string name="reversed">reversed</string>
@@ -152,7 +157,7 @@
     <string name="no_device_found">No device found</string>
     <string name="no_geomag">Failed to get GeoMag</string>
     <string name="no_gms">Calibration has no data.\nUse Download button</string>
-    <string name="no_leg_intersection">Section line does not cross any leg</string>
+    <string name="no_leg_intersection">Section line crosses no leg</string>
     <string name="no_paired_device">No paired device.\nScan and pair a DistoX</string>
     <string name="no_photos">Survey has no photo</string>
     <string name="no_plots">Survey has no sketch\nUse Add button to make one</string>
@@ -181,7 +186,7 @@
 
     <string name="popup_join_pt">Snap to nearby point</string>
     <string name="popup_snap_ln">Snap to nearby line</string>
-    <string name="popup_split_pt">Split point in two</string>
+    <string name="popup_split_pt">Duplicate point</string>
     <string name="popup_split_ln">Cut line at point</string>
     <string name="popup_sharp_pt">Straighten segment</string>
     <string name="popup_curve_pt">Smoothen segment</string>
@@ -201,7 +206,7 @@
     <string name="photo_sensor_prompt">Select photo or sensor</string>
     <string name="photo_shot">add shot</string>
     <string name="photo_survey">split survey</string>
-    <string name="picture_no_station">Need a station/name for the photo</string>
+    <string name="picture_no_station">Station name required</string>
     <string name="plot_delete">Delete sketch ?</string>
     <string name="plot_duplicate_name">Duplicate sketch name</string>
     <string name="plot_name">Sketch name</string>
@@ -213,14 +218,14 @@
     <!-- string name="plot_view">Viewed station</string -->
     <string name="read_">Read </string>
     <string name="read_fail_with_code">Read failure: error code </string>
-    <string name="read_failed">Failed to read from DistoX</string>
-    <!-- string name="reading_file_failed">Failed to read file</string -->
+    <string name="read_failed">Failed DistoX-read</string>
+    <!-- string name="reading_file_failed">Failed file-read</string -->
     <string name="saved_file_">Saved file\ </string>
     <string name="saving_">Saving </string>
-    <string name="saving_file_failed">Failed to save file</string>
+    <string name="saving_file_failed">Failed file-save</string>
     <string name="scrap_name">sketch name</string>
     <string name="splay">splay</string>
-    <string name="too_many_leg_intersection">Section line crosses more than one leg</string>
+    <string name="too_many_leg_intersection">Section line crosses many legs</string>
 
     <string name="sensor">sensor</string>
     <!-- string name="sensor_accelerometer">accelerometer</string -->
@@ -260,7 +265,8 @@
 -->
 
     <string name="station">station</string>
-    <string name="station_ask">Insert station ?</string>
+    <string name="station_ask">Insert station in sketch?</string>
+    <string name="station_set">Continue survey from here?</string>
     <string name="station_base">reference station</string>
     <!-- string name="station_next">next station</string -->
     <string name="station_viewed">viewed station</string>
@@ -279,11 +285,11 @@
     <string name="visible_border">visible border</string>
     <string name="vthreshold">vert. threshold</string>
     <string name="wait_scan">Scanning: wait ...</string>
-    <string name="write_failed">Failed to write to DistoX</string>
+    <string name="write_failed">Failed DistoX-write</string>
     <string name="write_ok">Written calibration to DistoX</string>
     <string name="zip_saved">Saved </string>
-    <string name="zip_failed">Failed to archive survey</string>
-    <string name="unzip_fail">Failed to un-archive survey</string>
+    <string name="zip_failed">Failed survey-zip</string>
+    <string name="unzip_fail">Failed survey-unzip</string>
     <!-- string name="zoom_in_out">Zoom in/out</string -->
 
     <string name="survey_info">Survey info</string>
@@ -299,10 +305,10 @@
     <string name="stat_surface">Surface shots %1$d %2$.1f</string>
     <string name="stat_wens">W %1$.0f  E %2$.0f  N %3$.0f  S %4$.0f"</string>
 
-    <string name="hide_blank">Hide blank shots</string>
-    <string name="hide_leg">Hide repeated leg shots</string>
-    <string name="hide_ids">Hide shot IDs</string>
-    <string name="hide_splay">Hide splay shots</string>
+    <string name="hide_blank">Blank shots</string>
+    <string name="hide_leg">Repeated leg shots</string>
+    <string name="hide_ids">Shot IDs</string>
+    <string name="hide_splay">Splay shots</string>
 
     <string name="surveys">SURVEYS</string>
     <string name="calibs">CALIBS</string>
@@ -313,7 +319,7 @@
     <string name="h_section">H-SECTION</string>
 
     <string name="distox_err_ok">OK</string>
-    <string name="distox_err_headtail">DistoX memory read failure</string>
+    <string name="distox_err_headtail">Failed DistoX memory-read</string>
     <string name="distox_err_headtail_io">DistoX memory I/O error</string>
     <string name="distox_err_headtail_eof">DistoX memory EOF error</string>
     <string name="distox_err_connected">Device already connected</string>
@@ -382,7 +388,7 @@
     <string name="btn_zip">Zip</string>
 
     <string name="help_help">This help</string>
-    <string name="help_manual">Online manual</string>
+    <string name="help_manual">User manual</string>
     <string name="help_more">Show the secondary actions</string>
     <string name="help_less">Return to the primary actions</string>
     
@@ -439,6 +445,7 @@
     <string name="help_delete_survey">Delete survey</string>
     <string name="help_delete_calib">Delete calibration</string>
     <string name="help_detach">Clear current DistoX choice</string>
+    <string name="help_firmware">DistoX2 firmware updater</string>
     <string name="help_toggle">Toggle DistoX calibration/normal mode</string>
     <string name="help_sdcard">DistoX memory functions</string>
     <string name="help_read">Read and display DistoX calibration coefficients</string>
@@ -463,6 +470,7 @@
     <string name="title_erase">Erase</string>
     <string name="title_location">Location</string>
     <string name="title_location_gps">Location *</string>
+    <string name="title_manual">TopoDroid User Manual</string>
     <string name="title_mode">Display Mode</string>
     <string name="title_move">Moving</string>
     <string name="title_note">Survey notes</string>
@@ -628,6 +636,8 @@
   <string name="pref_unit_location_title">Location units</string>
   <string name="pref_unit_location_summary">Display units for locations</string>
 
+  <string name="pref_log_stream_summary">Log output stream</string>
+  <string name="pref_log_stream_title">Log stream</string>
   <string name="pref_log_bt">Bluetooth</string>
   <string name="pref_log_bezier">Bezier curves</string>
   <string name="pref_log_calib">Calibration</string>
@@ -667,11 +677,12 @@
   <string name="firmware_file_title">Firmware Files</string>
   <string name="firmware_text">
 \n[1] Select either to upload a firmware or to dump the firmware to a file.
-\n[2] Choose the file to upload or save. Firmware files must be in the bin directory.
-\n[3] Put the DistoX2 in bootloader mode: press PLUS and MINUS while switching on with DIST key.
-\n[4] Tap the OK button and wait till the process is done.
-\n[5] Wait while the DistoX bluetooth icon flashes.
-\n[6] Turn off the DistoX2 with the CLR key.
+\n[2] Choose the file to upload or save. Firmware files are in the bin directory.
+\n[3] Make sure the upload firmware version is compatible with the DistoX hardware version.
+\n[4] Put the DistoX2 in bootloader mode: press PLUS and MINUS while switching on with DIST key.
+\n[5] Tap the OK button and wait till the process is done.
+\n[6] Wait while the DistoX bluetooth icon flashes.
+\n[7] Turn off the DistoX2 with the CLR key.
 \n
    </string>
    <string name="firmware_none">no firmware file</string>
@@ -679,6 +690,7 @@
    <string name="firmware_file_exists">Existing firmware file</string>
    <string name="firmware_file_missing">Missing firmware file</string>
    <string name="ask_upload">Upload firmware?</string>
+   <string name="ask_upload_not_compatible">Unable to check hw/fw compatibility.\nUpload firmware?</string>
    <string name="firmware_file_dumped">Saved firmware file %1$s size %2$d</string>
    <string name="firmware_file_uploaded">Uploaded firmware file %1$s size %2$d</string>
    

@@ -37,7 +37,7 @@ import java.nio.channels.ClosedByInterruptException;
 // import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 
-// import android.util.Log;
+import android.util.Log;
 
 import android.widget.Toast;
 
@@ -709,6 +709,31 @@ public class DistoXProtocol
       return false;
     }
     return true;  
+  }
+
+  int readFirmwareAddress( )
+  {
+    int ret = -1;
+    byte[] buf = new byte[256];
+    try {
+      int addr = 0;
+      buf[0] = (byte)0x3a;
+      buf[1] = (byte)( addr & 0xff );
+      buf[2] = 0; // not necessary
+      mOut.write( buf, 0, 3 );
+
+      mIn.readFully( mBuffer, 0, 8 );
+      int reply_addr = ( ((int)(mBuffer[2]))<<8 ) + ((int)(mBuffer[1]));
+      if ( mBuffer[0] == (byte)0x3a && addr == reply_addr ) {
+        mIn.readFully( buf, 0, 256 );
+        // Log.v("DistoX", "HARDWARE " + buf[0x40] + " " + buf[0x41] + " " + buf[0x42] + " " + buf[0x43] );
+        ret = (int)(buf[0x40]) + ((int)(buf[0x41])<<8); // major * 10 + minor
+        // FIXME  ((int)(buf[0x42]))<<16 + ((int)(buf[0x43]))<<24; 
+      }
+    } catch ( IOException e ) { 
+      // TODO
+    }
+    return ret;
   }
 
   int dumpFirmware( String filepath )

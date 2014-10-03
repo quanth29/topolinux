@@ -4,6 +4,7 @@ symbol line
   name-pt teto
   name-it tetto
   name-fr surplomb
+  name-de Überhang
   th_name overhang
   color 0xff0066 0xff
   csurvey 2 1 3 12

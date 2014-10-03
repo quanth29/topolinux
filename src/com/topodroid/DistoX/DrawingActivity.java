@@ -356,8 +356,8 @@ public class DrawingActivity extends Activity
 
     public void areaSelected( int k ) 
     {
-      if ( k >= 0 && k < DrawingBrushPaths.mAreaLib.mAreaNr ) {
-        mSymbol = SYMBOL_AREA;
+      mSymbol = SYMBOL_AREA;
+      if ( k >= 0 && k < DrawingBrushPaths.mAreaLib.mAnyAreaNr ) {
         mCurrentArea = k;
       }
       setTheTitle();
@@ -365,8 +365,8 @@ public class DrawingActivity extends Activity
 
     public void lineSelected( int k ) 
     {
-      if ( k >= 0 && k < DrawingBrushPaths.mLineLib.mLineNr ) {
-        mSymbol = SYMBOL_LINE;
+      mSymbol = SYMBOL_LINE;
+      if ( k >= 0 && k < DrawingBrushPaths.mLineLib.mAnyLineNr ) {
         mCurrentLine = k;
       }
       setTheTitle();
@@ -374,8 +374,8 @@ public class DrawingActivity extends Activity
 
     public void pointSelected( int p )
     {
-      if ( p >= 0 && p < DrawingBrushPaths.mPointLib.mPointNr ) {
-        mSymbol = SYMBOL_POINT;
+      mSymbol = SYMBOL_POINT;
+      if ( p >= 0 && p < DrawingBrushPaths.mPointLib.mAnyPointNr ) {
         mCurrentPoint = p;
       }
       setTheTitle();
@@ -460,7 +460,7 @@ public class DrawingActivity extends Activity
       if ( mMode == MODE_DRAW ) { 
         if ( mSymbol == SYMBOL_POINT ) {
           setTitle( String.format( res.getString(R.string.title_draw_point), 
-                                   DrawingBrushPaths.mPointLib.getPointName(mCurrentPoint) ) );
+                                   DrawingBrushPaths.mPointLib.getAnyPointName(mCurrentPoint) ) );
         } else if ( mSymbol == SYMBOL_LINE ) {
           setTitle( String.format( res.getString(R.string.title_draw_line),
                                    DrawingBrushPaths.getLineName(mCurrentLine) ) );
@@ -519,9 +519,9 @@ public class DrawingActivity extends Activity
 
     private void doSaveTh2( boolean not_all_symbols )
     {
-      TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, " doSaveTh2 " + mFullName1 + " " + mFullName2 );
+      TopoDroidApp.Log( TopoDroidApp.LOG_PLOT,
+                        " doSaveTh2 " + mFullName1 + " " + mFullName2 + " not all symbols " + not_all_symbols );
       if ( mFullName1 != null && mDrawingSurface != null ) {
-
         if ( not_all_symbols ) {
           AlertMissingSymbols();
         }
@@ -541,7 +541,6 @@ public class DrawingActivity extends Activity
 
           final boolean alert = not_all_symbols;
           final Activity currentActivity  = this;
-
           Handler saveHandler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
@@ -560,15 +559,13 @@ public class DrawingActivity extends Activity
 
           mApp.mShotActivity.enableSketchButton( false );
           (new SaveTh2File(this, saveHandler, mApp, mDrawingSurface, mFullName1, mFullName2 )).execute();
-        } else {
+        } else { // mAllSymbols is false
           // FIXME what to do ?
          Toast.makeText( this,
-           "Missing symbols: cannot save " + mFullName1 + " " + mFullName2, Toast.LENGTH_SHORT ).show();
+           "NOT SAVING " + mFullName1 + " " + mFullName2, Toast.LENGTH_LONG ).show();
         }
       }
     }
-
-
 
   private void computeReferences( int type, float xoff, float yoff, float zoom )
   {
@@ -660,7 +657,8 @@ public class DrawingActivity extends Activity
     mHotItemType = type;
     if (    type == DrawingPath.DRAWING_PATH_POINT 
          || type == DrawingPath.DRAWING_PATH_LINE 
-         || type == DrawingPath.DRAWING_PATH_AREA ) {
+         || type == DrawingPath.DRAWING_PATH_AREA 
+         || type == DrawingPath.DRAWING_PATH_STATION ) {
       inLinePoint = true;
       mButton3[5].setBackgroundResource(  R.drawable.ic_join );
     } else {
@@ -915,9 +913,9 @@ public class DrawingActivity extends Activity
     {
       TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "doStart " + mName1 + " " + mName2 );
 
-      mCurrentPoint = 0; // DrawingBrushPaths.POINT_LABEL;
-      mCurrentLine  = 0; // DrawingBrushPaths.mLineLib.mLineWallIndex;
-      mCurrentArea  = 0; // DrawingBrushPaths.AREA_WATER;
+      mCurrentPoint = 1; // DrawingBrushPaths.POINT_LABEL;
+      mCurrentLine  = 1; // DrawingBrushPaths.mLineLib.mLineWallIndex;
+      mCurrentArea  = 1; // DrawingBrushPaths.AREA_WATER;
 
       if ( ( mType != PlotInfo.PLOT_SECTION && mType != PlotInfo.PLOT_H_SECTION ) ) {
         mList = mData.selectAllShots( mSid, TopoDroidApp.STATUS_NORMAL );
@@ -996,14 +994,22 @@ public class DrawingActivity extends Activity
       }
 
       // Toast.makeText( this, R.string.sketch_loading, Toast.LENGTH_SHORT ).show();
-      MissingSymbols missingSymbols = new MissingSymbols();
+      SymbolsPalette missingSymbols = new SymbolsPalette(); 
+      //
+      // missingSymbols = palette of missing symbols
+      // if there are missing symbols mAllSymbols is false and the MissingDialog is shown
+      //    (the dialog just warns the user about missing symbols, maybe a Toast would be enough)
+      // when the sketch is saved, mAllSymbols is checked ( see doSaveTh2 )
+      // if there are not all symbols the user is asked if he/she wants to save anyways
+      //
       mAllSymbols = mDrawingSurface.loadTherion( filename1, filename2, missingSymbols );
 
       if ( ! mAllSymbols ) {
-        // Toast.makeText( this, "Missing symbols", Toast.LENGTH_SHORT ).show();
         String msg = missingSymbols.getMessage( getResources() );
-        (new MissingDialog( this, msg )).show();
-        finish();
+        TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "Missing " + msg );
+        Toast.makeText( this, "Missing symbols \n" + msg, Toast.LENGTH_LONG ).show();
+        // (new MissingDialog( this, this, msg )).show();
+        // finish();
       }
 
       // resetZoom();
@@ -1586,6 +1592,8 @@ public class DrawingActivity extends Activity
         mDrawingSurface.addDrawingPath( label_path );
       } 
     }
+
+    void setCurrentStationName( String name ) { mApp.setCurrentStationName( name ); }
 
     public void toggleStationBarrier( String name, boolean is_barrier ) 
     {
@@ -2294,6 +2302,7 @@ public class DrawingActivity extends Activity
       }
     }
 
+    // called by PlotSaveDialog: save as th2 even if there are missing symbols
     void saveTh2()
     {
       TopoDroidApp.Log( TopoDroidApp.LOG_PLOT, "saveTh2 back up " + mFullName1 + " " + mFullName2 );
@@ -2429,7 +2438,7 @@ public class DrawingActivity extends Activity
       if ( mFullName2 != null ) {
         filename2 = mApp.getTh2FileWithExt( mFullName2 ) + ".bck";
       }
-      MissingSymbols missingSymbols = new MissingSymbols();
+      SymbolsPalette missingSymbols = new SymbolsPalette();
       mDrawingSurface.loadTherion( filename1, filename2, missingSymbols );
       
     } else if ( item == mMIhelp ) { // HELP DIALOG

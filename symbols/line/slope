@@ -4,6 +4,7 @@ symbol line
   name-pt declive
   name-it pendenza
   name-fr ligne_de_pente
+  name-de Hangform
   th_name pendiente
   color 0xffcc00 0xff
   width 1

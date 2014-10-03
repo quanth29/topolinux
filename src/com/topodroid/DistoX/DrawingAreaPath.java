@@ -66,7 +66,7 @@ public class DrawingAreaPath extends DrawingPointLinePath
       ++area_id_cnt;
       mAreaCnt = area_id_cnt;
     }
-    if ( mAreaType < DrawingBrushPaths.mAreaLib.mAreaNr ) {
+    if ( mAreaType < DrawingBrushPaths.mAreaLib.mAnyAreaNr ) {
       setPaint( DrawingBrushPaths.getAreaPaint( mAreaType ) );
     }
   }
@@ -74,7 +74,7 @@ public class DrawingAreaPath extends DrawingPointLinePath
   public void setAreaType( int t ) 
   {
     mAreaType = t;
-    if ( mAreaType < DrawingBrushPaths.mAreaLib.mAreaNr ) {
+    if ( mAreaType < DrawingBrushPaths.mAreaLib.mAnyAreaNr ) {
       setPaint( DrawingBrushPaths.getAreaPaint( mAreaType ) );
     }
   }

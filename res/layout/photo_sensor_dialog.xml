@@ -7,6 +7,15 @@
     android:paddingRight="6dp"
     android:paddingBottom="3dp">
 
+    <TextView android:id="@+id/photo_shot_stations" 
+        android:maxLines="1" 
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="4dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+      	android:ems="25"
+        />
+
     <TextView android:id="@+id/photo_shot_data" 
         android:maxLines="1" 
         android:layout_marginTop="2dp"

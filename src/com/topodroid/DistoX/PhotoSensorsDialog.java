@@ -33,6 +33,7 @@ public class PhotoSensorsDialog extends Dialog
   private ShotActivity mParent;
   private DistoXDBlock mBlk;
 
+  private TextView mTVstations;
   private TextView mTVdata;
   private Button   mButtonPhoto;
   private Button   mButtonSensor;
@@ -75,7 +76,9 @@ public class PhotoSensorsDialog extends Dialog
 
     setTitle( R.string.title_photo );
 
+    mTVstations = (TextView) findViewById( R.id.photo_shot_stations );
     mTVdata = (TextView) findViewById( R.id.photo_shot_data );
+    mTVstations.setText( mBlk.Name() );
     mTVdata.setText( mBlk.dataString() );
 
     mButtonPhoto.setOnClickListener( this );

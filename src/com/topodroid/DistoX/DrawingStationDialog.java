@@ -33,6 +33,7 @@ public class DrawingStationDialog extends Dialog
 {
     private TextView mLabel;
     private Button mBtnOK;
+    private Button mBtnSet;
     // private Button mBtnCancel;
 
     private Context mContext;
@@ -55,9 +56,11 @@ public class DrawingStationDialog extends Dialog
 
       mLabel     = (TextView) findViewById(R.id.station_text);
       mBtnOK     = (Button) findViewById(R.id.btn_ok);
+      mBtnSet    = (Button) findViewById(R.id.btn_set);
       // mBtnCancel = (Button) findViewById(R.id.btn_cancel);
 
       mBtnOK.setOnClickListener( this );
+      mBtnSet.setOnClickListener( this );
       // mBtnCancel.setOnClickListener( this );
 
       setTitle( mContext.getResources().getString(R.string.STATION) + mStation.mName ); 
@@ -68,6 +71,8 @@ public class DrawingStationDialog extends Dialog
       // TopoDroidApp.Log( TopoDroidApp.LOG_INPUT, "DrawingStationDialog onClick() " + view.toString() );
       if (view.getId() == R.id.btn_ok ) {
         mActivity.addStationPoint( mStation );
+      } else if (view.getId() == R.id.btn_set ) {
+        mActivity.setCurrentStationName( mStation.mName );
       }
       dismiss();
     }

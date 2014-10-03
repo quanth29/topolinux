@@ -56,7 +56,7 @@ public class DrawingBrushPaths
 
   public static String getPointName( int idx )
   {
-    return mPointLib.getPointName( idx );
+    return mPointLib.getAnyPointName( idx );
   }
 
   public static String getPointThName( int index )

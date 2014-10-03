@@ -113,7 +113,7 @@ public class DrawingPointDialog extends Dialog
     mETtext    = (EditText) findViewById( R.id.point_text );
 
 
-    setTitle( "POINT " + DrawingBrushPaths.mPointLib.getPointName( mPoint.mPointType ) );
+    setTitle( "POINT " + DrawingBrushPaths.mPointLib.getAnyPointName( mPoint.mPointType ) );
     if ( DrawingBrushPaths.mPointLib.pointHasText( mPoint.mPointType ) ) {
       mETtext.setText( mPoint.getText() );
     } else {

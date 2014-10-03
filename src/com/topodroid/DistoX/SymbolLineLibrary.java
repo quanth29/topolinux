@@ -28,19 +28,21 @@ import android.util.Log;
 
 class SymbolLineLibrary
 {
-  ArrayList< SymbolLine > mLine;
+  // ArrayList< SymbolLine > mLine;
   ArrayList< SymbolLine > mAnyLine;
+  int mLineUserIndex;
   int mLineWallIndex;
   int mLineSlopeIndex;
   int mLineSectionIndex;
-  int mLineNr;
+  // int mLineNr;
   int mAnyLineNr;
 
   SymbolLineLibrary( Resources res )
   {
     // Log.v( "TopoDroid", "cstr SymbolLineLibrary()" );
-    mLine = new ArrayList< SymbolLine >();
+    // mLine = new ArrayList< SymbolLine >();
     mAnyLine = new ArrayList< SymbolLine >();
+    mLineUserIndex    =  0;
     mLineWallIndex    = -1;
     mLineSlopeIndex   = -1;
     mLineSectionIndex = -1;
@@ -51,11 +53,12 @@ class SymbolLineLibrary
 
   // int size() { return mLine.size(); }
 
-  SymbolLine getLine( int k ) 
-  {
-    if ( k < 0 || k >= mLineNr ) return null;
-    return mLine.get( k );
-  }
+  // SymbolLine getLine( int k ) 
+  // {
+  //   if ( k < 0 || k >= mAnyLineNr ) return null;
+  //   SymbolLine l =  mAnyLine.get( k );
+  //   return l.isEnabled() ? l : null;
+  // }
 
   SymbolLine getAnyLine( int k ) 
   {
@@ -65,9 +68,9 @@ class SymbolLineLibrary
 
   boolean hasLine( String th_name ) 
   {
-    for ( SymbolLine l : mLine ) {
+    for ( SymbolLine l : mAnyLine ) {
       if ( th_name.equals( l.mThName ) ) {
-        return true;
+        return l.isEnabled();
       }
     }
     return false;
@@ -91,58 +94,58 @@ class SymbolLineLibrary
     return null;
   }
 
-  boolean removeLine( String th_name ) 
-  {
-    for ( SymbolLine l : mLine ) {
-      if ( th_name.equals( l.mThName ) ) {
-        mLine.remove( l );
-        TopoDroidApp.mData.setSymbolEnabled( "l_" + th_name, false );
-        return true;
-      }
-    }
-    return false;
-  }
+  // boolean removeLine( String th_name ) 
+  // {
+  //   for ( SymbolLine l : mAnyLine ) {
+  //     if ( th_name.equals( l.mThName ) ) {
+  //       l.setEnabled( false ); // mAnyLine.remove( l );
+  //       TopoDroidApp.mData.setSymbolEnabled( "l_" + th_name, false );
+  //       return true;
+  //     }
+  //   }
+  //   return false;
+  // }
 
   String getLineName( int k )
   {
-    if ( k < 0 || k >= mLineNr ) return null;
-    return mLine.get(k).mName;
+    if ( k < 0 || k >= mAnyLineNr ) return null;
+    return mAnyLine.get(k).mName;
   }
 
   String getLineThName( int k )
   {
-    if ( k < 0 || k >= mLineNr ) return null;
-    return mLine.get(k).mThName;
+    if ( k < 0 || k >= mAnyLineNr ) return null;
+    return mAnyLine.get(k).mThName;
   }
 
   Paint getLinePaint( int k, boolean reversed )
   {
-    if ( k < 0 || k >= mLineNr ) return null;
-    return reversed ? mLine.get(k).mRevPaint : mLine.get(k).mPaint;
+    if ( k < 0 || k >= mAnyLineNr ) return null;
+    return reversed ? mAnyLine.get(k).mRevPaint : mAnyLine.get(k).mPaint;
   }
 
   int lineCsxLayer( int k )
   {
-    if ( k < 0 || k >= mLineNr ) return -1;
-    return mLine.get(k).mCsxLayer;
+    if ( k < 0 || k >= mAnyLineNr ) return -1;
+    return mAnyLine.get(k).mCsxLayer;
   }
 
   int lineCsxType( int k )
   {
-    if ( k < 0 || k >= mLineNr ) return -1;
-    return mLine.get(k).mCsxType;
+    if ( k < 0 || k >= mAnyLineNr ) return -1;
+    return mAnyLine.get(k).mCsxType;
   }
 
   int lineCsxCategory( int k )
   {
-    if ( k < 0 || k >= mLineNr ) return -1;
-    return mLine.get(k).mCsxCategory;
+    if ( k < 0 || k >= mAnyLineNr ) return -1;
+    return mAnyLine.get(k).mCsxCategory;
   }
 
   int lineCsxPen( int k )
   {
-    if ( k < 0 || k >= mLineNr ) return -1;
-    return mLine.get(k).mCsxPen;
+    if ( k < 0 || k >= mAnyLineNr ) return -1;
+    return mAnyLine.get(k).mCsxPen;
   }
 
   
@@ -151,13 +154,20 @@ class SymbolLineLibrary
   private void loadSystemLines( Resources res )
   {
     if ( mAnyLine.size() > 0 ) return;
-    SymbolLine symbol = new SymbolLine( res.getString( R.string.thl_wall ),  "wall",  0xffff0000, 2 );
+    SymbolLine symbol = new SymbolLine( res.getString( R.string.thl_user ),  "user",  0xffffffff, 1 );
     symbol.mCsxLayer = 5;
     symbol.mCsxType  = 4;
     symbol.mCsxCategory = 1;
     symbol.mCsxPen   = 1;
-    
     mAnyLine.add( symbol );
+
+    symbol = new SymbolLine( res.getString( R.string.thl_wall ),  "wall",  0xffff0000, 2 );
+    symbol.mCsxLayer = 5;
+    symbol.mCsxType  = 4;
+    symbol.mCsxCategory = 1;
+    symbol.mCsxPen   = 1;
+    mAnyLine.add( symbol );
+
     mAnyLineNr = mAnyLine.size();
   }
 
@@ -213,27 +223,29 @@ class SymbolLineLibrary
       
   void makeEnabledList()
   {
-    mLine.clear();
+    // mLine.clear();
+    mLineUserIndex    =  0;
     mLineWallIndex    = -1;
     mLineSlopeIndex   = -1;
     mLineSectionIndex = -1;
     for ( SymbolLine symbol : mAnyLine ) {
       TopoDroidApp.mData.setSymbolEnabled( "l_" + symbol.mThName, symbol.mEnabled );
       if ( symbol.mEnabled ) {
-        if ( symbol.mThName.equals("wall") )  mLineWallIndex = mLine.size();
-        if ( symbol.mThName.equals("slope") ) mLineSlopeIndex = mLine.size();
-        if ( symbol.mThName.equals("section") ) mLineSectionIndex = mLine.size();
-        mLine.add( symbol );
+        if ( symbol.mThName.equals("user") )  mLineUserIndex = mAnyLine.size();
+        if ( symbol.mThName.equals("wall") )  mLineWallIndex = mAnyLine.size();
+        if ( symbol.mThName.equals("slope") ) mLineSlopeIndex = mAnyLine.size();
+        if ( symbol.mThName.equals("section") ) mLineSectionIndex = mAnyLine.size();
+        // mLine.add( symbol );
       }
     }
-    mLineNr = mLine.size();
+    // mLineNr = mLine.size();
     // Log.v( TopoDroidApp.TAG, "lines " + mLineNr + " wall " + mLineWallIndex + " slope " + mLineSlopeIndex + " section " + mLineSectionIndex );
   }
  
-  void makeEnabledList( MissingSymbols palette )
+  void makeEnabledListFromPalette( SymbolsPalette palette )
   {
     for ( SymbolLine symbol : mAnyLine ) symbol.setEnabled( false );
-    for ( String p : palette.mMissingLine ) {
+    for ( String p : palette.mPaletteLine ) {
       SymbolLine symbol = getSymbolAnyLine( p );
       if ( symbol != null ) symbol.setEnabled( true );
     }
@@ -242,7 +254,7 @@ class SymbolLineLibrary
 
   void writePalette( PrintWriter pw ) 
   {
-    for ( SymbolLine symbol : mLine ) {
+    for ( SymbolLine symbol : mAnyLine ) {
       if ( symbol.isEnabled( ) ) pw.format( " %s", symbol.getThName() );
     }
   }

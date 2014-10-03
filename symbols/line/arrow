@@ -4,6 +4,7 @@ symbol line
   name-pt seta
   name-it freccia
   name-fr flèche
+  name-de Pfeil
   th_name arrow
   color 0xcccccc 0xff
   width 1

@@ -272,8 +272,8 @@ class DrawingDxf
       writeSection( out, "BLOCKS" );
       {
         // // 8 layer (0), 2 block name,
-        for ( int n = 0; n < DrawingBrushPaths.mPointLib.size(); ++ n ) {
-          SymbolPoint pt = DrawingBrushPaths.mPointLib.getPoint(n);
+        for ( int n = 0; n < DrawingBrushPaths.mPointLib.mAnyPointNr; ++ n ) {
+          SymbolPoint pt = DrawingBrushPaths.mPointLib.getAnyPoint(n);
 
           int block = 1+n; // block_name = 1 + therion_code
           writeString( out, 0, "BLOCK" );

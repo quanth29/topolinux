@@ -3,6 +3,7 @@ symbol line
   name-es suelo-meandro 
   name-it meandro_a_pavimento
   name-fr méandre_au_sol
+  name-de Bodenmäander
   th_name floor-meander
   color 0xcc0000 0xff
   width 1

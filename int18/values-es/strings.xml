@@ -83,6 +83,7 @@
     <string name="extend_right">Drch.</string>
     <string name="extend_vert">Vert.</string>
     <string name="external_prompt">Introducir medición</string>
+    <!-- TODO string name="splay_at_to">LRUD at To station</string -->
 
     <string name="few_data">No hay suficientes datos</string>
 
@@ -261,6 +262,7 @@
 
     <string name="station">Estación</string>
     <string name="station_ask">¿Insertar estación?</string>
+    <!-- TODO string name="station_set">Continue survey from here?</string -->
     <string name="station_base">Estación referencia</string>
     <!-- string name="station_next">Siguiente estación</string -->
     <string name="station_viewed">Vista de estación </string>
@@ -299,10 +301,10 @@
     <string name="stat_surface">mediciones Superficie %1$d %2$.1f</string>
     <string name="stat_wens">W %1$.0f  E %2$.0f  N %3$.0f  S %4$.0f"</string>
 
-    <string name="hide_blank">Ocultar mediciones en blanco</string>
-    <string name="hide_leg">Ocultar mediciones repetidas</string>
-    <string name="hide_ids">Ocultar enumeración de toma</string>
-    <string name="hide_splay">Ocultar mediciones laterales</string>
+    <string name="hide_blank">Mediciones en blanco</string>
+    <string name="hide_leg">Mediciones repetidas</string>
+    <string name="hide_ids">Enumeración de toma</string>
+    <string name="hide_splay">Mediciones laterales</string>
 
     <string name="surveys">Topografía</string>
     <string name="calibs">Calibración</string>
@@ -437,6 +439,7 @@
     <string name="help_delete_survey">Eliminar Topografía</string>
     <string name="help_delete_calib">Eliminar calibración</string>
     <string name="help_detach">Clear current DistoX choice</string>
+    <!-- TODO string name="help_firmware">DistoX2 firmware updater</string -->
     <string name="help_toggle">Cambiar DistoX a modo: Calibración/normal</string>
     <string name="help_sdcard">Funciones de memoria DistoX</string>
     <string name="help_read">Leer coeficientes de calibración DistoX</string>
@@ -624,6 +627,8 @@
   <string name="pref_unit_location_title">Unidades de Posicionamiento</string>
   <string name="pref_unit_location_summary">Visualizar unidades de Posicionamiento</string>
 
+  <!-- TODO string name="pref_log_stream_summary">Log output stream</string -->
+  <!-- TODO string name="pref_log_stream_title">Log stream</string -->
   <string name="pref_log_bt">Bluetooth</string>
   <string name="pref_log_bezier">Curvas Bézier</string>
   <string name="pref_log_calib">Calibración</string>

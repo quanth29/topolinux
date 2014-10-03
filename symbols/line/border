@@ -4,6 +4,7 @@ symbol line
   name-pt borda
   name-it bordo
   name-fr bordure
+  name-de Begrenzung
   th_name border
   color 0x00cc00 0xff
   width 1
