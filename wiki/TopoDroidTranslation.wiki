@@ -62,7 +62,7 @@ Send me your translation files (marco.corvi@gmail.com).
 
 I can test only the defaut (English) version.
 
-If you have translated the latest branch (currently 2.2),
+If you have translated the latest branch (currently 2.3),
 I will include it in the build that I put on [https://sites.google.com/site/speleoapps/home TopoDroid] site.
 
 
@@ -71,6 +71,19 @@ I will include it in the build that I put on [https://sites.google.com/site/spel
 As TopoDroid evolves, some strings are changed, new strings are added,
 while others are dropped.
 Usually there are only a few changes between one version and the next.
+
+New strings are added to existing translations as comments.
+For example
+{{{
+<!-- TODO string name="...">...</string -->
+}}}
+To update a translation these comments must be replaced with the 
+proper strings.
+
+Certain strings do not need to be translated. Put a comment in their place, such as,
+{{{
+<!-- OK string name="...">...</string -->
+}}}
 
 You should keep the last English string files that you used for your
 translation and diff the current ones against them.
