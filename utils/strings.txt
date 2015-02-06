@@ -1,0 +1,5000 @@
+TAG pref_hide_help_summary
+EN Hide help buttons
+de Hide help buttons TODO
+es Ocultar botón ayuda
+fr Masquer les boutons d\'aide
+it Nascondi bottoni di aiuto
+pt 
+
+TAG help_toggle
+EN Toggle DistoX calibration/normal mode
+de Toggle DistoX calibration/normal mode TODO
+es Cambiar DistoX a modo: Calibración/normal
+fr Bascule le DistoX en mode étalonnage/normal
+it Cambia modalità DistoX calibrazione/normal
+pt 
+
+TAG menu_firmware
+EN Firmware
+de Firmware OK
+es Firmware TODO
+fr Firmware TODO
+it Firmware OK
+pt 
+
+TAG shot_note
+EN note
+de Anmerkung
+es Nota
+fr note
+it nota
+pt nota
+
+TAG help_remote
+EN Remote DistoX control
+de Remote DistoX control TODO
+es Remote DistoX control TODO
+fr Remote DistoX control TODO
+it Coltrollo DistoX remoto
+pt 
+
+TAG pref_bootloader_summary
+EN Enable bootloader
+de Enable bootloader TODO
+es Enable bootloader TODO
+fr Enable bootloader TODO
+it Bootloader abilitiato
+pt 
+
+# TAG pref_device_type_title IGNORE
+EN Disto type
+de Disto type COMMENTED
+es Tipo Disto COMMENTED
+fr Disto type COMMENTED
+it Tipo DistoX COMMENTED
+pt 
+
+TAG longitude
+EN Long. 
+de Länge 
+es Long. 
+fr Long. 
+it Long. 
+pt Long. 
+
+TAG firmware_text
+EN 
+de 
+es 
+fr 
+it 
+pt 
+
+# TAG topodroid_man IGNORE
+EN https://sites.google.com/site/speleoapps/home/topodroid/docs
+de topodroid.txt COMMENTED
+es https://sites.google.com/site/speleoapps/home/topodroid/docs/TopoDroid-2.2-es.pdf
+fr https://sites.google.com/site/speleoapps/home/topodroid/docs COMMENTED
+it https://sites.google.com/site/speleoapps/home/topodroid/docs COMMENTED
+pt http://topolinux.googlecode.com/files/TopoDroid-1.1.0.pdf
+
+TAG pref_sketchDeltaExtrude_message
+EN Extrude delta
+de Extrude delta TODO
+es Extrusión delta
+fr Extrude delta
+it Extrude delta
+pt 
+
+TAG pref_text_size_title
+EN Text size
+de Text size TODO
+es Tamaño del texto de la lista
+fr Taille du texte
+it Dimensione testo
+pt 
+
+TAG device_illegal_addr
+EN Illegal memory address
+de Illegal memory address TODO
+es Dirección de memoria no válida
+fr Adresse mémoire illégale
+it Indirizzo di memoria illegale
+pt 
+
+TAG thl_user 
+EN user
+de user
+es 
+fr 
+it 
+pt 
+
+TAG pref_drawing_unit_title
+EN Point tools scale
+de Point tools scale TODO
+es Tamaño de los símbolo
+fr Echelle des symboles
+it Scala simboli grafici
+pt Tamanho dos símbolos
+
+TAG calib_gm_undelete
+EN Undelete calibration data?
+de Kalibrierung Daten wiedererlangen?
+es Undelete calibration data? COMMENTED
+fr Undelete calibration data? COMMENTED
+it Ripristina dato calibrazione?
+pt 
+
+TAG no_leg_intersection
+EN Section line crosses no leg
+de Schnittlinie kreuzt kein Vermessung TODO
+es La línea de la sección no atraviesa ninguna visual
+fr La ligne de section ne coupe aucune ligne cheminement
+it La linea di sezione non interseca alcuna battuta
+pt 
+
+TAG pref_line_thickness_summary
+EN Drawing line thickness
+de Drawing line thickness TODO
+es Grosor de la linea
+fr Drawing line thickness TODO
+it Spessore linee disegno
+pt 
+
+TAG pref_crs_summary
+EN CRS name
+de CRS name TODO
+es Nombre CRS
+fr Nom CRS
+it Nome CRS
+pt 
+
+TAG illegal_data_value
+EN Illegal data value
+de Illegale Datenwert
+es Valores de datos no válidos
+fr Valeur de donnée incorrecte
+it Dati illegali
+pt 
+
+TAG pref_base_path_summary
+EN TopoDroid parent directory
+de TopoDroid parent directory TODO
+es Directorio principal TopoDroid
+fr Répertoire Parent TopoDroid
+it Directory base per TopoDroid
+pt Pasta de nível superior do TopoDroid
+
+TAG menu_about
+EN About
+de über
+es Acerca de
+fr A propos
+it Info
+pt Sobre
+
+# TAG calib_read_coeffs IGNORE
+EN Reading calibration coefficients ...
+de Reading calibration coefficients ... TODO
+es leer coeficientes de calibración ... COMMENTED
+fr Lecture des coéficients d\'étalonnage ... COMMENTED
+it Lettura coefficienti in corso COMMENTED
+pt 
+
+TAG pref_log_proto
+EN DistoX protocol
+de DistoX protocol TODO
+es Protocolo
+fr Protocole
+it Protocollo DistoX
+pt Protocolo
+
+TAG tha_water 
+EN water
+de water
+es Agua
+fr eau
+it acqua
+pt água
+
+TAG pref_crs_message
+EN Enter the CRS name as in Proj4
+de Enter the CRS name as in Proj4 TODO
+es Introducir el CRS nombrar como en Proj4
+fr Saisissez le nom CRS tel que dans Proj4
+it Scrivi il CRS come in Proj4
+pt 
+
+TAG pref_log_ptopo IGNORE
+EN PocketTopo
+de PocketTopo TODO
+es 
+fr 
+it 
+pt 
+
+TAG pref_group_by_title
+EN Group policy
+de Group policy TODO
+es Política del grupo
+fr Politique de groupage
+it Politica gruppi
+pt Critério de agrupamento
+
+# TAG title_sketch_shot IGNORE
+EN New shot
+de New shot
+es Nueva toma
+fr New shot
+it New shot
+pt 
+
+TAG no_tdsymbol
+EN TdSymbol not installed
+de 
+es TdSymbol no instalado
+fr TdSymbol non installé
+it TdSymbol non installato
+pt TdSymbol não instalado
+
+TAG ask_upload
+EN Upload firmware?
+de Upload firmware? OK
+es 
+fr 
+it 
+pt 
+
+TAG pref_leg_summary
+EN Tolerance among the shots of a leg
+de Tolerance among the shots of a leg TODO
+es Precisión entre las mediciones de una visual
+fr Tolérance au long des visées de cheminement
+it Tolleranza tra tiri di una battuta
+pt Tolerância nos disparos de um troço
+
+TAG shot_to
+EN to
+de bis
+es Hasta
+fr à
+it a
+pt para
+
+TAG pref_base_path_message
+EN Enter TopoDroid parent directory
+de Enter TopoDroid parent directory TODO
+es Introducir el directorio principal TopoDroid
+fr Saisissez le répertoire parent de TopoDroid
+it Scrivi la directory base per TopoDroid
+pt Introduza o nome da pasta de nível superior
+
+TAG hide_blank
+EN Blank shots
+de Leer Messungen
+es Mediciones en blanco
+fr Visées non définies
+it Dati bianchi
+pt Esconder tiros não atribuídos
+
+TAG no_calib
+EN No calibration
+de Keine Kalibrierung
+es No hay calibración
+fr Pas d\'étalonnage
+it Nessuna calibrazione
+pt Sem calibração
+
+TAG in
+EN in
+de in
+es Dentro
+fr in
+it in
+pt dentro
+
+TAG pref_sock_type_summary
+EN Socket create
+de Socket create TODO
+es Crear emparejamiento
+fr Créer socket
+it Crea socket
+pt Criar Socket
+
+TAG device_status
+EN Angle units %1$s\nCompass/clino %2$s\nMode %3$s\nSilent %4$s
+de Winkeleinheiten %1$s\nKompass/Steigungs %2$s\nMode %3$s\nSilent %4$s
+es Angle units %1$s\nCompass/clino %2$s\nMode %3$s\nSilent %4$s TODO
+fr Angle units %1$s\nCompass/clino %2$s\nMode %3$s\nSilent %4$s TODO
+it Angoli in %1$s\nBussola/clino %2$s\nModo %3$s\nSilent %4$s
+pt 
+
+TAG pref_text_size_summary
+EN List items text size
+de List items text size TODO
+es Tamaño del texto de las visuales
+fr Taille du texte des éléments de liste
+it Dimensione testo liste
+pt 
+
+TAG non_linear
+EN non-linear
+de non-linearen
+es non-linear TODO
+fr non-linear TODO
+it non-lineare
+pt 
+
+TAG firmware_file_dumped
+EN Saved firmware file %1$s size %2$d
+de Saved firmware file %1$s size %2$d OK
+es 
+fr 
+it 
+pt 
+
+TAG calib_exists
+EN Calibration already exists
+de Kalibrierung ist bereits vorhanden
+es La calibración ya existe
+fr L\'étalonnage existe déjà
+it Calibrazione già presente
+pt Já existe calibração
+
+TAG device_pairing
+EN Pairing: check notifications
+de Pairing: check notifications
+es Emparejado. Compruebe notificaciones COMMENTED
+fr Appairage, vérifier les notifications
+it Pairing: controlla le notifiche
+pt 
+
+TAG pref_linecorner_summary
+EN Bezier corner threshold
+de Bezier corner threshold TODO
+es límite de la ángulo de línea Bezier
+fr Seuil angle Bézier
+it Soglia angolatura curve Bezier
+pt Threshold dos cantos das linhas
+
+TAG remote_on
+EN Laser ON
+de Laser AN
+es Laser ON TODO
+fr Laser ON TODO
+it Laser ON
+pt 
+
+# TAG reading_file_failed IGNORE
+EN Failed file-read
+de 
+es Error al leer el archivo COMMENTED
+fr Echec lors de la lecture du fichier COMMENTED
+it Lettura file fallita COMMENTED
+pt Falhou na leitura do ficheiro
+
+TAG calib_saved
+EN Saved calibration
+de Kalibrierung gespeichert
+es Guardar calibración
+fr Etalonnage enregistré
+it Salvata calibrazione
+pt 
+
+TAG error_group_required
+EN Group number required
+de Gruppennummer erforderlich
+es Se requiere un número de grupo
+fr Numéro de groupe nécessaire
+it Numero di gruppo mancante
+pt 
+
+TAG zip_failed
+EN Failed survey-zip
+de Fehler bein zip
+es Error al archivar Topografía
+fr Echec lors de la compression du relevé
+it Archiviazione rilievo fallita
+pt Falha no arquivamento do projeto
+
+TAG remote_off
+EN Laser OFF
+de Laser AUS
+es Laser OFF TODO
+fr Laser OFF TODO
+it Laser OFF
+pt 
+
+TAG hide_leg
+EN Repeated leg shots
+de Nebenamtlich Messstrecken
+es Mediciones repetidas
+fr Visées de cheminement répétées
+it Batture ripetute
+pt Esconder disparos extra de troços
+
+TAG help_delete_survey
+EN Delete survey
+de Delete survey TODO
+es Eliminar Topografía
+fr Supprime le relevé
+it Elimina rilievo
+pt 
+
+TAG calib_updated
+EN Updated calibration
+de Kalibrierung aktualisiert
+es Descargar calibración
+fr Etalonnage mis à jour
+it Aggiornata calibrazione
+pt 
+
+TAG help_download
+EN Download data
+de Download data TODO
+es Descargar datos
+fr Télécharge les données
+it Scarica dati
+pt 
+
+TAG mode_grid
+EN Grid
+de Gitter
+es Cuadriculas
+fr Grille
+it Griglia
+pt Grelha
+
+TAG pref_mag_thr_summary
+EN Tolerance over the shots magnetic field
+de Tolerance over the shots magnetic field TODO
+es Precisión sobre las mediciones de campo magnético
+fr Tolérance des visées : champ magnétique
+it Tolleranza valori di campo magnetico
+pt 
+
+TAG survey_delete
+EN Delete survey   
+de Vermessung löschen
+es Eliminar Topografía 
+fr Supprimer le relevé   
+it Elimina rilievo   
+pt Apagar projeto  
+
+TAG error_from_required
+EN First station required
+de Erste Messpunkt erforderlich
+es Introducir primera estación
+fr Premiêre station nécessaire
+it Primo caposaldo mancante
+pt 
+
+TAG barrier_del
+EN Continue midline display?
+de Weiter Mittellinie Anzeige?
+es Continúe la visualización de la línea central? COMMENTED
+fr Continuer l\'affichage du cheminement ?
+it Continuazione restituzione?
+pt 
+
+TAG import_zip_wait
+EN Imported zip file may take long. Please wait ...
+de Import Zip-Datei ... bitte warten ...
+es Imported zip file may take long. Please wait ... COMMENTED
+fr Imported zip file may take long. Please wait ... COMMENTED
+it Importare uno ZIP richiede tempo. Attendi...
+pt 
+
+TAG help_detach
+EN Clear current DistoX choice
+de Clear current DistoX choice TODO
+es Clear current DistoX choice
+fr Supprime le choix du DistoX courrant
+it Rimuovi selezione DistoX
+pt 
+
+TAG help_undelete
+EN Recover deleted items
+de Recover deleted items TODO
+es Recuperar datos eliminados
+fr Récupêre les éléments supprimés
+it Recupera oggetti eliminati
+pt 
+
+# TAG sketch3d_null_next IGNORE
+EN Missing 3D sketch next station
+de Missing 3D sketch next station
+es Falta dibujo 3D Sig. estación
+fr Missing 3D sketch next station
+it Missing 3D sketch next station
+pt 
+
+TAG sensor_type
+EN type
+de Art
+es Tipo
+fr type
+it tipo
+pt tipo
+
+TAG pref_error_title
+EN Error
+de Error TODO
+es Error
+fr Erreur
+it Errore
+pt Erro
+
+TAG pref_cat_survey
+EN Survey options
+de Survey options TODO
+es Opciones Topografía
+fr Options du relevé
+it Opzioni rilievo
+pt Opções do projeto
+
+TAG pref_extra_buttons_summary
+EN Level of enabled features
+de Enable main window optional buttons TODO
+es Enable main window optional buttons TODO
+fr Enable main window optional buttons TODO
+it Seleziona il livello di comandi
+pt 
+
+TAG ask_close_survey
+EN Close survey?
+de SchlieÃŸen Vermessung?
+es ¿Cerrar Topografía?
+fr Quitter le relevé ?
+it Chiudere rilievo?
+pt 
+
+TAG plot_not_found
+EN Sketch not found
+de Skizze nicht gefunden
+es No hay dibujo
+fr Dessin introuvable
+it Disegno non trovato
+pt Esquiço não encontrado
+
+TAG pref_error_message
+EN Minimum calibration error
+de Minimum calibration error TODO
+es Error mínimo de la calibración
+fr Erreur d\'étalonnage mini
+it Minimo errore calibrazione
+pt Erro mínimo de calibração
+
+TAG calib_saturated_values
+EN WARNING: %1$d saturated data
+de WARNUNG: %1$d gesättigten Daten
+es WARNING: %1$d saturated data TODO
+fr WARNING: %1$d saturated data TODO
+it ATTENZIONE: %1$d dati saturati
+pt 
+
+TAG help_splay
+EN Assign stations to splays automatically
+de Assign stations to splays automatically TODO
+es Asignar estaciones laterales automáticamente
+fr Affecte automatiquement les stations aux visées latérales
+it Assegna capisaldi agli splay automaticamente
+pt 
+
+TAG plot_start
+EN Base station
+de Basismesspunkt
+es Base estación
+fr Station d\'origne
+it Caposaldo di riferimento
+pt Estação de início
+
+TAG survey_date
+EN yyyy.mm.dd
+de jjjj.mm.tt
+es yyyy.mm.dd
+fr aaaa/mm/jj
+it aaaa.mm.gg
+pt aaaa.mm.dd
+
+TAG error_begin_required
+EN Start address required
+de Startaddressie erforderlich
+es Introducir dirección de inicio
+fr Adresse de début nécessaire
+it Indirizzo iniziale mancante
+pt 
+
+TAG pref_text_size_message
+EN Size of text in lists
+de Size of text in lists TODO
+es Tamaño del texto de la lista
+fr Taille du texte dans les listes
+it Dimensione testo liste
+pt 
+
+TAG help_database
+EN Database viewer app (SQliteViewer)
+de Database viewer app (SQliteViewer) TODO
+es Aplicación Database viewer(SQliteViewer)
+fr Application Database viewer (SQliteViewer)
+it App database (SQliteViewer)
+pt 
+
+# TAG toggle_device IGNORE
+EN Toggle device calibration mode
+de Kalibrierungsmodus auf/aus-einschelen COMMENTED
+es 
+fr Mettre le périphérique en mode étalonnage COMMENTED
+it Attiva modo calibrazione COMMENTED
+pt 
+
+TAG pref_log_photo
+EN Photo
+de Photo TODO
+es Foto
+fr Photo
+it Foto
+pt Foto
+
+TAG pref_device_title
+EN Device
+de Device TODO
+es Dispositivo
+fr Périphériques
+it Dispositivo
+pt Dispositivo
+
+TAG help_sensor
+EN Measurements dialog
+de Measurements dialog TODO
+es Opciones de medidas
+fr Mesures
+it Misurazioni
+pt 
+
+TAG pref_drawing_unit_message
+EN Scale of the point drawing tools [restart the app after change]
+de Scale of the point drawing tools [restart the app after change] TODO
+es Escala de los símbolos del dibujo en la pantalla[restart the app after change]
+fr Echelle des symboles de dessin [redémarrage app nécessaire]
+it Scala simboli grafici [far ripartire l\'app per aver effetto]
+pt Escala dos símbolos no ecrã
+
+# TAG help_split_line IGNORE
+EN Split the line into two at the point
+de Split the line into two at the point
+es Dividir la línea en dos punto
+fr Split the line into two at the point
+it Split the line into two at the point
+pt 
+
+TAG button_eval
+EN Eval      
+de Auswerten 
+es Eval      
+fr Eval      
+it Calcola   
+pt Avaliar      
+
+TAG survey_exists
+EN Survey already exists
+de Vermessung bereits vorhanden
+es Conflicto Nombre Topografía
+fr Conflit de nom de relevé
+it Rilievo già presente
+pt Conflito no nome do projeto
+
+TAG description
+EN description
+de Beschreibung
+es Descripción
+fr description
+it descrizione
+pt descrição
+
+TAG help_loc
+EN GPS location
+de GPS location TODO
+es Posicionamiento GPS
+fr Localisation GPS (GPSaverage)
+it Localizzazione GPS
+pt 
+
+TAG help_add_topodroid
+EN Create new survey/calibration
+de Create new survey/calibration TODO
+es Crear nueva Topografía/calibración
+fr Crée un nouveau relevé/étalonnage
+it Nuovo rilievo/calibr.
+pt 
+
+TAG pref_autoStations_title
+EN Sketch stations
+de Sketch stations TODO
+es Estaciones automáticas
+fr Stations auto
+it Punti th2 station
+pt Estações automáticas
+
+# TAG title_zoom IGNORE
+EN Zoom
+de Zoom COMMENTED
+es Zoom COMMENTED
+fr Zoom COMMENTED
+it Zoom COMMENTED
+pt ZOOM
+
+TAG popup_join_pt
+EN Snap to nearby point
+de Bewegen um Nähepunkt
+es Unir al punto más cercano
+fr Attacher au point le plus proche
+it Sposta al punto vicino
+pt 
+
+# TAG help_kink IGNORE
+EN Use a straight line at the point [line/area]
+de Use a straight line at the point [line/area]
+es Utilice una línea recta en el punto [línea / área]
+fr Use a straight line at the point [line/area]
+it Use a straight line at the point [line/area]
+pt 
+
+TAG button_gps_stop
+EN Stop      
+de Halt      
+es Stop      
+fr Stop      
+it Stop      
+pt Parar      
+
+TAG error_station_non_existing
+EN Non existing station
+de Messpunkt existiert nicht
+es Non existing station COMMENTED
+fr Non existing station COMMENTED
+it Caposaldo inesistente
+pt 
+
+TAG scrap_name
+EN sketch name
+de Skizze Namen
+es Nombre de dibujo
+fr Nom du croquis
+it nome del disegno
+pt nome do esquiço
+
+TAG help_line_point
+EN Line point actions: join, split, cut, remove
+de Line point actions: join, split, cut, remove TODO
+es Editar punto o línea: unir, separar, cortar, eliminar
+fr Actions sur les points d\'une ligne : joindre, partager, couper, supprimer
+it Azioni per pulti di linee: unire, dividere, tagliare, rimuovere
+pt 
+
+TAG title_move
+EN Moving
+de Verlagerung
+es Mover
+fr Déplacement
+it Sposta
+pt MOVENDO
+
+TAG ask_close
+EN Close TopoDroid?
+de Schließen TopoDroid?
+es ¿Cerrar TopoDroid?
+fr Quitter TopoDroid?
+it Uscire da TopoDroid?
+pt 
+
+# TAG sketch3d_new IGNORE
+EN New 3D sketch
+de New 3D sketch
+es Nuevo dibujo 3D
+fr New 3D sketch
+it New 3D sketch
+pt 
+
+# TAG sketch3d_name IGNORE
+EN name
+de Namen
+es Nombre
+fr name
+it name
+pt 
+
+# TAG button_toggle IGNORE
+EN Toggle CAL mode  
+de Toggle CAL mode  
+es Cambiar Modo CAL 
+fr Toggle CAL mode  
+it Attiva modo CAL. 
+pt Comutar modo de calibração/modo normal  
+
+TAG pref_log_sensor
+EN Sensors
+de Sensors TODO
+es Sensores
+fr Capteurs
+it Sensori
+pt Sensores
+
+TAG stat_wens
+EN W %1$.0f  E %2$.0f  N %3$.0f  S %4$.0f"
+de W %1$.0f  O %2$.0f  N %3$.0f  S %4$.0f"
+es W %1$.0f  E %2$.0f  N %3$.0f  S %4$.0f"
+fr W %1$.0f  E %2$.0f  N %3$.0f  S %4$.0f"
+it W %1$.0f  E %2$.0f  N %3$.0f  S %4$.0f"
+pt W %1$.0f  E %2$.0f  N %3$.0f  S %4$.0f"
+
+TAG import_title
+EN File Import
+de Datei-Import
+es Importar archivo
+fr Import fichier
+it Importazione file
+pt 
+
+# TAG missing_save IGNORE
+EN Sketch has missing drawing tools.\nNot saving it.
+de Sketch has missing drawing tools.\nNot saving it. OK
+es Faltan símbolos.\nno guardado COMMENTED
+fr Sketch has missing symbols.\nNot saving it. COMMENTED
+it Disegno non salvato causa prototipi mancanti COMMENTED
+pt O esquiço tem símbolos em falta.\nNão irá ser guardado. COMMENTED
+
+TAG pref_error_summary
+EN Minimum calibration error
+de Minimum calibration error TODO
+es Error mínimo de la calibración
+fr Erreur d\'étalonnage mini
+it Minimo errore calibrazione
+pt Erro mínimo de calibração
+
+TAG popup_snap_ln
+EN Snap to nearby line
+de Bewegen um Nähelinen
+es Ajustar a la línea más cercana COMMENTED
+fr Attacher à la ligne la plus proche
+it Segui la linea vicina
+pt 
+
+TAG tha_user
+EN user
+de user
+es 
+fr 
+it 
+pt 
+
+TAG pref_comm_retry_message
+EN Connection retries number
+de Connection retries number TODO
+es Números de intentos de comunicación
+fr Nombre max. de tentatives
+it Numero tentativi di connessione
+pt Número de tentativas
+
+TAG title_refs
+EN Sketch References
+de Sketch References TODO
+es Sketch References TODO
+fr Sketch References TODO
+it Referimenti grafici
+pt 
+
+TAG surface
+EN surface
+de Oberfläche
+es Superficie
+fr surface
+it superficie
+pt supercície
+
+TAG button_gps_start
+EN GPS       
+de GPS        OK
+es GPS       
+fr GPS       
+it GPS       
+pt GPS       
+
+TAG stat_surface
+EN Surface shots %1$d %2$.1f
+de Oberflächemessungen %1$d %2$.1f
+es mediciones Superficie %1$d %2$.1f
+fr Surface des visées %1$d %2$.1f
+it Tiri di superficie %1$d %2$.1f
+pt Disparos de superfície %1$d %2$.1f
+
+TAG popup_curve_pt
+EN Smoothen segment
+de Glätten Segment
+es Curved segment COMMENTED
+fr Curved segment COMMENTED
+it Rendi curvo
+pt 
+
+TAG import_none
+EN No file to import
+de Keine Datei importieren
+es No hay archivo a importar
+fr Aucun fichier à importer
+it Nessun file da importare
+pt 
+
+TAG label_title
+EN LABEL
+de BESCHRIFTUNG
+es Texto
+fr ETIQUETTE
+it TESTO
+pt 
+
+TAG firmware_file_title
+EN Firmware Files
+de Firmware Files OK
+es 
+fr 
+it 
+pt 
+
+TAG btn_therion IGNORE
+EN Therion
+de Therion OK
+es Therion
+fr Therion
+it Therion
+pt 
+
+TAG pref_comm_retry_dialogtitle
+EN Connection retries number
+de Connection retries number TODO
+es Números de intentos de comunicación
+fr Nombre max. de tentatives
+it Numero tentativi di connessione
+pt Número de tentativas
+
+TAG pref_log_comm
+EN BT communication
+de BT communication TODO
+es Communicación
+fr Communications
+it Comunicazione BT
+pt Communicação
+
+TAG button_save
+EN Save      
+de Speichre  
+es Guardar   
+fr Enregistrer      
+it Salva     
+pt Guardar      
+
+TAG head_tail_failed
+EN Failed to read DistoX memory index
+de Fehler beim DistoX Speicherindex lesen
+es Error al leer la memoria DistoX
+fr Echec de lecture de la mémoire du DistoX
+it Lettura memoria DistoX fallita
+pt Falha na leitura da fila
+
+TAG title_draw_point
+EN POINT %1$s
+de PUNKT %1$s
+es PUNTO %1$s
+fr POINT %1$s
+it PUNTO %1$s
+pt PONTO %1$s
+
+TAG algorithm
+EN Algorithm
+de Algorithmus
+es Algorithm TODO
+fr Algorithm TODO
+it Algoritmo
+pt 
+
+TAG btn_csurvey IGNORE
+EN cSurvey
+de cSurvey OK
+es cSurvey
+fr cSurvey
+it cSurvey
+pt 
+
+TAG pref_error_dialogtitle
+EN Calibration error
+de Calibration error TODO
+es Error de calibración
+fr Erreur d\'étalonnage
+it Errore calibrazione
+pt Erro de calibração
+
+TAG pref_bootloader_title
+EN Bootloader
+de Bootloader TODO
+es Bootloader TODO
+fr Bootloader TODO
+it Bootloader
+pt 
+
+# TAG title_stats IGNORE
+EN Statistics
+de Statistik
+es Estadísticas
+fr Statistiques
+it Statistiche
+pt Estatísticas
+
+TAG scale
+EN scale
+de Ausmaß
+es Escala
+fr échelle
+it scala
+pt escala
+
+TAG pref_station_size_summary
+EN Size of the station labels
+de Size of the station labels TODO
+es Tamaño de la etiqueta de la estación
+fr Taille du texte des stations
+it Dimensione nome capisaldi
+pt 
+
+TAG missing_hint
+EN Please, enable the missing tools or install them
+de Please, enable the missing tools or install them OK
+es Por favor, instale los símbolos con TdSymbol
+fr Merci d\'installer les symboles avec TdSymbol
+it Installa i prototipi grafici con TdSymbol
+pt Por favor instale os símbolos com a aplicação TdSymbol
+
+TAG photo_sensor
+EN sensor
+de Sensoren
+es Sensor
+fr capteur
+it sensore
+pt sensor
+
+TAG saving_
+EN Saving 
+de Speichern 
+es Guardar
+fr Enregistrement 
+it Salvando 
+pt Gravando 
+
+TAG calib_compute_groups
+EN Computing calibration data groups ...
+de Kalibrierung Datengruppen berechnend ...
+es Cálculo de calibración de lo grupos de datos ... COMMENTED
+fr Calculs des groupes de données d\'étalonnage ...
+it Raggruppamento dati in corso
+pt 
+
+TAG button_store
+EN Store     
+de Aufbewahre 
+es Recibir   
+fr Stocker     
+it Scrivi    
+pt 
+
+TAG title_survey_export
+EN Export survey as
+de Speichern Vermessung als
+es Exportar Topografías
+fr Exporter le relevé sous
+it Esporta rilievo come 
+pt 
+
+TAG calib_delete
+EN Delete calibration 
+de Kalibrierung löschen
+es Eliminar calibración 
+fr Supprimer l\'étalonnage 
+it Eliminare calibrazione 
+pt Apagar calibração
+
+TAG device_firmware
+EN Firmware  %1$d.%2$d
+de Firmware  %1$d.%2$d OK
+es Firmware  %1$d.%2$d TODO
+fr Firmware  %1$d.%2$d TODO
+it Firmware %1$d.%2$d
+pt 
+
+TAG device_reset
+EN Reset DistoX memory
+de DistoX Memory rücksetzen
+es Reseteo memoria de DistoX 
+fr Vider mémoire DistoX
+it Resettare la memoria del DistoX
+pt 
+
+TAG extend_ignore
+EN None
+de Kein COMMENTED
+es Ninguna
+fr Aucun
+it Ignora
+pt Nenhum
+
+TAG button_dump
+EN Dump     
+de Dump      TODO
+es Enviar    
+fr Dump     
+it Scrivi   
+pt 
+
+TAG LINE
+EN LINE
+de LINIE
+es LÍNEA
+fr LIGNE
+it LINEA
+pt 
+
+TAG pref_hthr_summary
+EN Threshold for horizontal cross-sections
+de Threshold for horizontal cross-sections TODO
+es Tolerancia de las secciones transversales horizontales
+fr Seuil pour les sections croisées horizontales
+it Soglia inclinazione per sezioni orizzontali
+pt 
+
+TAG stat_splay
+EN Splays %1$d
+de Hilfsmessungen %1$d
+es Secundaria %1$d
+fr Visées latérales %1$d
+it Splay %1$d
+pt Radiais %1$d
+
+# TAG line_delete IGNORE
+EN Delete line
+de Delete line TODO
+es Eliminar línea COMMENTED
+fr Supprimer ligne COMMENTED
+it Elimina linea COMMENTED
+pt 
+
+TAG pref_conn_mode_summary
+EN Type of the connection with DistoX
+de Type of the connection with DistoX TODO
+es 
+fr 
+it 
+pt 
+
+TAG pref_size_buttons_summary
+EN Size of action-bar buttons
+de Size of action-bar buttons TODO
+es Size of action-bar buttons TODO
+fr Size of action-bar buttons TODO
+it Dimensione bottoni barra superiore
+pt 
+
+TAG device_model_set
+EN Do you really want to change the model of the device
+de Do you really want to change the model of the device COMMENTED
+es Do you really want to change the model of the device TODO
+fr Do you really want to change the model of the device TODO
+it Vuoi davvero cambiare il modello del dispositivo
+pt 
+
+TAG not_implemented
+EN Not implemented yet
+de Noch nicht implementiert
+es aún no implantado
+fr Pas encore implémenté
+it Non implementato
+pt Não está ainda implementado
+
+TAG pref_log_csurvey
+EN cSurvey
+de cSurvey TODO
+es 
+fr 
+it 
+pt 
+
+TAG sketch_saving
+EN Saving sketch ... please wait...
+de Skizze speichern ... bitte warten ...
+es Exportando dibujo ... espere ...
+fr Exportation de dessin ... Patientez ...
+it Salvataggio disegno ... attendi ...
+pt 
+
+TAG read_
+EN Read 
+de Lesen 
+es Leer 
+fr Lecture 
+it Letti 
+pt Ler 
+
+TAG photo
+EN photo
+de Foto
+es Foto
+fr photo
+it foto
+pt foto
+
+# TAG sensor_humidity IGNORE
+EN humidity
+de Luftfeuchtigkeit COMMENTED
+es Humedad COMMENTED
+fr humidity COMMENTED
+it umidità COMMENTED
+pt humidade
+
+TAG help_log
+EN Enable/disable logging options
+de Enable/disable logging options TODO
+es Activar/desactivar las opciones de registro
+fr Active/désactive les options de journalisation
+it Attiva/disattiva opzioni di log
+pt 
+
+TAG pref_line_thickness_message
+EN Drawing line thickness
+de Drawing line thickness TODO
+es Grosor de la linea
+fr Drawing line thickness TODO
+it Spessore linee disegno
+pt 
+
+TAG pref_cat_log
+EN Log options
+de Log options TODO
+es Opciones de registro
+fr Options de journalisation
+it Opzioni log
+pt Opções de registo
+
+TAG mode_leg
+EN Legs
+de Messstrecke
+es Visuales
+fr Cheminements
+it Battute
+pt Troços
+
+# TAG title_sketch_select IGNORE
+EN Select item
+de Select item
+es Seleccionar elemento
+fr Select item
+it Select item
+pt 
+
+TAG pref_lineacc_summary
+EN Bezier interpolation accuracy
+de Bezier interpolation accuracy TODO
+es Precisión Bezier interpolación cúbica
+fr Précision de l\'interpolation Bézier
+it Accuratezza di interpolazione per le curve Bezier
+pt Precisão da interpolação cúbica das linhas
+
+TAG import_zip_ok
+EN Successfully imported zip file
+de Erfolgreich importiert Zip-Datei
+es Successfully imported zip file COMMENTED
+fr Successfully imported zip file COMMENTED
+it ZIP importato con successo
+pt 
+
+TAG station_set
+EN Continue survey from here?
+de Weiter Maßnahme von hier?
+es Continue survey from here? TODO
+fr Continue survey from here? TODO
+it Prosegui rilievo da qui?
+pt 
+
+TAG pref_calib_algo_title
+EN Algorithm
+de Algorithm TODO
+es Algorithm TODO
+fr Algorithm TODO
+it Algoritmo
+pt 
+
+TAG stat_leg
+EN Legs %1$d %2$.1f
+de Messstrecke %1$d %2$.1f
+es Visual %1$d %2$.1f
+fr Cheminements %1$d %2$.1f
+it Battute %1$d %2$.1f
+pt Troços %1$d %2$.1f
+
+TAG missing_area
+EN AREA
+de FLÃ„CHE
+es ÁREA
+fr ZONE
+it AREA
+pt ÁREA
+
+# TAG help_to_point IGNORE
+EN Move selected point to join with the nearest point
+de Move selected point to join with the nearest point
+es Mueva el punto seleccionado para unirse con el punto más cercano
+fr Move selected point to join with the nearest point
+it Move selected point to join with the nearest point
+pt 
+
+TAG pref_picker_type_summary
+EN Drawing tool picker type
+de Drawing tool picker type TODO
+es Tipo de selector de símbolos
+fr Type sélectionneur symbole
+it Tipo dialogo scelta prototipo grafico
+pt 
+
+TAG pref_lineacc_title
+EN Bezier accuracy
+de Bezier accuracy TODO
+es Precisión Bezier
+fr Précision Bézier
+it Accuratezza curve Bezier
+pt Precisão da linha
+
+TAG pref_altitude_summary
+EN Select altitude type
+de Select altitude type TODO
+es Seleccione el tipo de exportación
+fr Sélectionner le type d\'altitude
+it Tipo di altitudine
+pt 
+
+TAG no_geomag
+EN Failed to get GeoMag
+de Fehler beim Geomag bekommen
+es No se pudo obtener Geomag COMMENTED
+fr Failed to get GeoMag TODO
+it Fallita connesione a GeoMag
+pt 
+
+TAG help_sdcard
+EN DistoX memory functions
+de DistoX memory functions TODO
+es Funciones de memoria DistoX
+fr Fonction mémoire du DistoX
+it Funzioni memoria DistoX
+pt 
+
+TAG popup_remove_pt
+EN Remove point
+de Löschen Punkt
+es Eliminar punto
+fr Supprimer le point
+it Elimina punto
+pt 
+
+TAG help_export_survey
+EN Export survey
+de Export survey TODO
+es Exportar Topografía
+fr Exporte le relevé
+it Esporta rilievo
+pt 
+
+TAG title_discover
+EN Scanning for DistoX devices ... wait
+de DistoX Geräte suchen ... warten
+es Buscar dispositivos DistoX ... espere
+fr Recherche de nouveaux DistoX... Patientez
+it Ricerca dispositivi DistoX ... attendi
+pt Procurando por dispositivos DistoX... aguarde
+
+TAG pref_unit_location_summary
+EN Display units for locations
+de Display units for locations TODO
+es Visualizar unidades de Posicionamiento
+fr Afficher les unités de localisation
+it Unità posizioni
+pt Formato para a localização
+
+TAG btn_symbol
+EN Drawing tools
+de Drawing tools OK
+es Símbolos
+fr Symboles
+it Prototipi grafici
+pt 
+
+TAG pref_log_input
+EN User input
+de User input TODO
+es Entrada usuario
+fr Entrées utilisateur
+it Input utente
+pt Interação do utilizador
+
+TAG pref_cat_calib
+EN Calibration options
+de Calibration options TODO
+es Opciones calibración
+fr Options d\'étalonnage
+it Opzioni calibrazione
+pt Opções de calibração
+
+TAG no_shots
+EN Survey has no shots.\nUse Download button to get some
+de Vermessung hat kein Messung
+es Topografía sin mediciones.\nUse botón para descargar mediciones
+fr Le relevé ne contient aucune visées.\n Utilisez le menu Télécharger pour en obtenir.
+it Rilievo senza dati
+pt O projeto não tem disparos.\nUse o menu e a opção Descarregar para obter alguns
+
+TAG pref_extra_buttons_title
+EN Level of features
+de Optional buttons TODO
+es Optional buttons TODO
+fr Optional buttons TODO
+it Livello di comandi
+pt 
+
+TAG import_wait
+EN Importing file... please wait...
+de Import-Datei ... bitte warten ...`
+es Importando archivo, espere...
+fr Importation de fichier... Patientez...
+it Importazione file... attendi...
+pt 
+
+TAG device_busy
+EN Device busy
+de Gerät besetzt
+es Device busy TODO
+fr Device busy TODO
+it Dispositivo occupato
+pt dispositivo ocupado COMMENTED
+
+TAG help_trash
+EN Delete sketch
+de Delete sketch TODO
+es Eliminar dibujo
+fr Supprime le croquis
+it ELimina disegno
+pt 
+
+TAG ask_upload_not_compatible
+EN Unable to check hw/fw compatibility.\nUpload firmware?
+de Unable to check hw/fw compatibility.\nUpload firmware? OK
+es 
+fr 
+it 
+pt 
+
+TAG vthreshold
+EN vert. threshold
+de Vertikale Schwelle
+es Precisión
+fr Seuil vertical
+it soglia vert.
+pt vthreshold
+
+TAG help_manual
+EN User manual
+de Handbuch TODO
+es Online manual COMMENTED
+fr Online manual COMMENTED
+it Manuale online
+pt 
+
+TAG pref_unit_angle_summary
+EN Display units for angles
+de Display units for angles TODO
+es Visualizar unidades de ángulo
+fr Afficher les unités d\'angles
+it Unità angoli
+pt Unidades angulares
+
+TAG btn_zip
+EN Zip
+de Zip OK
+es Zip
+fr Zip
+it Zip
+pt 
+
+TAG import_already
+EN Survey already imported
+de Vermessung bereits importiert
+es Topografía ya importada
+fr Relevé déjà importé
+it Rilievo già presente
+pt 
+
+TAG pref_survey_stations_title
+EN Survey stations
+de Survey stations TODO
+es Sentido de las estaciones topográficas
+fr Stations du relevé
+it Capisaldi rilievo
+pt 
+
+# TAG station IGNORE
+EN station
+de Messpunkt
+es Estación
+fr station
+it caposaldo
+pt estação
+
+TAG firmware_title
+EN Firmware Updater
+de Firmware Updater OK
+es 
+fr 
+it 
+pt 
+
+TAG pref_leg_title
+EN Leg tolerance
+de Leg tolerance TODO
+es Precisión de visual
+fr Tolérance du cheminement
+it Tolleranza battute
+pt Tolerância nos troços
+
+# TAG sketch3d_start IGNORE
+EN base station
+de base station
+es Estación base
+fr base station
+it base station
+pt 
+
+TAG photo_sensor_prompt
+EN Select photo or sensor
+de Foto auswählen oder Sensor
+es Seleccione fotografía o sensor
+fr Sélectionnez photo ou capteur
+it Seleziona foto o sensore
+pt Seleccione foto ou sensor
+
+TAG help_prefs
+EN Edit preferences
+de Edit preferences TODO
+es Editar preferencias
+fr Modifie les préférences
+it Preferenze
+pt 
+
+TAG photo_name
+EN station/name
+de Messpunkt/Name
+es Estación/nombre
+fr station/nom
+it caposaldo/nome
+pt estação/nome
+
+TAG pref_log_shot
+EN Shots
+de Shots TODO
+es Toma
+fr Visées
+it Tiri
+pt 
+
+TAG menu_survey
+EN Metadata
+de Metadaten
+es Metadata COMMENTED
+fr Metadata COMMENTED
+it Metadati
+pt Projeto
+
+TAG popup_split_pt
+EN Duplicate point
+de Doppelter Punkt
+es Añadir punto
+fr Dupliquer point
+it Dividi il punto
+pt 
+
+TAG photo_photo
+EN photo
+de Foto
+es Foto
+fr photo
+it foto
+pt foto
+
+TAG sensor_gravity
+EN gravity
+de Schwerkraft
+es Gravedad
+fr gravité
+it gravità
+pt gravidade
+
+TAG help_help
+EN This help
+de This help TODO
+es Ayuda
+fr Affiche l\'aide
+it Questo aiuto
+pt 
+
+TAG error_end_required
+EN Final address required
+de Letzte Adresse erforderlich
+es Introducir dirección final
+fr Adresse de fin nécessaire
+it Indirizzo finale mancante
+pt 
+
+TAG undelete_text
+EN Tap item to recover
+de Tippen Sie Artikel zu erholen
+es Pulse el archivo a recuperar
+fr Sélectionner un élément pour le récupérer
+it Seleziona oggetto da recuoperare
+pt Prima o item para o repor
+
+TAG pref_size_buttons_message
+EN Enter the size of action-bar buttons [pixels]
+de Enter the size of action-bar buttons [pixels] TODO
+es Enter the size of action-bar buttons [pixels] TODO
+fr Enter the size of action-bar buttons [pixels] TODO
+it Scrivi la dimensione dei bottoni della barra superiore [pixels]
+pt 
+
+TAG help_therion
+EN Therion manager app
+de Therion manager app TODO
+es Administrador de aplicación Therion
+fr Application Therion manager
+it App Therion manager
+pt 
+
+TAG no_paired_device
+EN No paired device.\nScan and pair a DistoX
+de Kein gekoppeltes DistoX Gerät
+es Dispositivo no emparejado.\nEscanee y empareje DistoX
+fr Aucun périphérique appairé.\nRecherchez et appairez un DistoX
+it Nessun DistoX accoppiato.
+pt Sem dispositivo emparelhado.\nProcure e emparelhe um DistoX
+
+TAG pref_linecorner_title
+EN Bezier corner
+de Bezier corner TODO
+es Ángulo Bezier
+fr Angle Bézier
+it Angolatura Bezier
+pt Cantos da linha
+
+TAG pref_sketchBorderStep_summary
+EN Distance between edit-line points
+de Distance between edit-line points TODO
+es Distancia entre puntos de edición de la línea
+fr Distance entre les points d\'édition de ligne
+it Distance between edit-line points
+pt 
+
+TAG calib_write_coeffs
+EN Writing calibration coefficients ...
+de Kalibrierung Koeffizienten schreibend ...
+es Escribir coeficientes de calibración ... COMMENTED
+fr Ecriture des coéficients d\'étalonnage ...
+it Scrittura coefficienti in corso
+pt 
+
+# TAG help_split_point IGNORE
+EN Split the point into two [line/area]
+de Split the point into two [line/area]
+es Dividir el punto en dos [línea / área]
+fr Split the point into two [line/area]
+it Split the point into two [line/area]
+pt 
+
+TAG sensor_pressure
+EN pressure
+de Druck
+es Presión
+fr pression
+it pressione
+pt pressão
+
+TAG welcome_title
+EN Welcome to TopoDroid %1$s
+de Welcome to TopoDroid %1$s OK
+es Bienvenido a TopoDroid 2.2
+fr Bienvenue dans TopoDroid %1$s
+it TopoDroid %1$s
+pt Bem vindo ao TopoDroid 1.1!
+
+TAG help_import
+EN Import zip archive or Therion file
+de Import zip archive or Therion file TODO
+es Importar archivo zip o Therion
+fr Importe une archive Zip ou un fichier Therion
+it Importa zip o file Therion
+pt 
+
+TAG button_reset
+EN Reset     
+de Rücksetzen
+es Reset     
+fr Reset      
+it Resetta   
+pt 
+
+TAG missing_symbols
+EN There are missing drawing tools.\nSave anyway ?
+de There are missing drawing tools.\nSave anyway ? OK
+es Faltan símbolos. \n¿Desea guardar de todos modos?
+fr Il manque des symboles.\nEnregistrer tout de mème ?
+it Mancano alcuni prototipi grafici.\nSalvare ugualmente?
+pt Existem símbolos em falta.\nGuardar na mesma ?
+
+TAG title_manual
+EN TopoDroid User Manual
+de 
+es 
+fr 
+it 
+pt 
+
+TAG td_symbol_text
+EN Do you need to install drawing tools?\nYou can do it later with the app TdSymbol
+de Do you need to install drawing tools?\nYou can do it later with the app TdSymbol OK
+es ¿Necesitas instalar los símbolos de dibujo? \ Puede hacerlo más adelante con la aplicación TdSymbol
+fr Avez vous besoin d\'installer les symboles de dessin ?\nVous pourrez le faire plus tard avec l\'application TdSymbol.
+it Vuoi installare strumenti grafici?\nPuoi farlo anche dopo con l\'app TdSymbol
+pt Precisa instalar símbolos?\nPode fazê-lo mais tarde com a aplicação TdSymbol
+
+TAG help_more
+EN Show the secondary actions
+de Show the secondary actions TODO
+es Mostrar otras opciones
+fr Affiche des options supplémentaires
+it Passa ai tasti secondari
+pt 
+
+# TAG sensor_orientation IGNORE
+EN orientation
+de Orientierung COMMENTED
+es Orientación COMMENTED
+fr orientation COMMENTED
+it orientazione COMMENTED
+pt orientação
+
+TAG pref_sketchCompassReadings_message
+EN Number of compass readings to average
+de Number of compass readings to average TODO
+es Promedio de lecturas de la brújula
+fr Nombre de lectures (pour moyenne)
+it Number of compass readings to average
+pt 
+
+TAG write_ok
+EN Written calibration to DistoX
+de Geschrieben Kalibrierung zum DistoX
+es Calibración Escrita en DistoX
+fr Etalonnage écrit dans le DistoX
+it Calibrazione scritta sul DistoX
+pt calibração escrita no DistoX
+
+TAG pref_accel_thr_title
+EN Acceleration tolerance
+de Acceleration tolerance TODO
+es Precisión Aceleración
+fr Tolérance de l\'accélération
+it Tolleranza accelerazione
+pt 
+
+TAG no_capture_app
+EN No image capture app
+de Keine Kamera app
+es No hay aplicación para capturar imagen
+fr Aucune d\'application de capture d\'image
+it Nessuna app per foto
+pt 
+
+TAG mode_station
+EN Stations
+de Messpunkten
+es Estaciones
+fr Stations
+it Capisaldi
+pt Estações
+
+TAG thl_wall 
+EN wall
+de wall
+es Pared
+fr mur
+it parete
+pt muro
+
+TAG few_data
+EN Not enough data
+de Nicht genügend Daten
+es No hay suficientes datos
+fr Pas assez de données
+it Dati insufficienti
+pt Dados insuf.
+
+TAG pref_log_db
+EN Database
+de Database TODO
+es Base de datos
+fr Base de données
+it Database
+pt Base de dados
+
+TAG sensor_temperature
+EN temperature
+de Temperatur
+es Temperatura
+fr température
+it temperatura
+pt temperatura
+
+TAG sensor_value
+EN value
+de Messung
+es Valor
+fr valeur
+it valore
+pt valor
+
+TAG btn_dxf
+EN DXF
+de DXF OK
+es DXF
+fr DXF
+it DXF
+pt 
+
+TAG pref_closeness_summary
+EN Sketch item selection radius
+de Sketch item selection radius TODO
+es Selección dibujo de elementos radio
+fr Portée de la zone de sélection
+it Raggio di selezione oggetti disegno
+pt Raio de seleção de itens
+
+TAG help_previuos
+EN Previous item in the selection
+de Previous item in the selection TODO
+es Anterior elemento de la selección
+fr Sélectionne l\'élément précédent dans la sélection
+it Precedente oggetto nella selezione
+pt 
+
+# TAG make_surface IGNORE
+EN Surface exists. Replace it?
+de Surface exists. Replace it?
+es Ya existe en superficie ¿Reemplazar?
+fr Surface exists. Replace it?
+it Surface exists. Replace it?
+pt 
+
+TAG survey_not_attached
+EN WARNING: unattached shots
+de WARNUNG: ungebunden Messungen
+es 
+fr 
+it 
+pt 
+
+TAG pref_accel_thr_message
+EN Tolerance over the shots accelerations
+de Tolerance over the shots accelerations TODO
+es Precisión sobre las mediciones aceleración
+fr Tolérance des visées : accélération
+it Tolleranza valori di accelerazione
+pt 
+
+# TAG sketch3d_next IGNORE
+EN next station
+de next station
+es Falta nombre de dibujo 3D
+fr next station
+it next station
+pt 
+
+TAG pref_base_path_title
+EN Parent directory
+de Parent directory TODO
+es Directorio principal
+fr Répertoire Parent
+it Directory base
+pt Pasta de nível superior
+
+TAG welcome_text
+EN 
+de 
+es 
+fr 
+it 
+pt 
+
+TAG firmware_file_missing
+EN Missing firmware file
+de Missing firmware file OK
+es 
+fr 
+it 
+pt 
+
+TAG read_failed
+EN Failed DistoX-read
+de Failed DistoX-read
+es Error al leer DistoX
+fr Echec lors de lecture du DistoX
+it Lettura dati DistoX fallita
+pt Falhou na leitura do DistoX
+
+TAG help_redo
+EN Redo last drawing action
+de Redo last drawing action TODO
+es Rehacer última acción de dibujo
+fr Rétabli la derniêre action
+it Ripeti ultima azione di disegno
+pt 
+
+TAG extend_left
+EN Left
+de Links
+es izq.
+fr Gauche
+it Sx
+pt Esq.
+
+TAG pref_sketchCompassReadings_title
+EN Compass readings
+de Compass readings TODO
+es Lecturas de la brújula
+fr Lectures boussole
+it Compass readings
+pt 
+
+TAG calib_no_name
+EN The name is mandatory
+de Name erforderlich
+es Escriba el nombre de la calibración
+fr Vous devez indiquer un nom d\'étalonnage
+it Nome della calibrazione mancante
+pt 
+
+# TAG button_prev IGNORE
+EN Previous  
+de Previous  
+es Anterior  
+fr Previous  
+it Preced.   
+pt Anterior  
+
+# TAG plot_view IGNORE
+EN Viewed station
+de 
+es Estación vista COMMENTED
+fr Station consulté COMMENTED
+it Caposaldo puntato COMMENTED
+pt Estação em vista
+
+TAG help_compute
+EN Compute calibration
+de Compute calibration TODO
+es Cálculo de calibración
+fr Calcule l\'étalonnage
+it Calcola calibrazione
+pt 
+
+TAG error_invalid_number
+EN Invalid number
+de Ungültige Anzahl
+es Invalid number COMMENTED
+fr Invalid number COMMENTED
+it Valore non numerico
+pt 
+
+TAG pref_unit_length_title
+EN Length units
+de Length units TODO
+es Unidades de longitud
+fr Unité de distance
+it Unità lunghezze
+pt Unidades de distância
+
+TAG title_device
+EN DistoX devices
+de DistoX Geräte
+es Dispositivo DistoX
+fr Périphériques DistoX
+it Dispositivi DistoX
+pt Dispositivos DistoX
+
+TAG btn_csv
+EN CSV
+de CSV OK
+es CSV
+fr CSV
+it CSV
+pt 
+
+TAG external_prompt
+EN Enter measurement
+de Vermessung
+es Introducir medición
+fr Saisir mesure
+it Scrivi i dati
+pt Int. medida ext.
+
+TAG shot_leg
+EN repeated leg shot
+de Wiederholt Messstrecke
+es Toma repetida
+fr Ligne de cheminement répétée
+it battuta ripetuta
+pt disparo repetido de um troço
+
+# TAG button_close IGNORE
+EN Close     
+de Beenden   
+es Cerrar    
+fr Close     
+it Chiudi    
+pt Fechar      COMMENTED
+
+TAG error_alt_required
+EN Altitude required
+de Höhe erforderlich
+es Se requiere Altitud
+fr Altitude nécessaire
+it Altezza mancante
+pt 
+
+TAG pref_sketchDeltaExtrude_title
+EN Extrude delta
+de Extrude delta TODO
+es Extrusión delta
+fr Extrude delta
+it Extrude delta
+pt 
+
+TAG device_algo_failed
+EN Algorithm auto-determination failed\nUsing linear algorithm
+de Algorithmus Selbstbestimmung gescheitert.\nVerwendung von linearen Algorithmus
+es Failed to get algorithm form device\nUsing linear algorithm TODO
+fr Failed to get algorithm form device\nUsing linear algorithm TODO
+it Fallita determinazione automatica algoritmo\nUso algoritmo lineare
+pt 
+
+TAG no_calibration
+EN No calibration selected
+de Keine Kalibrierung ausgewählt
+es Calibración no seleccionada
+fr Aucun d\'étalonnage sélectionné
+it Nessuna calibrazione selezionata
+pt Sem calibração seleccionada.\nUse o menu para seleccionar uma
+
+# TAG shot_compass IGNORE
+EN compass
+de Kompass COMMENTED
+es Brújula COMMENTED
+fr compass COMMENTED
+it bussola COMMENTED
+pt bússula
+
+TAG pref_device_summary
+EN DistoX address name
+de DistoX address name TODO
+es Nombre dirección DistoX
+fr Adresse du DistoX
+it Indirizzo BT del DistoX
+pt Nome do endereço do DistoX
+
+TAG help_refs
+EN Choose sketching references
+de Choose sketching references TODO
+es Elejir dibujo
+fr Choix des références de dessin
+it Seleziona riferimenti per disegno
+pt 
+
+TAG td_symbol_ask
+EN Don\'t ask me again
+de Don\'t ask me again OK
+es No preguntar de nuevo
+fr Ne plus me proposer
+it Non chiederlo più
+pt Não perguntar novamente
+
+TAG sensor_comment
+EN comment
+de Anmerkung
+es Commentario
+fr commentaire
+it commento
+pt comentário
+
+TAG linear
+EN linear
+de linearen
+es linear TODO
+fr linear TODO
+it lineare
+pt 
+
+TAG not_enabled
+EN BT not enabled
+de BT nicht aktiviert
+es BT no habilitado
+fr Bluetooth désactivé
+it BT non attivo
+pt Bluetooth não ligado
+
+TAG pref_sketchCompassReadings_summary
+EN Number of readings to average
+de Number of readings to average TODO
+es Promedio de lecturas
+fr Nombre de lectures (pour moyenne)
+it Number of readings to average
+pt 
+
+TAG pref_gps_averaging_summary
+EN Whether to use GPSAveraging
+de Whether to use GPSAveraging TODO
+es Uso promedio GPS
+fr Utiliser GPSAveraging
+it Se usare GPSAveraging
+pt 
+
+TAG pref_closeness_message
+EN Sketch item selection radius
+de Sketch item selection radius TODO
+es dibujo selección radio
+fr Portée de la zone de sélection
+it Raggio di selezione oggetti disegno
+pt Raio de seleção de itens
+
+TAG plot_name
+EN Sketch name
+de Skizze Name
+es Nombre dibujo
+fr Nom du croquis
+it Nome del disegno
+pt Nome do esquiço
+
+TAG distox_err_headtail_io
+EN DistoX memory I/O error
+de DistoX memory I/O error OK
+es Fallo memoria DistoX I/O
+fr Erreur E/S mémoire DistoX
+it Memoria DistoX errore I/O
+pt BT Head-Tail - Erro de entrada/saída
+
+TAG title_location
+EN Location
+de Position
+es Posicionamiento
+fr Localisation
+it Posizione
+pt LOCALIZAÇÃO
+
+TAG calib_device_mismatch
+EN WARNING: Calibration-Device mismatch
+de WARNUNG: Kalibrierung Geräteübereinstimmung
+es ADVERTENCIA: Desajuste en la calibración del dispositivo
+fr ATTENTION : étalonnage-périphérique non correspondant
+it ATTENZIONE. Discrepanza tra calibrazione e dispositivo
+pt Aviso: Diferenças na calibração/dispositivo 
+
+# TAG button_split IGNORE
+EN Split     
+de Split     
+es División 
+fr Split     
+it Dividi    
+pt 
+
+TAG station_base
+EN reference station
+de Bezugsmesspunkt
+es Estación referencia
+fr Station de référence
+it caposaldo di riferimento
+pt estação base
+
+TAG title_survey
+EN Survey Info
+de Vermessung Info
+es Info Topografía
+fr Info du relevé
+it Info rilievo
+pt Informação do Projecto
+
+TAG thp_label 
+EN label
+de label
+es Texto
+fr étiquette
+it testo
+pt texto
+
+TAG help_note
+EN Edit survey notes
+de Edit survey notes TODO
+es Editar notas Topografía
+fr Modifie les notes du relevé
+it Annotazioni rilievo
+pt 
+
+TAG pref_group_by_summary
+EN Policy to group calibration data
+de Policy to group calibration data TODO
+es Política de grupo de datos calibración
+fr Politique de groupage de données d\'étalonnage
+it Politica raggruppamento dati di calibrazione
+pt Critério para agrupamento dos dados de calibração
+
+TAG pref_conn_mode_title
+EN Connection type
+de Connection type TODO
+es 
+fr 
+it 
+pt 
+
+TAG plot_new
+EN New sketch
+de Neu Skizze
+es Nuevo dibujo
+fr Nouveau croquis
+it Nuovo disegno
+pt Novo esquiço
+
+TAG outline
+EN outline
+de Umriss OK
+es contorno
+fr outline
+it outline
+pt contorno
+
+TAG reversed
+EN reversed
+de umgekehrt
+es inverso
+fr inverser
+it inversa
+pt invertido
+
+TAG no_device_address
+EN Device not selected
+de Kein Gerät gewählt
+es Dispositivo no seleccionado
+fr Adresse de périphérique non sélectionné
+it Dispositivo non selezionato
+pt Endereço do dispositivo não seleccionado
+
+TAG no_sensors
+EN Survey has no measurement
+de Vermessung hat kein Sensormessung
+es Topografía sin mediciones
+fr Le relevé n\'a aucune mesure
+it Rilievo senza misurazioni
+pt O projeto não tem nenhuma medida
+
+# TAG help_clear IGNORE
+EN Clear selection
+de Clear selection COMMENTED
+es Borrar selección COMMENTED
+fr Clear selection COMMENTED
+it Pulisci selezione COMMENTED
+pt 
+
+# TAG button_erase IGNORE
+EN Erase     
+de Erase     
+es Borrar    
+fr Erase     
+it Cancella  
+pt Apagar    
+
+TAG device_hardware
+EN Hardware  %1$d.%2$d
+de Hardware  %1$d.%2$d OK
+es Hardware  %1$d.%2$d TODO
+fr Hardware  %1$d.%2$d TODO
+it Hardware %1$d.%2$d
+pt 
+
+TAG pref_dip_thr_title
+EN Magnetic dip tolerance
+de Magnetic dip tolerance TODO
+es Tolerancia magnética de la inclinación
+fr Tolérance inclinaison
+it Tolleranza immersione magnetica
+pt 
+
+TAG shot_from
+EN from
+de von
+es Desde
+fr depuis
+it da
+pt de
+
+TAG title_photo
+EN Photo/Measurements
+de Foto/Messungen
+es Foto/Medidas
+fr Photo/Mesures
+it Foto/Misurazione
+pt Fotos/Medidas
+
+TAG help_display
+EN Choose display mode
+de Choose display mode TODO
+es Seleccione modo de visualización
+fr Choisit un mode d\'affichage
+it Scegli modalità display
+pt 
+
+TAG pref_group_summary
+EN Tolerance among shots in the same group
+de Tolerance among shots in the same group TODO
+es Precisión entre mediciones del mismo grupo
+fr Tolérance au long des visées du mème groupe
+it Tolleranza fra dati di uno stesso gruppo
+pt Tolerância entre disparos do mesmo grupo
+
+TAG pref_comm_retry_summary
+EN Connection retries number
+de Connection retries number TODO
+es Reintentar comunicación
+fr Nombre max. de tentatives
+it Numero tentativi di connessione
+pt Número de tentativas
+
+TAG loop_closure_errors
+EN Loop closure errors
+de Kreisschlussfehler
+es Errores de cierre de bucle
+fr Erreurs de bouclage
+it Errori chiusura anelli
+pt Erros no fecho do laço
+
+# TAG btn_3d IGNORE
+EN 3D
+de 3D
+es 3D
+fr 3D
+it 3D
+pt 
+
+TAG button_ok
+EN OK        
+de OK         OK
+es OK         OK
+fr OK         OK
+it OK         OK
+pt Confirmar      
+
+TAG device_none
+EN No DistoX selected
+de Kein DistoX ausgewählt COMMENTED
+es DistoX no seleccionado
+fr Aucun DistoX sélectionné
+it Nessun DistoX selezionato
+pt DistoX não selecionado
+
+TAG pref_iter_summary
+EN Maximum number of iterations
+de Maximum number of iterations TODO
+es Número máximo de iteraciones
+fr Nombre de répétition max
+it Massimo numero iterazioni
+pt Número máximo de iterações
+
+TAG too_many_leg_intersection
+EN Section line crosses many legs
+de Schnittlinie durchquert viele Messstrecken
+es La línea de la sección abarca más de una visual
+fr La ligne de section croise plus d\'une ligne de cheminement.
+it La sezione interseca più battute
+pt 
+
+TAG pref_picker_type_title
+EN Drawing tool picker
+de Drawing tool picker TODO
+es Selector de símbolos
+fr Sélectionneur de symbole
+it Dialogo scelta prototipo
+pt 
+
+TAG pref_lineacc_message
+EN Bezier cubic interpolation accuracy
+de Bezier cubic interpolation accuracy TODO
+es Precisión Bezier interpolación cúbica
+fr Précision de l\'interpolation cubique Bézier
+it Accuratezza di interpolazione per le curve Bezier
+pt Precisão da interpolação cúbica das linhas
+
+TAG pref_hthr_title
+EN Cross-section h-threshold
+de Cross-section hthreshold TODO
+es Tolerancia de las secciones Transversales
+fr Seuil horizontal croisement de section
+it Soglia sezione orizzontale
+pt 
+
+TAG title_shift
+EN Shift
+de verschieben
+es Cambio
+fr Décaler
+it Sposta
+pt 
+
+TAG hide_splay
+EN Splay shots
+de Hilfsmessungen
+es Mediciones laterales
+fr Visées latérales
+it Misure laterali
+pt Esconder disparos radiais
+
+TAG pref_segment_message
+EN Minimum distance between points on a line
+de Minimum distance between points on a line TODO
+es Distancia Mínima entre dos puntos de una línea en el dibujo
+fr Distance mini entre les points d\'une ligne
+it Minima distanza fra punti di una linea
+pt Distância mínima entre dois pontos numa linha
+
+TAG pref_raw_data_summary
+EN Show raw data
+de Show raw data TODO
+es Mostrar datos sin procesar
+fr Afficher les données brutes
+it Mostra dati grezzi
+pt 
+
+TAG photo_comment_prompt
+EN Enter the photo comment
+de Foto Kommentar
+es Intro. comentario de foto
+fr Saisissez un commentaire pour la photo
+it Scrivi il commento
+pt Introduza comentário para a fotografia
+
+TAG altitude_hint
+EN Alt. [meters]
+de Höhe [meters]
+es Alt. [metros]
+fr Alt. [mêtres]
+it Alt. [metri]
+pt 
+
+TAG title_draw_line
+EN LINE %1$s
+de LINIE %1$s
+es LÍNEA %1$s
+fr LIGNE %1$s
+it LINEA %1$s
+pt LINHA %1$s
+
+TAG pref_log_device
+EN Device window
+de Device window TODO
+es Ventana dispositivo
+fr Périphériques
+it Finestra DistoX
+pt Janela do dispositivo
+
+TAG missing_line
+EN LINE
+de LINIE
+es LÍNEA
+fr LIGNE
+it LINEA
+pt LINHA
+
+TAG memory_data
+EN DistoX data
+de DistoX Daten
+es DistoX data COMMENTED
+fr Données du DistoX
+it Dati DistoX
+pt 
+
+TAG pref_log_bt
+EN Bluetooth
+de Bluetooth OK
+es Bluetooth
+fr Bluetooth
+it Bluetooth
+pt Bluetooth
+
+TAG sketch_loading
+EN Loading sketch ... please wait...
+de Skizze laden... bitte warten ...
+es Importando dibujo, espere ...
+fr Importation de dessin ... Patientez ...
+it Caricamento disegno ... attendi ...
+pt 
+
+TAG button_measure
+EN Measure   
+de Messung   
+es Medida   
+fr Mesure   
+it Misura    
+pt Medir   
+
+TAG loop_none
+EN no loop
+de Kein Kreis
+es No hay Bucle
+fr Pas de bouclage
+it Nessun anello
+pt sem laço
+
+TAG error_name_required
+EN Name required
+de Namen erforderlich
+es Introducir nombre
+fr Nom nécessaire
+it Nome mancante
+pt 
+
+TAG btn_vtopo IGNORE
+EN VisualTopo
+de VisualTopo OK
+es VisualTopo
+fr VisualTopo
+it VisualTopo
+pt 
+
+TAG title_calib
+EN Calibrations
+de Kalibrierung
+es Calibración
+fr Etalonnage
+it Calibrazioni
+pt CALIBRAÇÕES
+
+TAG help_undo
+EN Undo last drawing action
+de Undo last drawing action TODO
+es Deshacer última acción de dibujo
+fr Annule la derniêre action
+it Cancella ultima azione di disegno
+pt 
+
+TAG calib_error
+EN Error: %1$.4f degrees
+de Ungleichheit: %1$.4f Grad
+es Error: %1$.4f grados COMMENTED
+fr Erreur: %1$s degrés
+it Errore %1$s gradi
+pt 
+
+TAG button_add
+EN Add       
+de Neu        COMMENTED
+es Añadir    
+fr Ajouter       
+it Aggiungi  
+pt Adicionar       
+
+TAG pref_iter_dialogtitle
+EN Calibration iterations
+de Calibration iterations TODO
+es Calibración de iteraciones
+fr Répétitions d\'étalonnage
+it Iterazioni calibrazione
+pt Interações para o processamento da calibração
+
+TAG memoryA3
+EN DistoX A3 memory
+de DistoX A3 Speicherkarte
+es Memoria DistoX A3
+fr Mémoire du DistoX A3
+it DistoX A3
+pt 
+
+TAG station_viewed
+EN viewed station
+de Angesehen Messpunkt
+es Vista de estación 
+fr station consultée
+it caposaldo puntato
+pt Estação em vista
+
+TAG photo_survey
+EN split survey
+de Teilen Vermessung
+es dividir Topografía
+fr Découper le relevé
+it dividi rilievo
+pt 
+
+TAG splay
+EN splay
+de Hilfsmessung
+es Secundaria
+fr *splay*
+it splay
+pt 
+
+TAG help_eraser
+EN Erase drawings
+de Erase drawings TODO
+es Borrar dibujos
+fr Efface un/des éléments du croquis
+it Modalità cancella
+pt 
+
+TAG pref_segment_title
+EN Line-point spacing
+de Line-point spacing TODO
+es Precisión de la línea
+fr Espacement des points de ligne
+it Spaziatura punti sulle linee
+pt Tolerância das linhas
+
+TAG title_erase
+EN Erase
+de Löschen
+es Borrar
+fr Supprimer
+it Cancella
+pt 
+
+TAG help_recover
+EN Recover sketch from backup
+de Recover sketch from backup TODO
+es Recover sketch from backup COMMENTED
+fr Recover sketch from backup COMMENTED
+it Recupera schizzo dal backup
+pt 
+
+TAG button_upload
+EN Upload    
+de Lade     TODO
+es 
+fr 
+it 
+pt 
+
+TAG help_next
+EN Next item in the selection
+de Next item in the selection TODO
+es Siguiente elemento de la selección
+fr Sélectionne l\'élément suivant dans la sélection
+it Prossimo oggetto nella selezione
+pt 
+
+TAG picture_no_station
+EN Station name required
+de Name erforderlich
+es Necesitas una estación / nombre para la foto
+fr Besoin d\'une station/nom pour la photo
+it Caposaldo o nome mancante
+pt É necessário estação/nome para a foto
+
+TAG regular
+EN regular
+de regulär
+es Normal
+fr régulier
+it regolare
+pt normal
+
+TAG latitude_hint
+EN Lat. dd:mm:ss.sss
+de Breite dd:mm:ss.sss
+es Lat. dd:mm:ss.sss
+fr Lat. dd:mm:ss.sss
+it Lat. gg:mm:ss.sss
+pt 
+
+TAG no_db
+EN No database
+de Keine Datenbank
+es No hay base de datos
+fr Pas de base de données
+it Nessun database
+pt Sem base de dados
+
+TAG help_plot
+EN Enter sketch activity
+de Enter sketch activity TODO
+es Introducir datos en dibujo
+fr Passe en mode croquis
+it Finestra disegno
+pt 
+
+TAG menu_delete
+EN Delete
+de löschen
+es Delete COMMENTED
+fr Delete COMMENTED
+it Rimuovi
+pt Apagar
+
+TAG help_read
+EN Read and display DistoX calibration coefficients
+de Read and display DistoX calibration coefficients TODO
+es Leer coeficientes de calibración DistoX
+fr Lit les coefficients de d\'étalonnage du DistoX
+it Leggi la calibrazione dal DistoX
+pt 
+
+TAG help_save
+EN Save changes to survey/calibration info
+de Save changes to survey/calibration info TODO
+es Guardar cambios de la Topografía o calibración
+fr Enregistre les modifications du relevé/info d\'étalonnage
+it Salva le modifiche al rilievo/calibr.
+pt 
+
+# TAG zoom_in_out IGNORE
+EN Zoom in/out
+de Zoom in/out COMMENTED
+es Zoom in/out COMMENTED
+fr Zoom +/- COMMENTED
+it Zoom in/out COMMENTED
+pt Zoom in/out
+
+TAG menu_palette
+EN Palette
+de Palette
+es Paleta
+fr Palette
+it Palette
+pt 
+
+TAG no_gms
+EN Calibration has no data.\nUse Download button
+de Kalibrierung mit keine Daten
+es Calibración no tiene datos.\nUse botón Descargar
+fr L\'étalonnage ne contient pas de données.\nUtiliser le bouton Télécharger
+it Calibrazione senza data.
+pt A calibração não tem dados.\nUse a opção de menu Descarregar para obtê-los
+
+TAG plot_duplicate_name
+EN Duplicate sketch name
+de Doppel Skizze Name
+es Duplicate sketch name COMMENTED
+fr Duplicate sketch name COMMENTED
+it Nome disegno già presente
+pt 
+
+TAG failed_snap_to_line
+EN No close line-point to snap the area border to
+de Keine enge Linie Punkt, um die Gegend zu schnappen Grenze
+es No close line to snap area border to COMMENTED
+fr No close line to snap area border to COMMENTED
+it Nessuna linea su cui deformare il bordo area
+pt 
+
+TAG memoryX310
+EN DistoX X310 memory
+de DistoX X310 Speicherkarte
+es Memoria DistoX X310
+fr Mémoire du DistoX X310
+it DistoX X310
+pt 
+
+TAG v_section
+EN V-SECTION
+de V-PROFIL COMMENTED
+es V-SECCIÓN
+fr SECTION V
+it SEZIONE VERT.
+pt SECÇÃO VERTICAL 
+
+TAG mode_splay
+EN Splays
+de Hilfsmessung
+es Laterales
+fr Visées latérales
+it Splay
+pt Radiais
+
+TAG duplicate
+EN duplicate
+de dupliziert
+es Duplicada
+fr copier
+it duplicato
+pt duplicado
+
+TAG help_open_calib
+EN Open calibration
+de Open calibration TODO
+es Abrir la calibración
+fr Ouvre l\'étalonnage
+it Apri calibrazione
+pt 
+
+TAG POINT
+EN POINT
+de PUNKT
+es PUNTO
+fr POINT
+it PUNTO
+pt 
+
+TAG data
+EN  data
+de  Daten
+es  Datos
+fr  données
+it  dati
+pt  dados
+
+TAG pref_list_refresh_summary
+EN Force list refresh
+de Force list refresh TODO
+es Forzar Actualización lista
+fr Forcer l\'actualiser la liste
+it Forza aggiornamento liste
+pt Forçar atualização da lista
+
+TAG survey_info
+EN Survey info
+de Vermessung Info
+es Info Topografía
+fr Information de relevé
+it Info rilievo
+pt Informação da Topo
+
+TAG title_scraps
+EN Survey sketches
+de Skizzen
+es Dibujo
+fr Croquis du relevé
+it Disegni
+pt %1$s esquiços
+
+TAG pref_group_title
+EN Group tolerance
+de Group tolerance TODO
+es Precisión grupo
+fr Groupe de tolérance
+it Tolleranza gruppi
+pt Tolerância no agrupamento
+
+# TAG sensor_accelerometer IGNORE
+EN accelerometer
+de Beschleunigungsmesser COMMENTED
+es Acelerometro COMMENTED
+fr accelerometer COMMENTED
+it accelerometro COMMENTED
+pt acelerómetro
+
+TAG pref_sketchBorderStep_title
+EN Border step
+de Border step TODO
+es Paso borde
+fr Paramêtre de bordure
+it Border step
+pt 
+
+TAG pref_list_refresh_title
+EN List refresh
+de List refresh TODO
+es Actualizar lista
+fr Actualiser la liste
+it Aggiorna liste
+pt Atualizar lista
+
+TAG firmware_none
+EN no firmware file
+de no firmware file OK
+es 
+fr 
+it 
+pt 
+
+TAG pref_loopClosure_title
+EN Loop closure
+de Kreisschluss TODO
+es Cierre de bucle
+fr Bouclage
+it Chiusura anelli
+pt Feço de Laço
+
+TAG head_tail_store_failed
+EN Failed to store DistoX memory index
+de Fehler beim DistoX Speicherindex speichern
+es Failed to store DistoX memory index TODO
+fr Failed to store DistoX memory index TODO
+it Memorizzazione memoria DistoX fallita
+pt 
+
+TAG pref_log_bezier
+EN Bezier curves
+de Bezier curves TODO
+es Curvas Bézier
+fr Courbe de Bézier
+it Curve Bezier
+pt 
+
+TAG title_calib_export
+EN Export calibration as
+de Exportieren Kalibrierung als
+es Export calibration as TODO
+fr Export calibration as TODO
+it Esporta calibrazione come 
+pt 
+
+TAG pref_sketchUsesSplays_title
+EN Sketch splays
+de Sketch splays TODO
+es Tomas laterales en el dibujo
+fr Dessiner les visées latérales
+it Sketch splays
+pt 
+
+TAG firmware_file
+EN firmware file
+de firmware file OK
+es 
+fr 
+it 
+pt 
+
+TAG pref_log_loc
+EN Location
+de Location TODO
+es Posicionamiento
+fr Localisation
+it Posizioni GPS
+pt Localização
+
+TAG error_lat_required
+EN Latitude required
+de Breite erforderlich
+es Se requiere Latitud
+fr Latitude nécessaire
+it Latitudine mancante
+pt 
+
+TAG sensor_proximity
+EN proximity
+de Nähe
+es Proximidad
+fr proximité
+it prossimità
+pt proximidade
+
+TAG missing_station
+EN Missing station
+de Kein Messpunkt
+es Falta Estación
+fr Station manquante
+it Caposaldo assente
+pt Estação em falta
+
+TAG auto
+EN auto
+de automatisch
+es auto TODO
+fr auto TODO
+it auto
+pt 
+
+TAG pref_sketchUsesSplays_summary
+EN Sketch surface uses splays
+de Sketch surface uses splays TODO
+es Utilizar superficie laterales en el dibujo
+fr Dessiner les surface en utilisant les visées latérales
+it Sketch surface uses splays
+pt 
+
+# TAG sketch3d_null_name IGNORE
+EN Missing 3D sketch name
+de Missing 3D sketch name
+es Falta dibujo 3D Sig. estación
+fr Missing 3D sketch name
+it Missing 3D sketch name
+pt 
+
+TAG distox_err_headtail
+EN Failed DistoX memory-read
+de Failed DistoX memory-read OK
+es Fallo conexión bluetooth
+fr Echec de lecture de la mémoire du DistoX
+it Lettura memoria DistoX fallita
+pt BT Head-Tail - Erro de leitura
+
+TAG button_read
+EN Read      
+de Lese      
+es Leer      
+fr Lecture      
+it Leggi     
+pt Ler calibração 
+
+TAG menu_detach
+EN Disconnect
+de trennen
+es Desconectar
+fr Déconnecter
+it Sconnetti
+pt 
+
+TAG menu_help
+EN Help
+de Hilfe
+es Ayuda
+fr Aide
+it Aiuto
+pt Ajuda
+
+TAG help_edit
+EN Enter editing mode
+de Enter editing mode TODO
+es Introducir modo de edición
+fr Entre en mode d\'édition
+it Modalità editing
+pt 
+
+TAG pref_sketchBorderStep_message
+EN Distance between edit-line points
+de Distance between edit-line points TODO
+es Distancia entre puntos de edición de la línea
+fr Distance entre les points d\'édition de ligne
+it Distance between edit-line points
+pt 
+
+TAG thp_user 
+EN user
+de user
+es 
+fr 
+it 
+pt 
+
+TAG pref_log_therion
+EN Therion
+de Therion TODO
+es Therion
+fr Therion
+it Therion
+pt 
+
+# TAG button_next IGNORE
+EN Next      
+de Nächste   
+es Siguiente 
+fr Next      
+it Prossimo  
+pt Próx.      
+
+TAG popup_split_ln
+EN Cut line at point
+de Schnitten linie am Punkt
+es Separar línea
+fr Couper la ligne
+it Taglia la linea
+pt 
+
+TAG title_coverage
+EN Calibration data distibution
+de Kalibrierung Daten
+es Distibución datos Calibración
+fr Distributions des données d\'étalonnage
+it Distribuzione dati calibrazione
+pt Distribuição de dados da calibração
+
+TAG pref_loopClosure_summary
+EN Loop closure-error compensation
+de Kreisschlussfehler compensation TODO
+es Error en cierre de bucle
+fr Compensation d\'erreur de bouclage
+it Compensazione errore nella chiusura anelli
+pt Compensação de erro de fecho de Laço
+
+TAG out
+EN out
+de aus
+es Fuera
+fr out
+it out
+pt fora
+
+TAG button_delete
+EN Delete    
+de Lösche    
+es Eliminar  
+fr Supprimer    
+it Elimina   
+pt 
+
+TAG missing_title
+EN MISSING SYMBOLS
+de MISSING SYMBOLS OK
+es Faltan símbolos
+fr SYMBOLES MANQUANTS
+it PROTOTIPI MANCANTI
+pt SÍMBOLOS EM FALTA
+
+TAG device_code
+EN DistoX code %1$4d
+de DistoX code %1$4d OK
+es DistoX code %1$4d TODO
+fr DistoX code %1$4d TODO
+it Codice DistoX %1$4d
+pt 
+
+# TAG shot_length IGNORE
+EN length
+de Länge COMMENTED
+es Longitud COMMENTED
+fr length COMMENTED
+it lunghezza COMMENTED
+pt comprimento
+
+TAG pref_checkBT_summary
+EN Enable/disable bluetooth
+de Enable/disable bluetooth TODO
+es Bluetooth encendido/apagado 
+fr Activer/désactiver Bluetooth
+it Attiva/disattiva bluetooth
+pt Verificar Bluetooth no início
+
+TAG stat_shot
+EN Shots  %1$d,   Duplicate %2$d,   Surface %3$d
+de Messungen  %1$d,   Doppeltes %2$d,   Oberfläche %3$d
+es Toma  %1$d,   Duplicada %2$d,   Superficie %3$d
+fr Visées  %1$d,   Dupliquées %2$d,   Surface %3$d
+it Tiri  %1$d,   Doppi %2$d,   Superficie %3$d
+pt Disparos  %1$d,   Duplicados %2$d,   Supercície %3$d
+
+TAG pref_sketchLineStep_summary
+EN Distance between line points
+de Distance between line points TODO
+es Distancia entre puntos de la línea
+fr Distance entre les points d\'une ligne
+it Distance between line points
+pt 
+
+TAG pref_station_size_title
+EN Station label size
+de Messpunkt Beschriftung size TODO
+es Tamaño de la etiqueta de la estación
+fr Taille nom de station
+it Dimensione nome capisaldi
+pt 
+
+TAG no_undelete
+EN No item to recover
+de Kein Artikel zu erholen
+es No hay medida para recuperar
+fr Aucun élément à récupérer
+it Nessun oggetto da riprendere
+pt Sem item para repor
+
+TAG help_device
+EN Enter device activity
+de Enter device activity TODO
+es Cambiar a opciones del dispositivo
+fr Périphériques DistoX
+it Finestra DistoX
+pt 
+
+TAG button_back
+EN Back      
+de Zurück    
+es Atras     
+fr Précédent      
+it Indietro  
+pt Voltar      
+
+TAG hide_ids
+EN Shot IDs
+de Messung ID
+es Enumeración de toma
+fr ID de visées
+it ID misure
+pt 
+
+TAG error_azimuth_required
+EN Azimuth required
+de Azimut erforderlich
+es Introducir rumbo
+fr Azimut nécessaire
+it Azimuth mancante
+pt 
+
+TAG pref_label_size_title
+EN Labels size
+de Beschriftung size TODO
+es Tamaño del texto
+fr Labels size TODO
+it Dimensione scritte
+pt 
+
+TAG error_length_required
+EN Length required
+de Länge erforderlich
+es Introducir Longitud
+fr Longueur nécessaire
+it Lunghezza mancante
+pt 
+
+TAG help_3d
+EN 3D viewer app (Cave3D)
+de 3D viewer app (Cave3D) TODO
+es Visualizar en 3D(Cave3D)
+fr Visionneuse 3D (Application Cave3D)
+it 3D app (Cave3D)
+pt 
+
+TAG error_station_already_fixed
+EN Station already with coordinates
+de Dauerhafter Messpunkt
+es Station already with coordinates COMMENTED
+fr Station already with coordinates COMMENTED
+it Caposaldo già con coordinate
+pt 
+
+TAG pref_log_data
+EN Survey data
+de Survey data TODO
+es Datos
+fr Données
+it Dati
+pt Dados
+
+TAG error_long_required
+EN Longitude required
+de Länge erforderlich
+es Se requiere Longitud
+fr Longitude nécessaire
+it Longitudine mancante
+pt 
+
+TAG calib_max_error
+EN Max. error: %1$.4f degrees
+de Max. Ungleichheit: %1$.4f Grad
+es Max. error: %1$.4f grados COMMENTED
+fr Erreur max : %1$.4f degrés
+it Errore massimo %1$.4f gradi
+pt 
+
+TAG distox_err_ok
+EN OK
+de OK OK
+es OK OK
+fr OK OK
+it OK OK
+pt OK OK
+
+TAG pref_raw_data_title
+EN Raw data
+de Raw data TODO
+es Datos sin procesar
+fr Données brutes
+it Dati grezzi
+pt 
+
+TAG connect_failed
+EN Failed connect
+de Verbindung fehlgeschlagen
+es Fallo de conexión
+fr Echec de la connexion
+it Comunicazione DistoX fallita
+pt Falha a ligar
+
+TAG menu_manual
+EN Manual
+de Handbuch
+es Manual
+fr Manuel
+it Manuale
+pt 
+
+TAG extend_vert
+EN Vert
+de Vert COMMENTED
+es Vert.
+fr Vert.
+it Vert.
+pt Vert.
+
+TAG version_title
+EN Version update
+de Version update TODO
+es Versión de actualización
+fr Mise à jour de version
+it Aggiornamento di versione
+pt 
+
+TAG help_symbol
+EN Enable/disable drawing tools
+de Enable/disable drawing tools TODO
+es Activar/desactivar los símbolos de dibujo
+fr Active/désactive des symboles de dessin
+it Attiva/disattiva prototipi grafici
+pt 
+
+TAG using
+EN Using %1$s %2$s
+de %1$s %2$s benutzen
+es Utilizar %1$s %2$s
+fr Utilisation de %1$s %2$s
+it Usando %1$s %2$s
+pt Usando %1$s
+
+TAG missing_point
+EN POINT
+de PUNKT
+es PUNTO
+fr POINT
+it PUNTO
+pt PONTO
+
+TAG head_tail
+EN Memory: 
+de Memory:  OK
+es Memoria: 
+fr Mémoire : 
+it Memoria: 
+pt Fila de dados: 
+
+TAG plot_delete
+EN Delete sketch ?
+de Skizze löschen??
+es ¿Eliminar dibujo?
+fr Supprimer le croquis ?
+it Elimina disegno ?
+pt 
+
+# TAG title_sketch_section_type IGNORE
+EN Sections type
+de Sections type
+es tipo Secciones
+fr Sections type
+it Sections type
+pt 
+
+TAG button_convert
+EN Convert   
+de Verwandle 
+es Convertir 
+fr Convertir   
+it Converti  
+pt 
+
+TAG button_manual
+EN Manual    
+de Bedienungsanleitung 
+es Manual    
+fr Manuel    
+it Manuale   
+pt Manual
+
+TAG title_coeff
+EN Calibration coefficients
+de Kalibrierung Koeffizienten
+es Coeficiente Calibración
+fr Coefficients d\'étalonnages
+it Calibrazione
+pt Coeficientes de Calibração
+
+TAG pref_log_plot
+EN Sketches
+de Sketches TODO
+es Dibujo
+fr Points
+it Disegni
+pt 
+
+TAG h_section
+EN H-SECTION
+de H-PROFIL
+es H-SECCIÓN
+fr SECTION H
+it SEZIONE ORIZZ.
+pt SECÇÃO HORIZONTAL
+
+TAG splay_at_to
+EN LRUD at TO station
+de LRUD bei BIS Messpunkt
+es LRUD at To station TODO
+fr LRUD at To station TODO
+it LRUD al caposaldo di arrivo
+pt 
+
+TAG title_mode
+EN Display Mode
+de Anzeige-Modus
+es Modo de visualización
+fr Mode d\'affichage
+it Modalità display
+pt OPÇÕES DE VISUALIZAÇÃO
+
+TAG help_info_topodroid
+EN TopoDroid info
+de TopoDroid info TODO
+es Info TopoDroid
+fr Infos TopoDroid
+it Info TopoDroid
+pt 
+
+TAG pref_label_size_summary
+EN Size of the labels
+de Size of the labels TODO
+es Tamaño del texto
+fr Size of the labels TODO
+it Dimensione delle scritte
+pt 
+
+TAG pref_group_message
+EN Tolerance among shots in the same group
+de Tolerance among shots in the same group TODO
+es Precisión entre mediciones del mismo grupo
+fr Tolérance au long des visées du mème groupe
+it Tolleranza fra dati di uno stesso gruppo
+pt Tolerância entre disparos do mesmo grupo
+
+TAG surveys
+EN SURVEYS
+de VERMESSUNG
+es Topografía
+fr RELEVES
+it RILIEVI
+pt PROJETOS
+
+TAG help_info_device
+EN Device info
+de Device info TODO
+es Device info TODO
+fr Device info TODO
+it Dati dispositivo DistoX
+pt 
+
+TAG pref_log_err
+EN Error
+de Error TODO
+es Error
+fr Erreurs
+it Errori
+pt Erro
+
+TAG station_ask
+EN Insert station in sketch?
+de Legen Messpunkt in Skizze?
+es ¿Insertar estación?
+fr Insérer station ?
+it Inserisci caposaldo ?
+pt Insira estação ?
+
+TAG toggle_ok
+EN Toggled DistoX calibration mode
+de Kalibrierungsmodus wechselt
+es Alternar a modo de calibración DistoX
+fr DistoX en mode étalonnage
+it DistoX in modo calibrazione
+pt DistoX em modo de calibração
+
+TAG calib_iter
+EN Iterations: %1$d
+de Iterationen: %1$d
+es Iteraciones: %1$d COMMENTED
+fr Répétitions : %1$d
+it Iterazioni: %1$d
+pt 
+
+TAG pref_hthr_message
+EN Shot clino over which cross-sections are horizontal
+de Shot clino over which cross-sections are horizontal TODO
+es toma de inclinación sobre las secciones transversales horizontales
+fr Visée de pente pour laquelle les sections croisées sont à l\'horizontale
+it Soglia inclinazione battuta per sezioni orizzontali
+pt 
+
+TAG write_failed
+EN Failed DistoX-write
+de Gescheitert DistoX Schreib
+es Error al escribir en DistoX
+fr Echec de l\'écriture vers le DistoX
+it Scrittura su DistoX fallita
+pt Falha na escrita para o DistoX
+
+TAG title_photo_comment
+EN Photo comment
+de Foto Kommentar
+es Comentario Foto
+fr Commentaire photo
+it Commento foto
+pt Comentário da foto
+
+TAG button_select
+EN Select    
+de Wähle     
+es Seleccionar 
+fr Sélectionner    
+it Seleziona 
+pt Selecionar    
+
+TAG help_photo
+EN Photos dialog
+de Photos dialog TODO
+es Opciones de Fotos
+fr Photos
+it Foto
+pt 
+
+TAG pref_hide_help_title
+EN Hide help
+de Hide help TODO
+es Ocultar ayuda
+fr Masquer l\'aide
+it Nascondi aiuto
+pt 
+
+TAG shot_info
+EN Enter shot data
+de Geben Sie erschossen Daten
+es Introducir datos Toma
+fr Saisir les infos de visée
+it Scrivi i dati
+pt Introduzir dados disparo
+
+TAG pref_size_buttons_title
+EN Buttons size
+de Buttons size TODO
+es Buttons size TODO
+fr Buttons size TODO
+it Dimensione bottoni
+pt 
+
+TAG no_thmanager
+EN ThManager not installed
+de 
+es ThManager no instalado
+fr ThManager non installé
+it ThManager non installato
+pt ThManager não instalado
+
+TAG pref_leg_message
+EN Tolerance among the shots of a leg
+de Tolerance among the shots of a leg TODO
+es Precisión entre las mediciones de una visual
+fr Tolérance au long des visées de cheminement
+it Tolleranza tra tiri di una battuta
+pt Tolerância nos disparos de um troço
+
+# TAG pref_device_type_summary IGNORE
+EN Model of the DistoX
+de Model of the DistoX COMMENTED
+es Modelo de DistoX COMMENTED
+fr Model of the DistoX COMMENTED
+it Modello DistoX COMMENTED
+pt 
+
+TAG altitude
+EN Alt. 
+de Höhe 
+es Alt. 
+fr Alt. 
+it Alt. 
+pt Alt.  
+
+# TAG plot_null_start IGNORE
+EN Missing base station
+de 
+es Falta base estación COMMENTED
+fr Missing base station COMMENTED
+it Caposaldo di riferimento mancante COMMENTED
+pt Estação de início em falta
+
+# TAG btn_compass IGNORE
+EN Compass
+de Compass OK
+es Rumbo
+fr Compas
+it Compass
+pt 
+
+TAG comment
+EN comment
+de Anmerkung
+es Comentario
+fr commentaire
+it commento
+pt comentário
+
+TAG pref_closeness_title
+EN Selection radius
+de Selection radius TODO
+es Selección radio
+fr Radius de sélection
+it Raggio di selezione
+pt Raio de seleção 
+
+TAG pref_log_fixed
+EN GPS points
+de GPS Punkt COMMENTED
+es Puntos fijos
+fr Points fixes
+it Punti GPS
+pt Pontos fixos
+
+TAG pref_segment_summary
+EN Minimum line-point distance
+de Minimum line-point distance TODO
+es Mínimo distancia línea-punto
+fr Distance mini entre points d\'une ligne
+it Minima spaziatura dei punti sulle linee
+pt Distância mínima entre dois pontos numa linha
+
+TAG pref_vthr_summary
+EN Vertical LRUD/WENS threshold
+de Vertical LRUD/WENS threshold TODO
+es límite visual vertical por LRUD/WENS
+fr Seuil vertical LRUD/WENS
+it Soglia inclinazione LRUD/WENS
+pt Threshold vertical dos troços para LRUD
+
+TAG unzip_fail
+EN Failed survey-unzip
+de Fehler beim unzip
+es Error en archivo medida
+fr Echec lors la décompression du relevé
+it Scompattazione rilievo fallita
+pt Falha no desarquivamento do projeto
+
+TAG help_write
+EN Write calibration coefficients to the DistoX
+de Write calibration coefficients to the DistoX TODO
+es Escribir coeficientes de calibración en DistoX
+fr Ecrit les coefficients d\'étalonnage sur le DistoX
+it Scrivi calibrazione sul DistoX
+pt 
+
+TAG failed_snap_to_point
+EN No close point to snap the point to
+de Kein Punkt in der Nähe, um den Punkt zu schnappen
+es No close point to snap the point to COMMENTED
+fr No close point to snap the point to COMMENTED
+it Nessun punto vicino su cui muovere il punto
+pt 
+
+TAG help_draw
+EN Enter drawing mode
+de Enter drawing mode TODO
+es Seleccinar herramienta de dibujo
+fr Entre en mode dessin
+it Modalità disegno
+pt 
+
+TAG device_info
+EN Device info
+de Gerät Info
+es Device info TODO
+fr Device info TODO
+it Dati dispositivo
+pt 
+
+TAG pref_autoStations_summary
+EN Add stations automatically
+de Add stations automatically TODO
+es Añadir estación automáticamente
+fr Ajouter les stations automatiquement
+it Aggiungi capisaldi automaticamente
+pt Adicionar estações automaticamente
+
+# TAG not_connected IGNORE
+EN Not connected
+de Not connected COMMENTED
+es No conectado COMMENTED
+fr Non connecté COMMENTED
+it Non connesso COMMENTED
+pt Não ligado
+
+TAG latitude
+EN Lat. 
+de Breite 
+es Lat. 
+fr Lat. 
+it Lat. 
+pt Lat.  
+
+# TAG title_sketch IGNORE
+EN [%1$s] %2$s %3$s %4$s
+de [%1$s] %2$s %3$s %4$s
+es [%1$s] %2$s %3$s %4$s
+fr [%1$s] %2$s %3$s %4$s
+it [%1$s] %2$s %3$s %4$s
+pt 
+
+TAG firmware_file_exists
+EN Existing firmware file
+de Existing firmware file OK
+es 
+fr 
+it 
+pt 
+
+TAG plan
+EN PLAN
+de GRUNDRISS
+es PLANTA
+fr PLAN
+it PIANTA
+pt PLANTA
+
+TAG pref_ethr_title
+EN Extend threshold
+de Extend threshold TODO
+es Ampliar límites
+fr Seuil extension
+it Soglia extend
+pt Threshold para vista estendida
+
+# TAG station_next IGNORE
+EN next station
+de Nächste Messpunkt OK
+es Siguiente estación COMMENTED
+fr next station COMMENTED
+it prossimo caposaldo COMMENTED
+pt 
+
+TAG wait_scan
+EN Scanning: wait ...
+de Scannen: warten ...
+es Buscando: espere...
+fr Recherche : patientez...
+it Scanning: attendi ...
+pt Procurando: aguarde...
+
+TAG name
+EN name
+de Namen
+es Nombre
+fr nom
+it nome
+pt nome
+
+TAG sensor_magnetic_field
+EN magnetic field
+de Magnetisches Feld
+es Campo magnético
+fr champ magnétique
+it campo magnetico
+pt campo magnético
+
+TAG saving_file_failed
+EN Failed file-save
+de Gescheitert Datei speichern
+es Fallo al guardar archivo
+fr Echec de l\'enregistrement du fichier
+it Salvataggio file fallito
+pt Falha na gravação do ficheiro
+
+TAG title_edit
+EN Edit
+de Edit TODO
+es Editar
+fr Modifier
+it Edita
+pt 
+
+# TAG title_sketch_edit IGNORE
+EN Edit 3D surface
+de Edit 3D surface
+es Edición Superficie 3D
+fr Edit 3D surface
+it Edit 3D surface
+pt 
+
+TAG pref_dip_thr_message
+EN Tolerance over the shots magnetic dip
+de Tolerance over the shots magnetic dip TODO
+es Precisión sobre mediciones magnética de la inclinación
+fr Tolérance des visées : inclinaison
+it Tolleranza valori di immersione magnetica
+pt 
+
+TAG extended
+EN EXTENDED
+de LÄNGSSCHNITT
+es DESARROLLADO
+fr COUPE
+it SEZIONE LONG.
+pt PERFIL ESTENDIDO
+
+TAG pref_ethr_summary
+EN Splay shot extend threshold
+de Splay shot extend threshold TODO
+es Ampliar límites de la toma Secundaria
+fr Seuil extension visée latérales
+it Soglia computo extend per tiri splay
+pt Threshold das radiais para a vista estendida
+
+TAG pref_device_message
+EN DistoX address name
+de DistoX address name TODO
+es Nombre dirección DistoX
+fr Adresse du DistoX
+it Indirizzo BT del DistoX
+pt Nome do endereço do DistoX
+
+TAG pref_accel_thr_summary
+EN Tolerance over the shots accelerations
+de Tolerance over the shots accelerations TODO
+es Precisión sobre las mediciones aceleración
+fr Tolérance des visées : accélération
+it Tolleranza valori di accelerazione
+pt 
+
+TAG shot_reverse
+EN reverse
+de umgekehrt
+es Inversa
+fr reverse TODO
+it inverso
+pt 
+
+TAG pref_linestyle_title
+EN Line style
+de Line style TODO
+es Nº de puntos en línea
+fr Style de ligne
+it Stile linee
+pt Estilo da linha
+
+TAG not_available
+EN BT not available
+de BT nicht verfügbar
+es BT no disponible
+fr Bluetooth indisponible
+it Bluetooth non disponibile
+pt Bluetooth não disponível
+
+TAG calib_compute_coeffs
+EN Computing calibration coefficients ...
+de Kalibrierung Koeffizienten berechnend ...
+es Cálculo de coeficientes de calibración  ... COMMENTED
+fr Calculs des coeficients d\'étalonnage ...
+it Calcolo coefficienti in corso
+pt 
+
+TAG pref_line_thickness_title
+EN Line thickness
+de Line thickness TODO
+es Grosor de la linea
+fr Line thickness TODO
+it Spessore linee
+pt 
+
+TAG menu_recover
+EN Recover
+de wiedererlangen
+es Registro
+fr Recupérer
+it Recupera
+pt 
+
+TAG version_ask
+EN Updating to a new version of TopoDroid.\nDo you want to reinstall drawing items?
+de Installation einer neuen Version von TopoDroid.\n.Zeichenwerkzeuge neu installieren möchten?
+es Usted va a actualizar a una nueva versión de topodroid.\n¿Quiere volver a instalar los elementos de dibujo?
+fr Vous ètre en train de mettre à jour vers une nouvelle version de TopoDroid.\n Voulez vous réinstaller les symboles de dessins ?
+it Stai aggiornando ad una nuova versione di TopoDroid.\nVuoi reinstallare prototipi grafici?
+pt 
+
+TAG stat_station
+EN Stations %1$d
+de Messpunkten %1$d
+es Estaciones %1$d
+fr Stations %1$d
+it Capisaldi %1$d
+pt Estações %1$d
+
+TAG pref_cat_sketch
+EN Sketch options
+de Sketch options TODO
+es Opciones dibujo
+fr Options de dessin
+it Opzioni sketch 3D
+pt 
+
+TAG error_value_required
+EN Value required
+de Wert erforderlich
+es Introducir valor
+fr Valeur nécessaire
+it Valore mancante
+pt 
+
+TAG STATION
+EN STATION 
+de MESSPUNKT 
+es ESTACIÓN 
+fr STATION 
+it CAPOSALDO 
+pt 
+
+TAG AREA
+EN AREA
+de FLÄCHE
+es ÁREA
+fr ZONE
+it AREA
+pt 
+
+TAG help_less
+EN Return to the primary actions
+de Return to the primary actions TODO
+es Volver a opciones principales
+fr Retour aux options précédentes
+it Ritorna ai tasti primari
+pt 
+
+TAG pref_sketchLineStep_message
+EN Distance between line points
+de Distance between line points TODO
+es Distancia entre puntos de la línea
+fr Distance entre les points d\'une ligne
+it Distance between line points
+pt 
+
+TAG no_plots
+EN Survey has no sketch\nUse Add button to make one
+de Vermessung hat kein Skizze
+es Topografía sin dibujos\nUse el botón para añadir uno
+fr Le relevé ne contient pas de croquis.\nUtilisez le bouton Ajouter pour en créer un.
+it Rilievo senza disegni
+pt O projeto não tem esquiços\nUse o menu para criar um
+
+TAG pref_sketchSectionStep_message
+EN Distance between intermediate sections
+de Distance between intermediate sections TODO
+es Distancia entre las secciones intermedias
+fr Distance entre sections intermédiaire
+it Distance between intermediate sections
+pt 
+
+TAG help_scan
+EN Scan for new DistoX devices
+de Scan for new DistoX devices TODO
+es Buscando nuevos dispositivos DistoX
+fr Recherche de nouveaux DistoX
+it Cerca dispositivi DistoX
+pt 
+
+TAG stat_length
+EN Length %1$.1f
+de Länge %1$.1f
+es Longitud %1$.1f
+fr Longueur %1$.1f
+it Sviluppo %1$.1f
+pt Comprimento %1$.1fm
+
+TAG menu_options
+EN Options
+de Einstellungen
+es Opciones
+fr Options
+it Opzioni
+pt Opções
+
+TAG help_toggle_plot
+EN Switch between plan and extended sect.
+de Switch between plan and extended sect. TODO
+es Cambiar de planta a Alzado
+fr Bascule entre plan et section étendue
+it Passa tra pianta e sezione long.
+pt 
+
+TAG error_group_non_integer
+EN Group must be integer number
+de Gruppe muss ganze Zahl sein
+es Group must be integer number COMMENTED
+fr Group must be integer number COMMENTED
+it Il gruppo deve essere un numero intero
+pt 
+
+TAG title_note
+EN Survey notes
+de Vermessung Anmerkung
+es Notas
+fr Notes du relevé
+it Annotazioni
+pt 
+
+TAG sensor_light
+EN light
+de Licht
+es Luz
+fr lumiêre
+it luce
+pt luz
+
+TAG saved_file_
+EN Saved file\ 
+de Gespeicherte Datei
+es Guardar archivo\ 
+fr Fichier enregistré\ 
+it Salvato file\ 
+pt Ficheiro gravado 
+
+TAG help_info_shot
+EN Survey informations
+de Survey informations TODO
+es Información Topografía
+fr Informations supplémentaires du relevé
+it Informazioni sul rilievo
+pt 
+
+TAG null_bitmap
+EN null bitmap [OOM error]
+de Null Bitmap [OOM error]
+es mapa bits nulo
+fr null bitmap
+it null bitmap OK
+pt null bitmap
+
+TAG error_station_required
+EN Station required
+de Messpunkt erforderlich
+es Introducir estación
+fr Station nécessaire
+it Caposaldo mancante
+pt 
+
+TAG help_coeff
+EN Show calibration coefficients
+de Show calibration coefficients TODO
+es Show calibration coefficients COMMENTED
+fr Show calibration coefficients COMMENTED
+it Coefficienti della calibrazione
+pt 
+
+TAG no_photos
+EN Survey has no photo
+de Vermessung hat kein Foto
+es Topografía sin foto
+fr Le relevé ne contient pas de photo
+it Rilievo senza foto
+pt O projeto não tem fotos
+
+TAG distox_err_connected
+EN Device already connected
+de Gerät bereits verbunden
+es Dispositivo ya conectado
+fr Périphérique déjà connecté
+it DistoX già connesso
+pt BT Dispositivo já ligado
+
+TAG no_survey
+EN No survey selected.
+de Kein Vermessung ausgewählt
+es Topografía no seleccionada.
+fr Aucun relevé sélectionné.
+it Rilievo non selezionato
+pt Sem projecto seleccionado.\nUse os menus para seleccionar um
+
+TAG button_eval_cal
+EN Eval w. calib.
+de Auswerten mit Kal.
+es Eval w. calib.
+fr Eval avec étalonnage
+it Calcola con calibr.
+pt Avaliar com calibração
+
+TAG visible_border
+EN visible border
+de Sichtbar Grenze
+es Borde visible
+fr Bordure visible
+it bordo visibile
+pt bolda visível
+
+# TAG thp_danger IGNORE 
+EN danger
+de danger COMMENTED
+es Peligro COMMENTED
+fr danger COMMENTED
+it pericolo COMMENTED
+pt perigo
+
+TAG help_add_shot
+EN Add a shot entering the data manually
+de Add a shot entering the data manually TODO
+es Introducir datos de una toma manualmente
+fr Ajoute une visée manuellement
+it Aggiungi un tiro manualmente
+pt 
+
+TAG title_location_gps
+EN Location *
+de GPS Position
+es Posicionamiento
+fr localisation
+it Posizione *
+pt LOCALIZAÇÃO *
+
+TAG stat_depth
+EN Depth %1$.1f %2$.1f"
+de Tiefe %1$.1f %2$.1f"
+es Profundidad %1$.1f %2$.1f"
+fr Profondeur %1$.1f %2$.1f"
+it Profondità %1$.1f %2$.1f"
+pt Profundidade %1$.1f +%2$.1f"m
+
+TAG remote_title
+EN Device Remote Control
+de Device Remote Control TODO
+es Device Remote Control TODO
+fr Device Remote Control TODO
+it DistoX Remote Control
+pt 
+
+TAG pref_comm_retry_title
+EN Connection retry
+de Connection retry TODO
+es Reiniciar comunicación
+fr Tentative de communication
+it Tentativi connesione
+pt Tentativas de comunicação
+
+TAG firmware_file_uploaded
+EN Uploaded firmware file %1$s size %2$d
+de Uploaded firmware file %1$s size %2$d OK
+es 
+fr 
+it 
+pt 
+
+TAG pref_sketchSectionStep_title
+EN Section step
+de Section step TODO
+es Sección paso
+fr Paramêtres de section
+it Section step
+pt 
+
+TAG pref_checkAttached_title
+EN Midline check
+de Midline check TODO
+es Comprobación línea media
+fr Vérification cheminement
+it Controllo poligonale
+pt Verificação da poligonal
+
+TAG btn_pockettopo IGNORE
+EN PocketTopo
+de PocketTopo OK
+es PocketTopo
+fr PocketTopo
+it PocketTopo
+pt 
+
+TAG save_as
+EN save as
+de Speichern als
+es save as COMMENTED
+fr save as COMMENTED
+it salva come
+pt 
+
+TAG stat_loop
+EN Loops %1$d
+de Kreis %1$d
+es Bucle %1$d
+fr Boucle %1$d
+it Anelli %1$d
+pt Laços %1$d
+
+TAG calibs
+EN CALIBS
+de KALIBRIERUNG
+es Calibración
+fr ETALONNAGES
+it CALIBRAZ.
+pt CALIBRAÇÕES
+
+TAG popup_sharp_pt
+EN Straighten segment
+de Begradigen Segment
+es Ángulo agudo COMMENTED
+fr Angle aigu COMMENTED
+it Rendi diritto
+pt 
+
+TAG error_start_required
+EN Reference station required
+de Referenzmesspunkt erforderlich
+es Introducir referencia de estación
+fr Station de référence nécessaire
+it Caposaldo di riferimento mancante
+pt 
+
+TAG HELP
+EN HELP
+de HILFE
+es AYUDA
+fr AIDE
+it AIUTO
+pt 
+
+TAG pref_checkAttached_summary
+EN Check if stations are attached
+de Check if stations are attached TODO
+es Compruebe si se adjunta la estación
+fr Vérifier si les stations sont reliées
+it Controlla se ci sono capisaldi scollegati
+pt Verificar se as estações estão ligadas
+
+TAG help_group
+EN Assign group numbers automatically
+de Assign group numbers automatically TODO
+es Asignar automáticamente números grupo
+fr Affecte automatiquement les numéros de groupe
+it Assegna gruppi automaticamente
+pt 
+
+TAG pref_calib_algo_summary
+EN Calibration algorithm
+de Calibration algorithm TODO
+es Calibration algorithm TODO
+fr Calibration algorithm TODO
+it Algortimo di calibrazione
+pt 
+
+TAG help_stats
+EN Survey statistics dialog
+de Survey statistics dialog TODO
+es Estadísticas de Topografías
+fr Statistiques du relevé
+it Statistiche rilievo
+pt 
+
+TAG title_draw_area
+EN AREA %1$s
+de FLÃ„CHE %1$s
+es ÁREA %1$s
+fr ZONE %1$s
+it AREA %1$s
+pt ÁREA %1$s
+
+TAG barrier_add
+EN Break midline display?
+de Brechen Mittellinie Anzeige?
+es Dividir  la visualización de la línea central? COMMENTED
+fr Arréter l\'affichage du cheminement ?
+it Interruzione restituzione?
+pt 
+
+TAG no_device_found
+EN No device found
+de Kein Gerät gefunden
+es No se encuentra dispositivos
+fr Pas de périphérique trouvé
+it Dispositivo non trovato
+pt Nenhum dispositivo encontrado
+
+TAG pref_cat_device
+EN DistoX options
+de DistoX options TODO
+es Opciones DistoX
+fr Options du DistoX
+it Opzioni DistoX
+pt Opções DistoX
+
+TAG pref_linecorner_message
+EN Bezier corner detection threshold
+de Bezier corner detection threshold TODO
+es Detección del límite del ángulo de línea Bezier
+fr Seuil de détection angle Bézier
+it Soglia angolatura curve Bezier
+pt Threshold de detecção dos cantos das linhas
+
+TAG extend_right
+EN Right
+de Recht
+es Drch.
+fr Droite
+it Dx
+pt Dir.
+
+TAG pref_label_size_message
+EN Size of the labels
+de Size of the labels TODO
+es Tamaño del texto
+fr Size of the labels TODO
+it Dimensione delle scritte
+pt 
+
+TAG btn_png
+EN PNG
+de PNG OK
+es PNG
+fr PNG
+it PNG
+pt 
+
+TAG pref_log_calib
+EN Calibration
+de Calibration TODO
+es Calibración
+fr Etalonnage
+it Calibrazione
+pt Calibração
+
+TAG pref_iter_message
+EN Calibration iterations
+de Calibration iterations TODO
+es Calibración de iteraciones
+fr Répétitions d\'étalonnage
+it Massimo numero iterazioni
+pt Interações para o processamento da calibração
+
+TAG button_geomag
+EN GeoMag    
+de GeoMag     OK
+es GeoMag     COMMENTED
+fr GeoMag    
+it GeoMag     OK
+pt 
+
+TAG pref_sketchSectionStep_summary
+EN Distance between sections
+de Distance between sections TODO
+es Distancia entre las secciones
+fr Distance entre sections
+it Distance between sections
+pt 
+
+TAG sensor
+EN sensor
+de Sensor
+es Sensor
+fr capteur
+it sensore
+pt sensor
+
+TAG pref_unit_angle_title
+EN Angle units
+de Angle units TODO
+es Unidades de ángulo
+fr Unité d\'angle
+it Unità angoli
+pt Unidades angulares
+
+TAG pref_log_units
+EN Units
+de Units TODO
+es Unidades
+fr Unités
+it Unità
+pt 
+
+TAG pref_dip_thr_summary
+EN Tolerance over the shots magnetic dip
+de Tolerance over the shots magnetic dip TODO
+es Precisión sobre mediciones magnética de la inclinación
+fr Tolérance des visées : inclinaison
+it Tolleranza valori di immersione magnetica
+pt 
+
+TAG help_bluetooth
+EN Reset bluetooth connection
+de Reset bluetooth connection TODO
+es Reinicio conexión bluetooth
+fr Reinitialise la connexion Bluetooth
+it Resetta connessione bluetooth
+pt 
+
+# TAG button_write IGNORE
+EN Write calibration
+de Schreib Kalibrierung
+es Escribir calibración
+fr Write calibration COMMENTED
+it Scrivi calibrazione
+pt Escrever calibração
+
+TAG pref_gps_averaging_title
+EN GPS Averaging
+de GPS Averaging TODO
+es Promedio GPS
+fr Calcul moyenne GPS
+it GPS Averaging
+pt 
+
+TAG pref_ethr_message
+EN Threshold to compute splay shot extend
+de Threshold to compute splay shot extend TODO
+es Calculo ampliación límite de la toma secundaria
+fr Seuil de calcul des visées étendues
+it Soglia computo extend per tiri splay
+pt Threshold para processar radiais para a vista estendida
+
+TAG pref_log_debug
+EN Debug
+de Debug TODO
+es Depurar
+fr Debug
+it Debug
+pt Debug
+
+TAG pref_sketchDeltaExtrude_summary
+EN Extrude delta
+de Extrude delta TODO
+es Extrusión delta
+fr Extrude delta
+it Extrude delta
+pt 
+
+TAG distox_err_headtail_eof
+EN DistoX memory EOF error
+de DistoX memory EOF error OK
+es Fallo memoria EOF DistoX
+fr Erreur EOF mémoire DistoX
+it Memoria DistoX EOF
+pt BT Head-Tail - Erro fim do ficheiro
+
+TAG zip_saved
+EN Saved 
+de Gespeichert Zip
+es Guardar
+fr Enregistré 
+it Salvato 
+pt Guardada 
+
+TAG help_save_plot
+EN Export sketch
+de Export sketch TODO
+es Exportar dibujo
+fr Exporte le croquis
+it Esporta disegno
+pt 
+
+TAG btn_man
+EN Manual
+de Manual OK
+es Manual
+fr Manuel
+it Manuale
+pt 
+
+TAG label_text
+EN Enter the label text
+de Geben Sie den Beschriftungstext
+es Introducir texto en la etiqueta
+fr Saisissez le texte
+it Scrivi il testo
+pt Introduza o texto
+
+TAG pref_cat_drawing
+EN Drawing options
+de Drawing options TODO
+es Opciones Dibujo
+fr Options de dessin
+it Opzioni disegno
+pt Opções do desenho
+
+TAG error_sensor_required
+EN Sensor required
+de Sensor erforderlich
+es Introducir sensor
+fr Capteur nécessaire
+it Sensore mancante
+pt 
+
+TAG none
+EN none
+de kein
+es Nada
+fr aucun
+it none
+pt nenhum
+
+TAG pref_drawing_unit_summary
+EN Scale of the point tools
+de Scale of the point tools TODO
+es Escala de símbolos del dibujo
+fr Echelle des symboles de dessin
+it Scala simboli grafici
+pt Escala dos símbolos no ecrã
+
+TAG options
+EN options
+de Einstellungen COMMENTED
+es nota
+fr options
+it opzioni
+pt 
+
+TAG longitude_hint
+EN Long. dd:mm:ss.sss
+de Länge dd:mm:ss.sss
+es Long. dd:mm:ss.sss
+fr Long. dd:mm:ss.sss
+it Long. gg:mm:ss.sss
+pt 
+
+TAG ask_reset
+EN Reset DistoX memory?
+de Rücksetzen DistoX?
+es ¿Reiniciar memoria DistoX?
+fr Reinitialiser mémoire DistoX ?
+it Resettare memoria DistoX?
+pt 
+
+TAG pref_vthr_message
+EN Leg inclination threshold between LRUD/WENS
+de Leg inclination threshold between LRUD/WENS TODO
+es límite visual vertical por LRUD/WENS
+fr Seuil inclinaison cheminement entre LRUD/WENS
+it Soglia inclinazione battuta per LRUD/WENS
+pt Threshold vertical dos troços para LRUD
+
+TAG pref_log_survey
+EN Surveys
+de Surveys TODO
+es Topografía
+fr Relevés
+it Rilievi
+pt 
+
+TAG stat_duplicate
+EN Duplicate shots %1$d %2$.1f
+de Doppelmessungen %1$d %2$.1f
+es mediciones duplicadas %1$d %2$.1f
+fr Visée dupliquées %1$d %2$.1f
+it Battute doppie %1$d %2$.1f
+pt Disparos duplicados %1$d %2$.1f
+
+TAG bt_reset
+EN Reset bluetooth connection
+de Bluetooth-Verbindung zurückgesetzt
+es Reinicio conexión bluetooth
+fr Redémarrer connexion Bluetooth
+it Resettare la connessione bluetooth
+pt 
+
+TAG altitude_wgs84
+EN WGS84 altitude
+de WGS84 Höhe
+es Altitud WGS84
+fr Altitude WGS84
+it Quota WGS84
+pt 
+
+TAG button_yes
+EN Yes       
+de Ja       
+es Si        
+fr Oui       
+it SÃ­        
+pt Sim       
+
+TAG pref_mag_thr_title
+EN Magnetic tolerance
+de Magnetic tolerance TODO
+es Tolerancia magnética
+fr Tolérance magnétique
+it Tolleranza campo magnetico
+pt 
+
+TAG declination
+EN Magn. decl.
+de Magn. Dekl.
+es Decl. magn. 
+fr Décl. magn.
+it decl. magn.
+pt 
+
+TAG help_symbol_plot
+EN Select the current drawing tool
+de Select the current drawing tool TODO
+es Seleccione el símbolo de dibujo para dibujar
+fr Sélectionne le symbole à dessiner
+it Seleziona prototipo per disegno
+pt 
+
+TAG title_plot_save
+EN Save sketch as
+de Speichern Skizze als
+es Guardar dibujo como
+fr Enregistrer le croquis sous
+it Salva disegno come 
+pt 
+
+# TAG sensor_extern IGNORE
+EN extern
+de extern TODO
+es Externo COMMENTED
+fr externe COMMENTED
+it esterno COMMENTED
+pt externo
+
+TAG remote_measure
+EN Measure
+de Messung
+es Measure TODO
+fr Measure TODO
+it Misura
+pt 
+
+TAG btn_survex IGNORE
+EN Survex
+de Survex OK
+es Survex
+fr Survex
+it Survex
+pt 
+
+TAG error_declination_number
+EN Declination must be a number
+de Deklination muss eine Zahl sein
+es Declination must be a number COMMENTED
+fr Declination must be a number COMMENTED
+it La declinazione deve esser un numero
+pt 
+
+TAG no_proj4
+EN Proj4 not installed
+de Proj4 nicht installiert
+es Proj4 no instalado
+fr *Proj$* non installé
+it Proj4 non installato
+pt 
+
+TAG help_delete_calib
+EN Delete calibration
+de Delete calibration TODO
+es Eliminar calibración
+fr Supprime l\'étalonnage
+it Elimina calibrazione
+pt 
+
+TAG pref_altitude_title
+EN Altitude
+de Höhe COMMENTED
+es Altimetría
+fr Altitude
+it Altitudine
+pt 
+
+TAG missing_warning
+EN The following drawing tools are missing.\n
+de The following drawing tools are missing.\n OK
+es Faltan los siguientes símbolos en el dibujo.\n
+fr Les symboles suivants sont manquants.\n
+it Mancano i seguenti prototipi grafici.\n
+pt Os seguintes símbolos estão em falta:\n
+
+TAG help_export_calib
+EN Export calibration
+de Export calibration TODO
+es Export calibration TODO
+fr Export calibration TODO
+it Esporta calibrazione
+pt 
+
+TAG menu_logs
+EN Logs
+de Logs
+es Registros
+fr Journalisation
+it Logs
+pt Opções de registo
+
+TAG pref_log_stream_title
+EN Log stream
+de Log stream TODO
+es Log stream TODO
+fr Log stream TODO
+it Log stream OK
+pt 
+
+TAG button_cancel
+EN Cancel    
+de Abbrechen 
+es Cancelar  
+fr Annuler    
+it Cancella  
+pt Cancelar    
+
+TAG error_clino_required
+EN Clino required
+de Neigung erforderlich
+es Introducir Clino
+fr Pente nécessaire
+it Inclinazione mancante
+pt 
+
+TAG pref_crs_title
+EN C R S 
+de C R S  TODO
+es C R S 
+fr C R S 
+it C R S 
+pt 
+
+TAG read_fail_with_code
+EN Read failure: error code 
+de Lesefehler: Fehlercode
+es Fallo de lectura: código de error 
+fr Echec de lecture : code d\'erreur 
+it Lettura fallita. Codice 
+pt Erro leitura: cód. erro 
+
+TAG pref_log_zip
+EN ZIP
+de ZIP TODO
+es ZIP
+fr ZIP
+it ZIP
+pt 
+
+TAG pref_sketchLineStep_title
+EN Line step
+de Line step TODO
+es Paso de la línea
+fr Paramêtres de ligne
+it Line step
+pt 
+
+TAG pref_station_size_message
+EN Size of the station labels
+de Size of the station labels TODO
+es Tamaño de la etiqueta de la estación
+fr Taille du texte des stations
+it Size of the station labels
+pt 
+
+TAG toggle_failed
+EN Failed to toggle DistoX
+de Fehler beim Kalibrierungsmodus wechseln
+es Error al alternar DistoX
+fr Echec du changement de mode du DistoX
+it Attivazione modo calibrazione fallita
+pt Falha na comutação do DistoX para o modo de calibração
+
+TAG photo_shot
+EN add shot
+de Mess hinzufügen
+es Añadir toma
+fr ajouter une visée
+it aggiungi battuta
+pt 
+
+TAG menu_display
+EN Display
+de anzeigen
+es Display COMMENTED
+fr Display COMMENTED
+it Display
+pt Modo de visionamento COMMENTED
+
+TAG help_firmware
+EN DistoX2 firmware updater
+de DistoX2 firmware updater TODO
+es DistoX2 firmware updater TODO
+fr DistoX2 firmware updater TODO
+it DistoX2 firmware updater OK
+pt 
+
+TAG pref_linestyle_summary
+EN Line drawing style
+de Line drawing style TODO
+es Número de puntos en la línea dibujada
+fr Style de ligne
+it Stile linee
+pt Estilo da linha a desenhar
+
+TAG team
+EN team
+de Team
+es Equipo
+fr équipe
+it squadra
+pt equipa
+
+TAG no_cave3d
+EN Cave3D not installed
+de Cave3D nicht installiert
+es Cave3D No instalado
+fr Cave3D n\'est pas installé
+it Cave3D non installato
+pt Cave3D não instalado
+
+TAG pref_log_num
+EN Data reduction
+de Data reduction TODO
+es reducción de datos
+fr Réduction données
+it Riduzione poligonale
+pt 
+
+TAG pref_log_stream_summary
+EN Log output stream
+de Log output stream TODO
+es Log output stream TODO
+fr Log output stream TODO
+it Log output stream OK
+pt 
+
+TAG help_cover
+EN Display angle distribution of calibration data
+de Display angle distribution of calibration data TODO
+es Distribución del ángulo de visualización de los datos de calibración
+fr Affiche la distribution des données d\'étalonnage
+it Distribuzione angolare dati calibrazione
+pt 
+
+TAG pref_vthr_title
+EN Shot vertical threshold
+de Shot vertical threshold TODO
+es Toma límite
+fr Seuil visées verticales
+it Soglia vert.
+pt Vthreshold dos disparos
+
+TAG pref_unit_length_summary
+EN Display units for lengths
+de Display units for lengths TODO
+es Visualizar unidades de longitud
+fr Afficher les unités de longueurs
+it Unità lunghezze
+pt Unidades de distância
+
+TAG pref_iter_title
+EN Iterations
+de Iterations TODO
+es Iteraciones
+fr Répétitions
+it Iterazioni
+pt Iterações (tentativas de melhoria de calibração)
+
+TAG photo_external
+EN measurement
+de Messung
+es Medición
+fr mesure
+it misurazione
+pt medida externa
+
+TAG app_name
+EN TopoDroid
+de TopoDroid OK
+es TopoDroid
+fr TopoDroid
+it TopoDroid
+pt TopoDroid
+
+TAG pref_log_distox
+EN DistoX
+de DistoX TODO
+es DistoX
+fr DistoX
+it DistoX
+pt DistoX
+
+# TAG sketch3d_null_start IGNORE
+EN Missing 3D sketch base station
+de Missing 3D sketch base station
+es Falta dibujo 3D estación base
+fr Missing 3D sketch base station
+it Missing 3D sketch base station
+pt 
+
+TAG menu_scan
+EN Scan
+de Scan
+es Scan COMMENTED
+fr Scan COMMENTED
+it Scan
+pt Procurar COMMENTED
+
+TAG pref_survey_stations_summary
+EN Automatic survey stations
+de Automatic survey stations TODO
+es Estaciones topográficas automáticas
+fr Stations automatiques
+it Capisaldi rilievo automatici
+pt 
+
+TAG pref_unit_location_title
+EN Location units
+de Location units TODO
+es Unidades de Posicionamiento
+fr Unité de localisation
+it Unità posizioni
+pt Formato para a localização
+
+# TAG shot_clino IGNORE
+EN clino
+de Neigung COMMENTED
+es Clino COMMENTED
+fr clino COMMENTED
+it clino COMMENTED
+pt clino
+
+TAG stat_component
+EN Components %1$d
+de Components %1$d
+es Componentes %1$d
+fr Composants %1$d
+it Componenti %1$d
+pt Componentes %1$d
+
+TAG menu_export
+EN Export
+de exportieren
+es Export COMMENTED
+fr Export COMMENTED
+it Esporta
+pt Exportar
+
+# TAG plot_null_name IGNORE
+EN Missing sketch name
+de 
+es Falta nombre dibujo COMMENTED
+fr Missing sketch name COMMENTED
+it Nome del disegno mancante COMMENTED
+pt Nome para o esquiço em falta
+
+# TAG help_note_plot IGNORE
+EN Edit the properties of the selected sketch item
+de Edit the properties of the selected sketch item TODO
+es Edite las propiedades del elemento de dibujo
+fr Edite les propriétés de l\'élément dessiné
+it Edita le propertà dell\'oggetto
+pt 
+
+TAG button_no
+EN No        
+de Nein      
+es No        
+fr Non        
+it No        
+pt 
+
+TAG pref_mag_thr_message
+EN Tolerance over the shots magnetic field
+de Tolerance over the shots magnetic field TODO
+es Precisión sobre las mediciones de campo magnético
+fr Tolérance des visées : champ magnetique
+it Tolleranza valori di campo magnetico
+pt 
+
+TAG pref_sock_type_title
+EN Socket
+de Socket TODO
+es Emparejar
+fr Socket
+it Socket
+pt Socket
+
+TAG pref_checkBT_title
+EN Bluetooth
+de Bluetooth TODO
+es Bluetooth
+fr Bluetooth
+it Bluetooth
+pt Verificar Bluetooth
+

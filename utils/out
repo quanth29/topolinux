@@ -1,0 +1,35 @@
+Checking xx against en
+comment0 XX <1> EN <>
+comment0 <1> <>
+comment1 XX <1> EN <1>
+comment4 XX <1> EN <>
+comment4 <1> <>
+comment6 XX <2> EN <2>
+enable1 XX <2> EN <2>
+enable2 XX <2> EN <2>
+enable4 XX <2> EN <2>
+enable5 XX <2> EN <>
+enable5 <2> <>
+enable7 XX <2> EN <>
+enable7 <2> <>
+xx COMMENT - en MISSING
+comment0
+comment4
+xx COMMENT - en ENABLED
+xx ENABLED - en MISSING
+enable7
+enable5
+xx ENABLED - en COMMENT
+Checking en against xx
+enable3 <> <2>
+enable6 <> <2>
+comment3 <> <1>
+comment2 <> <1>
+xx COMMENT - en ENABLED
+xx ENABLED - en COMMENT
+xx MISSING - en ENABLED
+enable3
+enable6
+xx MISSING - en COMMENT
+comment3
+comment2

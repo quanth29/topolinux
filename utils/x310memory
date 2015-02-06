@@ -1,0 +1,45 @@
+
+int index2addr( int index )
+{
+  int addr = 0;
+  while ( index >= 56 ) {
+    index -= 56;
+    addr += 0x0400; // 1 KB
+  }
+  addr += 18 * index;
+  return addr;
+}
+
+byte[] readData( int index )
+{
+  byte[] bytes = new byte[4];
+  byte[] ret = new byte[18];
+
+  int addr = index2addr( index );
+  int off = addr % 4;
+  addr -= off;
+  int k1 = 0;
+  int k2 = off;
+  for (int k=0; k<5; ++k ) {
+    read4bytes( addr, bytes );
+    while ( k2 < 4 ) {
+      ret[k1++] = bytes[k2++];
+    }
+    k2 = 0;
+    addr += 4;
+  }
+  return ret;
+}
+
+void resetData( int index )
+{
+  int addr = index2addr( index );
+  int off = addr % 4;
+  addr += 4*4;
+  byte[] bytes = new byte[4];
+  read4bytes( addr, bytes );
+  byte[off+0] = 0xff;
+  byte[off+1] = 0xff;
+  write4bytes( addr, bytes );
+}
+
