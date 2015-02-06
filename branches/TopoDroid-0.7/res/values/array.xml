@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+  <string-array name="exportType">
+     <item name="th">Therion</item>
+     <item name="dat">Compass</item>
+     <item name="svx">Survex</item>
+     <item name="tro">VisualTopo</item>
+     <item name="tlx">TopoLinux</item>
+  </string-array>
+
+  <string-array name="exportTypeValue">
+     <item name="th">th</item>
+     <item name="dat">dat</item>
+     <item name="svx">svx</item>
+     <item name="tro">tro</item>
+     <item name="tlx">tlx</item>
+  </string-array>
+
+  <string-array name="lineStyle">
+     <item name="bezier">Bezier</item>
+     <item name="none">Fine</item>
+     <item name="two">Normal</item>
+     <item name="two">Coarse</item>
+  </string-array>
+
+  <string-array name="lineStyleValue">
+     <item name="bezier">bezier</item>
+     <item name="none">none</item>
+     <item name="two">two</item>
+     <item name="three">three</item>
+  </string-array>
+
+  <string-array name="groupBy">
+     <item name="distance">Distance</item>
+     <item name="four">Four at a time</item>
+     <item name="only16">Only first 16</item>
+  </string-array>
+
+  <string-array name="groupByValue">
+     <item name="distance">0</item>
+     <item name="four">1</item>
+     <item name="only16">2</item>
+  </string-array>
+
+  <string-array name="unitLength">
+     <item name="meters">meters</item>
+     <item name="feet">feet</item>
+  </string-array>
+
+  <string-array name="unitLengthValue">
+     <item name="meters">meters</item>
+     <item name="feet">feet</item>
+  </string-array>
+
+  <string-array name="unitAngle">
+     <item name="degrees">degrees</item>
+     <item name="grads">grads</item>
+  </string-array>
+
+  <string-array name="unitAngleValue">
+     <item name="degrees">degrees</item>
+     <item name="grads">grads</item>
+  </string-array>
+
+</resources>
