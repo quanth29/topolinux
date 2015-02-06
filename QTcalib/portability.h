@@ -1,1 +1,0 @@
-../QTshot/portability.h
