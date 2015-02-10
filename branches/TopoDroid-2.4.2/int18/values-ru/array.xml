@@ -13,7 +13,7 @@
      <item name="normal">Нормальный</item>
      <item name="advanced">Продвинутый</item>
      <item name="experimental">Эксперементальный</item>
-     <!-- item name="complete">Complete</item -->
+     <!-- item name="complete">Полный</item -->
   </string-array>
   <string-array name="extraButtonsValue">
      <item name="basic">0</item>
