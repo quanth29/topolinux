@@ -18,7 +18,7 @@ The first time you start the app a welcome message is shown: read it! It is impo
 
 <h4>BUTTONS</h4>
 <ulist>
-<li><u>DistoX</u> switches to the Device (management) window</li>
+<li><u>Device activity</u> (Disto icon): switches to the Device (management) window</li>
 <li><u>Add</u> (a plus sign): used to create a new survey</li>
 <li><u>Import</u> (a vertical arrow): used to import ZIP archives created with TopoDroid or survey files (Therion, Compass, or PocketTopo).</li>
 <li>The optional buttons (shown only at the highest activity level) are for the <i>ThManager</i> (Therion manager) and the <i>SQLite viewer</i>; both require external apps</li>

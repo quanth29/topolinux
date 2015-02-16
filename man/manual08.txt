@@ -1,13 +1,13 @@
 <html><body>
 <h3>[8] SURVEY DATA</h3>
 
-<i>Back to the main window. The list of surveys is empty, but you are finally ready for your first survey. Tap on the <u>Add</u> button (the "plus" sign). You get a dialog to specify the survey informations: <u>name</u>, <u>date</u>, <u>team</u>. magnetic <u>declination</u>, and a brief <u>description</u>.</i><br><p>
+<i>Back to the main window. The list of surveys is empty, but you are finally ready for your first survey. Tap on the <u>Add</u> button (the "plus" sign). You get a dialog to specify the survey informations: <u>name</u>, <u>date</u>, <u>team</u>, magnetic <u>declination</u>, and a brief <u>description</u>.</i><br><p>
 
 The survey name is mandatory. It must be unique in the database. The survey
 names are used to list surveys in the main window and TopoDroid distinguishes
 surveys by their name (although each survey has a unique numerical id in the
 database).  The date is pre-filled with the current date. Team and description
-are empty (unless you have set a default team in the app settings). They can safely be left so, although it is a good practice to take the time to fill them.  The magnetic declination is 0.0 ba default. If you know it you can enter it here, otherwise you can look it up in the web after you have found the coordinates of a fixed point (say, the cave entrance) with the GPS.<br><p>
+are empty (unless you have set a default team in the app settings). They can safely be left so, although it is a good practice to take the time to fill them. The magnetic declination is 0.0 by default. If you know it you can enter it here, otherwise you can look it up in the web after you have found the coordinates of a fixed point (say, the cave entrance) with the GPS.<br><p>
 
 <b>WARNING.<br>
 The name of the survey cannot contain the character '/' (slash), which is the pathname separator.<br>
@@ -32,20 +32,20 @@ Each kind of shots is displayed with a different color: "legs" are white, "repea
 <ulist>
 <li><u>Survey info</u>: to open the survey informations window</li>
 <li><u>Recover</u>: to recover a deleted item (shot or sketch)</li>
-<li><u>Photo</u> lists the pictures taken for this survey</li>
-<li><u>Sensor</u> lists the sensor data taken for this survey</li>
+<li><u>Photo</u>: lists the pictures taken for this survey</li>
+<li><u>Sensor</u>: lists the sensor data taken for this survey</li>
 <li><u>3D</u>: to display the survey in 3D (need the app </i>Cave3D</i>)</li>
-<li><u>DistoX</u> opens the Device window</li>
+<li><u>DistoX</u>: opens the Device window</li>
 <li><u>Settings</u></li>
 <li><u>Help</u></li>
 </ulist><br>
 
 <h4>BUTTONS</h4>
 <ulist>
-<li><u>Download</u>: it will download the data from the DistoX as in the calibration data window. If no DistoX is selected this button is replaced by the <u>Add</u> button used to manually enter a data.</li>
+<li><u>Download</u>: it will download the data from the DistoX as in the calibration data window. If no DistoX is selected this button is replaced by the <u>Add</u> button used to manually enter a shot.</li>
 <li><u>Bluetooth</u>: resets the Bluetooth connection. If you experience problems with the DistoX after downloading some data, you may try to reset the bluetooth connection on TopoDroid, switch the DistoX on and off, and retry downloading the data.</li>
 <li><u>Display</u>: to decide the display mode (what to show)</li>
-<li><u>Sketch</u>: opens the Sketch dialog where you can ask the program to create a new sketch or open an existing one. The dialog has a button to create a new sketch, and a two-column list of the current survey sketches (items in the left column open a sketch with its plan view, the right column items open sketches in extended-section view; once open in a view you can switch to the other from within the sketch window). If the 3D modeling is enabled there is also a button to create a new 3D model, and the existing 3D models are listed after the sketches.</li>
+<li><u>Sketch</u>: opens the Sketch dialog where you can ask the program to create a new sketch or open an existing one. The dialog has a button to create a new sketch, and a two-column list of the current survey sketches (items in the left column open a sketch with its plan view, the right column items open sketches in extended-profile view; once open in a view you can switch to the other from within the sketch window). If the 3D modeling is enabled there is also a button to create a new 3D model, and the existing 3D models are listed after the sketches.</li>
 <li><u>Notes</u> opens the dialog to edit the annotations of the survey</li>
 <li><u>Stations</u>: this buttons opens the dialog for the saved stations</li>
 <li><u>Add</u> adds a shot. In the coming dialog you must enter the shot stations and data (length, azimuth, and clino). You can specify also the direction of "extend", and values for LRUD. By default these are assumed at the FROM station, unless you check the box for the TO station.</li>
@@ -55,7 +55,7 @@ Each kind of shots is displayed with a different color: "legs" are white, "repea
 <ulist>
 <li><i>Team</i>: the default surveying team. If the value is not empty, it is used to set the <u>Team</u> field when you create a new survey. You can write your name and that of the cavers you usually survey with.</li>
 <li><i>Survey stations</i>: this tells the program how to automatically assign survey stations to the shots. (This is further explained below).</li>
-<li><i>Leg tolerance</i>: the angular tolerance (radiants) between consecutive shots to belong to the same leg</li>
+<li><i>Leg tolerance</i>: the angular tolerance (radians) between consecutive shots to belong to the same leg</li>
 <li><i>Extend threshold</i>: splay shots are assigned an "extend" direction depending on the angle they make with the leg(s). When the angle is less than the threshold they get a "vertical extend".</li>
 <li><i>Shot vertical threshold</i>. this is like Therion vthreshold: the LRUD for manually entered shots are considered West-East-North-South when the shot inclination exceeds the vertical threshold</li>
 <li><i>Timer</i> is the number of seconds before measuring the direction with the Android sensors (for manual data-input)</li>
@@ -70,8 +70,8 @@ Each kind of shots is displayed with a different color: "legs" are white, "repea
 <li><i>Orthometric lookup</i>: whether to lookup the orthometric altitude on internet</li>
 <li><i>C.R.S.</i> coordinate reference system [default is long-lat]</li>
 <li><i>Acceleration tolerance</i>: tolerance on acceleration values above which a shot is signalled anomalous (only DistoX2)</li>
-<li><i>Mangnetic tolerance</i>: tolerance on mangnetic field values above which a shot is signalled anomalous (only DistoX2)</li>
-<li><i>Mangnetic dip tolerance</i>: tolerance on mangnetic dip angle values above which a shot is signalled anomalous (only DistoX2)</li>
+<li><i>Magnetic tolerance</i>: tolerance on magnetic field values above which a shot is signalled anomalous (only DistoX2)</li>
+<li><i>Magnetic dip tolerance</i>: tolerance on magnetic dip angle values above which a shot is signalled anomalous (only DistoX2)</li>
 </ulist><br><p>
 
 <h4>DISPLAY MODE</h4>
@@ -91,7 +91,7 @@ Each saved station must have a brief description or comment.<br><p>
 
 The buttons acts on the selected station: 
 <ulis>
-<li>clear the text boxex</li>
+<li>clear the text boxes</li>
 <li>save the station in  the text-box, if not already saved, or update the comment</li>
 <li>set the current station to that in the text-box (or clear it, if the text-box is empty)</li>
 <li>delete the saved station</li>
@@ -110,7 +110,7 @@ The "Save" button at the bottom inserts the shot into the survey, and updates th
 the dialog. If LRUD are specified the respective splay shots are also inserted.<br><p>
 
 <hr>
-The <u>Download</u> button starts a connection with the DistoX to download data.  While the connection is active it stays red. If you are using the "on-demand" download-mode the connection is closed when there are no more data to retrieve. With the "continuous" download-mode the connection remains open (and data are continuosly downloaded as soon as the measurements are taken) until the DistoX and the Android lose the bluetooth connection.  Which mode is best suited for you depends on your habits. With the on-demand mode you can concentrate on sketching and other tasks without being bothered by incoming data, and when you download the data you can focus on them (they are highlighted blue). On the other hand on-demand download requires pauses to get the data, and these are especially long if you took several shots in the between.<br><p>
+The <u>Download</u> button starts a connection with the DistoX to download data.  While the connection is active it stays red. If you are using the "on-demand" download-mode the connection is closed when there are no more data to retrieve. With the "continuous" download-mode the connection remains open (and data are continuously downloaded as soon as the measurements are taken) until the DistoX and the Android lose the Bluetooth connection.  Which mode is best suited for you depends on your habits. With the on-demand mode you can concentrate on sketching and other tasks without being bothered by incoming data, and when you download the data you can focus on them (they are highlighted blue). On the other hand on-demand download requires pauses to get the data, and these are especially long if you took several shots in the between.<br><p>
 
 In the Bluetooth connection with the DistoX is broken (eg. the DistoX gets too far from the Android, or it is switched off) the data download is interrupted. In continuous-mode, if the "Auto reconnect" setting is selected, TopoDroid retries to connect to the DistoX every second.<br><p>
 

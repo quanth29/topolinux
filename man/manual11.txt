@@ -11,7 +11,7 @@ The first time you tap the Sketch button the dialog you get contains only the "N
 
 So type in a station name, and tap the <u>OK</u> button.  And you go to the sketch window.<br><p>
 
-Actually each sketch is made of two therion 2D sketch files: one for the plan, the other for the extended elevation. Of course you can draw cross sections, but we will get to them later. The sketch window opens with the plan by default.  Afterwards the sketch dialog shows two columns, and you can open a sketch starting either in the plan view or in the extended view. In any case TopoDroid is always opening the two sketch files, and just showing the one you choose.<br><p>
+Actually each sketch is made of two Therion 2D sketch files: one for the plan, the other for the extended elevation. Of course you can draw cross sections, but we will get to them later. The sketch window opens with the plan by default.  Afterwards the sketch dialog shows two columns, and you can open a sketch starting either in the plan view or in the extended view. In any case TopoDroid is always opening the two sketch files, and just showing the one you choose.<br><p>
 
 <b>NOTE</b><br>
 The first time you open a sketch TopoDroid loads the drawing tools (the palette). This may take some time if your Android is not powerful because the program has to read in many files (one for each tool). Afterwards opening a sketch is usually faster.<br><p>
@@ -84,5 +84,5 @@ The <b>edit</b> mode has four buttons besides the green ones:
 </ulist><br><p>
 
 <hr>
-<i>To start drawing select the <b>draw</b> mode (green pencil button) and trace lines with your finger. If you make a mistake you can cancel the whole line with the <u>undo</u> button, or switch to the <u>erase</u> mode.  The drawing is saved in a pair of <i>Therion</i> files when you exit the sketch window. Each cross-sections are saved in a single Therion file.</i>
+<i>To start drawing select the <b>draw</b> mode (green pencil button) and trace lines with your finger. If you make a mistake you can cancel the whole line with the <u>undo</u> button, or switch to the <u>erase</u> mode.  The drawing is saved in a pair of <i>Therion</i> files when you exit the sketch window. Each cross-section is saved in a single separate Therion file.</i>
 </body></html>
