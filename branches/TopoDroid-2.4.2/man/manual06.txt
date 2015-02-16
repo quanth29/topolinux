@@ -1,13 +1,13 @@
 <html><body>
 <h3>[6] CALIBRATION WINDOW</h3>
 
-Tapping the <u>Calibration</u> menu in the Device window you go to the Calibrations Dialog, which lists the calibrations of the selected DistoX. To create a new calibration tap on the <u>New Calibration</u> button in the dialog. This brings you to the window for the calibration informations. The "date" field is prefilled with the current date. The "device" field is prefilled with the address of the DistoX, and cannot be modified.  You must give a "name" to the calibration. The name is what appears in the list of calibrations. You can optionally enter a brief "description". By default TopoDroid will pick automatically the calibration algorithm based on the DistoX model and firmware. However you can force it to use either the linear or the non-linear algorithm. When you are done tap the <u>Save</u> button (the leftmost) to save the calibration info to the database.</i><br><p>
+Tapping the <u>Calibration</u> menu in the Device activity window you go to the Calibrations dialog, which lists the calibrations of the selected DistoX. To create a new calibration tap on the <u>New Calibration</u> button in the dialog. This brings you to the window for the calibration informations. The "date" field is prefilled with the current date. The "device" field is prefilled with the address of the DistoX, and cannot be modified. You must give a "name" to the calibration. The name is what appears in the list of calibrations. You can optionally enter a brief "description". By default TopoDroid will pick automatically the calibration algorithm based on the DistoX model and firmware. However you can force it to use either the linear or the non-linear algorithm. When you are done tap the <u>Save</u> button (the leftmost) to save the calibration info to the database.</i><br><p>
 
 <b>WARNING. The name of the calibration must not contain the character '/' (slash), which is the pathname separator.</b><br><p>
 
 <h4>MENUS</h4>
 <ulist>
-<li><u>Export</u>. The calibration data can be exported as a CSV text file that can be imported in a spreadsheet program</li>
+<li><u>Export</u> The calibration data can be exported as a CSV text file that can be imported in a spreadsheet program</li>
 <li><u>Delete</u> removes the calibration informations and its data from the database.</li>
 <li><u>Settings</u></li>
 <li><u>Help</u></li>
