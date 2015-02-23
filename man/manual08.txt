@@ -3,19 +3,13 @@
 
 <i>Back to the main window. The list of surveys is empty, but you are finally ready for your first survey. Tap on the <u>Add</u> button (the "plus" sign). You get a dialog to specify the survey informations: <u>name</u>, <u>date</u>, <u>team</u>, magnetic <u>declination</u>, and a brief <u>description</u>.</i><br><p>
 
-The survey name is mandatory. It must be unique in the database. The survey
-names are used to list surveys in the main window and TopoDroid distinguishes
-surveys by their name (although each survey has a unique numerical id in the
-database).  The date is pre-filled with the current date. Team and description
-are empty (unless you have set a default team in the app settings). They can safely be left so, although it is a good practice to take the time to fill them. The magnetic declination is 0.0 by default. If you know it you can enter it here, otherwise you can look it up in the web after you have found the coordinates of a fixed point (say, the cave entrance) with the GPS.<br><p>
+The survey name is mandatory. It must be unique in the database. The survey names are used to list surveys in the main window and TopoDroid distinguishes surveys by their name (although each survey has a unique numerical id in the database). The date is pre-filled with the current date. Team and description are empty (unless you have set a default team in the app settings). They can safely be left so, although it is a good practice to take the time to fill them. The magnetic declination is 0.0 by default. If you know it you can enter it here, otherwise you can look it up in the web after you have found the coordinates of a fixed point (say, the cave entrance) with the GPS.<br><p>
 
 <b>WARNING.<br>
 The name of the survey cannot contain the character '/' (slash), which is the pathname separator.<br>
 The date must be written with format "yyyy.mm.dd". For example January 6, 2015 is "2015.01.06".</b><br><p>
 
-Save when you are done, and the new survey name will appear in the list of
-surveys.  A long tap on a survey name opens the survey info dialog again. You
-can change any information except the survey name, because once the survey has been committed to the database, the name is used to refer to it.<br><p>
+Save when you are done, and the new survey name will appear in the list of surveys.  A long tap on a survey name opens the survey info dialog again. You can change any information except the survey name, because once the survey has been committed to the database, the name is used to refer to it.<br><p>
 
 If you tap shortly on the survey name the survey data activity starts.  This is one of the two most important activities of TopoDroid. The other is the Sketch activity.<br><p>
 
@@ -30,7 +24,7 @@ Each kind of shots is displayed with a different color: "legs" are white, "repea
 
 <h4>MENUS</h4>
 <ulist>
-<li><u>Survey info</u>: to open the survey informations window</li>
+<li><u>Survey info</u>: to open the survey information window</li>
 <li><u>Recover</u>: to recover a deleted item (shot or sketch)</li>
 <li><u>Photo</u>: lists the pictures taken for this survey</li>
 <li><u>Sensor</u>: lists the sensor data taken for this survey</li>
@@ -43,7 +37,7 @@ Each kind of shots is displayed with a different color: "legs" are white, "repea
 <h4>BUTTONS</h4>
 <ulist>
 <li><u>Download</u>: it will download the data from the DistoX as in the calibration data window. If no DistoX is selected this button is replaced by the <u>Add</u> button used to manually enter a shot.</li>
-<li><u>Bluetooth</u>: resets the Bluetooth connection. If you experience problems with the DistoX after downloading some data, you may try to reset the bluetooth connection on TopoDroid, switch the DistoX on and off, and retry downloading the data.</li>
+<li><u>Bluetooth</u>: Opens the Bluetooth dialog that allows you to control the laser, take a measurement and download it, and reset the BT connection. If you experience problems with the DistoX after downloading some data, you may try to reset the bluetooth connection on TopoDroid, switch the DistoX on and off, and retry downloading the data.</li>
 <li><u>Display</u>: to decide the display mode (what to show)</li>
 <li><u>Sketch</u>: opens the Sketch dialog where you can ask the program to create a new sketch or open an existing one. The dialog has a button to create a new sketch, and a two-column list of the current survey sketches (items in the left column open a sketch with its plan view, the right column items open sketches in extended-profile view; once open in a view you can switch to the other from within the sketch window). If the 3D modeling is enabled there is also a button to create a new 3D model, and the existing 3D models are listed after the sketches.</li>
 <li><u>Notes</u> opens the dialog to edit the annotations of the survey</li>
@@ -61,7 +55,7 @@ Each kind of shots is displayed with a different color: "legs" are white, "repea
 <li><i>Timer</i> is the number of seconds before measuring the direction with the Android sensors (for manual data-input)</li>
 <li><i>Beep volume</i> is the volume of the timer beep</li>
 <li><i>Loop closure</i>: whether to do the loop closure error compensation. It is advisable not to do the compensation, as this allows to see graphically the misclosures, and spot possible survey errors</li>
-<li><i>Splay Extend</i>: whether to assign the extend direction to splay shots or set "vertical" extend to them</li> 
+<li><i>Splay extend</i>: whether to assign the extend direction to splay shots or set "vertical" extend to them</li> 
 <li><i>Length units</i>: either meters or feet</li>
 <li><i>Angle units</i>: either degrees or grads</li>
 <li><i>GSP Averaging</i>: whether to use the app GPSaveraging to locate fixed points. By default this app is not used and the location is carried out by TopoDroid.</li>

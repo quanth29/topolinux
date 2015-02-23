@@ -3,7 +3,7 @@
 
 The first time you tap the Sketch button the dialog you get contains only the "New Sketch" button. Tap on it. The coming dialog contains two fields:
 <ulist>
-<li>the sketch <u>name</u>. TopoDroid suggest a number, and you can safely leave it. The sketch filenames are obtained composing the survey name with the name in this field. For example if the survey is "MySurvey" and the skecth is "1", the plan filename is "MySurvey-1p.th2" and the extended elevation filename is "MySurvey-1s.th2". They are placed in the directory "th2" of TopoDroid</li>
+<li>the sketch <u>name</u>. TopoDroid suggest a number, and you can safely leave it. The sketch filenames are obtained composing the survey name with the name in this field. For example if the survey is "MySurvey" and the sketch is "1", the plan filename is "MySurvey-1p.th2" and the extended elevation filename is "MySurvey-1s.th2". They are placed in the directory "th2" of TopoDroid</li>
 <li>the sketch <u>origin</u> station. This is very important as all the sketch data will have coordinates relative to this station. You should choose a station that is inside the sketch, because, in order to keep the sketch as clean as possible, you can limit the data reduction for the sketch not to go beyond certain shots (this mechanism is called "barrier". When editing a station you can mark it as a "barrier" to the data reduction for the sketch; the data reduction does not proceed beyond the "barrier" stations)</li>
 </ulist><br><p>
 
@@ -33,9 +33,9 @@ The remaining buttons differ by the mode. In the <b>move</b> mode they are
 <ulist>
 <li><u>Reference</u>: to choose which reference to display. The drawing references are the midline, the splay shots, the station names, and the metric grid.</li>
 <li><u>Download</u> downloads data from the DistoX. The latest downloaded shot are bluish to help you distinguish them from the others.</li>
-<li><u>Notes</u>: to edit the survey annotations</li>
+<li><u>Bluetooth</u>: Opens the Bluetooth dialog that allows you to control the laser, take a measurement and download it, and reset the BT connection. If you experience problems with the DistoX after downloading some data, you may try to reset the bluetooth connection on TopoDroid, switch the DistoX on and off, and retry downloading the data.</li>
 <li><u>Plan/Extended</u> toggles between the sketch of the plan and that of the extended section</li>
-<li><u>Stats</u> displays some statistics (beware that these are limited to the extent of the data reduction of the sketch)</li>
+<li><u>Notes</u>: to edit the survey annotations</li>
 </ulist><br><p>
 
 The <b>draw</b> mode has three buttons besides the green ones:
@@ -58,6 +58,7 @@ The <b>edit</b> mode has four buttons besides the green ones:
 <h4>MENUS</h4>
 <ulist>
 <li><u>Export</u>: the sketch can be exported as <i>Therion</i> 2D file(s), <i>cSurvey</i> (a single file), PNG (two files), DXF (two files), and SVG (two files). Sketches are stored in therion format. Exporting as <i>Therion</i> will save a backup copy. A backup copy is also made by TopoDroid when you open a sketch. If you experience a problem with the opened sketch, try to recover if from the backup copy (<u>reload</u> menu). Cross-section cannot be exported as cSurevy files</li>
+<li><u>Stats</u> displays some statistics (beware that these are limited to the extent of the data reduction of the sketch)</li>
 <li><u>Reload</u>: to reload the sketch from the backup copy</li>
 <li><u>Delete</u>: this marks the sketch as deleted. It can be later recovered as the sketch files are not actually deleted, nor the sketch record is dropped from the database table</li>
 <li><u>Palette</u>: to choose the active drawing tools</li>
@@ -67,11 +68,14 @@ The <b>edit</b> mode has four buttons besides the green ones:
 
 <h4>SKETCH SETTINGS</h4>
 <ulist>
-<li><i>Tool picker</i>: either list view or grid view. At the begining it may be helpful to have a tool picker listing the drawing tool names [default]. After you get used to the tool icons you are likely to prefer the more compact view of the grid picker.</li>
-<li><i>Point symbol scale</i>: the base scale of point symbols</li>
-<li><i>Line thickness</i>: the base thickness of lines</li>
-<li><i>Station size</i>: size of stations name</li>
-<li><i>Label size</i>: size of label texts</li>
+<li><i>Drawing tool picker</i>: either list view or grid view. At the beginning it may be helpful to have a tool picker listing the drawing tool names [default]. After you get used to the tool icons you are likely to prefer the more compact view of the grid picker.</li>
+<li><i>Point tools scale</i>: the base scale of point symbols</li>
+<li><i>Line thickness</i>: the base thickness of drawing lines</li>
+<li><i>Survey line thickness</i>: the base thickness of midline/splay lines</li>
+<li><i>Station label size</i>: size of stations names</li>
+<li><i>Labels size</i>: size of label texts</li>
+<li><i>Section tick</i>: length of the direction "tick" line in cross-section lines</li>
+<li><i>Dots radius</i>: size of the green dots displayed in <b>draw</b> mode</li>
 <li><i>Selection radius</i>: the range within which points are selected when fine-editing a sketch;</li>
 <li><i>Line style</i>. TopoDroid has four line styles. With the normal style [default] the lines are drawn as polylines. With the fine style the polyline segments are shorter, while with the coarse style they are longer. In the fourth style lines are interpolated replacing the segments with cubic Bezier curves. These segments pass through the two endpoints and have two control points used define the curvature.</li>
 <li><i>Line point spacing</i>: this is the distance between line points in the normal style</li>
