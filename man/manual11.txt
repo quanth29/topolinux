@@ -57,7 +57,8 @@ The <b>edit</b> mode has four buttons besides the green ones:
 
 <h4>MENUS</h4>
 <ulist>
-<li><u>Export</u>: the sketch can be exported as <i>Therion</i> 2D file(s), <i>cSurvey</i> (a single file), PNG (two files), DXF (two files), and SVG (two files). Sketches are stored in therion format. Exporting as <i>Therion</i> will save a backup copy. A backup copy is also made by TopoDroid when you open a sketch. If you experience a problem with the opened sketch, try to recover if from the backup copy (<u>reload</u> menu). Cross-section cannot be exported as cSurevy files</li>
+<li><u>Export</u>: the sketch can be exported as <i>Therion</i> 2D file(s), <i>cSurvey</i> (a single file), PNG (two files), DXF (two files), and SVG (two files). Sketches are stored in therion format. Exporting as <i>Therion</i> will save a backup copy. A backup copy is also made by TopoDroid when you open a sketch. If you experience a problem with the opened sketch, try to recover it from the backup copy (<u>reload</u> menu). Cross-sections cannot be exported as cSurevy files<br>
+PNG resolution can be increased if you get too coarse a drawing. You will get a larger and more detailed image, but this requires more CPU time and may fail due to memory limits. If it fails TopoDroid tries reducing the resolution until it succeeds.</li>
 <li><u>Stats</u> displays some statistics (beware that these are limited to the extent of the data reduction of the sketch)</li>
 <li><u>Reload</u>: to reload the sketch from the backup copy</li>
 <li><u>Delete</u>: this marks the sketch as deleted. It can be later recovered as the sketch files are not actually deleted, nor the sketch record is dropped from the database table</li>
