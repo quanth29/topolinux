@@ -115,6 +115,7 @@ public class DataHelper extends DataSetObservable
   private SQLiteStatement updateCalibAlgoStmt;
   private SQLiteStatement updateCalibCoeffStmt;
   private SQLiteStatement updateCalibErrorStmt;
+  private SQLiteStatement resetAllGMStmt;
 
   private SQLiteStatement deleteShotStmt;
   private SQLiteStatement undeleteShotStmt;
@@ -244,6 +245,7 @@ public class DataHelper extends DataSetObservable
         updateFixedStationStmt = myDB.compileStatement( "UPDATE fixeds set station=? WHERE surveyId=? AND id=?" );
         updateFixedStatusStmt = myDB.compileStatement( "UPDATE fixeds set status=? WHERE surveyId=? AND id=?" );
 
+        resetAllGMStmt = myDB.compileStatement( "UPDATE gms SET grp=0, error=0 WHERE calibId=? AND status=0" );
         deleteGMStmt = myDB.compileStatement( "UPDATE gms set status=? WHERE calibID=? AND id=?" );
 
         doDeleteGMStmt    = myDB.compileStatement( "DELETE FROM gms where calibId=?" );
@@ -1668,6 +1670,12 @@ public class DataHelper extends DataSetObservable
        cursor.close();
      }
      return list;
+   }
+
+   public void resetAllGMs( long cid )
+   {
+     resetAllGMStmt.bindLong( 1, cid );
+     resetAllGMStmt.execute();
    }
 
    public List<CalibCBlock> selectAllGMs( long cid, int status )

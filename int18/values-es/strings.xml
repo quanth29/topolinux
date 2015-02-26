@@ -142,6 +142,12 @@
     <!-- string name="error_station_non_existing">Non existing station</string -->
     <string name="error_sensor_required">Introducir sensor</string>
     <string name="error_value_required">Introducir valor</string>
+    
+    <!-- TODO string name="group_title">Assign calibration data groups</string -->
+    <!-- TODO string name="group_policy_four">Policy: group by four</string -->
+    <!-- TODO string name="group_policy_sixteen">Policy: four groups of four, other single</string -->
+    <!-- TODO string name="group_policy_distance">Policy: group by angular distance</string -->
+    <!-- TODO string name="group_reset">Reset groups</string -->
 
     <string name="scale">Escala</string>
     <string name="reversed">inverso</string>
@@ -194,6 +200,7 @@
     <!-- OK string name="menu_sensor">SENSOR</string -->
     <!-- string name="menu_scan">SCAN</string -->
     <!-- TODO string name="menu_station">STATIONS</string -->
+    <!-- TODO string name="menu_stats">STATS</string -->
     <!-- string name="menu_survey">SURVEY INFO</string -->
 
     <string name="popup_join_pt">Unir al punto más cercano</string>
@@ -396,6 +403,8 @@
     <!-- TODO string name="remote_on">Laser ON</string -->
     <!-- TODO string name="remote_off">Laser OFF</string -->
     <!-- TODO string name="remote_measure">Measure</string -->
+    <!-- TODO string name="remote_reset">Reset BT</string -->
+    <!-- TODO string name="download">Download</string -->
 
 <!--
     <string name="btn_3d">3D</string>
@@ -537,6 +546,10 @@
   <string name="pref_raw_data_summary">Mostrar datos sin procesar</string>
   <!-- TODO string name="pref_bootloader_title">Bootloader</string -->
   <!-- TODO string name="pref_bootloader_summary">Enable bootloader</string -->
+  <!-- TODO string name="pref_cosurvey_title">Co-surveying</string -->
+  <!-- TODO string name="pref_cosurvey_summary">Enable/Disable co-surveying</string -->
+  <!-- TODO string name="pref_export_shots_title">Data export format</string -->
+  <!-- TODO string name="pref_export_shots_summary">Default data export format</string -->
   <!-- TODO string name="pref_extra_buttons_title">Optional buttons</string -->
   <!-- TODO string name="pref_extra_buttons_summary">Enable main window optional buttons</string -->
   <!-- TODO string name="pref_size_buttons_title">Buttons size</string -->
@@ -562,6 +575,10 @@
   <string name="pref_crs_message">Introducir el CRS nombrar como en Proj4</string>
   <string name="pref_gps_averaging_title">Promedio GPS</string>
   <string name="pref_gps_averaging_summary">Uso promedio GPS</string>
+  <!-- TODO string name="pref_plot_screen_title">Sketch screen settings</string -->
+  <!-- TODO string name="pref_tool_screen_title">Sketch drawing settings</string -->
+  <!-- TODO string name="pref_location_title">Location settings</string -->
+  <!-- TODO string name="pref_shot_data_title">SHOT DATA SETTINGS</string -->
   <string name="pref_cwd_title">Directorio principal</string>
   <string name="pref_cwd_summary">Directorio principal TopoDroid</string>
   <string name="pref_cwd_message">Introducir el directorio principal TopoDroid</string>
@@ -573,10 +590,8 @@
   <string name="pref_closeness_message">dibujo selección radio</string>
   <string name="pref_altitude_title">Altimetría</string>
   <string name="pref_altitude_summary">Seleccione el tipo de exportación</string>
-  <!-- string name="pref_altimetric_title">Orthometric atitude</string -->
-  <!-- string name="pref_altimetric_summary">Orthometric altitude lookup</string -->
-  <string name="pref_list_refresh_title">Actualizar lista</string>
-  <string name="pref_list_refresh_summary">Forzar Actualización lista</string>
+  <!-- TODO string name="pref_altimetric_title">Orthometric atitude</string -->
+  <string name="pref_altimetric_summary">Orthometric altitude lookup</string>
   <string name="pref_survey_stations_title">Sentido de las estaciones topográficas</string>
   <string name="pref_survey_stations_summary">Estaciones topográficas automáticas</string>
   <string name="pref_accel_thr_title">Precisión Aceleración</string>
@@ -595,12 +610,14 @@
   <string name="pref_team_title">Equipo</string>
   <!-- string name="pref_team_summary">Surveying team</string -->
   <!-- string name="pref_team_message">Default surveying team</string -->
+
   <string name="pref_ethr_title">Ampliar límites</string>
   <string name="pref_ethr_summary">Ampliar límites de la toma Secundaria</string>
   <string name="pref_ethr_message">Calculo ampliación límite de la toma secundaria</string>
   <string name="pref_vthr_title">Toma límite</string>
   <string name="pref_vthr_summary">límite visual vertical por LRUD/WENS</string>
   <string name="pref_vthr_message">límite visual vertical por LRUD/WENS</string>
+
   <string name="pref_hthr_title">Tolerancia de las secciones Transversales</string>
   <string name="pref_hthr_summary">Tolerancia de las secciones transversales horizontales</string>
   <string name="pref_hthr_message">toma de inclinación sobre las secciones transversales horizontales</string>
@@ -611,14 +628,14 @@
   <!-- TODO string name="pref_thumbnail_summary">Size of thumbnail images</string -->
   <!-- TODO string name="pref_thumbnail_message">Size of thumbnail images</string -->
   <!-- TODO string name="pref_shot_timer_title">Shot direction timer</string -->
-  <!-- TODO string name="pref_shot_timer_summary">Seconds before the shot direction is measured</string -->
-  <!-- TODO string name="pref_shot_timer_message">Seconds before the shot direction is measured</string -->
+  <string name="pref_shot_timer_summary">Seconds before the shot direction is measured</string>
+  <string name="pref_shot_timer_message">Seconds before the shot direction is measured</string>
   <!-- TODO string name="pref_beep_volume_title">Timer-beep volume</string -->
   <!-- TODO string name="pref_beep_volume_summary">Percent timer-beep volume</string -->
   <!-- TODO string name="pref_beep_volume_message">Percent timer-beep volume</string -->
   <string name="pref_drawing_unit_title">Tamaño de los símbolo</string>
   <string name="pref_drawing_unit_summary">Escala de símbolos del dibujo</string>
-  <string name="pref_drawing_unit_message">Escala de los símbolos del dibujo en la pantalla[restart the app after change]</string>
+  <string name="pref_drawing_unit_message">Escala de los símbolos del dibujo en la pantalla</string>
   <string name="pref_segment_title">Precisión de la línea</string>
   <string name="pref_segment_summary">Mínimo distancia línea-punto</string>
   <string name="pref_segment_message">Distancia Mínima entre dos puntos de una línea en el dibujo</string>
@@ -648,9 +665,18 @@
   <string name="pref_label_size_title">Tamaño del texto</string>
   <string name="pref_label_size_summary">Tamaño del texto</string>
   <string name="pref_label_size_message">Tamaño del texto</string>
+  <!-- TODO string name="pref_arrow_length_title">Section tick</string -->
+  <!-- TODO string name="pref_arrow_length_summary">Size of the section line tick</string -->
+  <!-- TODO string name="pref_arrow_length_message">Size of the section line tick</string -->
+  <!-- TODO string name="pref_dot_radius_title">Dots radius</string -->
+  <!-- TODO string name="pref_dot_radius_summary">Green dots size</string -->
+  <!-- TODO string name="pref_dot_radius_message">Size of the green dots</string -->
   <string name="pref_line_thickness_title">Grosor de la linea</string>
   <string name="pref_line_thickness_summary">Grosor de la linea</string>
   <string name="pref_line_thickness_message">Grosor de la linea</string>
+  <!-- TODO string name="pref_fixed_thickness_title">Survey line thickness</string -->
+  <!-- TODO string name="pref_fixed_thickness_summary">Survey line thickness</string -->
+  <!-- TODO string name="pref_fixed_thickness_message">Survey line thickness</string -->
   <string name="pref_device_title">Dispositivo</string>
   <string name="pref_device_summary">Nombre dirección DistoX</string>
   <string name="pref_device_message">Nombre dirección DistoX</string>
@@ -662,8 +688,8 @@
   <string name="pref_autoStations_summary">Añadir estación automáticamente</string>
   <string name="pref_loopClosure_title">Cierre de bucle</string>
   <string name="pref_loopClosure_summary">Error en cierre de bucle</string>
-  <!-- string name="pref_splayExtend_title">Splay extend</string -->
-  <!-- string name="pref_splayExtend_summary">Whether to estimate the extend of splays</string -->
+  <!-- TODO string name="pref_splayExtend_title">Splay extend</string -->
+  <!-- TODO string name="pref_splayExtend_summary">Whether to estimate the extend of splays</string -->
   <string name="pref_picker_type_title">Selector de símbolos</string>
   <string name="pref_picker_type_summary">Tipo de selector de símbolos</string>
   <string name="pref_station_size_title">Tamaño de la etiqueta de la estación</string>
@@ -720,6 +746,11 @@
   <string name="pref_log_therion">Therion</string>
   <string name="pref_log_units">Unidades</string>
   <string name="pref_log_zip">ZIP</string>
+
+  <!-- OK string name="line_bezier">Bezier</string -->
+  <!-- TODO string name="line_fine">fine</string -->
+  <!-- TODO string name="line_normal">normale</string -->
+  <!-- TODO string name="line_coarse">grossolana</string -->
 
     <string name="welcome_title">Bienvenido a TopoDroid 2.2</string>
     <string name="welcome_text">

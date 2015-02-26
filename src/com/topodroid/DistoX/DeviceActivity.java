@@ -78,14 +78,16 @@ public class DeviceActivity extends Activity
                         0,
                         R.drawable.ic_read_no,
                         0,
-                        R.drawable.ic_remote_no };
+                        // R.drawable.ic_remote_no
+                     };
   private static int ixonsno[] = {
                         0,
                         R.drawable.ix_toggle_no,
                         0,
                         R.drawable.ix_read_no,
                         0,
-                        R.drawable.ix_remote_no };
+                        // R.drawable.ix_remote_no
+                      };
 
   private static int icons00[];
   private static int icons[] = {
@@ -93,21 +95,21 @@ public class DeviceActivity extends Activity
                         R.drawable.ic_toggle,
                         R.drawable.ic_sdcard,
                         R.drawable.ic_read,
-                        R.drawable.ic_info,
-                        R.drawable.ic_remote
+                        R.drawable.ic_info
+                        // R.drawable.ic_remote,
                      };
   private static int ixons[] = {
                         R.drawable.ix_bt,
                         R.drawable.ix_toggle,
                         R.drawable.ix_sdcard,
                         R.drawable.ix_read,
-                        R.drawable.ix_info,
-                        R.drawable.ix_remote
+                        R.drawable.ix_info
+                        // R.drawable.ix_remote,
                       };
 
   private static int indexButtonDownload = 1;
   private static int indexButtonRead     = 2;
-  private static int indexButtonRemote   = 5;
+  // private static int indexButtonRemote   = 5;
 
 
   private static int menus[] = {
@@ -124,8 +126,8 @@ public class DeviceActivity extends Activity
                         R.string.help_toggle,
                         R.string.help_sdcard,
                         R.string.help_read,
-                        R.string.help_info_device,
-                        R.string.help_remote
+                        R.string.help_info_device
+                        // R.string.help_remote
                      };
   private static int help_menus[] = {
                         R.string.help_scan,
@@ -160,7 +162,7 @@ public class DeviceActivity extends Activity
       if ( mMIfirmware != null ) {
         mMIfirmware.setEnabled( true );
       }
-      setButtonRemote();
+      // setButtonRemote();
     } else {
       mTvAddress.setTextColor( 0xffff0000 );
       mTvAddress.setText( R.string.no_device_address );
@@ -175,7 +177,7 @@ public class DeviceActivity extends Activity
   // ---------------------------------------------------------------
   // private Button mButtonHelp;
   private Button[] mButton1;
-  private int mNrButton1 = 6;
+  private int mNrButton1 = 5; // 6 if ButtonRemote
   HorizontalListView mListView;
   HorizontalButtonView mButtonView1;
   ListView   mMenu;
@@ -184,18 +186,18 @@ public class DeviceActivity extends Activity
   boolean onMenu;
 
 
-  private void setButtonRemote( )
-  {
-    if ( TopoDroidSetting.mLevelOverNormal ) {
-      if ( mDevice != null && mDevice.mType == Device.DISTO_X310 ) {
-        mButton1[ indexButtonRemote ].setEnabled( true );
-        mButton1[ indexButtonRemote ].setBackgroundResource( icons00[ indexButtonRemote ] );
-      } else {
-        mButton1[ indexButtonRemote ].setEnabled( false );
-        mButton1[ indexButtonRemote ].setBackgroundResource( icons00no[ indexButtonRemote ] );
-      }
-    }
-  }
+  // private void setButtonRemote( )
+  // {
+  //   if ( TopoDroidSetting.mLevelOverNormal ) {
+  //     if ( mDevice != null && mDevice.mType == Device.DISTO_X310 ) {
+  //       mButton1[ indexButtonRemote ].setEnabled( true );
+  //       mButton1[ indexButtonRemote ].setBackgroundResource( icons00[ indexButtonRemote ] );
+  //     } else {
+  //       mButton1[ indexButtonRemote ].setEnabled( false );
+  //       mButton1[ indexButtonRemote ].setBackgroundResource( icons00no[ indexButtonRemote ] );
+  //     }
+  //   }
+  // }
 
   void setDeviceModel( Device device, int model )
   {
@@ -222,7 +224,7 @@ public class DeviceActivity extends Activity
     icons00   = ( TopoDroidSetting.mSizeButtons == 2 )? ixons : icons;
     icons00no = ( TopoDroidSetting.mSizeButtons == 2 )? ixonsno : iconsno;
 
-    mNrButton1 = TopoDroidSetting.mLevelOverNormal ? 6 : 2;
+    mNrButton1 = TopoDroidSetting.mLevelOverNormal ? 5 : 2;
     mButton1 = new Button[ mNrButton1 ];
     for ( int k=0; k<mNrButton1; ++k ) {
       mButton1[k] = new Button( this );
@@ -243,7 +245,6 @@ public class DeviceActivity extends Activity
     mList.setDividerHeight( 2 );
 
     setState();
-    // setButtonRemote();
 
     mImage = (Button) findViewById( R.id.handle );
     mImage.setOnClickListener( this );
@@ -348,7 +349,6 @@ public class DeviceActivity extends Activity
         // mAddress = address;
         mApp.disconnectRemoteDevice();
         setState();
-        // setButtonRemote();
       }
     }
   }
@@ -361,7 +361,6 @@ public class DeviceActivity extends Activity
       // mAddress = address;
       mApp.disconnectRemoteDevice();
       setState();
-      // setButtonRemote();
     }
   }
 
@@ -370,22 +369,23 @@ public class DeviceActivity extends Activity
   {
     mButton1[1].setEnabled( enable );
     if ( TopoDroidSetting.mLevelOverNormal ) {
-      mButton1[3].setEnabled( enable );
-      mButton1[5].setEnabled( enable );
+      for ( int k=2; k<mNrButton1; ++k ) {
+        mButton1[k].setEnabled( enable );
+      }
     }
     if ( enable ) {
       setTitleColor( TopoDroidConst.COLOR_NORMAL );
       mButton1[1].setBackgroundResource( icons00[1] );
       if ( TopoDroidSetting.mLevelOverNormal ) {
         mButton1[3].setBackgroundResource( icons00[3] );
-        mButton1[5].setBackgroundResource( icons00[5] );
+        // mButton1[indexButtonRemote].setBackgroundResource( icons00[5] );
       }
     } else {
       setTitleColor( TopoDroidConst.COLOR_CONNECTED );
       mButton1[1].setBackgroundResource( icons00no[1] );
       if ( TopoDroidSetting.mLevelOverNormal ) {
         mButton1[3].setBackgroundResource( icons00no[3] );
-        mButton1[5].setBackgroundResource( icons00no[5] );
+        // mButton1[indexButtonRemote].setBackgroundResource( icons00no[5] );
       }
     }
   }
@@ -465,16 +465,16 @@ public class DeviceActivity extends Activity
         }
       }
 
-    } else if ( k < mNrButton1 && b == mButton1[k++] ) { // 5: REMOTE
-      if ( mDevice == null ) {
-        Toast.makeText( this, R.string.no_device_address, Toast.LENGTH_SHORT).show();
-      } else {
-        if ( mDevice.mType == Device.DISTO_X310 ) {
-          ( new DeviceRemote( this, this, mApp )).show();
-        } else {
-          /* nothing */
-        }
-      }
+    // } else if ( k < mNrButton1 && b == mButton1[k++] ) { // 5: REMOTE
+    //   if ( mDevice == null ) {
+    //     Toast.makeText( this, R.string.no_device_address, Toast.LENGTH_SHORT).show();
+    //   } else {
+    //     if ( mDevice.mType == Device.DISTO_X310 ) {
+    //       ( new DeviceRemote( this, this, mApp )).show();
+    //     } else {
+    //       /* nothing */
+    //     }
+    //   }
 
     }
     setState();

@@ -41,7 +41,7 @@ public class DrawingLabelPath extends DrawingPointPath
     // paint.setStyle(Paint.Style.STROKE);
     // paint.setStrokeJoin(Paint.Join.ROUND);
     // paint.setStrokeCap(Paint.Cap.ROUND);
-    // paint.setStrokeWidth( STROKE_WIDTH_CURRENT );
+    // paint.setStrokeWidth( WIDTH_CURRENT );
 
     makeStraightPath( 0, 0, 20*mText.length(), 0, cx, cy );
   }

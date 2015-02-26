@@ -81,6 +81,30 @@ public class DistoXDBlock
   public boolean isSurface() { return mFlag == BLOCK_SURFACE; }
   public boolean isDuplicate() { return mFlag == BLOCK_DUPLICATE; }
 
+  // used by PocketTopo parser only
+  public DistoXDBlock( String f, String t, float d, float b, float c, float r, int e, int type )
+  {
+    mView = null; // view is set by the DistoXDBlockAdapter
+    mVisible = View.VISIBLE;
+    mId = 0;
+    mSurveyId = 0;
+    // mName = "";
+    mFrom = f;
+    mTo   = t;
+    mLength = d;
+    mBearing = b;
+    mClino = c;
+    mRoll = r;
+    mAcceleration = 0.0f;
+    mMagnetic = 0.0f;
+    mDip = 0.0f;
+    mComment = "";
+    mExtend = e;
+    mFlag   = BLOCK_SURVEY;
+    mType   = type;
+    mWithPhoto = false;
+  }
+
   public DistoXDBlock()
   {
     mView = null; // view is set by the DistoXDBlockAdapter

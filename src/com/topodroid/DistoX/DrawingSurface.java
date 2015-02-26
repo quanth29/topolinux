@@ -132,15 +132,10 @@ public class DrawingSurface extends SurfaceView
 
     int getNextAreaIndex() { return commandManager.getNextAreaIndex(); }
 
-    // @Override
-    // public boolean onTouchEvent(MotionEvent event) 
-    // {
-    //   Log.v( TopoDroidApp.TAG, "TOUCH EVENT!" );
-    //   super.onTouchEvent(event);
-    //   return true;
+    // void setScaleBar( float x0, float y0 ) 
+    // { 
+    //   commandManager.setScaleBar(x0,y0);
     // }
-
-    void setScaleBar( float x0, float y0 ) { commandManager.setScaleBar(x0,y0); }
     
     List< DrawingPath > getIntersectionShot( LinePoint p1, LinePoint p2 )
     {
@@ -148,7 +143,6 @@ public class DrawingSurface extends SurfaceView
     }
 
     // -----------------------------------------------------------
-
 
     public void setDisplayMode( int mode ) { commandManager.setDisplayMode(mode); }
 
@@ -326,6 +320,20 @@ public class DrawingSurface extends SurfaceView
         return mCommandManager2.getBitmap();
       }
       return mCommandManager1.getBitmap();
+    }
+
+    // @param lp   point
+    // @param type line type
+    DrawingLinePath getLineToContinue( LinePoint lp, int type )
+    {
+      return commandManager.getLineToContinue( lp, type );
+    }
+ 
+    /** add the points of the first line to the second line
+     */
+    void addLineToLine( DrawingLinePath line, DrawingLinePath line0 )
+    {
+      commandManager.addLineToLine( line, line0 );
     }
 
     // ---------------------------------------------------------------------
@@ -813,6 +821,7 @@ public class DrawingSurface extends SurfaceView
                   TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "Therion Line X-Y error " + line );
                   continue;
                 }
+                // Log.v( "DistoX", "  line start point: <" + line + "> " + x + " " + y );
               // }
               while ( (line = readLine( br )) != null ) {
                 if ( line.indexOf( "l-size" ) >= 0 ) continue;
@@ -821,11 +830,9 @@ public class DrawingSurface extends SurfaceView
                     if ( type.equals("section") ) { // section line only in non-section scraps
                       if ( is_not_section ) {
                         path.makeStraight( true );
-                        addDrawingPath( path );
                       }
-                    } else {
-                      addDrawingPath( path );
                     }
+                    addDrawingPath( path );
                   }
                   break;
                 }

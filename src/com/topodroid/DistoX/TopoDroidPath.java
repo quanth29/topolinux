@@ -324,7 +324,14 @@ public class TopoDroidPath
   //   return null;
   // }
 
-  static File[] getImportFiles() { return getFiles( APP_IMPORT_PATH, new String[] {".th", ".top", ".dat"} ); }
+  static File[] getImportFiles() 
+  { 
+    if ( TopoDroidSetting.mLevelOverNormal ) {
+      return getFiles( APP_IMPORT_PATH, new String[] {".th", ".top", ".dat"} );
+    }
+    return getFiles( APP_IMPORT_PATH, new String[] {".th", ".dat"} );
+  }
+
   static File[] getZipFiles() { return getFiles( APP_ZIP_PATH, new String[] {".zip"} ); }
   static File[] getBinFiles() { return getFiles( APP_BIN_PATH, new String[] { } ); }
 

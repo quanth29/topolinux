@@ -142,6 +142,12 @@
     <string name="error_station_non_existing">Caposaldo inesistente</string>
     <string name="error_sensor_required">Sensore mancante</string>
     <string name="error_value_required">Valore mancante</string>
+    
+    <string name="group_title">Assegna i gruppi ai dati della calibrazione</string>
+    <string name="group_policy_four">Metodo: gruppi di quattro</string>
+    <string name="group_policy_sixteen">Metodo: quattro gruppi di quattro, poi singoli</string>
+    <string name="group_policy_distance">Metodo: in base alla distanza angolare</string>
+    <string name="group_reset">Cancella i gruppi</string>
 
     <string name="scale">scala</string>
     <string name="reversed">reversa</string>
@@ -194,6 +200,7 @@
     <string name="menu_sensor">SENSORI</string>
     <string name="menu_scan">CERCA</string>
     <string name="menu_station">CAPISALDI</string>
+    <!-- TODO string name="menu_stats">STATS</string -->
     <string name="menu_survey">INFORMAZIONI</string>
 
     <string name="popup_join_pt">Sposta al punto vicino</string>
@@ -396,6 +403,8 @@
     <string name="remote_on">Laser ON</string>
     <string name="remote_off">Laser OFF</string>
     <string name="remote_measure">Misura</string>
+    <!-- NO string name="remote_reset">Reset BT</string -->
+    <string name="download">Scarica dati</string>
 
 <!--
     <string name="btn_3d">3D</string>
@@ -537,6 +546,10 @@
   <string name="pref_raw_data_summary">Mostra dati grezzi</string>
   <string name="pref_bootloader_title">Bootloader</string>
   <string name="pref_bootloader_summary">Bootloader abilitiato</string>
+  <!-- NO string name="pref_cosurvey_title">Co-surveying</string -->
+  <string name="pref_cosurvey_summary">Attiva/disattiva il servizio co-surveying</string>
+  <string name="pref_export_shots_title">Formato esportazione dati</string>
+  <string name="pref_export_shots_summary">Formato esportazione dati preferenziale</string>
   <string name="pref_extra_buttons_title">Livello di comandi</string>
   <string name="pref_extra_buttons_summary">Seleziona il livello di comandi</string>
   <string name="pref_size_buttons_title">Dimensione bottoni</string>
@@ -562,7 +575,11 @@
   <string name="pref_crs_message">Scrivi il CRS come in Proj4</string>
   <string name="pref_gps_averaging_title">GPS Averaging</string>
   <string name="pref_gps_averaging_summary">Se usare GPSAveraging</string>
-  <string name="pref_cwd_title">Directory di lavoro</string>
+  <string name="pref_plot_screen_title">IMPOSTAZIONI SCHERMO DISEGNO</string>
+  <string name="pref_tool_screen_title">IMPOSTAZIONI STRUMENTI DISEGNO</string>
+  <string name="pref_location_title">IMPOSTAZIONI POSIZIONE</string>
+  <string name="pref_shot_data_title">IMPOSTAZIONI DATI POLIGONALE</string>
+  <string name="pref_cwd_title">DIRECTORY DI LAVORO</string>
   <string name="pref_cwd_summary">Directory di lavoro di TopoDroid</string>
   <string name="pref_cwd_message">Scrivi la directory di lavoro di TopoDroid</string>
   <string name="pref_text_size_title">Dimensione testo</string>
@@ -573,10 +590,8 @@
   <string name="pref_closeness_message">Raggio di selezione oggetti disegno</string>
   <string name="pref_altitude_title">Altitudine</string>
   <string name="pref_altitude_summary">Tipo di altitudine</string>
-  <string name="pref_altimetric_title">Quota ortometrica</string>
+  <string name="pref_altimetric_title">Quota ortometrica (con internet)</string>
   <string name="pref_altimetric_summary">Ricerca internet quota ortometrica</string>
-  <string name="pref_list_refresh_title">Aggiorna liste</string>
-  <string name="pref_list_refresh_summary">Forza aggiornamento liste</string>
   <string name="pref_survey_stations_title">Capisaldi rilievo</string>
   <string name="pref_survey_stations_summary">Capisaldi rilievo automatici</string>
   <string name="pref_accel_thr_title">Tolleranza accelerazione</string>
@@ -592,15 +607,18 @@
   <string name="pref_leg_title">Tolleranza battute</string>
   <string name="pref_leg_summary">Tolleranza tra tiri di una battuta</string>
   <string name="pref_leg_message">Tolleranza tra tiri di una battuta</string>
+
   <string name="pref_team_title">Squadra</string>
   <string name="pref_team_summary">Squadra topo</string>
   <string name="pref_team_message">Squadra di topografia</string>
+
   <string name="pref_ethr_title">Soglia extend</string>
   <string name="pref_ethr_summary">Soglia computo extend per tiri splay</string>
   <string name="pref_ethr_message">Soglia computo extend per tiri splay</string>
   <string name="pref_vthr_title">Soglia vert.</string>
   <string name="pref_vthr_summary">Soglia inclinazione LRUD/WENS</string>
   <string name="pref_vthr_message">Soglia inclinazione battuta per LRUD/WENS</string>
+
   <string name="pref_hthr_title">Soglia sezione orizzontale</string>
   <string name="pref_hthr_summary">Soglia inclinazione per sezioni orizzontali</string>
   <string name="pref_hthr_message">Soglia inclinazione battuta per sezioni orizzontali</string>
@@ -613,9 +631,12 @@
   <string name="pref_shot_timer_title">Timer direzioni</string>
   <string name="pref_shot_timer_summary">Secondi di attesa prima della misura</string>
   <string name="pref_shot_timer_message">Secondi di attesa prima della misura</string>
+  <string name="pref_beep_volume_title">Volume timer</string>
+  <string name="pref_beep_volume_summary">Percent timer-beep volume</string>
+  <string name="pref_beep_volume_message">Percent timer-beep volume</string>
   <string name="pref_drawing_unit_title">Scala simboli grafici</string>
   <string name="pref_drawing_unit_summary">Scala simboli grafici</string>
-  <string name="pref_drawing_unit_message">Scala simboli grafici [far ripartire l\'app per aver effetto]</string>
+  <string name="pref_drawing_unit_message">Scala simboli grafici</string>
   <string name="pref_segment_title">Spaziatura punti sulle linee</string>
   <string name="pref_segment_summary">Minima spaziatura dei punti sulle linee</string>
   <string name="pref_segment_message">Minima distanza fra punti di una linea</string>
@@ -645,9 +666,18 @@
   <string name="pref_label_size_title">Dimensione scritte</string>
   <string name="pref_label_size_summary">Dimensione delle scritte</string>
   <string name="pref_label_size_message">Dimensione delle scritte</string>
+  <string name="pref_arrow_length_title">Direzione di sezione</string>
+  <string name="pref_arrow_length_summary">Lunghezza direzione di sezione</string>
+  <string name="pref_arrow_length_message">Lunghezza direzione di sezione</string>
+  <string name="pref_dot_radius_title">Raggio punti selezione</string>
+  <string name="pref_dot_radius_summary">Raggio punti selezione</string>
+  <string name="pref_dot_radius_message">Raggio dei punti di selezione</string>
   <string name="pref_line_thickness_title">Spessore linee</string>
   <string name="pref_line_thickness_summary">Spessore linee disegno</string>
   <string name="pref_line_thickness_message">Spessore linee disegno</string>
+  <string name="pref_fixed_thickness_title">Spessore poligonale</string>
+  <string name="pref_fixed_thickness_summary">Spessore linee di poligonale</string>
+  <string name="pref_fixed_thickness_message">Spessore linee della poligonale</string>
   <string name="pref_device_title">Dispositivo</string>
   <string name="pref_device_summary">Indirizzo BT del DistoX</string>
   <string name="pref_device_message">Indirizzo BT del DistoX</string>
@@ -659,7 +689,7 @@
   <string name="pref_autoStations_summary">Aggiungi capisaldi automaticamente</string>
   <string name="pref_loopClosure_title">Chiusura anelli</string>
   <string name="pref_loopClosure_summary">Compensazione errore nella chiusura anelli</string>
-  <string name="pref_splayExtend_title">Splay extend</string>
+  <string name="pref_splayExtend_title">Stima extendi per splay</string>
   <string name="pref_splayExtend_summary">Stima del extend degli splay</string>
   <string name="pref_picker_type_title">Dialogo scelta prototipo</string>
   <string name="pref_picker_type_summary">Tipo dialogo scelta prototipo grafico</string>
@@ -717,6 +747,11 @@
   <string name="pref_log_therion">Therion</string>
   <string name="pref_log_units">Unità</string>
   <string name="pref_log_zip">ZIP</string>
+
+  <!-- OK string name="line_bezier">Bezier</string -->
+  <string name="line_fine">fine</string>
+  <string name="line_normal">normale</string>
+  <string name="line_coarse">grossolana</string>
 
     <string name="welcome_title">TopoDroid %1$s</string>
     <string name="welcome_text">

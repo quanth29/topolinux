@@ -54,7 +54,7 @@ public class SymbolLine extends Symbol
   public void toggleEnabled() { mEnabled = ! mEnabled; }
   public void rotate( float angle ) { }
 
-  // width = 1
+  // width = 1;
   // no effect
   SymbolLine( String name, String th_name, int color )
   {
@@ -64,23 +64,23 @@ public class SymbolLine extends Symbol
   }
 
   // no effect
-  SymbolLine( String name, String th_name, int color, int width )
+  SymbolLine( String name, String th_name, int color, float width )
   {
     super( th_name );
     init( name, color, width );
     makePath();
   }
 
-  SymbolLine( String name, String th_name, int color, PathEffect effect_dir, PathEffect effect_rev )
+  SymbolLine( String name, String th_name, int color, float width, PathEffect effect_dir, PathEffect effect_rev )
   {
     super( th_name );
-    init( name, color, 4 );
+    init( name, color, width );
     mPaint.setPathEffect( effect_dir );
     mRevPaint.setPathEffect( effect_rev );
     makePath();
   }
 
-  private void init( String name, int color, int width )
+  private void init( String name, int color, float width )
   {
     mName   = name;
     mPaint  = new Paint();
@@ -89,7 +89,7 @@ public class SymbolLine extends Symbol
     mPaint.setStyle(Paint.Style.STROKE);
     mPaint.setStrokeJoin(Paint.Join.ROUND);
     mPaint.setStrokeCap(Paint.Cap.ROUND);
-    mPaint.setStrokeWidth( width );
+    mPaint.setStrokeWidth( width * TopoDroidSetting.mLineThickness );
     mRevPaint = new Paint (mPaint );
     mHasEffect = false;
   }
@@ -121,13 +121,13 @@ public class SymbolLine extends Symbol
   void readFile( String filename, String locale, String iso )
   {
     // Log.v(  TopoDroidApp.TAG, "load line file " + filename );
-    float unit = TopoDroidSetting.mUnit;
+    float unit = TopoDroidSetting.mUnit * TopoDroidSetting.mLineThickness;
     String name    = null;
     String th_name = null;
     mHasEffect = false;
     int color  = 0;
     int alpha  = 0xcc;
-    int width  = 1;
+    float width  = 1;
     Path path_dir = null;
     Path path_rev = null;
     DashPathEffect dash = null;
@@ -198,7 +198,7 @@ public class SymbolLine extends Symbol
             try {
   	      ++k; while ( k < s && vals[k].length() == 0 ) ++k;    
   	      if ( k < s ) {
-  	        width = Integer.parseInt( vals[k] );
+  	        width = Integer.parseInt( vals[k] ) * TopoDroidSetting.mLineThickness;
               }
             } catch ( NumberFormatException e ) {
               TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "parse width error: " + line );
@@ -217,10 +217,10 @@ public class SymbolLine extends Symbol
               if ( ndash > 0 ) {
                 try {
                   float[] x = new float[ndash];
-  	          x[0] = Float.parseFloat( vals[k] );
+  	          x[0] = Float.parseFloat( vals[k] ) * unit;
                   for (int n=1; n<ndash; ++n ) {
                     ++k; while ( k < s && vals[k].length() == 0 ) ++k;
-  	            x[n] = Float.parseFloat( vals[k] );
+  	            x[n] = Float.parseFloat( vals[k] ) * unit;
                   }  
                   dash = new DashPathEffect( x, 0 );
                 } catch ( NumberFormatException e ) {
@@ -244,12 +244,12 @@ public class SymbolLine extends Symbol
                     if ( ! moved_to ) {
   	              ++k; while ( k < s && vals[k].length() == 0 ) ++k;
   	              if ( k < s ) {
-  	                float x = Float.parseFloat( vals[k] );
+  	                float x = Float.parseFloat( vals[k] ) * unit;
   	                ++k; while ( k < s && vals[k].length() == 0 ) ++k;
   	                if ( k < s ) {
-  	                   float y = Float.parseFloat( vals[k] );
-                           path_dir.moveTo( x*unit, y*unit );
-                           xmin=xmax=x;
+  	                   float y = Float.parseFloat( vals[k] ) * unit;
+                           path_dir.moveTo( x, y );
+                           xmin = xmax = x;
                            moved_to = true;
                         }
                       }
@@ -261,13 +261,12 @@ public class SymbolLine extends Symbol
                   try {
   	            ++k; while ( k < s && vals[k].length() == 0 ) ++k;
   	            if ( k < s ) {
-  	              float x = Float.parseFloat( vals[k] );
+  	              float x = Float.parseFloat( vals[k] ) * unit;
   	              ++k; while ( k < s && vals[k].length() == 0 ) ++k;
   	              if ( k < s ) {
-  	                float y = Float.parseFloat( vals[k] );
-                        path_dir.lineTo( x*unit, y*unit );
-                        if ( x < xmin ) xmin = x;
-                        else if ( x > xmax ) xmax = x;
+  	                float y = Float.parseFloat( vals[k] ) * unit;
+                        path_dir.lineTo( x, y );
+                        if ( x < xmin ) xmin = x; else if ( x > xmax ) xmax = x;
                       }
                     }
                   } catch ( NumberFormatException e ) {
@@ -276,11 +275,11 @@ public class SymbolLine extends Symbol
                 } else if ( vals[k].equals("endeffect") ) {
                   path_dir.close();
                   path_rev = new Path( path_dir );
-                  effect = new PathDashPathEffect( path_dir, (xmax-xmin)*unit, 0, PathDashPathEffect.Style.MORPH );
+                  effect = new PathDashPathEffect( path_dir, (xmax-xmin), 0, PathDashPathEffect.Style.MORPH );
                   Matrix m = new Matrix();
                   m.postRotate( 180 );
                   path_rev.transform( m );
-                  rev_effect = new PathDashPathEffect( path_rev, (xmax-xmin)*unit, 0, PathDashPathEffect.Style.MORPH );
+                  rev_effect = new PathDashPathEffect( path_rev, (xmax-xmin), 0, PathDashPathEffect.Style.MORPH );
                   break;
                 }
               }
@@ -314,8 +313,8 @@ public class SymbolLine extends Symbol
                 mPaint.setPathEffect( dash );
                 mRevPaint.setPathEffect( dash );
               } else {
-                mPaint.setStrokeWidth( width );
-                mRevPaint.setStrokeWidth( width );
+                mPaint.setStrokeWidth( width * TopoDroidSetting.mLineThickness );
+                mRevPaint.setStrokeWidth( width * TopoDroidSetting.mLineThickness );
               }
   	    }
           }

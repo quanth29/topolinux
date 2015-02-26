@@ -199,11 +199,16 @@ public class DrawingPointLinePath extends DrawingPath
     if ( with_arrow ) {
       float dy =   first.mX - last.mX;
       float dx = - first.mY + last.mY;
-      float d = 10.0f * TopoDroidSetting.mUnit / FloatMath.sqrt( dx*dx + dy*dy );
-      dx *= d;
-      dy *= d;
-      addStartPoint( first.mX+dx, first.mY+dy );
-      addPoint( first.mX, first.mY );
+      float d = dx*dx + dy*dy;
+      if ( d > 0.00001f ) {
+        d = TopoDroidSetting.mArrowLength * TopoDroidSetting.mUnit / FloatMath.sqrt( d );
+        dx *= d;
+        dy *= d;
+        addStartPoint( first.mX+dx, first.mY+dy );
+        addPoint( first.mX, first.mY );
+      } else {
+        addStartPoint( first.mX, first.mY );
+      }
     } else {
       addStartPoint( first.mX, first.mY );
     }
@@ -255,6 +260,20 @@ public class DrawingPointLinePath extends DrawingPath
     }
   }
 
+  void append( DrawingPointLinePath line )
+  {
+    if ( line.mSize ==  0 ) return;
+    LinePoint lp = line.mFirst;
+    addPoint( lp.mX, lp.mY );
+    for ( lp = lp.mNext; lp != null; lp = lp.mNext ) {
+      if ( lp.has_cp ) {
+        addPoint3( lp.mX1, lp.mY1, lp.mX2, lp.mY2, lp.mX, lp.mY );
+      } else {
+        addPoint( lp.mX, lp.mY );
+      }
+    }
+  }
+
   LinePoint insertPointAfter( float x, float y, LinePoint lp )
   {
     if ( Float.isNaN(x) || Float.isNaN(y) ) return null;
@@ -295,6 +314,29 @@ public class DrawingPointLinePath extends DrawingPath
       } else {
         mPath.lineTo( lp.mX, lp.mY );
       }
+    }
+  }
+
+  void reversePath()
+  {
+    if ( mSize == 0 ) return;
+    LinePoint lf = mFirst;
+    LinePoint ll = mLast;
+    clear();
+    // mPath = new Path();
+    // mFirst = null;
+    // mLast  = null;
+    LinePoint lp = ll;
+    addStartPoint( lp.mX, lp.mY );
+    LinePoint prev = lp.mPrev;
+    while ( prev != null ) {
+      if ( lp.has_cp ) {
+        addPoint3( lp.mX2, lp.mY2, lp.mX1, lp.mY1, prev.mX, prev.mY );
+      } else {
+        addPoint( prev.mX, prev.mY );
+      }
+      lp = prev;
+      prev = prev.mPrev;
     }
   }
 

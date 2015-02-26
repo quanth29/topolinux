@@ -164,6 +164,12 @@
     <string name="error_station_non_existing">Messpunkt existiert nicht</string>
     <string name="error_sensor_required">Sensor erforderlich</string>
     <string name="error_value_required">Wert erforderlich</string>
+    
+    <!-- TODO string name="group_title">Assign calibration data groups</string -->
+    <!-- TODO string name="group_policy_four">Policy: group by four</string -->
+    <!-- TODO string name="group_policy_sixteen">Policy: four groups of four, other single</string -->
+    <!-- TODO string name="group_policy_distance">Policy: group by angular distance</string -->
+    <!-- TODO string name="group_reset">Reset groups</string -->
 
     <string name="scale">Ausmaß</string>
     <string name="reversed">umkehren</string>
@@ -221,6 +227,7 @@
     <string name="menu_sensor">SENSOR</string>
     <string name="menu_scan">SCAN</string>
     <string name="menu_station">MESSPUNKTEN</string>
+    <!-- TODO string name="menu_stats">STATS</string -->
     <string name="menu_survey">INFO</string>
 
 <!-- LINE POINT EDITING ACTIONS -->
@@ -427,6 +434,8 @@
     <string name="remote_on">Laser AN</string>
     <string name="remote_off">Laser AUS</string>
     <string name="remote_measure">Messung</string>
+    <string name="remote_reset">BT zurücksetzen</string>
+    <string name="download">Daten herunterladen</string>
 
 <!--
     <string name="btn_3d">3D</string>
@@ -586,6 +595,10 @@
   <!-- TODO string name="pref_raw_data_summary">Raw data zeigen</string -->
   <!-- OK string name="pref_bootloader_title">Bootloader</string -->
   <string name="pref_bootloader_summary">Die Bootloader ermöglichen</string>
+  <!-- TODO string name="pref_cosurvey_title">Co-surveying</string -->
+  <!-- TODO string name="pref_cosurvey_summary">Enable/Disable co-surveying</string -->
+  <!-- TODO string name="pref_export_shots_title">Data export format</string -->
+  <!-- TODO string name="pref_export_shots_summary">Default data export format</string -->
   <!-- OK string name="pref_extra_buttons_title">Optional buttons</string -->
   <!-- OK string name="pref_extra_buttons_summary">Enable main window optional buttons</string -->
   <!-- TODO string name="pref_size_buttons_title">Buttons size</string -->
@@ -607,10 +620,14 @@
   <!-- TODO string name="pref_auto_reconnect_title">Auto reconnect</string -->
   <!-- TODO string name="pref_auto_reconnect_summary">Reconnect when connection is lostX</string -->
   <!-- OK string name="pref_crs_title">C R S </string -->
-  <string name="pref_crs_summary">CRS Name</string>
+  <!-- TODO string name="pref_crs_summary">CRS Name</string -->
   <!-- TODO string name="pref_crs_message">Enter the CRS name as in Proj4</string -->
   <!-- OK string name="pref_gps_averaging_title">GPS Averaging</string -->
-  <!-- FIXME string name="pref_gps_averaging_summary">Ob GPSAveraging benutzen</string -->
+  <string name="pref_gps_averaging_summary">Ob GPSAveraging benutzen</string>
+  <!-- TODO string name="pref_plot_screen_title">Sketch screen settings</string -->
+  <!-- TODO string name="pref_tool_screen_title">Sketch drawing settings</string -->
+  <!-- TODO string name="pref_location_title">Location settings</string -->
+  <!-- TODO string name="pref_shot_data_title">SHOT DATA SETTINGS</string -->
   <string name="pref_cwd_title">TopoDroid Ordner</string>
   <string name="pref_cwd_summary">TopoDroid Ordner</string>
   <string name="pref_cwd_message">Die TopoDroid Ordner stellen</string>
@@ -620,12 +637,10 @@
   <!-- TODO string name="pref_closeness_title">Selection radius</string -->
   <!-- TODO string name="pref_closeness_summary">Sketch item selection radius</string -->
   <!-- TODO string name="pref_closeness_message">Sketch item selection radius</string -->
-  <!-- string name="pref_altitude_title">Höhe</string -->
+  <string name="pref_altitude_title">Höhe</string>
   <!-- TODO string name="pref_altitude_summary">Select altitude type</string -->
   <!-- TODO string name="pref_altimetric_title">Orthometric atitude</string -->
   <!-- TODO string name="pref_altimetric_summary">Orthometric altitude lookup</string -->
-  <!-- TODO string name="pref_list_refresh_title">List refresh</string -->
-  <!-- TODO string name="pref_list_refresh_summary">Force list refresh</string -->
   <!-- TODO string name="pref_survey_stations_title">Vermessung Massungpunkten</string -->
   <!-- TODO string name="pref_survey_stations_summary">Automatisch Vermessung Messpunkten</string -->
   <!-- TODO string name="pref_accel_thr_title">Acceleration tolerance</string -->
@@ -641,6 +656,7 @@
   <!-- TODO string name="pref_leg_title">Leg tolerance</string -->
   <!-- TODO string name="pref_leg_summary">Tolerance among the shots of a leg</string -->
   <!-- TODO string name="pref_leg_message">Tolerance among the shots of a leg</string -->
+
   <!-- TODO string name="pref_team_title">Equipo</string -->
   <!-- TODO string name="pref_team_summary">Surveying team</string -->
   <!-- TODO string name="pref_team_message">Default surveying team</string -->
@@ -667,7 +683,7 @@
   <!-- TODO string name="pref_beep_volume_message">Percent timer-beep volume</string -->
   <!-- TODO string name="pref_drawing_unit_title">Point tools scale</string -->
   <!-- TODO string name="pref_drawing_unit_summary">Scale of the point tools</string -->
-  <!-- TODO string name="pref_drawing_unit_message">Scale of the point drawing tools [restart the app after change]</string -->
+  <!-- TODO string name="pref_drawing_unit_message">Scale of the point drawing tools</string -->
   <!-- TODO string name="pref_segment_title">Line-point spacing</string -->
   <!-- TODO string name="pref_segment_summary">Minimum line-point distance</string -->
   <!-- TODO string name="pref_segment_message">Minimum distance between points on a line</string -->
@@ -697,9 +713,18 @@
   <string name="pref_label_size_title">Beschriftung Schriftgröße</string>
   <string name="pref_label_size_summary">Beschriftung Schriftgröße</string>
   <string name="pref_label_size_message">Beschriftung Schriftgröße</string>
+  <!-- TODO string name="pref_arrow_length_title">Section tick</string -->
+  <!-- TODO string name="pref_arrow_length_summary">Size of the section line tick</string -->
+  <!-- TODO string name="pref_arrow_length_message">Size of the section line tick</string -->
+  <!-- TODO string name="pref_dot_radius_title">Dots radius</string -->
+  <!-- TODO string name="pref_dot_radius_summary">Green dots size</string -->
+  <!-- TODO string name="pref_dot_radius_message">Size of the green dots</string -->
   <!-- TODO string name="pref_line_thickness_title">Line thickness</string -->
   <!-- TODO string name="pref_line_thickness_summary">Drawing line thickness</string -->
   <!-- TODO string name="pref_line_thickness_message">Drawing line thickness</string -->
+  <!-- TODO string name="pref_fixed_thickness_title">Survey line thickness</string -->
+  <!-- TODO string name="pref_fixed_thickness_summary">Survey line thickness</string -->
+  <!-- TODO string name="pref_fixed_thickness_message">Survey line thickness</string -->
   <!-- TODO string name="pref_device_title">Device</string -->
   <!-- TODO string name="pref_device_summary">DistoX address name</string -->
   <!-- TODO string name="pref_device_message">DistoX address name</string -->
@@ -711,8 +736,8 @@
   <!-- TODO string name="pref_autoStations_summary">Add stations automatically</string -->
   <!-- FIXME string name="pref_loopClosure_title">Kreisschluss</string -->
   <!-- FIXME string name="pref_loopClosure_summary">Kreisschlussfehler compensation</string -->
-  <!-- string name="pref_splayExtend_title">Splay extend</string -->
-  <!-- string name="pref_splayExtend_summary">Whether to estimate the extend of splays</string -->
+  <!-- TODO string name="pref_splayExtend_title">Splay extend</string -->
+  <!-- TODO string name="pref_splayExtend_summary">Whether to estimate the extend of splays</string -->
   <string name="pref_picker_type_title">Zeichenwerkzeuge wählen</string>
   <!-- TODO string name="pref_picker_type_summary">Drawing tool picker type</string -->
   <string name="pref_station_size_title">Messpunkt Schriftgröße</string>
@@ -771,6 +796,11 @@
   <!-- TODO string name="pref_log_therion">Therion</string -->
   <!-- TODO string name="pref_log_units">Units</string -->
   <!-- TODO string name="pref_log_zip">ZIP</string -->
+
+  <!-- OK string name="line_bezier">Bezier</string -->
+  <!-- TODO string name="line_fine">fine</string -->
+  <!-- TODO string name="line_normal">normale</string -->
+  <!-- TODO string name="line_coarse">grossolana</string -->
 
 <!-- WELCOME MESSAGE: IT WOULD BE NICE TO HAVE THIS TRANSLATED -->
     <string name="welcome_title">Willkommen in TopoDroid %1$s</string>

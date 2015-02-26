@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.Button;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 // import android.view.View.OnKeyListener;
 // import android.view.KeyEvent;
 
@@ -105,6 +106,8 @@ public class DistoXAnnotations extends Dialog // Activity
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.distox_annotations);
+    getWindow().setLayout( LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT );
+
     // mTVtitle  = (TextView) findViewById(R.id.note_title );
     mETtext   = (EditText) findViewById(R.id.note_text );
     mButtonOK = (Button) findViewById(R.id.button_ok );

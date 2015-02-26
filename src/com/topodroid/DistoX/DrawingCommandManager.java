@@ -521,6 +521,9 @@ public class DrawingCommandManager
   // called by DrawingSurface::addDrawingStation
   public void addStation( DrawingStationName st, boolean selectable )
   {
+    // Log.v("PTDistoX", "add station " + st.mName + " scene " + st.cx + " " + st.cy
+    //                + " num " + st.mStation.e + " " + st.mStation.s );
+
     mStations.add( st );
     if ( selectable ) {
       synchronized( mSelection ) {
@@ -530,16 +533,16 @@ public class DrawingCommandManager
     }
   }
 
-  void setScaleBar( float x0, float y0 ) 
-  {
-    if ( mCurrentStack.size() > 0 ) return;
-    DrawingLinePath scale_bar = new DrawingLinePath( DrawingBrushPaths.mLineLib.mLineSectionIndex );
-    scale_bar.addStartPoint( x0 - 50, y0 );
-    scale_bar.addPoint( x0 + 50, y0 );  // 5 meters
-    synchronized( mCurrentStack ) {
-      mCurrentStack.add( scale_bar );
-    }
-  }
+  // void setScaleBar( float x0, float y0 ) 
+  // {
+  //   if ( mCurrentStack.size() > 0 ) return;
+  //   DrawingLinePath scale_bar = new DrawingLinePath( DrawingBrushPaths.mLineLib.mLineSectionIndex );
+  //   scale_bar.addStartPoint( x0 - 50, y0 );
+  //   scale_bar.addPoint( x0 + 50, y0 );  // 5 meters
+  //   synchronized( mCurrentStack ) {
+  //     mCurrentStack.add( scale_bar );
+  //   }
+  // }
 
   void addCommand( DrawingPath path )
   {
@@ -553,6 +556,12 @@ public class DrawingCommandManager
         mMaxAreaIndex = area.mAreaCnt;
       }
     }
+
+    // if ( path.mType == DrawingPath.DRAWING_PATH_LINE ) {
+    //   DrawingLinePath line = (DrawingLinePath)path;
+    //   LinePoint lp = line.mFirst;
+    //   Log.v("PTDistoX", "add path. size " + line.size() + " start " + lp.mX + " " + lp.mY );
+    // }
     
     synchronized( mCurrentStack ) {
       mCurrentStack.add( path );
@@ -675,6 +684,39 @@ public class DrawingCommandManager
     return length;
   }
 
+  DrawingLinePath getLineToContinue( LinePoint lp, int type )
+  {
+    DrawingLinePath ret = null;
+    synchronized( mCurrentStack ) {
+      final Iterator i = mCurrentStack.iterator();
+      while ( i.hasNext() ){
+        final DrawingPath drawingPath = (DrawingPath) i.next();
+        if ( drawingPath.mType == DrawingPath.DRAWING_PATH_LINE ) {
+          DrawingLinePath linePath = (DrawingLinePath)drawingPath;
+          if ( linePath.mLineType == type ) {
+            if ( linePath.mFirst.distance( lp ) < 20 || linePath.mLast.distance( lp ) < 20 ) {
+              if ( ret != null ) return null;
+              ret = linePath;
+            }
+          }
+        }
+      }
+    }
+    if ( ret != null ) mSelection.removePath( ret );
+    return ret;
+  }
+        
+  /** add the points of the first line to the second line
+   */
+  void addLineToLine( DrawingLinePath line, DrawingLinePath line0 )
+  {
+    synchronized( mCurrentStack ) {
+      line0.append( line );
+      mSelection.insertPath( line0 );
+    }
+  }
+
+
   public void executeAll( Canvas canvas, float zoom, Handler doneHandler)
   {
     boolean legs   = (mDisplayMode & DISPLAY_LEG) != 0;
@@ -729,7 +771,7 @@ public class DrawingCommandManager
     }
     if ( mDisplayPoints ) {
       synchronized( mSelection ) {
-        float radius = 5/zoom;
+        float radius = TopoDroidSetting.mDotRadius/zoom;
         for ( SelectionPoint pt : mSelection.mPoints ) { // FIXME SELECTION
           float x, y;
           if ( pt.mPoint != null ) { // line-point
@@ -747,7 +789,7 @@ public class DrawingCommandManager
       }
       synchronized( mSelected ) {
         if ( mSelected.mPoints.size() > 0 ) { // FIXME SELECTIOM
-          float radius = 20/zoom;
+          float radius = 4*TopoDroidSetting.mDotRadius/zoom;
           Path path;
           SelectionPoint sp = mSelected.mHotItem;
           if ( sp != null ) {
@@ -1400,21 +1442,22 @@ public class DrawingCommandManager
           pw.format("scrap %s -projection %s -scale [%.0f %.0f %.0f %.0f 0 5 0 0 m]", scrap_name, proj_name, 
             mNorthLine.x1*toTherion, -mNorthLine.y1*toTherion, mNorthLine.x2*toTherion, -mNorthLine.y2*toTherion );
         } else {
-          float x1 = 0 * toTherion;
-          float x2 = 5 * toTherion;
-          final Iterator i = mCurrentStack.iterator();
-          while ( i.hasNext() ) {
-            final DrawingPath p = (DrawingPath) i.next();
-            if ( p.mType == DrawingPath.DRAWING_PATH_LINE ) {
-              DrawingLinePath lp = (DrawingLinePath)p;
-              if ( lp.mLineType == DrawingBrushPaths.mLineLib.mLineSectionIndex ) {
-                x1 = lp.mFirst.mX * toTherion;
-                x2 = lp.mLast.mX  * toTherion;
-                break;
-              }
-            }
-          }
-          pw.format("scrap %s -projection %s -scale [%.0f 0 %.0f 0 0 0 5 0 m]", scrap_name, proj_name, x1, x2 );
+          // float x1 = 0 * toTherion;
+          // float x2 = 5 * toTherion;
+          // final Iterator i = mCurrentStack.iterator();
+          // while ( i.hasNext() ) {
+          //   final DrawingPath p = (DrawingPath) i.next();
+          //   if ( p.mType == DrawingPath.DRAWING_PATH_LINE ) {
+          //     DrawingLinePath lp = (DrawingLinePath)p;
+          //     if ( lp.mLineType == DrawingBrushPaths.mLineLib.mLineSectionIndex ) {
+          //       x1 = lp.mFirst.mX * toTherion;
+          //       x2 = lp.mLast.mX  * toTherion;
+          //       break;
+          //     }
+          //   }
+          // }
+          float dx = 100 * toTherion;
+          pw.format("scrap %s -projection %s -scale [0 0 %.0f 0 0 0 5 0 m]", scrap_name, proj_name, dx );
         }
       } else {
         pw.format("scrap %s -projection %s -scale [0 0 1 0 0.0 0.0 1 0.0 m]", scrap_name, proj_name );

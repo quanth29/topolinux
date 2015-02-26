@@ -80,7 +80,7 @@ public class DistoXComm
 
   private void resetBTReceiver()
   {
-    // TopoDroidLog.Log(  TopoDroidLog.LOG_BT, "resetBTReceiver");
+    // TopoDroidLog.Log(  TopoDroidLog.LOG_BT, "reset BTReceiver");
     if ( mBTReceiver != null ) {
       mApp.unregisterReceiver( mBTReceiver );
       mBTReceiver = null;
@@ -103,13 +103,13 @@ public class DistoXComm
           TopoDroidLog.Log( TopoDroidLog.LOG_BT, "ACL_CONNECTED");
         } else if ( BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED.equals( action ) ) {
           TopoDroidLog.Log( TopoDroidLog.LOG_BT, "ACL_DISCONNECT_REQUESTED");
-          closeSocket( true );
+          closeSocket( );
         } else if ( BluetoothDevice.ACTION_ACL_DISCONNECTED.equals( action ) ) {
           Bundle extra = data.getExtras();
           String device = extra.getString( BluetoothDevice.EXTRA_DEVICE ).toString();
           Log.v("DistoX", " DistoXComm ACL_DISCONNECTED from " + device );
           TopoDroidLog.Log( TopoDroidLog.LOG_BT, "ACL_DISCONNECTED");
-          closeSocket( true );
+          closeSocket( );
         }
       }
     };
@@ -139,51 +139,6 @@ public class DistoXComm
   int nReadPackets;   // number of received data-packet
   long mLastShotId;   // last shot id
   boolean doWork = true;
-
-/* ************
-  private class CommandThread extends AsyncTask< String, Integer, Integer >
-  {
-    private DistoXProtocol mProto;
-    private int mJob;
-    private byte[] mData;
-
-    CommandThread( DistoXProtocol proto, int job, byte[] data )
-    {
-      mProto = proto;
-      mJob   = job;
-      mData  = data;
-    }
-
-    @Override
-    protected Integer doInBackground( String... statuses )
-    {  
-      int ret = 0;
-      switch ( job ) {
-        case READ_CALIBRATION: 
-          boolean ret = mProto.readCalibration( mData );
-          // TODO return result
-          break;
-        case WRITE_CALIBRATION: 
-          boolean ret = mProto.writeCalibration( mData );
-          // TODO return result
-          break;
-      }
-      return ret;
-    }
-
-    @Override
-    protected void onProgressUpdate( Integer... values)
-    {
-      // super.onProgressUpdate( values );
-    }
-
-    @Override
-    protected void onPostExecute( Integer res )
-    {
-    }
-
-  };
-************* */
 
   private class RfcommThread extends Thread
   {
@@ -331,26 +286,23 @@ public class DistoXComm
 
 
   /** close the socket (and the RFcomm thread) but don't delete it
+   * alwasy called with wait_thread
    */
-  private void closeSocket( boolean wait_thread )
+  private void closeSocket( )
   {
-    TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "closeSocket() wait thread " + wait_thread );
+    TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "close socket()" );
     if ( mBTSocket != null ) {
       try {
         mBTSocket.close();
-        if ( wait_thread ) {
-          if ( mRfcommThread != null ) {
-            {
-              mRfcommThread.join();
-            }
-          }
-          mRfcommThread = null;
+        if ( mRfcommThread != null ) {
+          mRfcommThread.join();
         }
       } catch ( InterruptedException e ) {
-        TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "closeSocket interrupt " + e.getMessage() );
+        TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "close socket interrupt " + e.getMessage() );
       } catch ( IOException e ) {
-        TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "closeSocket IOexception " + e.getMessage() );
+        TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "close socket IOexception " + e.getMessage() );
       } finally {
+        mRfcommThread = null;
         mBTConnected = false;
       }
     }
@@ -358,13 +310,13 @@ public class DistoXComm
   }
 
   /** close the socket and delete it
-   * the connection is unusable
+   * the connection becomes unusable
+   * As a matter of fact tghis is alwyas called with wait_thread = true
    */
-  private void destroySocket( boolean wait_thread )
+  private void destroySocket( ) // boolean wait_thread )
   {
-    TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "destroySocket()" );
-    closeSocket( wait_thread );
-    mBTConnected = false;
+    TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "destroy socket()" );
+    closeSocket( );
     mBTSocket = null;
     mProtocol = null;
     resetBTReceiver();
@@ -463,8 +415,7 @@ public class DistoXComm
   private boolean connectSocket( String address )
   {
     if ( address == null ) return false;
-    TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "DistoXComm.connectSocket(): " + address );
-    // TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "DistoXComm.connectSocket(): connected is " + mBTConnected );
+    TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "connect socket(): " + address );
     createSocket( address );
     if ( mBTSocket != null ) {
       int k = 0;
@@ -473,17 +424,17 @@ public class DistoXComm
           mBTSocket.connect();
           mBTConnected = true;
         } catch ( IOException e ) {
-          TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "connectSocket() IO " + e.getMessage() );
+          TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "connect socket() IO " + e.getMessage() );
           if ( ++k < TopoDroidSetting.mCommRetry ) {
-            destroySocket( true );
+            destroySocket( );
             createSocket( address );
           }
         }
       }
     } else {
-      TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "connectSocket() null socket");
+      TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "connect socket() null socket");
     }
-    // TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "connectSocket() result " + mBTConnected );
+    // TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "connect socket() result " + mBTConnected );
     return mBTConnected;
   }
 
@@ -494,7 +445,6 @@ public class DistoXComm
       if ( mRfcommThread == null ) {
         mRfcommThread = new RfcommThread( mProtocol, to_read, lister );
         mRfcommThread.start();
-        // downloadLoop();
         // TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "startRFcommThread started");
       // } else {
       //   TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "startRFcommThread already running");
@@ -511,26 +461,24 @@ public class DistoXComm
   
   public boolean connectRemoteDevice( String address, ILister lister )
   {
-    // TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "connectRemoteDevice address " + address );
-    // createSocket( address );
+    // TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "connect remote device: address " + address );
     if ( connectSocket( address ) ) {
       if ( mProtocol != null ) {
         return startRfcommThread( -1, lister );
       }
       TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "connectRemoteDevice null protocol");
-      destroySocket( true );
+      destroySocket( );
     } else {
       TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "connectRemoteDevice failed on connectSocket()" );
     }
     return false;
   }
- 
 
   public void disconnectRemoteDevice( )
   {
-    // TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "disconnectRemoteDevice ");
+    // TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "disconnect remote device ");
     if ( mBTSocket != null ) {
-      destroySocket( true );
+      destroySocket( );
       if ( mRfcommThread != null ) {
         try {
           mRfcommThread.join();
@@ -545,7 +493,7 @@ public class DistoXComm
 
   private boolean checkRfcommThreadNull( String msg )
   {
-    // TopoDroidLog.Log( TopoDroidLog.LOG_COMM, msg );
+    TopoDroidLog.Log( TopoDroidLog.LOG_COMM, msg );
     return ( mRfcommThread == null );
   }
 
@@ -566,7 +514,7 @@ public class DistoXComm
   /**
    * nothing to read (only write) --> no AsyncTask
    */
-  void setX310Laser( String address, int what )
+  void setX310Laser( String address, int what, ILister lister )
   {
     if ( connectSocket( address ) ) {
       switch ( what ) {
@@ -577,10 +525,24 @@ public class DistoXComm
           sendCommand( 0x36 );
           break;
         case 2: // MEASURE
+        case 3: // MEASURE and DOWNLAOD
           sendCommand( 0x38 );
+          if ( what == 3 ) {
+            if ( mRfcommThread == null ) {
+              Log.v("DistoX", "RF comm threadi start ... ");
+              startRfcommThread( -1, lister );
+              while ( mRfcommThread != null ) {
+                try {
+                  Thread.sleep( 100 );
+                } catch ( InterruptedException e ) { }
+              }
+            } else {
+              Log.v("DistoX", "RF comm thread not null ");
+            }
+          }
           break;
       }
-      destroySocket( true );
+      destroySocket( );
     }
   }
 
@@ -591,15 +553,12 @@ public class DistoXComm
   private boolean setX310CalibMode( boolean turn_on )
   {
     boolean ret = false;
-    {
-      if ( turn_on ) {
-        ret = sendCommand( 0x31 ); // TOGGLE CALIB ON 
-      } else { 
-        ret = sendCommand( 0x30 ); // TOGGLE CALIB OFF
-      }
-      // destroySocket( true );
+    if ( turn_on ) {
+      ret = sendCommand( 0x31 ); // TOGGLE CALIB ON 
+    } else { 
+      ret = sendCommand( 0x30 ); // TOGGLE CALIB OFF
     }
-    TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "setX310CalibMode ret " + ret );
+    // TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "set X310 CalibMode ret " + ret );
     return ret;
   }
 
@@ -610,9 +569,8 @@ public class DistoXComm
    */
   public boolean toggleCalibMode( String address, int type )
   {
-    TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "toggleCalibMode address " + address + " type " + type );
-    if ( ! checkRfcommThreadNull( "toggleCalibMode address " + address ) ) {
-      TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "toggleCalibMode address " + address + " not null RFcomm thread" );
+    if ( ! checkRfcommThreadNull( "toggle CalibMode: address " + address + " type " + type ) ) {
+      TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "toggle CalibMode address " + address + " not null RFcomm thread" );
       return false;
     }
     boolean ret = false;
@@ -623,7 +581,7 @@ public class DistoXComm
           byte[] result = new byte[4];
           if ( ! mProtocol.read8000( result ) ) { // FIXME ASYNC
             TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "toggleCalibMode A3 failed read8000" );
-            destroySocket( true );
+            destroySocket( );
             return false;
           }
           TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "toggleCalibMode A3 result " + result[0] );
@@ -639,16 +597,14 @@ public class DistoXComm
           ret = setX310CalibMode( mCalibMode );
           break;
       }
-      destroySocket( true );
+      destroySocket( );
     }
     return ret;
   }
 
   public boolean writeCoeff( String address, byte[] coeff )
   {
-    if ( ! checkRfcommThreadNull( "writeCoeff address " + address ) ) {
-      return false;
-    }
+    if ( ! checkRfcommThreadNull( "write coeff: address " + address ) ) return false;
     boolean ret = false;
     if ( coeff != null ) {
       mCoeff = coeff;
@@ -657,7 +613,7 @@ public class DistoXComm
         setupBTReceiver();
         ret = mProtocol.writeCalibration( mCoeff );
         // FIXME ASYNC new CommandThread( mProtocol, WRITE_CALIBRATION, mCoeff );
-        destroySocket( true );
+        destroySocket( );
       }
     }
     return ret;
@@ -666,9 +622,7 @@ public class DistoXComm
   // called only by CalibReadTask
   public boolean readCoeff( String address, byte[] coeff )
   {
-    if ( ! checkRfcommThreadNull( "readCoeff address " + address ) ) {
-      return false;
-    }
+    if ( ! checkRfcommThreadNull( "read coeff: address " + address ) ) return false;
     boolean ret = false;
     if ( coeff != null ) {
       // createSocket( address );
@@ -676,7 +630,7 @@ public class DistoXComm
         setupBTReceiver();
         ret = mProtocol.readCalibration( coeff );
         // FIXME ASYNC new CommandThread( mProtocol, READ_CALIBRATION, coeff );
-        destroySocket( true );
+        destroySocket( );
 
         // int k;
         // for ( k=0; k<48; k+=8 ) {
@@ -694,20 +648,15 @@ public class DistoXComm
   public String readHeadTail( String address, int[] head_tail )
   {
     if ( mApp.distoType() == Device.DISTO_A3 ) {
-      if ( ! checkRfcommThreadNull( "readHeadTail address " + address ) ) {
-        TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "readHeadTail() Rfcomm thread not null");
-        return null;
-      }
-      {
-        // createSocket( address );
-        if ( connectSocket( address ) ) {
-          setupBTReceiver();
-          String result = mProtocol.readHeadTailA3( head_tail );
-          // FIXME ASYNC new CommandThread( mProtocol, READ_HEAD_TAIL, haed_tail ); NOTE int[] instead of byte[]
-          destroySocket( true );
-          TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "readHeadTail() result " + result );
-          return result; 
-        }
+      if ( ! checkRfcommThreadNull( "read HeadTail: address " + address ) ) return null;
+      // createSocket( address );
+      if ( connectSocket( address ) ) {
+        setupBTReceiver();
+        String result = mProtocol.readHeadTailA3( head_tail );
+        // FIXME ASYNC new CommandThread( mProtocol, READ_HEAD_TAIL, haed_tail ); NOTE int[] instead of byte[]
+        destroySocket( );
+        TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "readHeadTail() result " + result );
+        return result; 
       }
     }
     // default
@@ -717,38 +666,32 @@ public class DistoXComm
   // X310 data memory is read-only
   // public int resetX310Memory( String address, int from, int to )
   // {
-  //   if ( ! checkRfcommThreadNull( "swapHotBit address " + address ) ) {
-  //     return -1;
-  //   }
+  //   if ( ! checkRfcommThreadNull( "reset X310 memory: address " + address ) ) return -1;
   //   int n = 0;
   //   if ( connectSocket( address ) ) {
   //     setupBTReceiver();
   //     n = mProtocol.resetX310Memory( from, to );
-  //     destroySocket( true );
+  //     destroySocket( );
   //   }
   //   return n;
   // }
 
   public int readX310Memory( String address, int from, int to, List< MemoryOctet > memory )
   {
-    if ( ! checkRfcommThreadNull( "swapHotBit address " + address ) ) {
-      return -1;
-    }
+    if ( ! checkRfcommThreadNull( "read X310 memory: address " + address ) ) return -1;
     int n = 0;
     if ( connectSocket( address ) ) {
       setupBTReceiver();
       n = mProtocol.readX310Memory( from, to, memory );
       // FIXME ASYNC new CommandThread( mProtocol, READ_X310_MEMORY, memory ) Note...
-      destroySocket( true );
+      destroySocket( );
     }
     return n;
   }
 
   public int readA3Memory( String address, int from, int to, List< MemoryOctet > memory )
   {
-    if ( ! checkRfcommThreadNull( "swapHotBit address " + address ) ) {
-      return -1;
-    }
+    if ( ! checkRfcommThreadNull( "read A3 memory: address " + address ) ) return -1;
     from &= 0x7ff8;
     to   &= 0xfff8;
     if ( from >= 0x8000 ) from = 0;
@@ -759,7 +702,7 @@ public class DistoXComm
         setupBTReceiver();
         n = mProtocol.readMemory( from, to, memory );
         // FIXME ASYNC new CommandThread( mProtocol, READ_MEMORY, memory ) Note...
-        destroySocket( true );
+        destroySocket( );
       }
     }
     return n;
@@ -773,7 +716,7 @@ public class DistoXComm
       setupBTReceiver();
       ret = mProtocol.readMemory( addr );
       // FIXME ASYNC new CommandThread( mProtocol, READ_MEMORY_LOWLEVEL, addr ) Note...
-      destroySocket( true );
+      destroySocket( );
     }
     return ret;
   }
@@ -782,9 +725,7 @@ public class DistoXComm
    */
   public int swapHotBit( String address, int from, int to )
   {
-    if ( ! checkRfcommThreadNull( "swapHotBit address " + address ) ) {
-      return -1;
-    }
+    if ( ! checkRfcommThreadNull( "swap hot bit: address " + address ) ) return -1;
 
     from &= 0x7ff8;
     to   &= 0xfff8;
@@ -807,15 +748,16 @@ public class DistoXComm
         } while ( to != from );
         // FIXME ASYNC new CommandThread( mProtocol, SWAP_HOT_BITS, from, to ) Note...
         
-        destroySocket( true );
+        destroySocket( );
         TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "swapHotBit swapped " + n + "data" );
       }
     }
     return n;
   }
 
-  // FIXME_COMM
-  // continuous data download
+  // ------------------------------------------------------------------------------------
+  // CONTINUOUS DATA DOWNLOAD
+
   public boolean connect( String address, ILister lister ) 
   {
     if ( mRfcommThread != null ) return true;
@@ -823,7 +765,6 @@ public class DistoXComm
     startRfcommThread( -2, lister );
     return true;
   }
-
 
   public void disconnect()
   {
@@ -835,77 +776,72 @@ public class DistoXComm
         // TODO
       }
     }
-    destroySocket( true );
+    destroySocket( );
   }
-  // END FIXME_COMM
 
+  // -------------------------------------------------------------------------------------
+  // ON-DEMAND DATA DOWNLOAD
 
-  // on-demand data download
   public int downloadData( String address, ILister lister )
   {
-    TopoDroidLog.Log( TopoDroidLog.LOG_COMM,
-      "DistoXComm.downloadData address " + address + " DistoX type " + mApp.distoType() );
-    if ( mRfcommThread != null ) {
-      TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "DistoXComm.downloadData RFcomm thread not null");
+    if ( ! checkRfcommThreadNull( "download data: address " + address ) ) {
+      TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "download data: RFcomm thread not null");
       return DistoXProtocol.DISTOX_ERR_CONNECTED;
     }
-    {
-      // createSocket( address );
-      if ( connectSocket( address ) ) {
-        // TopoDroidLog.Log( TopoDroidLog.LOG_ERR,
-        //                   "DistoXComm.downloadData socket connected ... DistoX type " + mApp.distoType() );
-        if ( mApp.distoType() == Device.DISTO_A3 ) {
-          int prev_read = -1;
-          int to_read = mProtocol.readToReadA3();
-          TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "downloadData A3 to-read " + to_read );
-          if ( to_read <= 0 ) {
-            destroySocket( true );
-            return to_read;
-          }
+    
+    if ( connectSocket( address ) ) {
+      if ( mApp.distoType() == Device.DISTO_A3 ) {
+        int prev_read = -1;
+        int to_read = mProtocol.readToReadA3();
+        TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "download data: A3 to-read " + to_read );
+        if ( to_read <= 0 ) {
+          destroySocket( );
+          return to_read;
+        }
 
-          // FIXME asyncTask ?
-          // nReadPackets = 0; // done in RfcommThread cstr
-          startRfcommThread( to_read, lister );
-          while ( mRfcommThread != null && nReadPackets < to_read ) {
-            if ( nReadPackets != prev_read ) {
-              TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "downloadData A3 read " + nReadPackets + " / " + to_read );
-              prev_read = nReadPackets;
-              // try {
-              //   Thread.sleep( 500 );
-              // } catch ( InterruptedException e ) { }
-            }
+        // FIXME asyncTask ?
+        // nReadPackets = 0; // done in RfcommThread cstr
+        startRfcommThread( to_read, lister );
+        while ( mRfcommThread != null && nReadPackets < to_read ) {
+          if ( nReadPackets != prev_read ) {
+            TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "download data: A3 read " + nReadPackets + " / " + to_read );
+            prev_read = nReadPackets;
+            // try {
+            //   Thread.sleep( 500 );
+            // } catch ( InterruptedException e ) { }
           }
-          TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "downloadData A3 read " + nReadPackets );
-          destroySocket( true );
-        } else if ( mApp.distoType() == Device.DISTO_X310 ) {
-          startRfcommThread( -1, lister );
-          while ( mRfcommThread != null ) {
-            try {
-              Thread.sleep( 500 );
-            } catch ( InterruptedException e ) { }
-          }
-          TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "DistoXComm.downloadData X310 read " + nReadPackets );
-          destroySocket( true );
-        } else {
-          TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "DistoXComm.downloadData unknown DistoType " + mApp.distoType() );
         }
-        if ( mRfcommThread != null ) {
+        TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "download data: A3 read " + nReadPackets );
+        destroySocket( );
+      } else if ( mApp.distoType() == Device.DISTO_X310 ) {
+        startRfcommThread( -1, lister );
+        while ( mRfcommThread != null ) {
           try {
-            mRfcommThread.join();
-          } catch ( InterruptedException e ) {
-            // TODO
-          }
-          mRfcommThread = null;
+            Thread.sleep( 500 );
+          } catch ( InterruptedException e ) { }
         }
-        return nReadPackets;
+        TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "download data: X310 read " + nReadPackets );
+        destroySocket( );
       } else {
-        TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "DistoXComm.downloadData fail to connect socket");
+        TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "download data: unknown DistoType " + mApp.distoType() );
       }
+      if ( mRfcommThread != null ) {
+        try {
+          mRfcommThread.join();
+        } catch ( InterruptedException e ) {
+          // TODO
+        }
+        mRfcommThread = null;
+      }
+      return nReadPackets;
+    } else {
+      TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "download data: fail to connect socket");
     }
+    
     return -1; // failure
   }
 
-  // ================================================
+  // ====================================================================================
   // FIRMWARE
 
   // int readFirmwareHardware( String address )
@@ -913,7 +849,7 @@ public class DistoXComm
   //   int ret = 0;
   //   if ( connectSocket( address ) ) {
   //     ret = mProtocol.readFirmwareAddress( );
-  //     destroySocket( true );
+  //     destroySocket( );
   //   }
   //   return ret;
   // }
@@ -923,7 +859,7 @@ public class DistoXComm
     int ret = 0;
     if ( connectSocket( address ) ) {
       ret = mProtocol.dumpFirmware( filepath );
-      destroySocket( true );
+      destroySocket( );
     }
     return ret;
   }
@@ -934,7 +870,7 @@ public class DistoXComm
     if ( connectSocket( address ) ) {
       TopoDroidLog.LogFile( "Firmware upload: socket is ready " );
       ret = mProtocol.uploadFirmware( filepath );
-      destroySocket( true );
+      destroySocket( );
     }
     return ret;
   }

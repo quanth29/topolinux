@@ -25,8 +25,11 @@ import android.content.Intent;
 // import android.content.DialogInterface.OnDismissListener;
 
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.Toast;
 
 class DeviceRemote extends Dialog
                    implements View.OnClickListener
@@ -34,17 +37,28 @@ class DeviceRemote extends Dialog
   private Button mBTlaserOn;
   private Button mBTlaserOff;
   private Button mBTmeasure;
+  private Button mBTreset;
+  private CheckBox mCBdownload;
+
+  // private DataDowloader mDataDowloader;
+  private ILister mLister;
 
   // private Button mBTback;
 
-  DeviceActivity mParent;
+  // DeviceActivity mParent;
   TopoDroidApp   mApp;
 
-  DeviceRemote( Context context, DeviceActivity parent, TopoDroidApp app )
+  DeviceRemote( Context context,
+                ILister lister,
+                // DataDownloader data_downloader,
+                // DeviceActivity parent, 
+                TopoDroidApp app )
   {
     super( context );
-    mParent = parent;
+    // mParent = parent;
     mApp    = app;
+    mLister = lister;
+    // mDataDownloader = data_downloader
   }
 
 
@@ -54,32 +68,42 @@ class DeviceRemote extends Dialog
     super.onCreate( bundle );
 
     setContentView( R.layout.device_remote );
+    getWindow().setLayout( LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT );
 
-    setTitle( mParent.getResources().getString( R.string.remote_title ) );
+    setTitle( mApp.getResources().getString( R.string.remote_title ) );
 
     mBTlaserOn  = (Button) findViewById( R.id.remote_on );
     mBTlaserOff = (Button) findViewById( R.id.remote_off );
     mBTmeasure  = (Button) findViewById( R.id.remote_measure );
+    mBTreset    = (Button) findViewById( R.id.remote_reset );
     // mBTback     = (Button) findViewById( R.id.button_back );
+    mCBdownload = (CheckBox) findViewById( R.id.remote_download );
 
     mBTlaserOn.setOnClickListener( this );
     mBTlaserOff.setOnClickListener( this );
     mBTmeasure.setOnClickListener( this );
+    mBTreset.setOnClickListener( this );
     // mBTback.setOnClickListener( this );
   }
 
   @Override
   public void onClick( View view )
   {
+    boolean download = mCBdownload.isChecked();
     switch ( view.getId() ) {
       case R.id.remote_on:
-        mApp.setX310Laser( 1 );
+        mApp.setX310Laser( 1, mLister );
         break;
       case R.id.remote_off:
-        mApp.setX310Laser( 0 );
+        mApp.setX310Laser( 0, mLister );
         break;
       case R.id.remote_measure:
-        mApp.setX310Laser( 2 );
+        mApp.setX310Laser( (download ? 3 : 2), mLister );
+        // if ( mDataDownloader != null ) mDataDownloader.downloadData();
+        break;
+      case R.id.remote_reset:
+        mApp.resetComm();
+        Toast.makeText(mApp, R.string.bt_reset, Toast.LENGTH_SHORT).show();
         break;
       // case R.id.button_back:
       //   dismiss();

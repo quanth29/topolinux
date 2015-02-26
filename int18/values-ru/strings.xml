@@ -69,7 +69,7 @@
    
     <string name="device_algo_failed">Алгоритм автоопределения не сработал\nИспользую линейный алгоритм</string>
     <string name="device_busy">Устройство занято</string>
-    <string name="device_illegal_addr">Невозможный адрес памяти</string>
+    <string name="device_illegal_addr">Недопустимый адрес памяти</string>
     <string name="device_info">Информация об устройстве</string>
     <string name="device_model_set">Вы уверенны что хотите сменить модель прибора</string>
     <string name="device_none">DistoX не выбран</string>
@@ -91,7 +91,7 @@
     <!-- OK string name="regular">обычный</string -->
     <string name="surface">поверхность</string>
     <string name="extend">расширенный</string>
-    <!-- TODO string name="extend_ignore">None</string -->
+    <string name="extend_ignore">Игнорировать</string>
     <string name="extend_left">РРвЛево</string>
     <string name="extend_right">РРвПраво</string>
     <string name="extend_vert">РРвВерх</string>
@@ -150,11 +150,11 @@
     <string name="error_sensor_required">Требуется датчик</string>
     <string name="error_value_required">Требуется значение</string>
     
-    <!-- TODO string name="group_title">Assign calibration data groups</string -->
-    <!-- TODO string name="group_policy_four">Policy: group by four</string -->
-    <!-- TODO string name="group_policy_sixteen">Policy: four groups of four, other single</string -->
-    <!-- TODO string name="group_policy_distance">Policy: group by angular distance</string -->
-    <!-- TODO string name="group_reset">Reset groups</string -->
+    <string name="group_title">Присвоить калибровку к группе данных</string>
+    <string name="group_policy_four">Правило: группировать по четыре</string>
+    <string name="group_policy_sixteen">Правило: четыре группы по четыре, остальные по одному</string>
+    <string name="group_policy_distance">Правило: группировать по угловому расстоянию</string>
+    <string name="group_reset">Сбросить группы</string>
 
     <string name="scale">масштаб</string>
     <string name="reversed">обратный</string>
@@ -163,8 +163,8 @@
     <string name="out">из</string>
     <string name="in">в</string>
     <string name="none">none</string>
-    <string name="barrier_add">Break midline display?</string>
-    <string name="barrier_del">Continue midline display?</string>
+    <string name="barrier_add">Прервать показ средней линии?</string>
+    <string name="barrier_del">Продолжить показ средней линии?</string>
 
     <string name="no_calib">Отсутствует калибровка</string>
     <string name="no_calibration">Калибровка не выбрана</string>
@@ -189,18 +189,18 @@
 
     <!-- NO string name="menu_3d">3 D</string -->
     <string name="menu_about">Описание</string>
-    <!-- TODO string name="menu_attach">CONNECT</string -->
-    <!-- TODO string name="menu_calib">CALIBRATIONS</string -->
+    <string name="menu_attach">СОЕДИНИТЬ</string>
+    <string name="menu_calib">КАЛИБРОВКИ</string>
     <string name="menu_delete">Удалить</string>
     <string name="menu_detach">Отсоединить</string>
     <string name="menu_display">Показать</string>
-    <!-- TODO string name="menu_distox">DISTOX</string -->
+    <string name="menu_distox">DISTOX</string>
     <string name="menu_export">Экспорт</string>
     <string name="menu_firmware">Прошивка</string>
     <string name="menu_recover">Восстановить</string>
     <string name="menu_reload">Перезагрузить</string>
     <string name="menu_help">Помощь</string>
-    <!-- TODO string name="menu_join_survey">CO-SURVEY</string -->
+    <string name="menu_join_survey">СОВМ. СЪЕМКА</string>
     <string name="menu_logs">Журнал</string>
     <!-- OK string name="menu_manual">Вручную</string -->
     <string name="menu_options">Настройки</string>
@@ -209,8 +209,9 @@
     <string name="menu_sensor">датчик</string>
     <string name="menu_scan">Сканировать</string>
     <string name="menu_station">ПИКЕТЫ</string>
+    <!-- TODO string name="menu_stats">STATS</string -->
     <string name="menu_survey">Метаданные</string>
-    <!-- TODO string name="menu_sync">SYNC</string -->
+    <string name="menu_sync">СИНХР.</string>
 
     <string name="popup_join_pt">Привязать к ближайшей точке</string>
     <string name="popup_snap_ln">Привязать к ближайшей линии</string>
@@ -220,8 +221,8 @@
     <string name="popup_curve_pt">Сгладить сегмент</string>
     <string name="popup_remove_pt">Удалить точку</string>
 
-    <!-- TODO string name="connected_none">Not connected</string -->
-    <!-- TODO string name="connected_already">Already connected</string -->
+    <string name="connected_none">Не соединено</string>
+    <string name="connected_already">Уже соединено</string>
 
     <string name="not_available">Блютуф недоступен</string>
     <!-- OK string name="not_connected">Нет соединения</string -->
@@ -405,12 +406,14 @@
     <string name="mode_splay">Бок. замер</string>
     <string name="mode_station">Пикеты</string>
     <string name="mode_grid">Сетка</string>
-    <!-- TODO string name="mode_fixed">Fix refs</string -->
+    <string name="mode_fixed">Фиксир. точки.</string>
 
     <string name="remote_title">Пульт дистанционного управления</string>
     <string name="remote_on">Laser ON</string>
     <string name="remote_off">Laser OFF</string>
     <string name="remote_measure">Замер</string>
+    <!-- TODO string name="remote_reset">Reset BT</string -->
+    <!-- TODO string name="download">Download</string -->
 
 <!-- OK
     <string name="btn_3d">3D</string>
@@ -440,13 +443,13 @@
     <string name="sketch_mode_ngbh">Соединение пикеты</string>
     <string name="sketch_mode_all">Все пикеты</string>
     <string name="sketch_delete">Удалить 3D модель ?</string>
-    <string name="sketch_no_split">No refinement. Decrease side max. length to refine further.</string>
+    <string name="sketch_no_split">Не точно. Уменьшите боковую макс. длинну чтобы уточнить.</string>
 
     <string name="btn_head">head</string>
     <string name="btn_stretch">Растянуть</string>
-    <string name="btn_extrude">Extrude</string>
-    <string name="btn_erase">стереть</string>
-    <string name="btn_cut">вырезать</string>
+    <string name="btn_extrude">Вырезать</string>
+    <string name="btn_erase">Стереть</string>
+    <string name="btn_cut">Вырезать</string>
     <string name="btn_vertical">Вертикальный</string>
     <string name="btn_horizontal">Горизонтальный</string>
 
@@ -476,16 +479,16 @@
     
     <string name="help_coeff">Показать коэфиценты калибровки</string>
     <string name="help_current_station">Сохраненные пикеты</string>
-    <string name="help_device">Enter device activity</string>
+    <string name="help_device">Введите активность устройства</string>
     <string name="help_add_topodroid">Создать новую съёмку/калибровку</string>
     <string name="help_import">Импорт zip архива или Therion файла</string>
     <string name="help_symbol">Вкл/Выкл инструменты рисования</string>
-    <string name="help_therion">Therion manager app</string>
-    <string name="help_database">Database viewer app (SQliteViewer)</string>
+    <string name="help_therion">Therion менеджер</string>
+    <string name="help_database">Просмотр базы данных (SQliteViewer)</string>
     <string name="help_prefs">Изменить настройки</string>
     <string name="help_log">Вкл/Выкл настройки журнала</string>
-    <!-- TODO string name="help_join_survey">Join surveying</string -->
-    <string name="help_info_topodroid">TopoDroid info</string>
+    <string name="help_join_survey">Совместная топосъёмка</string>
+    <string name="help_info_topodroid">Сведения о TopoDroid</string>
     <string name="help_download">Скачивание данных</string>
     <string name="help_splay">Автоматически присваивать номер пикет боковым измерениям</string>
     <string name="help_display">Выберать режим просмотра</string>
@@ -500,7 +503,7 @@
     <string name="help_undelete">Восстановить удаленные элементы</string>
     <string name="help_photo">Инструмент Фото</string>
     <string name="help_sensor">Инструмент Измерения</string>
-    <!-- TODO string name="help_3d">3D viewer app (Cave3D)</string -->
+    <string name="help_3d">3D просмотр (Cave3D)</string>
     <string name="help_draw">Перейти в режим рисования</string>
     <string name="help_edit">Перейти в режим редактирования</string>
     <string name="help_refs">Выбрать привязку абриса</string>
@@ -546,7 +549,7 @@
     <string name="help_write">Записать коэфиценты калибровки в DistoX</string>
 <!-- FIXME_SKETCH_3D -->
     <string name="help_refs_model">Режим просмотра</string>
-    <string name="help_one_model">Fit 3d model to view</string>
+    <string name="help_one_model">Вместить 3d модель в экран</string>
     <string name="help_surface">Создать поверхность</string>
     <string name="help_save_model">Экспорт 3D модели</string>
     <string name="help_trash_model">Удалить 3D модель</string>
@@ -564,7 +567,7 @@
     <string name="title_calib">Калибровки</string>
     <string name="title_coverage">Калибровка и распределение данных</string>
     <string name="title_coeff">Калибровочные коэфиценты</string>
-    <string name="title_current_station">Сохраненные пикеты</string>
+    <string name="title_current_station">Зафиксировать пикеты</string>
     <string name="title_device">Устройства DistoX</string>
     <string name="title_discover">Поиск устройств DistoX ... обождите</string>
     <string name="title_draw_area">ОБЛАСТЬ %1$s</string>
@@ -604,8 +607,10 @@
   <string name="pref_raw_data_summary">Показать сырые данные</string>
   <string name="pref_bootloader_title">Загрузчик</string>
   <string name="pref_bootloader_summary">Вкл Загрузчик</string>
-  <!-- TODO string name="pref_cosurvey_title">Co-surveying</string -->
-  <!-- TODO string name="pref_cosurvey_summary">Enable/Disable co-surveying</string -->
+  <string name="pref_cosurvey_title">Совм. съёмка</string>
+  <string name="pref_cosurvey_summary">Вкл/Выкл Совм. съёмку</string>
+  <!-- TODO string name="pref_export_shots_title">Data export format</string -->
+  <!-- TODO string name="pref_export_shots_summary">Default data export format</string -->
   <string name="pref_extra_buttons_title">Уровень функционала</string>
   <string name="pref_extra_buttons_summary">Уровень подключенного функционала</string>
   <string name="pref_size_buttons_title">Размер кнопок</string>
@@ -631,6 +636,10 @@
   <string name="pref_crs_message">Введите имя CRS как в Proj4</string>
   <string name="pref_gps_averaging_title">Осреднение данных GPS </string>
   <string name="pref_gps_averaging_summary">Использовать GPSAveraging?</string>
+  <!-- TODO string name="pref_plot_screen_title">Sketch screen settings</string -->
+  <!-- TODO string name="pref_tool_screen_title">Sketch drawing settings</string -->
+  <!-- TODO string name="pref_location_title">Location settings</string -->
+  <!-- TODO string name="pref_shot_data_title">SHOT DATA SETTINGS</string -->
   <string name="pref_cwd_title">Корневой каталог</string>
   <string name="pref_cwd_summary">TopoDroid корневой каталог</string>
   <string name="pref_cwd_message">Введите корневой каталог TopoDroid</string>
@@ -644,8 +653,8 @@
   <string name="pref_altitude_summary">Выберите тип альтитуды</string>
   <string name="pref_altimetric_title">Вертикальная координата</string>
   <string name="pref_altimetric_summary">Поиск вертикальной координаты в интернете</string>
-  <string name="pref_list_refresh_title">Обновить список</string>
-  <string name="pref_list_refresh_summary">Принудительно обновить список</string>
+  <!-- UNUSED string name="pref_list_refresh_title">Обновить список</string -->
+  <!-- UNUSED string name="pref_list_refresh_summary">Принудительно обновить список</string -->
   <string name="pref_survey_stations_title">Настройки пикетов</string>
   <string name="pref_survey_stations_summary">Авто нумерация пикетов</string>
   <string name="pref_accel_thr_title">Максимальное допустимое ускорение</string>
@@ -661,9 +670,10 @@
   <string name="pref_leg_title">Допустимое отклонениие в измерении отрезков</string>
   <string name="pref_leg_summary">Точновсть измерений пикетов отрезка</string>
   <string name="pref_leg_message">Точновсть измерений пикетов отрезка</string>
-  <!-- TODO string name="pref_team_title">Team</string -->
-  <!-- TODO string name="pref_team_summary">Surveying team</string -->
-  <!-- TODO string name="pref_team_message">Default surveying team</string -->
+
+  <string name="pref_team_title">Группа съёмемки</string>
+  <string name="pref_team_summary">Группа съёмемки</string>
+  <string name="pref_team_message">Группа съёмемки по умолчанию</string>
   <string name="pref_ethr_title">Порог расчета проэкции</string>
   <string name="pref_ethr_summary">Допустимое отклонениие в бок. замере</string>
   <string name="pref_ethr_message">Порог расчета бокового измерения как проэкции</string>
@@ -686,7 +696,7 @@
   <string name="pref_beep_volume_summary">Проценты громкости сигнала таймера</string>
   <string name="pref_beep_volume_message">Проценты громкости сигнала таймера</string>
   <string name="pref_drawing_unit_title">Размер значков для точек</string>
-  <string name="pref_drawing_unit_summary">Размер значков для точекls</string>
+  <string name="pref_drawing_unit_summary">Размер значков для точек</string>
   <string name="pref_drawing_unit_message">Размер значков для рисования точек [требуется перезапуск программы]</string>
   <string name="pref_segment_title">Шаг точек на линии</string>
   <string name="pref_segment_summary">Шаг точек на линии</string>
@@ -703,9 +713,9 @@
   <string name="pref_calib_algo_summary">Алгоритм калибровки</string>
   <string name="pref_group_by_title">Формирование групп калибровки</string>
   <string name="pref_group_by_summary">Группирование данных калибровки</string>
-  <string name="pref_group_title">Доруск в группе</string>
-  <string name="pref_group_summary">Доруск для измерений в одной группе</string>
-  <string name="pref_group_message">Доруск для измерений в одной группе</string>
+  <string name="pref_group_title">Допуск в группе</string>
+  <string name="pref_group_summary">Допуск для измерений в одной группе</string>
+  <string name="pref_group_message">Допуск для измерений в одной группе</string>
   <string name="pref_error_title">Ошибка</string>
   <string name="pref_error_summary">Минимальная ошибка калибровки</string>
   <string name="pref_error_dialogtitle">Ошибка калибровки</string>
@@ -717,14 +727,23 @@
   <string name="pref_label_size_title">Размер значков</string>
   <string name="pref_label_size_summary">Размер значков</string>
   <string name="pref_label_size_message">Размер значков</string>
+  <!-- TODO string name="pref_arrow_length_title">Section tick</string -->
+  <!-- TODO string name="pref_arrow_length_summary">Size of the section line tick</string -->
+  <!-- TODO string name="pref_arrow_length_message">Size of the section line tick</string -->
+  <!-- TODO string name="pref_dot_radius_title">Dots radius</string -->
+  <!-- TODO string name="pref_dot_radius_summary">Green dots size</string -->
+  <!-- TODO string name="pref_dot_radius_message">Size of the green dots</string -->
   <string name="pref_line_thickness_title">Толщина линии</string>
   <string name="pref_line_thickness_summary">Толщина линий</string>
   <string name="pref_line_thickness_message">Толщина линий</string>
+  <!-- TODO string name="pref_fixed_thickness_title">Survey line thickness</string -->
+  <!-- TODO string name="pref_fixed_thickness_summary">Survey line thickness</string -->
+  <!-- TODO string name="pref_fixed_thickness_message">Survey line thickness</string -->
   <string name="pref_device_title">Устройство</string>
-  <!-- TODO string name="pref_device_summary">DistoX address name</string -->
-  <!-- TODO string name="pref_device_message">DistoX address name</string -->
-  <!-- TODO string name="pref_checkBT_title">Bluetooth</string -->
-  <!-- TODO string name="pref_checkBT_summary">Enable/disable bluetooth</string -->
+  <string name="pref_device_summary">DistoX наименование адреса</string>
+  <string name="pref_device_message">DistoX наименование адреса</string>
+  <string name="pref_checkBT_title">Bluetooth</string>
+  <string name="pref_checkBT_summary">Вкл/Выкл bluetooth</string>
   <string name="pref_checkAttached_title">Проверка нитки хода</string>
   <string name="pref_checkAttached_summary">Проверить принадлежность пикетов</string>
   <string name="pref_autoStations_title">Пикеты абриса</string>
@@ -734,7 +753,7 @@
   <string name="pref_splayExtend_title">Развертка бокового замера</string>
   <string name="pref_splayExtend_summary">Расчитывать развертку бокового замера</string>
   <string name="pref_picker_type_title">Вид меню инструментов рисования</string>
-  <string name="pref_picker_type_summary">Drawing tool picker type</string>
+  <string name="pref_picker_type_summary">Тип меню инструментов рисования</string>
   <string name="pref_station_size_title">Размер номера пикетов</string>
   <string name="pref_station_size_summary">Размер номера пикетов</string>
   <string name="pref_station_size_message">Размер подписи пикетов</string>
@@ -791,6 +810,11 @@
   <string name="pref_log_therion">Therion</string>
   <string name="pref_log_units">Единицы</string>
   <string name="pref_log_zip">ZIP</string>
+
+  <!-- OK string name="line_bezier">Bezier</string -->
+  <!-- TODO string name="line_fine">fine</string -->
+  <!-- TODO string name="line_normal">normale</string -->
+  <!-- TODO string name="line_coarse">grossolana</string -->
 
     <string name="welcome_title">Вас приветствует TopoDroid %1$s</string>
     <string name="welcome_text">
