@@ -145,7 +145,7 @@ public class SketchActivity extends ItemDrawer
                         R.drawable.ic_eraser,
                         R.drawable.ic_select,
                         R.drawable.ic_one,           // 3
-                        R.drawable.ic_refs,          // 4
+                        R.drawable.ic_mode,          // 4
                         R.drawable.ic_plan,          // 
                         R.drawable.ic_download,      // 
                         R.drawable.ic_note,
@@ -171,7 +171,7 @@ public class SketchActivity extends ItemDrawer
                         R.drawable.ix_eraser,
                         R.drawable.ix_select,
                         R.drawable.ix_one,           // 2
-                        R.drawable.ix_refs,          // 4
+                        R.drawable.ix_mode,          // 4
                         R.drawable.ix_plan,          // 
                         R.drawable.ix_download,      // 
                         R.drawable.ix_note,

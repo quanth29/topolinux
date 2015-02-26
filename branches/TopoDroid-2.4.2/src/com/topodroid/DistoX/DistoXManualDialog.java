@@ -64,22 +64,22 @@ public class DistoXManualDialog extends Activity
   private void load( String filename )
   {
     StringBuilder html = new StringBuilder();
-    // mTVtext.setText(""); 
-    try {
-      FileReader fr = new FileReader( filename );
-      BufferedReader br = new BufferedReader( fr );
-      String line = br.readLine();
-      while ( line != null ) {
-        html.append( line );
-        html.append( " " );
-        // mTVtext.append( line + "\n" );
-        line = br.readLine();
-      }
-      fr.close();
-      mTVtext.loadData( html.toString(), "text/html", null );
-    } catch ( IOException e ) {
-      TopoDroidLog.Log(  TopoDroidLog.LOG_ERR, "load IOexception " + e.toString() );
-    }
+    // try {
+    //   FileReader fr = new FileReader( filename );
+    //   BufferedReader br = new BufferedReader( fr );
+    //   String line = br.readLine();
+    //   while ( line != null ) {
+    //     html.append( line );
+    //     html.append( " " );
+    //     // mTVtext.append( line + "\n" );
+    //     line = br.readLine();
+    //   }
+    //   fr.close();
+    //   mTVtext.loadData( html.toString(), "text/html", null );
+    // } catch ( IOException e ) {
+    //   TopoDroidLog.Log(  TopoDroidLog.LOG_ERR, "load IOexception " + e.toString() );
+    // }
+    mTVtext.loadUrl("file:///android_asset/man/" + filename );
   }
 
   private void getManualFromWeb()
@@ -115,7 +115,8 @@ public class DistoXManualDialog extends Activity
     // mTVtitle.setText( mTitle );
 
     setTitle( R.string.title_manual );
-    load( TopoDroidPath.getManFile( "manual00.txt" ) );
+    // load( TopoDroidPath.getManFile( "manual00.txt" ) );
+    load( "manual00.htm" );
 
     // mButtonOK.setOnClickListener( this );
     // mButtonCancel.setOnClickListener( this );
@@ -180,8 +181,10 @@ public class DistoXManualDialog extends Activity
     if ( pos <= max ) {
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter( sw );
-      pw.format( "manual%02d.txt", pos );
-      load( TopoDroidPath.getManFile( sw.getBuffer().toString() ) );
+      // pw.format( "manual%02d.txt", pos );
+      // load( TopoDroidPath.getManFile( sw.getBuffer().toString() ) );
+      pw.format( "manual%02d.htm", pos );
+      load( sw.getBuffer().toString() );
     } else {
       getManualFromWeb();
     }

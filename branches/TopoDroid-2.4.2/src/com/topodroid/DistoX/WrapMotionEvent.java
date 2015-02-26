@@ -38,6 +38,10 @@ public class WrapMotionEvent
    }
    
    public int getAction() { return event.getAction(); }
+
+   // this is the X coord (pixels, from the center ?) adjusted for containing window and views
+   // to get the real X use getRawX()
+   //
    public float getX() { return event.getX(); }
    public float getX(int pointerIndex) 
    {

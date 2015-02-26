@@ -60,6 +60,17 @@ class DataDownloader
     if ( ! mConnected ) resetReceiver();
   }
 
+  public void disconnect()
+  {
+    if ( ! mConnected ) return;
+    if ( TopoDroidSetting.mConnectionMode == TopoDroidSetting.CONN_MODE_CONTINUOUS ) {
+      mApp.disconnect();
+      resetReceiver();
+      // mConnected = false;
+      setConnectionStatus( mConnected );
+    }
+  }
+
   private void tryConnect()
   {
     if ( mApp.mDevice != null && mApp.mBTAdapter.isEnabled() ) {
@@ -67,7 +78,8 @@ class DataDownloader
         mConnected = mApp.connect( mApp.mDevice.mAddress, mLister );
       } else {
         mApp.disconnect( );
-        mConnected = false;
+        resetReceiver();
+        // mConnected = false;
       }
       setConnectionStatus( mConnected );
     }

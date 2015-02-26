@@ -305,8 +305,6 @@ class DrawingDxf
       
       writeSection( out, "ENTITIES" );
       {
-        float CENTER_X = 100f;
-        float CENTER_Y = 120f;
         float SCALE_FIX = DrawingActivity.SCALE_FIX;
 
         // reference
@@ -372,17 +370,17 @@ class DrawingDxf
             printAcDb( pw4, -1, "AcDbEntity", "AcDbLine" );
 
             if ( type == PlotInfo.PLOT_PLAN ) {
-              float x = CENTER_X + f.e*SCALE_FIX;
-              float y = CENTER_Y + f.s*SCALE_FIX;
-              float x1 = CENTER_X + t.e*SCALE_FIX;
-              float y1 = CENTER_Y + t.s*SCALE_FIX;
+              float x =  DrawingActivity.toSceneX( f.e );
+              float y =  DrawingActivity.toSceneY( f.s );
+              float x1 = DrawingActivity.toSceneX( t.e );
+              float y1 = DrawingActivity.toSceneY( t.s );
               printXYZ( pw4, x, -y, 0.0f );
               printXYZ1( pw4, x1, -y1, 0.0f );
             } else if ( type == PlotInfo.PLOT_EXTENDED ) {
-              float x = CENTER_X + f.h*SCALE_FIX;
-              float y = CENTER_Y + f.v*SCALE_FIX;
-              float x1 = CENTER_X + t.h*SCALE_FIX;
-              float y1 = CENTER_Y + t.v*SCALE_FIX;
+              float x =  DrawingActivity.toSceneX( f.h );
+              float y =  DrawingActivity.toSceneY( f.v );
+              float x1 = DrawingActivity.toSceneX( t.h );
+              float y1 = DrawingActivity.toSceneY( t.v );
               printXYZ( pw4, x, -y, 0.0f );
               printXYZ1( pw4, x1, -y1, 0.0f );
             } else if ( type == PlotInfo.PLOT_SECTION ) {
@@ -397,15 +395,15 @@ class DrawingDxf
 
             float dh = blk.mLength * FloatMath.cos( blk.mClino * grad2rad )*SCALE_FIX;
             if ( type == PlotInfo.PLOT_PLAN ) {
-              float x = CENTER_X + f.e*SCALE_FIX;
-              float y = CENTER_Y + f.s*SCALE_FIX;
+              float x = DrawingActivity.toSceneX( f.e );
+              float y = DrawingActivity.toSceneY( f.s );
               float de =   dh * FloatMath.sin( blk.mBearing * grad2rad);
               float ds = - dh * FloatMath.cos( blk.mBearing * grad2rad);
               printXYZ( pw4, x, -y, 0.0f );
               printXYZ1( pw4, x + de, -(y+ds), 0.0f );
             } else if ( type == PlotInfo.PLOT_EXTENDED ) {
-              float x = CENTER_X + f.h*SCALE_FIX;
-              float y = CENTER_Y + f.v*SCALE_FIX;
+              float x = DrawingActivity.toSceneX( f.h );
+              float y = DrawingActivity.toSceneY( f.v );
               float dv = - blk.mLength * FloatMath.sin( blk.mClino * grad2rad )*SCALE_FIX;
               printXYZ( pw4, x, -y, 0.0f );
               printXYZ1( pw4, x+dh*blk.mExtend, -(y+dv), 0.0f );

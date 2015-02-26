@@ -61,7 +61,7 @@ class SymbolArea extends Symbol
     mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
     mPaint.setStrokeJoin(Paint.Join.ROUND);
     mPaint.setStrokeCap(Paint.Cap.ROUND);
-    mPaint.setStrokeWidth( 1 );
+    mPaint.setStrokeWidth( TopoDroidSetting.mLineThickness );
     makePath();
   }
 
@@ -168,7 +168,7 @@ class SymbolArea extends Symbol
               mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
               mPaint.setStrokeJoin(Paint.Join.ROUND);
               mPaint.setStrokeCap(Paint.Cap.ROUND);
-              mPaint.setStrokeWidth( 1 );
+              mPaint.setStrokeWidth( TopoDroidSetting.mLineThickness );
   	    }
           }
         }

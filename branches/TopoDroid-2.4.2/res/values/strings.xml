@@ -147,6 +147,12 @@
     <string name="error_station_non_existing">Non existing station</string>
     <string name="error_sensor_required">Sensor required</string>
     <string name="error_value_required">Value required</string>
+    
+    <string name="group_title">Assign calibration data groups</string>
+    <string name="group_policy_four">Policy: group by four</string>
+    <string name="group_policy_sixteen">Policy: four groups of four, other single</string>
+    <string name="group_policy_distance">Policy: group by angular distance</string>
+    <string name="group_reset">Reset groups</string>
 
     <string name="scale">scale</string>
     <string name="reversed">reverse</string>
@@ -204,6 +210,7 @@
     <string name="menu_sensor">SENSOR</string>
     <string name="menu_scan">SCAN</string>
     <string name="menu_station">STATIONS</string>
+    <string name="menu_stats">STATS</string>
     <string name="menu_survey">SURVEY INFO</string>
     <string name="menu_sync">SYNC</string>
 
@@ -408,6 +415,8 @@
     <string name="remote_on">Laser ON</string>
     <string name="remote_off">Laser OFF</string>
     <string name="remote_measure">Measure</string>
+    <string name="remote_reset">Reset BT</string>
+    <string name="download">Download</string>
 
 <!--
     <string name="btn_3d">3D</string>
@@ -474,6 +483,7 @@
     <string name="help_less">Return to the primary actions</string>
     
     <string name="help_coeff">Show calibration coefficients</string>
+    <string name="help_continue">Continue drawing a line</string>
     <string name="help_current_station">Saved stations</string>
     <string name="help_device">Enter device activity</string>
     <string name="help_add_topodroid">Create new survey/calibration</string>
@@ -589,12 +599,12 @@
     <string name="title_calib_export">Export calibration as</string>
     <!-- string name="title_zoom">Zoom</string -->
 
-  <string name="pref_cat_survey">Survey settings</string>
-  <string name="pref_cat_drawing">Drawing settings</string>
-  <string name="pref_cat_calib">Calibration settings</string>
-  <string name="pref_cat_device">Device settings</string>
-  <string name="pref_cat_sketch">Sketch settings</string>
-  <string name="pref_cat_log">Log settings</string>
+  <string name="pref_cat_survey">SURVEY SETTINGS</string>
+  <string name="pref_cat_drawing">SKETCH SETTINGS</string>
+  <string name="pref_cat_calib">CALIBRATION SETTINGS</string>
+  <string name="pref_cat_device">DEVICE SETTINGS</string>
+  <string name="pref_cat_sketch">3D MODEL SETTINGS</string>
+  <string name="pref_cat_log">LOG SETTINGS</string>
 
   <string name="pref_hide_help_title">Hide help</string>
   <string name="pref_hide_help_summary">Hide help buttons</string>
@@ -603,14 +613,17 @@
   <string name="pref_raw_data_summary">Show raw data</string>
   <string name="pref_bootloader_title">Bootloader</string>
   <string name="pref_bootloader_summary">Enable/Disable bootloader</string>
-  <string name="pref_cosurvey_title">Co-surveying</string>
-  <string name="pref_cosurvey_summary">Enable/Disable co-surveying</string>
+  <string name="pref_cosurvey_title">Co-surveying service</string>
+  <string name="pref_cosurvey_summary">Enable/Disable co-surveying service</string>
+  <string name="pref_export_shots_title">Data export format</string>
+  <string name="pref_export_shots_summary">Default data export format</string>
   <string name="pref_extra_buttons_title">Level of features</string>
   <string name="pref_extra_buttons_summary">Level of enabled features</string>
   <string name="pref_size_buttons_title">Buttons size</string>
   <string name="pref_size_buttons_summary">Size of action-bar buttons</string>
   <string name="pref_size_buttons_message">Enter the size of action-bar buttons [pixels]</string>
-  <string name="pref_leg_shots_title">Leg shots</string>
+
+  <string name="pref_leg_shots_title">Minimum leg shots</string>
   <string name="pref_leg_shots_summary">Minimum number of shots per leg</string>
 
   <string name="pref_sock_type_title">Socket</string>
@@ -630,7 +643,14 @@
   <string name="pref_crs_message">Enter the CRS name as in Proj4</string>
   <string name="pref_gps_averaging_title">GPS Averaging</string>
   <string name="pref_gps_averaging_summary">Whether to use GPSAveraging</string>
-  <string name="pref_cwd_title">Work directory</string>
+
+  <string name="pref_plot_screen_title">SKETCH SCREEN</string>
+  <string name="pref_tool_screen_title">DRAWING TOOLS</string>
+  <string name="pref_location_title">LOCATION</string>
+  <string name="pref_accuracy_title">ACCURACY</string>
+  <string name="pref_shot_data_title">SHOT DATA</string>
+  <string name="pref_shot_units_title">DATA UNITS</string>
+  <string name="pref_cwd_title">WORK DIRECTORY</string>
   <string name="pref_cwd_summary">TopoDroid work directory</string>
   <string name="pref_cwd_message">Enter TopoDroid work directory</string>
   <string name="pref_text_size_title">Text size</string>
@@ -641,10 +661,8 @@
   <string name="pref_closeness_message">Sketch item selection radius</string>
   <string name="pref_altitude_title">Altitude</string>
   <string name="pref_altitude_summary">Select altitude type</string>
-  <string name="pref_altimetric_title">Orthometric atitude</string>
+  <string name="pref_altimetric_title">Orthometric atitude lookup</string>
   <string name="pref_altimetric_summary">Internet lookup of orthometric altitude</string>
-  <string name="pref_list_refresh_title">List refresh</string>
-  <string name="pref_list_refresh_summary">Force list refresh</string>
   <string name="pref_survey_stations_title">Survey stations</string>
   <string name="pref_survey_stations_summary">Automatic survey stations</string>
   <string name="pref_accel_thr_title">Acceleration tolerance</string>
@@ -660,15 +678,18 @@
   <string name="pref_leg_title">Leg tolerance</string>
   <string name="pref_leg_summary">Tolerance among the shots of a leg</string>
   <string name="pref_leg_message">Tolerance among the shots of a leg</string>
+
   <string name="pref_team_title">Team</string>
   <string name="pref_team_summary">Surveying team</string>
   <string name="pref_team_message">Default surveying team</string>
+
   <string name="pref_ethr_title">Extend threshold</string>
   <string name="pref_ethr_summary">Splay shot extend threshold</string>
   <string name="pref_ethr_message">Threshold to compute splay shot extend</string>
   <string name="pref_vthr_title">Shot vertical threshold</string>
   <string name="pref_vthr_summary">Vertical LRUD/WENS threshold</string>
   <string name="pref_vthr_message">Leg inclination threshold between LRUD/WENS</string>
+
   <string name="pref_hthr_title">Cross-section h-threshold</string>
   <string name="pref_hthr_summary">Threshold for horizontal cross-sections</string>
   <string name="pref_hthr_message">Shot clino over which cross-sections are horizontal</string>
@@ -686,7 +707,7 @@
   <string name="pref_beep_volume_message">Percent timer-beep volume</string>
   <string name="pref_drawing_unit_title">Point tools scale</string>
   <string name="pref_drawing_unit_summary">Scale of the point tools</string>
-  <string name="pref_drawing_unit_message">Scale of the point drawing tools [restart the app after change]</string>
+  <string name="pref_drawing_unit_message">Scale of the point drawing tools</string>
   <string name="pref_segment_title">Line-point spacing</string>
   <string name="pref_segment_summary">Minimum line-point distance</string>
   <string name="pref_segment_message">Minimum distance between points on a line</string>
@@ -695,7 +716,7 @@
   <string name="pref_lineacc_title">Bezier accuracy</string>
   <string name="pref_lineacc_summary">Bezier interpolation accuracy</string>
   <string name="pref_lineacc_message">Bezier cubic interpolation accuracy</string>
-  <string name="pref_linecorner_title">Bezier corner</string>
+  <string name="pref_linecorner_title">Bezier corner threshold</string>
   <string name="pref_linecorner_summary">Bezier corner threshold</string>
   <string name="pref_linecorner_message">Bezier corner detection threshold</string>
   <string name="pref_calib_algo_title">Algorithm</string>
@@ -716,9 +737,18 @@
   <string name="pref_label_size_title">Labels size</string>
   <string name="pref_label_size_summary">Size of the labels</string>
   <string name="pref_label_size_message">Size of the labels</string>
-  <string name="pref_line_thickness_title">Line thickness</string>
-  <string name="pref_line_thickness_summary">Drawing line thickness</string>
-  <string name="pref_line_thickness_message">Drawing line thickness</string>
+  <string name="pref_arrow_length_title">Section line tick size</string>
+  <string name="pref_arrow_length_summary">Size of the section line tick</string>
+  <string name="pref_arrow_length_message">Size of the section line tick</string>
+  <string name="pref_dot_radius_title">Green dots size</string>
+  <string name="pref_dot_radius_summary">Green dots size</string>
+  <string name="pref_dot_radius_message">Size of the green dots</string>
+  <string name="pref_line_thickness_title">Line width</string>
+  <string name="pref_line_thickness_summary">Drawing line width</string>
+  <string name="pref_line_thickness_message">Drawing line width</string>
+  <string name="pref_fixed_thickness_title">Survey line width</string>
+  <string name="pref_fixed_thickness_summary">Survey line width</string>
+  <string name="pref_fixed_thickness_message">Survey line width</string>
   <string name="pref_device_title">Device</string>
   <string name="pref_device_summary">DistoX address name</string>
   <string name="pref_device_message">DistoX address name</string>
@@ -730,13 +760,14 @@
   <string name="pref_autoStations_summary">Add stations automatically</string>
   <string name="pref_loopClosure_title">Loop closure</string>
   <string name="pref_loopClosure_summary">Loop closure-error compensation</string>
-  <string name="pref_splayExtend_title">Splay extend</string>
+  <string name="pref_splayExtend_title">Estimate splay extend</string>
   <string name="pref_splayExtend_summary">Whether to estimate the extend of splays</string>
+
   <string name="pref_picker_type_title">Drawing tool picker</string>
   <string name="pref_picker_type_summary">Drawing tool picker type</string>
-  <string name="pref_station_size_title">Station label size</string>
-  <string name="pref_station_size_summary">Size of the station labels</string>
-  <string name="pref_station_size_message">Size of the station labels</string>
+  <string name="pref_station_size_title">Station name size</string>
+  <string name="pref_station_size_summary">Size of the station names</string>
+  <string name="pref_station_size_message">Size of the station names</string>
 
   <string name="pref_sketchUsesSplays_title">Sketch splays</string>
   <string name="pref_sketchUsesSplays_summary">Sketch surface uses splays</string>
@@ -791,6 +822,19 @@
   <string name="pref_log_therion">Therion</string>
   <string name="pref_log_units">Units</string>
   <string name="pref_log_zip">ZIP</string>
+
+  <string name="line_bezier">Bezier</string>
+  <string name="line_fine">fine</string>
+  <string name="line_normal">normal</string>
+  <string name="line_coarse">coarse</string>
+  <string name="units_ddmmss">ddmmss</string>
+  <string name="units_dd">degrees</string>
+  <string name="units_grads">grads</string>
+  <string name="units_meters">meters</string>
+  <string name="units_feet">feet</string>
+  <string name="alt_wgs">ellipsoid</string>
+  <string name="alt_ortho">orthometric</string>
+  <string name="splay_extend">estimate splay extend</string>
 
     <string name="welcome_title">Welcome to TopoDroid %1$s</string>
     <string name="welcome_text">

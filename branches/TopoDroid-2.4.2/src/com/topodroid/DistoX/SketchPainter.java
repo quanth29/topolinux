@@ -48,7 +48,6 @@ class SketchPainter
     whitePaint.setStyle(Paint.Style.STROKE);
     whitePaint.setStrokeJoin(Paint.Join.ROUND);
     whitePaint.setStrokeCap(Paint.Cap.ROUND);
-    whitePaint.setStrokeWidth( DrawingBrushPaths.STROKE_WIDTH_PREVIEW );
     redPaint   = new Paint();
     redPaint.setDither(true);
     redPaint.setColor( 0xccff0000 );
@@ -83,34 +82,29 @@ class SketchPainter
     previewPaint.setStyle(Paint.Style.STROKE);
     previewPaint.setStrokeJoin(Paint.Join.ROUND);
     previewPaint.setStrokeCap(Paint.Cap.ROUND);
-    previewPaint.setStrokeWidth( DrawingBrushPaths.STROKE_WIDTH_PREVIEW );
     // topLinePaint = new Paint();
     // topLinePaint.setColor(0x99cc6633);
     // topLinePaint.setStyle(Paint.Style.STROKE);
     // topLinePaint.setStrokeJoin(Paint.Join.ROUND);
     // topLinePaint.setStrokeCap(Paint.Cap.ROUND);
-    // topLinePaint.setStrokeWidth( DrawingBrushPaths.STROKE_WIDTH_PREVIEW );
     // sideLinePaint = new Paint();
     // // sideLinePaint.setColor(0xFF3333ff);
     // sideLinePaint.setColor(0x99cc9900);
     // sideLinePaint.setStyle(Paint.Style.STROKE);
     // sideLinePaint.setStrokeJoin(Paint.Join.ROUND);
     // sideLinePaint.setStrokeCap(Paint.Cap.ROUND);
-    // sideLinePaint.setStrokeWidth( DrawingBrushPaths.STROKE_WIDTH_PREVIEW );
 
     borderLinePaint = new Paint();
     borderLinePaint.setColor(0xff0033ff);
     borderLinePaint.setStyle(Paint.Style.STROKE);
     borderLinePaint.setStrokeJoin(Paint.Join.ROUND);
     borderLinePaint.setStrokeCap(Paint.Cap.ROUND);
-    borderLinePaint.setStrokeWidth( DrawingBrushPaths.STROKE_WIDTH_PREVIEW );
 
     insidePaint = new Paint();
     insidePaint.setColor(0xff3366ff);
     insidePaint.setStyle(Paint.Style.FILL);
     insidePaint.setStrokeJoin(Paint.Join.ROUND);
     insidePaint.setStrokeCap(Paint.Cap.ROUND);
-    insidePaint.setStrokeWidth( DrawingBrushPaths.STROKE_WIDTH_PREVIEW );
 
     surfaceForPaint = new Paint();
     // surfaceForPaint.setColor(0x66666666);
@@ -119,7 +113,6 @@ class SketchPainter
     surfaceForPaint.setStyle(Paint.Style.STROKE);
     surfaceForPaint.setStrokeJoin(Paint.Join.ROUND);
     surfaceForPaint.setStrokeCap(Paint.Cap.ROUND);
-    surfaceForPaint.setStrokeWidth( DrawingBrushPaths.STROKE_WIDTH_PREVIEW );
 
     surfaceBackPaint = new Paint();
     surfaceBackPaint.setColor(0x44cc6633);
@@ -127,14 +120,12 @@ class SketchPainter
     surfaceBackPaint.setStyle(Paint.Style.STROKE);
     surfaceBackPaint.setStrokeJoin(Paint.Join.ROUND);
     surfaceBackPaint.setStrokeCap(Paint.Cap.ROUND);
-    surfaceBackPaint.setStrokeWidth( DrawingBrushPaths.STROKE_WIDTH_PREVIEW );
 
     // areaPaint = new Paint();
     // areaPaint.setColor(0x99cc6633);
     // areaPaint.setStyle(Paint.Style.FILL_AND_STROKE);
     // areaPaint.setStrokeJoin(Paint.Join.ROUND);
     // areaPaint.setStrokeCap(Paint.Cap.ROUND);
-    // areaPaint.setStrokeWidth( DrawingBrushPaths.STROKE_WIDTH_PREVIEW );
 
     vertexPaint = new Paint();
     vertexPaint.setDither(true);
@@ -142,7 +133,6 @@ class SketchPainter
     vertexPaint.setStyle(Paint.Style.FILL);
     vertexPaint.setStrokeJoin(Paint.Join.ROUND);
     vertexPaint.setStrokeCap(Paint.Cap.ROUND);
-    vertexPaint.setStrokeWidth( DrawingBrushPaths.STROKE_WIDTH_PREVIEW );
 
     backVertexPaint = new Paint();
     backVertexPaint.setDither(true);
@@ -150,6 +140,22 @@ class SketchPainter
     backVertexPaint.setStyle(Paint.Style.STROKE);
     backVertexPaint.setStrokeJoin(Paint.Join.ROUND);
     backVertexPaint.setStrokeCap(Paint.Cap.ROUND);
-    backVertexPaint.setStrokeWidth( DrawingBrushPaths.STROKE_WIDTH_PREVIEW );
+
+    setStrokeWidths();
+  }
+
+  void setStrokeWidths()
+  {
+    whitePaint.setStrokeWidth( DrawingBrushPaths.WIDTH_PREVIEW );
+    previewPaint.setStrokeWidth( DrawingBrushPaths.WIDTH_PREVIEW );
+    // topLinePaint.setStrokeWidth( DrawingBrushPaths.WIDTH_PREVIEW );
+    // sideLinePaint.setStrokeWidth( DrawingBrushPaths.WIDTH_PREVIEW );
+    borderLinePaint.setStrokeWidth( DrawingBrushPaths.WIDTH_PREVIEW );
+    insidePaint.setStrokeWidth( DrawingBrushPaths.WIDTH_PREVIEW );
+    surfaceForPaint.setStrokeWidth( DrawingBrushPaths.WIDTH_PREVIEW );
+    surfaceBackPaint.setStrokeWidth( DrawingBrushPaths.WIDTH_PREVIEW );
+    // areaPaint.setStrokeWidth( DrawingBrushPaths.WIDTH_PREVIEW );
+    vertexPaint.setStrokeWidth( DrawingBrushPaths.WIDTH_PREVIEW );
+    backVertexPaint.setStrokeWidth( DrawingBrushPaths.WIDTH_PREVIEW );
   }
 }

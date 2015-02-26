@@ -168,7 +168,7 @@ public class ShotActivity extends Activity
 
   private static int help_icons[] = {
                           R.string.help_download,
-                          R.string.help_bluetooth,
+                          R.string.help_remote,
                           R.string.help_display,
                           R.string.help_plot,
                           R.string.help_note,
@@ -1008,8 +1008,16 @@ public class ShotActivity extends Activity
       if ( k1 < mNrButton1 && b == mButton1[k1++] ) {        // mBtnDownload
         mDataDownloader.downloadData();
       } else if ( k1 < mNrButton1 && b == mButton1[k1++] ) { // mBtnReset
-        mApp.resetComm();
-        Toast.makeText(this, R.string.bt_reset, Toast.LENGTH_SHORT).show();
+        mDataDownloader.disconnect();
+        switch ( mApp.distoType() ) {
+          case Device.DISTO_A3:
+            mApp.resetComm();
+            Toast.makeText(this, R.string.bt_reset, Toast.LENGTH_SHORT).show();
+            break;
+          case Device.DISTO_X310:
+            (new DeviceRemote( this, this, mApp )).show();
+            break;
+        }
       } else if ( k1 < mNrButton1 && b == mButton1[k1++] ) { // mBtnDisplay 
         new ShotDisplayDialog( this, this ).show();
       } else if ( k1 < mNrButton1 && b == mButton1[k1++] ) { // mBtnSketch

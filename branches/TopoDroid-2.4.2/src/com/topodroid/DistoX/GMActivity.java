@@ -54,7 +54,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.view.Menu;
 import android.view.MenuItem;
 
-// import android.util.Log;
+import android.util.Log;
 
 public class GMActivity extends Activity
                         implements OnItemClickListener, ILister, IEnableButtons
@@ -82,6 +82,7 @@ public class GMActivity extends Activity
 
   static int CALIB_COMPUTE_CALIB  = 0;
   static int CALIB_COMPUTE_GROUPS = 1;
+  static int CALIB_RESET_GROUPS   = 2;
 
   static int icons00[];
   static int icons[] = { 
@@ -223,7 +224,12 @@ public class GMActivity extends Activity
     updateDisplay( );
   }
 
-  void computeGroups( )
+  void doResetGroups( )
+  {
+    mApp.mData.resetAllGMs( mApp.mCID ); // reset all groups where status=0
+  }
+
+  void doComputeGroups( )
   {
     long cid = mApp.mCID;
     if ( cid < 0 ) return;
@@ -553,9 +559,15 @@ public class GMActivity extends Activity
           if ( list.size() >= 16 ) {
             setTitle( R.string.calib_compute_groups );
             setTitleColor( TopoDroidConst.COLOR_COMPUTE );
-            // computeGroups();
-            // updateDisplay( );
-            new CalibComputer( this, CALIB_COMPUTE_GROUPS ).execute();
+            (new GMGroupsDialog( this, this, 
+              ( TopoDroidSetting.mGroupBy == TopoDroidSetting.GROUP_BY_DISTANCE )?
+                getResources().getString( R.string.group_policy_distance )
+              : ( TopoDroidSetting.mGroupBy == TopoDroidSetting.GROUP_BY_FOUR )?
+                getResources().getString( R.string.group_policy_four )
+              : /* TopoDroidSetting.GROUP_BY_ONLY_16 */
+                getResources().getString( R.string.group_policy_sixteen ) 
+            )).show();
+            // new CalibComputer( this, CALIB_COMPUTE_GROUPS ).execute();
           } else {
             resetTitle( );
             Toast.makeText( this, R.string.few_data, Toast.LENGTH_SHORT ).show();
@@ -614,6 +626,16 @@ public class GMActivity extends Activity
       //   startActivity( deviceIntent );
       }
     }
+
+  void computeGroups()
+  {
+    new CalibComputer( this, CALIB_COMPUTE_GROUPS ).execute();
+  }
+
+  void resetGroups()
+  {
+    new CalibComputer( this, CALIB_RESET_GROUPS ).execute();
+  }
 
   // ------------------------------------------------------------------
   // LIFECYCLE

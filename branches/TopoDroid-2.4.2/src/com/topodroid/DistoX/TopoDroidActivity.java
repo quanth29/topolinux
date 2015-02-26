@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import android.os.AsyncTask;
+import android.os.Debug;
 
 // import java.lang.Long;
 // import java.lang.reflect.Method;
@@ -127,14 +128,6 @@ public class TopoDroidActivity extends Activity
 
   // private Button   mBtnSurveys = null;
   // private Button   mBtnCalibs  = null;
-
-  private MenuItem mMIsymbol;
-  private MenuItem mMIoptions;
-  private MenuItem mMIlogs;
-  // private MenuItem mMImanual;
-  private MenuItem mMIjoin;   // join-survey
-  private MenuItem mMIhelp;
-  private MenuItem mMIabout;
 
   // private ArrayAdapter<String> mArrayAdapter;
   private ListItemAdapter mArrayAdapter;
@@ -591,32 +584,38 @@ public class TopoDroidActivity extends Activity
         long id = mApp.mData.insertShots( sid, 1, shots ); // start id = 1
         TopoDroidLog.Log( TopoDroidLog.LOG_PTOPO, "SID " + sid + " inserted shots. return " + id );
 
-        DistoXDBlock blk = mApp.mData.selectShot( 1, sid );
-        String plan = parser.mOutline;
-        String extended = parser.mSideview;
-        if ( blk != null && plan != null || extended != null ) {
-          // insert plot in DB
-          // long pid = 
-            mApp.insert2dPlot( sid, "1", blk.mFrom );
-          if ( plan == null ) plan = "";
-          if ( extended == null ) extended = "";
-          TopoDroidLog.Log( TopoDroidLog.LOG_PTOPO, "SID " + sid + " scraps " + plan.length() + " " + extended.length() );
-          try {
-            String filename1 = TopoDroidPath.getTh2File( parser.mName + "-1p.th2" );
-            TopoDroidApp.checkPath( filename1 );
-            FileWriter fw1 = new FileWriter( filename1 );
-            PrintWriter pw1 = new PrintWriter( fw1 );
-            pw1.format("%s", plan );
-            
-            String filename2 = TopoDroidPath.getTh2File( parser.mName + "-1s.th2" );
-            TopoDroidApp.checkPath( filename2 );
-            FileWriter fw2 = new FileWriter( filename2 );
-            PrintWriter pw2 = new PrintWriter( fw2 );
-            pw2.format("%s", extended );
-          } catch ( IOException e ) {
-            TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "SID " + sid + " scraps IO error " + e );
-          }
-       }
+        if ( parser.mStartFrom != null ) {
+          mApp.insert2dPlot( sid, "1", parser.mStartFrom );
+        }
+
+        // DistoXDBlock blk = mApp.mData.selectShot( 1, sid );
+        // String plan = parser.mOutline;
+        // String extended = parser.mSideview;
+        // if ( blk != null /* && plan != null || extended != null */ ) {
+        //   // insert plot in DB
+        //   // long pid = 
+        //     mApp.insert2dPlot( sid, "1", blk.mFrom );
+
+        //   if ( plan == null ) plan = "";
+        //   if ( extended == null ) extended = "";
+        //   TopoDroidLog.Log( TopoDroidLog.LOG_PTOPO, "SID " + sid + " scraps " + plan.length() + " " + extended.length() );
+        //   try {
+        //     String filename1 = TopoDroidPath.getTh2File( parser.mName + "-1p.th2" );
+        //     TopoDroidApp.checkPath( filename1 );
+        //     FileWriter fw1 = new FileWriter( filename1 );
+        //     PrintWriter pw1 = new PrintWriter( fw1 );
+        //     pw1.format("%s", plan );
+        //     
+        //     String filename2 = TopoDroidPath.getTh2File( parser.mName + "-1s.th2" );
+        //     TopoDroidApp.checkPath( filename2 );
+        //     FileWriter fw2 = new FileWriter( filename2 );
+        //     PrintWriter pw2 = new PrintWriter( fw2 );
+        //     pw2.format("%s", extended );
+
+        //   } catch ( IOException e ) {
+        //     TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "SID " + sid + " scraps IO error " + e );
+        //   }
+        // }
       } catch ( ParserException e ) {
         // Toast.makeText(this, R.string.file_parse_fail, Toast.LENGTH_SHORT).show();
       }
@@ -667,7 +666,6 @@ public class TopoDroidActivity extends Activity
 
   void importFile( String filename )
   {
-    int PT_SCALE = 40;
     // FIXME connect-title string
     setTitle( R.string.import_title );
     setTitleColor( TopoDroidConst.COLOR_CONNECTED );
@@ -736,7 +734,6 @@ public class TopoDroidActivity extends Activity
     mApp = (TopoDroidApp) getApplication();
     mApp.mActivity = this;
 
-
     // mArrayAdapter = new ArrayAdapter<String>( this, R.layout.message );
     mArrayAdapter = new ListItemAdapter( this, R.layout.message );
 
@@ -803,6 +800,7 @@ public class TopoDroidActivity extends Activity
     DrawingBrushPaths.doMakePaths( );
 
     // setTitleColor( 0x006d6df6 );
+
   }
   
   int mNrButton1 = 3;
@@ -1025,13 +1023,14 @@ public class TopoDroidActivity extends Activity
     mApp.suspendComm();
   }
 
-  // @Override
-  // public synchronized void onStop()
-  // { 
-  //   super.onStop();
-  //   // TopoDroidLog.Log( TopoDroidLog.LOG_MAIN, "onStop " );
-  //   // mSavedState = new Bundle();
-  // }
+  @Override
+  public void onStop()
+  {
+    super.onStop();
+    if ( TopoDroidApp.isTracing ) {
+      Debug.stopMethodTracing();
+    }
+  }
 
   // @Override
   // public synchronized void onDestroy() 
@@ -1071,6 +1070,14 @@ public class TopoDroidActivity extends Activity
 
   // ---------------------------------------------------------------
   /* OPTIONS MENU
+
+  private MenuItem mMIsymbol;
+  private MenuItem mMIoptions;
+  private MenuItem mMIlogs;
+  // private MenuItem mMImanual;
+  private MenuItem mMIjoin;   // join-survey
+  private MenuItem mMIhelp;
+  private MenuItem mMIabout;
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) 

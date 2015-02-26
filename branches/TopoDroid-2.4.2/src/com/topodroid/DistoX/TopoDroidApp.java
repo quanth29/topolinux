@@ -106,6 +106,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.os.Debug;
 
 import android.app.Application;
 import android.app.KeyguardManager;
@@ -144,7 +145,7 @@ public class TopoDroidApp extends Application
 {
   String mCWD;  // current work directory
 
-  static String SYMBOL_VERSION = "06"; 
+  static String SYMBOL_VERSION = "07"; 
   static String VERSION = "0.0.0"; 
   static int VERSION_CODE = 0;
   static int MAJOR = 0;
@@ -163,6 +164,8 @@ public class TopoDroidApp extends Application
   public static float mScaleFactor   = 1.0f;
   public static float mDisplayWidth  = 200f;
   public static float mDisplayHeight = 320f;
+
+  static boolean isTracing = false;
 
   // ----------------------------------------------------------------------
   // DataListener
@@ -508,7 +511,7 @@ public class TopoDroidApp extends Application
     String version = mData.getValue( "version" );
     if ( version == null || ( ! version.equals(VERSION) ) ) {
       mData.setValue( "version", VERSION );
-      installManual( );  // must come before installSymbols
+      // FIXME MANUAL installManual( );  // must come before installSymbols
       installSymbols( false ); // this updates symbol_version in the database
       installFirmware( false );
     }
@@ -566,12 +569,17 @@ public class TopoDroidApp extends Application
     mDisplayWidth  = dm.widthPixels;
     mDisplayHeight = dm.heightPixels;
     mScaleFactor   = (mDisplayHeight / 320.0f) * density;
-    // Log.v( TAG, "display " + mDisplayWidth + " " + mDisplayHeight + " scale " + mScaleFactor );
+    // Log.v( "DistoX", "display " + mDisplayWidth + " " + mDisplayHeight + " scale " + mScaleFactor );
 
     TopoDroidLog.setLogTarget();
     TopoDroidLog.loadLogPreferences( mPrefs );
 
     mManual = getResources().getString( R.string.topodroid_man );
+
+    if ( TopoDroidLog.LOG_DEBUG ) {
+      isTracing = true;
+      Debug.startMethodTracing("DISTOX");
+    }
   }
 
 
@@ -800,13 +808,73 @@ public class TopoDroidApp extends Application
     if ( mCWD.equals( cwd ) ) return;
     // Log.v("DistoX", "setCWDPreference " + cwd );
     if ( mPrefs != null ) {
-      // Log.v("DistoX", "setCWDPreference edit " + TopoDroidSetting.keyCWDName() );
       Editor editor = mPrefs.edit();
-      editor.putString( TopoDroidSetting.keyCWDName(), cwd ); 
+      editor.putString( "DISTOX_CWD", cwd ); 
       editor.commit();
     }
     setCWD( cwd ); 
   }
+
+  void setAccuracyPreference( float acceleration, float magnetic, float dip )
+  {
+    SharedPreferences.Editor editor = mPrefs.edit();
+    editor.putString( "DISTOX_ACCEL_THR", Float.toString( acceleration ) ); 
+    editor.putString( "DISTOX_MAG_THR", Float.toString( magnetic ) ); 
+    editor.putString( "DISTOX_DIP_THR", Float.toString( dip ) ); 
+    editor.commit();
+  }
+
+  void setShotDataPreference( float leg_tolerance, int leg_shots, float extend_thr,
+                              float vthreshold, boolean splay_extend, int timer, int volume )
+  {
+    SharedPreferences.Editor editor = mPrefs.edit();
+    editor.putString( "DISTOX_CLOSE_DISTANCE", Float.toString( leg_tolerance ) ); 
+    editor.putString( "DISTOX_LEG_SHOTS",   Integer.toString( leg_shots ) ); 
+    editor.putString( "DISTOX_EXTEND_THR2", Float.toString( extend_thr ) ); 
+    editor.putString( "DISTOX_VTHRESHOLD",  Float.toString( vthreshold ) ); 
+    editor.putBoolean( "DISTOX_SPLAY_EXTEND", splay_extend );
+    editor.putString( "DISTOX_SHOT_TIMER",  Integer.toString( timer ) ); 
+    editor.putString( "DISTOX_BEEP_VOLUME", Integer.toString( volume ) ); 
+    editor.commit();
+  }
+
+  void setPlotScreenPreference( float line_width, float survey_width, float station_size, float label_size, 
+                                float dot_size, float selection_radius )
+  {
+    SharedPreferences.Editor editor = mPrefs.edit();
+    editor.putString( "DISTOX_LINE_THICKNESS",  Float.toString( line_width ) ); 
+    editor.putString( "DISTOX_FIXED_THICKNESS", Float.toString( survey_width ) ); 
+    editor.putString( "DISTOX_STATION_SIZE",    Float.toString( station_size ) ); 
+    editor.putString( "DISTOX_LABEL_SIZE",      Float.toString( label_size ) ); 
+    editor.putString( "DISTOX_DOT_RADIUS",      Float.toString( dot_size ) ); 
+    editor.putString( "DISTOX_CLOSENESS",       Float.toString( selection_radius ) ); 
+    editor.commit();
+  }
+
+  void setToolScreenPreference( float point_scale, float section_line_tick, int line_style,
+                                float line_point_spacing, float bezier_accuracy, float bezier_corner )
+  {
+    SharedPreferences.Editor editor = mPrefs.edit();
+    editor.putString( "DISTOX_DRAWING_UNIT",  Float.toString( point_scale ) ); 
+    editor.putString( "DISTOX_ARROW_LENGTH",  Float.toString( section_line_tick ) ); 
+    editor.putString( "DISTOX_LINE_STYLE",    Integer.toString( line_style) ); 
+    editor.putString( "DISTOX_LINE_SEGMENT",  Float.toString( line_point_spacing ) ); 
+    editor.putString( "DISTOX_LINE_ACCURACY", Float.toString( bezier_accuracy ) ); 
+    editor.putString( "DISTOX_LINE_CORNER",   Float.toString( bezier_corner ) ); 
+    editor.commit();
+  }
+  
+  void setSurveyLocationPreference( String crs, boolean gps_averaging, String units, int alt, boolean alt_lookup )
+  {
+    SharedPreferences.Editor editor = mPrefs.edit();
+    // editor.putString( "DISTOX_CRS",  crs );
+    editor.putBoolean( "DISTOX_GPS_AVERAGING",  gps_averaging );
+    editor.putString( "DISTOX_UNIT_LOCATION", units ); 
+    editor.putString( "DISTOX_ALTITUDE", Integer.toString( alt ) ); 
+    editor.putBoolean( "DISTOX_ALTIMETRIC", alt_lookup );
+    editor.commit();
+  }
+
 
   public void onSharedPreferenceChanged( SharedPreferences sp, String k ) 
   {
@@ -1103,13 +1171,14 @@ public class TopoDroidApp extends Application
     InputStream is = getResources().openRawResource( R.raw.firmware );
     firmwareUncompress( is, overwrite );
   }
-
-  private void installManual( )
-  {
-    // Log.v( TopoDroidApp.TAG, "Uncompress Manual ");
-    InputStream is = getResources().openRawResource( R.raw.manual );
-    manualUncompress( is );
-  }
+ 
+  // FIXME MANUAL
+  // private void installManual( )
+  // {
+  //   // Log.v( TopoDroidApp.TAG, "Uncompress Manual ");
+  //   InputStream is = getResources().openRawResource( R.raw.manual );
+  //   manualUncompress( is );
+  // }
 
   // -------------------------------------------------------------
   // SYMBOLS
@@ -1454,9 +1523,9 @@ public class TopoDroidApp extends Application
     return 1; // CALIB_ALGO_LINEAR
   }  
 
-  void setX310Laser( int what ) // 0: off, 1: on, 2: measure
+  void setX310Laser( int what, ILister lister ) // 0: off, 1: on, 2: measure
   {
-    mComm.setX310Laser( mDevice.mAddress, what );
+    mComm.setX310Laser( mDevice.mAddress, what, lister );
   }
 
   // int readFirmwareHardware()
@@ -1482,6 +1551,7 @@ public class TopoDroidApp extends Application
 
   long insert2dPlot( long sid , String name, String start )
   {
+    TopoDroidLog.Log( TopoDroidLog.LOG_PLOT, "new plot " + name + " start " + start );
     long pid_p = mData.insertPlot( sid, -1L, name+"p",
                  PlotInfo.PLOT_PLAN, 0L, start, "", 0, 0, mScaleFactor, 0, 0, true );
     long pid_s = mData.insertPlot( sid, -1L, name+"s",

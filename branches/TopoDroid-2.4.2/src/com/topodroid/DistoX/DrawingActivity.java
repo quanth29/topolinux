@@ -120,7 +120,6 @@ public class DrawingActivity extends ItemDrawer
                                       , ILabelAdder
                                       , ILister
 {
-  private static int DOWNLOAD_BUTTON = 4; // index of the download utton (mButton1)
   // nr. 8 6 7 3
   private static int icons00[];
   private static int icons00ok[];
@@ -134,61 +133,70 @@ public class DrawingActivity extends ItemDrawer
                         R.drawable.ix_eraser_ok,
                         R.drawable.ix_select_ok };
 
-  private static int IC_DOWNLOAD = 4;
-  private static int IC_JOIN     = 13;
-  private static int IC_JOIN_NO  = 18;
+  private static int IC_DOWNLOAD = 3;
+  private static int IC_JOIN     = 14;
+  private static int IC_JOIN_NO  = 19;
   private static int IC_PLAN     = 6;
-  private static int IC_MENU     = 16;
-  private static int IC_EXTEND   = 17;
+  private static int IC_MENU     = 17;
+  private static int IC_EXTEND   = 18;
+  private static int IC_CONTINUE_NO = 11;      // index of mButton1 plot button
+  private static int IC_CONTINUE = 20;   // index of mButton1 plot button
 
-  private static int BTN_DOWNLOAD = 4;
+  private static int BTN_DOWNLOAD = 3;  // index of mButton1 download button
+  private static int BTN_BLUETOOTH = 4;
   private static int BTN_JOIN = 5;
-  private static int BTN_PLOT = 6;
+  private static int BTN_PLOT = 6;      // index of mButton1 plot button
+  private static int BTN_CONTINUE = 6;  // index of mButton2 continue button
                       
   private static int icons[] = { 
                         R.drawable.ic_edit,          // 0
                         R.drawable.ic_eraser,
                         R.drawable.ic_select,
-                        R.drawable.ic_refs,          // 3
-                        R.drawable.ic_download,      // 4 ic_download
-                        R.drawable.ic_note,
+                        R.drawable.ic_download,      // 3 ic_download
+                        R.drawable.ic_bt,
+                        R.drawable.ic_mode,          // 5
                         R.drawable.ic_plan,
-                        R.drawable.ic_info,          // 7 ic_details,
+                        R.drawable.ic_note,
                         R.drawable.ic_undo,
                         R.drawable.ic_redo,
                         R.drawable.ic_list,          // 10
-                        R.drawable.ic_back,          // 11
+                        R.drawable.ic_continue_no,
+                        R.drawable.ic_back,          // 12
                         R.drawable.ic_forw,
                         R.drawable.ic_join,
-                        R.drawable.ic_note,          // 14
+                        R.drawable.ic_note,          // 15
                         0,
-                        R.drawable.ic_menu,          // 16
+                        R.drawable.ic_menu,          // 17
                         R.drawable.ic_extended,
                         R.drawable.ic_join_no,
+                        R.drawable.ic_continue,   // 20
                       };
   private static int ixons[] = { 
                         R.drawable.ix_edit, // 0
                         R.drawable.ix_eraser,
                         R.drawable.ix_select,
-                        R.drawable.ix_refs,          // 3
-                        R.drawable.ix_download,      // 4 <-- updateBlockList
-                        R.drawable.ix_note,
+                        R.drawable.ix_download,      // 3 <-- updateBlockList
+                        R.drawable.ix_bt,
+                        R.drawable.ix_mode,          // 5
                         R.drawable.ix_plan,          // 6 <-- switchPlotType
-                        R.drawable.ix_info,          // 7 ic_details,
+                        R.drawable.ix_note,
                         R.drawable.ix_undo,
                         R.drawable.ix_redo,
                         R.drawable.ix_list,          // 10
+                        R.drawable.ix_continue,
                         R.drawable.ix_back,
                         R.drawable.ix_forw,
-                        R.drawable.ix_join,          // 13 <-- setButton3
-                        R.drawable.ix_note,          // 14
+                        R.drawable.ix_join,          // 14 <-- setButton3
+                        R.drawable.ix_note,          // 15
                         0,
-                        R.drawable.ix_menu,          // 16
+                        R.drawable.ix_menu,          // 17
                         R.drawable.ix_extended,
                         R.drawable.ix_join_no,
+                        R.drawable.ix_continue_no,
                       };
   private static int menus[] = {
                         R.string.menu_export,
+                        R.string.menu_stats,
                         R.string.menu_reload,
                         R.string.menu_delete,
                         R.string.menu_palette,
@@ -199,14 +207,15 @@ public class DrawingActivity extends ItemDrawer
   private static int help_icons[] = { R.string.help_draw,
                         R.string.help_eraser,
                         R.string.help_edit,
-                        R.string.help_refs,
                         R.string.help_download,
-                        R.string.help_note,
+                        R.string.help_remote,
+                        R.string.help_refs,
                         R.string.help_toggle_plot,
-                        R.string.help_stats,
+                        R.string.help_note,
                         R.string.help_undo,
                         R.string.help_redo,
                         R.string.help_symbol_plot,
+                        R.string.help_continue,
                         R.string.help_previous,
                         R.string.help_next,
                         R.string.help_line_point, // R.string.help_to_point,
@@ -214,6 +223,7 @@ public class DrawingActivity extends ItemDrawer
                       };
   private static int help_menus[] = {
                         R.string.help_save_plot,
+                        R.string.help_stats,
                         R.string.help_recover,
                         R.string.help_trash,
                         R.string.help_symbol,
@@ -232,10 +242,6 @@ public class DrawingActivity extends ItemDrawer
     // 0: no bezier, plain path
     // 1: bezier interpolator
 
-    public static final float CENTER_X = 100f;
-    public static final float CENTER_Y = 120f;
-
-    static final float SCALE_FIX = 20.0f; // FIXME
     private String mSectionName;
 
     private static BezierInterpolator mBezierInterpolator = new BezierInterpolator();
@@ -246,14 +252,6 @@ public class DrawingActivity extends ItemDrawer
     // private Paint mCurrentPaint;
     LinearLayout popup_layout = null;
     PopupWindow popup_window = null;
-
-    // private MenuItem mMIrefs;
-    private MenuItem mMIsymbol;
-    private MenuItem mMIsave;
-    private MenuItem mMIdelete;
-    private MenuItem mMIoptions;
-    private MenuItem mMIrecover;
-    private MenuItem mMIhelp;
 
     // private boolean canRedo;
     private DistoXNum mNum;
@@ -293,6 +291,7 @@ public class DrawingActivity extends ItemDrawer
 
     public int mMode   = MODE_MOVE;
     private int mTouchMode = MODE_MOVE;
+    private boolean mContinueLine = false;
     private float mSaveX;
     private float mSaveY;
     private float mSave0X;
@@ -302,8 +301,7 @@ public class DrawingActivity extends ItemDrawer
     private float mStartX; // line shift scene start point
     private float mStartY;
     private PointF mOffset  = new PointF( 0f, 0f );
-    private PointF mOffset0 = new PointF( 0f, 0f );
-    private static final PointF mCenter = new PointF( CENTER_X, CENTER_Y );
+    // private PointF mOffset0 = new PointF( 0f, 0f );
     private PointF mDisplayCenter;
     private float mZoom  = 1.0f;
 
@@ -396,11 +394,17 @@ public class DrawingActivity extends ItemDrawer
     //   setTheTitle();
     // }
 
-    private static float toSceneX( float x ) { return mCenter.x + x * SCALE_FIX; }
-    private static float toSceneY( float y ) { return mCenter.y + y * SCALE_FIX; }
+    static final float SCALE_FIX = 20.0f; 
+    public static final float CENTER_X = 100f;
+    public static final float CENTER_Y = 120f;
 
-    static float sceneToWorldX( float x ) { return (x - mCenter.x)/SCALE_FIX; }
-    static float sceneToWorldY( float y ) { return (y - mCenter.y)/SCALE_FIX; }
+    // private static final PointF mCenter = new PointF( CENTER_X, CENTER_Y );
+
+    static float toSceneX( float x ) { return CENTER_X + x * SCALE_FIX; }
+    static float toSceneY( float y ) { return CENTER_Y + y * SCALE_FIX; }
+
+    static float sceneToWorldX( float x ) { return (x - CENTER_X)/SCALE_FIX; }
+    static float sceneToWorldY( float y ) { return (y - CENTER_Y)/SCALE_FIX; }
 
     private void resetFixedPaint( )
     {
@@ -503,6 +507,10 @@ public class DrawingActivity extends ItemDrawer
           setTitle( s1 + String.format( res.getString(R.string.title_draw_area),
                                    DrawingBrushPaths.mAreaLib.getAreaName(mCurrentArea) ) );
         }
+        // setButtonContinue( false ); // replaced with these two lines
+        // mContinueLine = mContinueLine && mCurrentLine == DrawingBrushPaths.mLineLib.mLineWallIndex;
+        boolean visible = ( mSymbol == SYMBOL_LINE && mCurrentLine == DrawingBrushPaths.mLineLib.mLineWallIndex );
+        mButton2[ BTN_CONTINUE ].setVisibility( visible? View.VISIBLE : View.GONE );
       } else if ( mMode == MODE_MOVE ) {
         setTitle( s1 + res.getString( R.string.title_move ) );
       } else if ( mMode == MODE_EDIT ) {
@@ -606,6 +614,10 @@ public class DrawingActivity extends ItemDrawer
       addGrid( mNum.surveyHmin(), mNum.surveyHmax(), mNum.surveyVmin(), mNum.surveyVmax(), xoff, yoff );
     }
 
+    // Log.v("DistoX", "reference offset " + xoff + " " + yoff );
+    // Log.v("DistoX", "num " + mNum.surveyEmin() + " " + mNum.surveyEmax()
+    //                  + " " + mNum.surveySmin() + " " + mNum.surveySmax() );
+
     List< NumStation > stations = mNum.getStations();
     List< NumShot > shots = mNum.getShots();
     List< NumSplay > splays = mNum.getSplays();
@@ -663,7 +675,7 @@ public class DrawingActivity extends ItemDrawer
   private Button[] mButton3; // edit
   private Button[] mButton5; // eraser
   private int mNrButton1 = 8;          // main-primary
-  private int mNrButton2 = 6;          // draw
+  private int mNrButton2 = 7;          // draw
   private int mNrButton3 = 7;          // edit
   private int mNrButton5 = 3;          // erase
   HorizontalListView mListView;
@@ -685,7 +697,7 @@ public class DrawingActivity extends ItemDrawer
   float zoom() { return mZoom; }
 
   // set the button3 by the type of the hot-item
-  void setButton3( int type )
+  private void setButton3( int type )
   {
     mHotItemType = type;
     if (    type == DrawingPath.DRAWING_PATH_POINT 
@@ -699,6 +711,26 @@ public class DrawingActivity extends ItemDrawer
       mButton3[ BTN_JOIN ].setBackgroundResource( icons00[ IC_JOIN_NO ] );
     }
   }
+
+  private void setButtonContinue( boolean continue_line )
+  {
+    mContinueLine = continue_line;
+    if ( mSymbol == SYMBOL_LINE && mCurrentLine == DrawingBrushPaths.mLineLib.mLineWallIndex ) {
+      mButton2[ BTN_CONTINUE ].setVisibility( View.VISIBLE );
+      mButton2[ BTN_CONTINUE ].setBackgroundResource( icons00[ ( mContinueLine ? IC_CONTINUE : IC_CONTINUE_NO ) ] );
+    } else {
+      mButton2[ BTN_CONTINUE ].setVisibility( View.GONE );
+    }
+  }
+
+  // used only be setTheTitle
+  // void setButtonContinue( boolean visible )
+  // {
+  //   if ( mSymbol != SYMBOL_LINE || mCurrentLine != DrawingBrushPaths.mLineLib.mLineWallIndex ) 
+  //   visible = false;
+  //   mButton2[ BTN_CONTINUE ].setVisibility( visible? View.VISIBLE : View.GONE );
+  // }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -714,6 +746,7 @@ public class DrawingActivity extends ItemDrawer
       mIsNotMultitouch = ! getPackageManager().hasSystemFeature( PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH );
       mSectionName = null;
       mShiftDrawing = false;
+      mContinueLine = false;
 
       setContentView(R.layout.drawing_activity);
       mApp = (TopoDroidApp)getApplication();
@@ -769,7 +802,7 @@ public class DrawingActivity extends ItemDrawer
         } else if ( k < 3 ) {
           mButton2[k].setBackgroundResource( icons00[k] );
         } else {
-          mButton2[k].setBackgroundResource( icons00[8-3+k] );
+          mButton2[k].setBackgroundResource( icons00[8-3+k] ); // starts at 8
         }
       }
 
@@ -783,7 +816,7 @@ public class DrawingActivity extends ItemDrawer
         } else if ( k < 3 ) {
           mButton3[k].setBackgroundResource( icons00[k] );
         } else {
-          mButton3[k].setBackgroundResource( icons00[11-3+k] );
+          mButton3[k].setBackgroundResource( icons00[12-3+k] ); // starts at 12
         }
       }
 
@@ -797,7 +830,7 @@ public class DrawingActivity extends ItemDrawer
         } else if ( k < 3 ) {
           mButton5[k].setBackgroundResource( icons00[k] );
         } else {
-          mButton5[k].setBackgroundResource( icons00[8-3+k] );
+          // mButton5[k].setBackgroundResource( icons00[8-3+k] ); // nothing else
         }
       }
       if ( TopoDroidSetting.mActivityLevel < 1 ) {
@@ -808,7 +841,7 @@ public class DrawingActivity extends ItemDrawer
       }
 
       if ( mApp.mDevice == null ) {
-        mButton1[DOWNLOAD_BUTTON].setBackgroundResource( 
+        mButton1[BTN_DOWNLOAD].setBackgroundResource( 
           (TopoDroidSetting.mSizeButtons == 2 )? R.drawable.ix_add : R.drawable.ic_add );
       }
 
@@ -924,6 +957,7 @@ public class DrawingActivity extends ItemDrawer
       if ( ! DrawingBrushPaths.mPointLib.hasPoint( "label" ) ) mCurrentPoint = 0;
       if ( ! DrawingBrushPaths.mLineLib.hasLine( "wall" ) ) mCurrentLine = 0;
       if ( ! DrawingBrushPaths.mAreaLib.hasArea( "water" ) ) mCurrentArea = 0;
+      setButtonContinue( false );
     }
 
     private void doStart()
@@ -949,13 +983,16 @@ public class DrawingActivity extends ItemDrawer
         // normal, horizontal and cross-product
         float mc = mClino * TopoDroidUtil.GRAD2RAD;
         float ma = mAzimuth * TopoDroidUtil.GRAD2RAD;
-        float X0 = FloatMath.cos( mc ) * FloatMath.cos( ma );
-        float Y0 = FloatMath.cos( mc ) * FloatMath.sin( ma );
-        float Z0 = FloatMath.sin( mc );
-        float X1 = - FloatMath.sin( ma );
-        float Y1 =   FloatMath.cos( ma );
+        float X0 = FloatMath.cos( mc ) * FloatMath.cos( ma );  // X = North
+        float Y0 = FloatMath.cos( mc ) * FloatMath.sin( ma );  // Y = East
+        float Z0 = FloatMath.sin( mc );                        // Z = Up
+        float X1 = - FloatMath.sin( ma ); // X1 goes to the left in the section plane !!!
+        float Y1 =   FloatMath.cos( ma ); 
         float Z1 = 0;
-        float X2 = Y0 * Z1 - Y1 * Z0;
+        // float X2 = - FloatMath.sin( mc ) * FloatMath.cos( ma );
+        // float Y2 = - FloatMath.sin( mc ) * FloatMath.sin( ma );
+        // float Z2 =   FloatMath.cos( ma );
+        float X2 = Y0 * Z1 - Y1 * Z0;  // this is X0 ^ X1 : it goes up in the section plane
         float Y2 = Z0 * X1 - Z1 * X0;
         float Z2 = X0 * Y1 - X1 * Y0;
 
@@ -979,7 +1016,7 @@ public class DrawingActivity extends ItemDrawer
           float X = FloatMath.cos( bc ) * FloatMath.cos( bb );
           float Y = FloatMath.cos( bc ) * FloatMath.sin( bb );
           float Z = FloatMath.sin( bc );
-          xfrom = -dist * (float)(X1 * X + Y1 * Y + Z1 * Z);
+          xfrom = -dist * (float)(X1 * X + Y1 * Y + Z1 * Z); // neg. because it is the FROM point
           yfrom =  dist * (float)(X2 * X + Y2 * Y + Z2 * Z);
           addFixedLine( blk, xfrom, yfrom, xto, yto, 0, 0, false, false ); // not-splay, not-selecteable
           mDrawingSurface.addDrawingStation( mFrom, toSceneX(xfrom), toSceneY(yfrom) );
@@ -1009,12 +1046,14 @@ public class DrawingActivity extends ItemDrawer
           }
         }
 
-        mDrawingSurface.setScaleBar( mCenter.x, mCenter.y ); // (90,160) center of the drawing
+        // mDrawingSurface.setScaleBar( mCenter.x, mCenter.y ); // (90,160) center of the drawing
+
         if ( mType == PlotInfo.PLOT_H_SECTION ) {
           if ( Math.abs( mClino ) > TopoDroidSetting.mHThreshold ) { // north arrow == (1,0,0), 5 m long in the CS plane
-            float x = (float)(X1);
-            float y = (float)(X2);
+            float x =  (float)(X1);
+            float y = -(float)(X2);
             float d = 5 / FloatMath.sqrt(x*x + y*y);
+            if ( mClino > 0 ) x = -x;
             addFixedSpecial( x*d, y*d, 0, 0, 0, 0 ); 
             // Log.v("AZIMUTH", "North " + x + " " + y );
           }
@@ -1122,7 +1161,7 @@ public class DrawingActivity extends ItemDrawer
     //   mCurrentPaint.setStyle(Paint.Style.STROKE);
     //   mCurrentPaint.setStrokeJoin(Paint.Join.ROUND);
     //   mCurrentPaint.setStrokeCap(Paint.Cap.ROUND);
-    //   mCurrentPaint.setStrokeWidth( STROKE_WIDTH_CURRENT );
+    //   mCurrentPaint.setStrokeWidth( WIDTH_CURRENT );
     // }
 
     private Paint getPreviewPaint()
@@ -1132,7 +1171,7 @@ public class DrawingActivity extends ItemDrawer
       previewPaint.setStyle(Paint.Style.STROKE);
       previewPaint.setStrokeJoin(Paint.Join.ROUND);
       previewPaint.setStrokeCap(Paint.Cap.ROUND);
-      previewPaint.setStrokeWidth( DrawingBrushPaths.STROKE_WIDTH_PREVIEW );
+      previewPaint.setStrokeWidth( DrawingBrushPaths.WIDTH_PREVIEW );
       return previewPaint;
     }
 
@@ -1368,13 +1407,15 @@ public class DrawingActivity extends ItemDrawer
 
       float x_canvas = event.getX();
       float y_canvas = event.getY();
+      // Log.v("DistoX", "touch canvas " + x_canvas + " " + y_canvas ); 
+
       if ( mIsNotMultitouch && y_canvas > CENTER_Y*2-20 ) {
         mZoomBtnsCtrl.setVisible( true );
         // mZoomCtrl.show( );
       }
       float x_scene = x_canvas/mZoom - mOffset.x;
       float y_scene = y_canvas/mZoom - mOffset.y;
-      // Log.v("DistoX", "onTouch " + x_scene + " " + y_scene );
+      // Log.v("DistoX", "touch scene " + x_scene + " " + y_scene );
 
       int action = event.getAction() & MotionEvent.ACTION_MASK;
 
@@ -1580,7 +1621,19 @@ public class DrawingActivity extends ItemDrawer
                           BezierPoint p3 = c.getPoint(3);
                           bezier_path.addPoint3(p1.mX, p1.mY, p2.mX, p2.mY, p3.mX, p3.mY );
                         }
-                        mDrawingSurface.addDrawingPath( bezier_path );
+                        if ( mContinueLine ) {
+                          DrawingLinePath line = mDrawingSurface.getLineToContinue( mCurrentLinePath.mFirst, mCurrentLine );
+                          if ( line != null ) {
+                            // Log.v( "DistoX", "continuing line ");
+                            if ( line.mFirst.distance( mCurrentLinePath.mFirst ) < 20 ) line.reversePath();
+                            mDrawingSurface.addLineToLine( mCurrentLinePath, line );
+                          } else {
+                            mDrawingSurface.addDrawingPath( bezier_path );
+                          }
+                          // setButtonContinue();
+                        } else {
+                          mDrawingSurface.addDrawingPath( bezier_path );
+                        }
                       } else { //  mSymbol == SYMBOL_AREA
                         DrawingAreaPath bezier_path = new DrawingAreaPath( mCurrentArea, mDrawingSurface.getNextAreaIndex(), true ); 
                         bezier_path.addStartPoint( p0.mX, p0.mY );
@@ -1690,7 +1743,19 @@ public class DrawingActivity extends ItemDrawer
                         Toast.makeText( this, R.string.no_leg_intersection, Toast.LENGTH_SHORT ).show(); 
                       }
                     } else {
-                      mDrawingSurface.addDrawingPath( mCurrentLinePath );
+                      if ( mContinueLine ) {
+                        DrawingLinePath line = mDrawingSurface.getLineToContinue( mCurrentLinePath.mFirst, mCurrentLine );
+                        if ( line != null ) {
+                          // Log.v( "DistoX", "continuing line ");
+                          if ( line.mFirst.distance( mCurrentLinePath.mFirst ) < 20 ) line.reversePath();
+                          mDrawingSurface.addLineToLine( mCurrentLinePath, line );
+                        } else {
+                          mDrawingSurface.addDrawingPath( mCurrentLinePath );
+                        }
+                        // setButtonContinue();
+                      } else {
+                        mDrawingSurface.addDrawingPath( mCurrentLinePath );
+                      }
                     }
                   } else { //  mSymbol == SYMBOL_AREA
                     mCurrentAreaPath.close();
@@ -2127,9 +2192,7 @@ public class DrawingActivity extends ItemDrawer
           mListView.setAdapter( mButtonView3.mAdapter );
           mListView.invalidate();
         }
-      } else if ( b == mButton1[3] ) { // display mode 
-        new DrawingModeDialog( this, this, mDrawingSurface ).show();
-      } else if ( b == mButton1[4] ) { // download
+      } else if ( b == mButton1[3] ) { // download
         resetFixedPaint();
         if ( mType == (int)PlotInfo.PLOT_PLAN ) {
           saveReference( mPlot1, mPid1 );
@@ -2137,20 +2200,24 @@ public class DrawingActivity extends ItemDrawer
           saveReference( mPlot2, mPid2 );
         }
         mDataDownloader.downloadData();
-      } else if ( b == mButton1[5] ) { //  noteBtn
-        (new DistoXAnnotations( this, mData.getSurveyFromId(mSid) )).show();
-      } else if ( b == mButton1[6] ) { // toggle
+      } else if ( b == mButton1[4] ) { // bluetooth
+        new DeviceRemote( this, this, mApp ).show();
+      } else if ( b == mButton1[5] ) { // display mode 
+        new DrawingModeDialog( this, this, mDrawingSurface ).show();
+      } else if ( b == mButton1[6] ) { // toggle plan/extended
         if ( ! isSection() ) { 
           immediateSaveTh2( ); 
           // mDrawingSurface.clearDrawing();
           switchPlotType();
         }
-      } else if ( b == mButton1[7] ) { // more --> info
-        // mListView.setAdapter( mButtonView4.mAdapter );
-        // mListView.invalidate();
-        if ( mNum != null ) {
-          new DistoXStatDialog( mDrawingSurface.getContext(), mNum ).show();
-        }
+      } else if ( b == mButton1[7] ) { //  noteBtn
+        (new DistoXAnnotations( this, mData.getSurveyFromId(mSid) )).show();
+      // } else if ( b == mButton1[7] ) { // more --> info
+      //   // mListView.setAdapter( mButtonView4.mAdapter );
+      //   // mListView.invalidate();
+      //   if ( mNum != null ) {
+      //     new DistoXStatDialog( mDrawingSurface.getContext(), mNum ).show();
+      //   }
 
       } else if ( b == mButton2[3] ) { // undoBtn
         mDrawingSurface.undo();
@@ -2165,6 +2232,8 @@ public class DrawingActivity extends ItemDrawer
         }
       } else if ( b == mButton2[5] ) { // pointBtn
         new ItemPickerDialog(this, this, mType ).show();
+      } else if ( b == mButton2[6] ) { //  continueBtn
+        setButtonContinue( ! mContinueLine );
 
       } else if ( b == mButton3[3] ) { // prev
         mMode = MODE_SHIFT;
@@ -2221,8 +2290,6 @@ public class DrawingActivity extends ItemDrawer
         mDrawingSurface.clearSelected();
         mMode = MODE_EDIT;
 
-      // } else if ( b == mButtonHelp ) { // help
-      //   (new HelpDialog(this, icons, menus, help_icons, help_menus, mNrButton1, 6 ) ).show();
       }
 
     }
@@ -2552,6 +2619,14 @@ public class DrawingActivity extends ItemDrawer
   // ---------------------------------------------------------
   /* MENU
 
+  // private MenuItem mMIrefs;
+  private MenuItem mMIsymbol;
+  private MenuItem mMIsave;
+  private MenuItem mMIdelete;
+  private MenuItem mMIoptions;
+  private MenuItem mMIrecover;
+  private MenuItem mMIhelp;
+
   @Override
   public boolean onCreateOptionsMenu(Menu menu) 
   {
@@ -2602,7 +2677,7 @@ public class DrawingActivity extends ItemDrawer
       askRecover();
     } else if ( item == mMIhelp ) { // HELP DIALOG
       int nn = mNrButton1 + mNrButton2 - 3 + mNrButton5 - 3 + ( TopoDroidApp.mLevelOverBasic? mNrButton3 - 3: 0 );
-      (new HelpDialog(this, icons, menus, help_icons, help_menus, mNrButton1, 6 ) ).show();
+      (new HelpDialog(this, icons, menus, help_icons, help_menus, nn, 7 ) ).show();
     } else {
       return super.onOptionsItemSelected(item);
     }
@@ -2621,6 +2696,7 @@ public class DrawingActivity extends ItemDrawer
     mMenuAdapter.add( res.getString( menus[3] ) );
     mMenuAdapter.add( res.getString( menus[4] ) );
     mMenuAdapter.add( res.getString( menus[5] ) );
+    mMenuAdapter.add( res.getString( menus[6] ) );
     mMenu.setAdapter( mMenuAdapter );
     mMenu.invalidate();
   }
@@ -2639,6 +2715,10 @@ public class DrawingActivity extends ItemDrawer
       int p = 0;
       if ( p++ == pos ) { // EXPORT
         new PlotSaveDialog( this, this ).show();
+      } else if ( p++ == pos ) { // INFO
+        if ( mNum != null ) {
+          new DistoXStatDialog( mDrawingSurface.getContext(), mNum ).show();
+        }
       } else if ( p++ == pos ) { // RECOVER
         askRecover();
       } else if ( TopoDroidSetting.mLevelOverBasic && p++ == pos ) { // DELETE
@@ -2652,7 +2732,7 @@ public class DrawingActivity extends ItemDrawer
         startActivity( intent );
       } else if ( p++ == pos ) { // HELP
         int nn = mNrButton1 + mNrButton2 - 3 + mNrButton5 - 3 + ( TopoDroidSetting.mLevelOverBasic? mNrButton3 - 3: 0 );
-        (new HelpDialog(this, icons, menus, help_icons, help_menus, mNrButton1, 6 ) ).show();
+        (new HelpDialog(this, icons, menus, help_icons, help_menus, nn, 7 ) ).show();
       }
     }
   }
@@ -2694,7 +2774,7 @@ public class DrawingActivity extends ItemDrawer
 
   public void setConnectionStatus( boolean connected )
   { 
-    Button buttonDownload = mButton1[4]; // download-index
+    Button buttonDownload = mButton1[ BTN_DOWNLOAD ]; 
     if ( connected ) {
       // setTitleColor( TopoDroidConst.COLOR_CONNECTED );
       if ( buttonDownload != null ) {

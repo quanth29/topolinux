@@ -389,7 +389,7 @@ public class SurveyActivity extends Activity
   {
     while ( ! mApp.mEnableZip ) Thread.yield();
 
-    doExport( TopoDroidConst.DISTOX_EXPORT_TH, false );
+    doExport( TopoDroidSetting.mExportShotsFormat, false );
     Archiver archiver = new Archiver( mApp );
     if ( archiver.archive( ) ) {
       String msg = getResources().getString( R.string.zip_saved ) + " " + archiver.zipname;
@@ -518,9 +518,6 @@ public class SurveyActivity extends Activity
         // case TopoDroidConst.DISTOX_EXPORT_TLX:
         //   filename = mApp.exportSurveyAsTlx();
         //   break;
-        case TopoDroidConst.DISTOX_EXPORT_TH:
-          filename = mApp.exportSurveyAsTh();
-          break;
         case TopoDroidConst.DISTOX_EXPORT_DAT:
           filename = mApp.exportSurveyAsDat();
           break;
@@ -532,9 +529,6 @@ public class SurveyActivity extends Activity
           break;
         case TopoDroidConst.DISTOX_EXPORT_CSV:
           filename = mApp.exportSurveyAsCsv();
-          break;
-        case TopoDroidConst.DISTOX_EXPORT_SRV:
-          filename = mApp.exportSurveyAsSrv();
           break;
         case TopoDroidConst.DISTOX_EXPORT_DXF:
           List<DistoXDBlock> list = mApp.mData.selectAllShots( mApp.mSID, TopoDroidApp.STATUS_NORMAL );
@@ -550,6 +544,14 @@ public class SurveyActivity extends Activity
           break;
         case TopoDroidConst.DISTOX_EXPORT_TOP:
           filename = mApp.exportSurveyAsTop( null, null );
+          break;
+        case TopoDroidConst.DISTOX_EXPORT_SRV:
+          filename = mApp.exportSurveyAsSrv();
+          break;
+
+        case TopoDroidConst.DISTOX_EXPORT_TH:
+        default:
+          filename = mApp.exportSurveyAsTh();
           break;
       }
       if ( warn ) { 
