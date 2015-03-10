@@ -53,36 +53,55 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.ArrayAdapter;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 
 public class CalibActivity extends Activity
                            implements OnItemClickListener
                            , View.OnClickListener
 {
-  private static int icons00no[];
-  private static int iconsno[] = {
-                        0, // R.drawable.ic_save_no,
-                        R.drawable.ic_open_no,
-                        R.drawable.ic_read_no
-                        // R.drawable.ic_export0_no,
-                     };
-  private static int ixonsno[] = {
-                        0, // R.drawable.ix_save_no,
-                        R.drawable.ix_open_no,
-                        R.drawable.ix_read_no
-                        // R.drawable.ix_export0_no
+  // private static int icons00no[];
+  // private static int iconsno[] = {
+  //                       0, // R.drawable.ic_save_no,
+  //                       R.drawable.ic_open_no,
+  //                       R.drawable.ic_read_no
+  //                       // R.drawable.ic_export0_no,
+  //                    };
+  // private static int ixonsno[] = {
+  //                       0, // R.drawable.ix_save_no,
+  //                       R.drawable.ix_open_no,
+  //                       R.drawable.ix_read_no
+  //                       // R.drawable.ix_export0_no
+  //                    };
+  private static int izonsno[] = {
+                        0, // R.drawable.iz_save_no,
+                        R.drawable.iz_open_no,
+                        R.drawable.iz_read_no
+                        // R.drawable.iz_export0_no
                      };
                       
-  private static int icons00[];
-  private static int icons[] = {
-                        R.drawable.ic_save,
-                        R.drawable.ic_open,
-                        R.drawable.ic_read
+  // private static int icons00[];
+  // private static int icons[] = {
+  //                       R.drawable.ic_save,
+  //                       R.drawable.ic_open,
+  //                       R.drawable.ic_read
+  //                    };
+  // private static int ixons[] = {
+  //                       R.drawable.ix_save,
+  //                       R.drawable.ix_open,
+  //                       R.drawable.ix_read
+  //                     };
+  private static int izons[] = {
+                        R.drawable.iz_save,
+                        R.drawable.iz_open,
+                        R.drawable.iz_read
                      };
-  private static int ixons[] = {
-                        R.drawable.ix_save,
-                        R.drawable.ix_open,
-                        R.drawable.ix_read
-                      };
+
+  BitmapDrawable mBMopen;
+  BitmapDrawable mBMopen_no;
+  BitmapDrawable mBMread;
+  BitmapDrawable mBMread_no;
   
   private static int menus[] = {
                         R.string.menu_export,
@@ -126,11 +145,19 @@ public class CalibActivity extends Activity
     if ( 2 < mNrButton1 ) mButton1[2].setEnabled( isSaved ); // coeff (read)
     // mButton1[3].setEnabled( isSaved );   // export
     if ( isSaved ) {
-      mButton1[1].setBackgroundResource( icons00[1] );
-      if ( 2 < mNrButton1 ) mButton1[2].setBackgroundResource( icons00[2] );
+      // mButton1[1].setBackgroundResource( icons00[1] );
+      mButton1[1].setBackgroundDrawable( mBMopen );
+      if ( 2 < mNrButton1 ) {
+        // mButton1[2].setBackgroundResource( icons00[2] );
+        mButton1[2].setBackgroundDrawable( mBMread );
+      }
     } else {
-      mButton1[1].setBackgroundResource( icons00no[1] );
-      if ( 2 < mNrButton1 ) mButton1[2].setBackgroundResource( icons00no[2] );
+      // mButton1[1].setBackgroundResource( icons00no[1] );
+      mButton1[1].setBackgroundDrawable( mBMopen_no );
+      if ( 2 < mNrButton1 ) {
+        // mButton1[2].setBackgroundResource( icons00no[2] );
+        mButton1[2].setBackgroundDrawable( mBMread_no );
+      }
     }
   }
 
@@ -163,9 +190,9 @@ public class CalibActivity extends Activity
     mCBAlgoNonLinear = (RadioButton) findViewById( R.id.calib_algo_non_linear );
 
     mListView = (HorizontalListView) findViewById(R.id.listview);
-    mApp.setListViewHeight( mListView );
-    icons00   = ( TopoDroidSetting.mSizeButtons == 2 )? ixons : icons;
-    icons00no = ( TopoDroidSetting.mSizeButtons == 2 )? ixonsno : iconsno;
+    int size = mApp.setListViewHeight( mListView );
+    // icons00   = ( TopoDroidSetting.mSizeButtons == 2 )? ixons : icons;
+    // icons00no = ( TopoDroidSetting.mSizeButtons == 2 )? ixonsno : iconsno;
 
     mNrButton1 = 2 + ( TopoDroidSetting.mLevelOverNormal? 1 : 0 );
     mButton1 = new Button[ mNrButton1 ];
@@ -173,8 +200,16 @@ public class CalibActivity extends Activity
       mButton1[k] = new Button( this );
       mButton1[k].setPadding(0,0,0,0);
       mButton1[k].setOnClickListener( this );
-      mButton1[k].setBackgroundResource(  icons00[k] );
+      // mButton1[k].setBackgroundResource(  icons00[k] );
+      BitmapDrawable bm2 = mApp.setButtonBackground( mButton1[k], size, izons[k] );
+      if ( k == 1 ) {
+        mBMopen = bm2;
+      } else if ( k == 2 ) {
+        mBMread = bm2;
+      }
     }
+    mBMopen_no = mApp.setButtonBackground( null, size, izonsno[1] );
+    mBMread_no = mApp.setButtonBackground( null, size, izonsno[2] );
 
     mButtonView1 = new HorizontalButtonView( mButton1 );
     // mButtonView2 = new HorizontalButtonView( mButton2 );
@@ -217,8 +252,9 @@ public class CalibActivity extends Activity
 
     mImage = (Button) findViewById( R.id.handle );
     mImage.setOnClickListener( this );
-    mImage.setBackgroundResource( 
-      ( TopoDroidSetting.mSizeButtons == 2 )? R.drawable.ix_menu : R.drawable.ic_menu );
+    // mImage.setBackgroundResource( ( TopoDroidSetting.mSizeButtons == 2 )? R.drawable.ix_menu : R.drawable.ic_menu );
+    mApp.setButtonBackground( mImage, size, R.drawable.iz_menu );
+
     mMenu = (ListView) findViewById( R.id.menu );
     setMenuAdapter();
     closeMenu();
@@ -418,7 +454,7 @@ public class CalibActivity extends Activity
         // TODO Toast
       }
     } else if ( item == mMIhelp  ) { // HELP DIALOG
-      (new HelpDialog(this, icons, menus, help_icons, help_menus, mNrButton1, 4 ) ).show();
+      (new HelpDialog(this, izons, menus, help_icons, help_menus, mNrButton1, 4 ) ).show();
     } else {
       return super.onOptionsItemSelected(item);
     }
@@ -466,7 +502,7 @@ public class CalibActivity extends Activity
         intent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_CALIB );
         startActivity( intent );
       } else if ( p++ == pos ) { // HELP
-        (new HelpDialog(this, icons, menus, help_icons, help_menus, mNrButton1, 4 ) ).show();
+        (new HelpDialog(this, izons, menus, help_icons, help_menus, mNrButton1, 4 ) ).show();
       }
     }
   }

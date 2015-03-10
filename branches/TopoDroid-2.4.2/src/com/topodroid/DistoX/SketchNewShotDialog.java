@@ -134,7 +134,7 @@ public class SketchNewShotDialog extends Dialog
         float ber = Float.parseFloat( mETazimuth.getText().toString() );
         float cln = Float.parseFloat( mETclino.getText().toString() );
         // append a new shot FIXME null splay ?
-        DistoXDBlock blk = mApp.makeNewShot( -1L, mFrom, to, len, ber, cln, 1L, null, null, null, null, null );
+        DistoXDBlock blk = mApp.insertManualShot( -1L, mFrom, to, len, ber, cln, 1L, null, null, null, null, null );
         updateList = new ArrayList<DistoXDBlock>();
         updateList.add( blk );
       } else {

@@ -81,8 +81,10 @@ public class DistoXDBlock
   public boolean isSurface() { return mFlag == BLOCK_SURFACE; }
   public boolean isDuplicate() { return mFlag == BLOCK_DUPLICATE; }
 
+  int mShotType;  // 0: DistoX, 1: manual
+
   // used by PocketTopo parser only
-  public DistoXDBlock( String f, String t, float d, float b, float c, float r, int e, int type )
+  public DistoXDBlock( String f, String t, float d, float b, float c, float r, int e, int type, int shot_type )
   {
     mView = null; // view is set by the DistoXDBlockAdapter
     mVisible = View.VISIBLE;
@@ -102,6 +104,7 @@ public class DistoXDBlock
     mExtend = e;
     mFlag   = BLOCK_SURVEY;
     mType   = type;
+    mShotType = shot_type;
     mWithPhoto = false;
   }
 
@@ -125,6 +128,7 @@ public class DistoXDBlock
     mExtend = EXTEND_RIGHT;
     mFlag   = BLOCK_SURVEY;
     mType   = BLOCK_BLANK;
+    mShotType = 0;
     mWithPhoto = false;
   }
 
@@ -267,6 +271,33 @@ public class DistoXDBlock
     StringWriter sw = new StringWriter();
     PrintWriter pw  = new PrintWriter(sw);
     pw.format(Locale.ENGLISH, "L %.2f  N %.1f  I %.1f", mLength*ul, mBearing*ua, mClino*ua );
+    return sw.getBuffer().toString();
+  }
+
+  public String distanceString()
+  {
+    float ul = TopoDroidSetting.mUnitLength;
+    StringWriter sw = new StringWriter();
+    PrintWriter pw  = new PrintWriter(sw);
+    pw.format(Locale.ENGLISH, "%.2f", mLength*ul );
+    return sw.getBuffer().toString();
+  }
+
+  public String bearingString()
+  {
+    float ua = TopoDroidSetting.mUnitAngle;
+    StringWriter sw = new StringWriter();
+    PrintWriter pw  = new PrintWriter(sw);
+    pw.format(Locale.ENGLISH, "%.1f", mBearing*ua );
+    return sw.getBuffer().toString();
+  }
+
+  public String clinoString()
+  {
+    float ua = TopoDroidSetting.mUnitAngle;
+    StringWriter sw = new StringWriter();
+    PrintWriter pw  = new PrintWriter(sw);
+    pw.format(Locale.ENGLISH, "%.1f", mClino*ua );
     return sw.getBuffer().toString();
   }
 

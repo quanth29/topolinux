@@ -13,6 +13,8 @@
  */
 package com.topodroid.DistoX;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
@@ -33,27 +35,46 @@ class DataDownloader
 
   private Context mContext;
   private TopoDroidApp mApp;
-  private ILister  mLister; 
+  ArrayList<ILister> mLister; 
   private BroadcastReceiver mBTReceiver = null;
 
-  DataDownloader( Context context, TopoDroidApp app, ILister lister )
+  int status; // 0 disconnected, 1 on-demand, 2 continuous
+
+  DataDownloader( Context context, TopoDroidApp app ) // , ILister lister )
   {
     mContext = context;
     mApp     = app;
-    mLister  = lister;
+    mLister  = new ArrayList<ILister>();
     mBTReceiver = null;
+  }
+
+  void registerLister( ILister lister )
+  {
+    for ( ILister l : mLister ) {
+      if ( l == lister ) return; // already registered
+    }
+    mLister.add( lister );
+  }
+
+  void unregisterLister( ILister lister )
+  {
+    mLister.remove( lister );
   }
 
   private void setConnectionStatus( boolean connected )
   {
-    if ( mLister != null ) mLister.setConnectionStatus( connected );
+    for ( ILister lister : mLister ) {
+      lister.setConnectionStatus( connected );
+    }
   }
 
-  public void downloadData()
+  /** 
+   */
+  public void downloadData( )
   {
     if ( mBTReceiver == null ) registerBTreceiver();
     if ( TopoDroidSetting.mConnectionMode == TopoDroidSetting.CONN_MODE_BATCH ) {
-      tryDownloadData();
+      tryDownloadData( );
     } else {
       tryConnect();
     }
@@ -62,6 +83,7 @@ class DataDownloader
 
   public void disconnect()
   {
+    // Log.v("DistoX", "disconnect() connected was " + mConnected );
     if ( ! mConnected ) return;
     if ( TopoDroidSetting.mConnectionMode == TopoDroidSetting.CONN_MODE_CONTINUOUS ) {
       mApp.disconnect();
@@ -75,17 +97,20 @@ class DataDownloader
   {
     if ( mApp.mDevice != null && mApp.mBTAdapter.isEnabled() ) {
       if ( mConnected == false ) {
+        mApp.disconnect();
         mConnected = mApp.connect( mApp.mDevice.mAddress, mLister );
+        // Log.v("DistoX", "tryConnect mConnected was false: connect --> " + mConnected );
       } else {
         mApp.disconnect( );
         resetReceiver();
         // mConnected = false;
+        // Log.v("DistoX", "tryConnect mConnected was true: diconnect --> " + mConnected );
       }
       setConnectionStatus( mConnected );
     }
   }
 
-  private void tryDownloadData()
+  private void tryDownloadData( )
   {
     // mSecondLastShotId = mApp.lastShotId( );
     if ( mApp.mDevice != null && mApp.mBTAdapter.isEnabled() ) {
@@ -93,12 +118,13 @@ class DataDownloader
       // TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "shot menu DOWNLOAD" );
       new DistoXRefresh( mApp, mLister ).execute();
     } else {
+      TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "download data: no device selected" );
       if ( mApp.mSID < 0 ) {
         // Toast.makeText( mContext, R.string.no_survey, Toast.LENGTH_SHORT ).show();
         TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "download data: no survey selected" );
       } else {
-        DistoXDBlock last_blk = mApp.mData.selectLastLegShot( mApp.mSID );
-        (new ShotNewDialog( mContext, mApp, mLister, last_blk, -1L )).show();
+        // DistoXDBlock last_blk = mApp.mData.selectLastLegShot( mApp.mSID );
+        // (new ShotNewDialog( mContext, mApp, lister, last_blk, -1L )).show();
       }
     }
   }
@@ -106,6 +132,7 @@ class DataDownloader
 
   public void resetReceiver()
   {
+    // Log.v("DistoX", "reset receiver() connected " + mConnected + " BT-receiver " + ((mBTReceiver!=null)? "not null":"null"));
     if ( mBTReceiver != null ) {
       mContext.unregisterReceiver( mBTReceiver );
       mBTReceiver = null;
@@ -113,10 +140,28 @@ class DataDownloader
     mConnected = false;
   }
 
+  static boolean mConnectedSave = false;
+
+  void onPause()
+  {
+    // Log.v("DistoX", "Data Downloader onPause() connected " + mConnected + ( (mBTReceiver!=null)? "with BT receiver":""));
+    mConnectedSave = mConnected;
+    if ( mLister.size() == 0 ) {
+      resetReceiver();
+    }
+  }
+
+  void onResume()
+  {
+    // Log.v("DistoX", "Data Downloader onResume() connected-save " + mConnectedSave + " listers " + mLister.size() );
+    if ( mConnectedSave ) {
+      if ( mLister.size() > 0 ) mLister.get(0).notifyDisconnected();
+    }
+  }
+
   // called only if mBTReceiver == null
   private void registerBTreceiver()
   {
-    // resetReceiver();
     mConnected  = false;
     mBTReceiver = new BroadcastReceiver() 
     {
@@ -136,10 +181,11 @@ class DataDownloader
           // String device = extra.getString( BluetoothDevice.EXTRA_DEVICE );
           // Log.v("DistoX", "DataDownloader ACL_DISCONNECTED");
           setConnectionStatus( false );
-          if ( mLister != null ) mLister.notifyDisconnected();
+          if ( mLister.size() > 0 ) mLister.get(0).notifyDisconnected();
         }
       }
     };
+
     IntentFilter connectedFilter = new IntentFilter( BluetoothDevice.ACTION_ACL_CONNECTED );
     IntentFilter disconnectRequestFilter = new IntentFilter( BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED );
     IntentFilter disconnectedFilter = new IntentFilter( BluetoothDevice.ACTION_ACL_DISCONNECTED );

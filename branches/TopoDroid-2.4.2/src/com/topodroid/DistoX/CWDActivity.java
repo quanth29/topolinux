@@ -32,6 +32,8 @@ import android.widget.LinearLayout;
 
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -99,6 +101,8 @@ public class CWDActivity extends Activity
     super.onCreate( b );
     setContentView(R.layout.cwd_activity);
     mApp = (TopoDroidApp) getApplication();
+
+    getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN );
 
     mList = (ListView) findViewById( R.id.cwd_list );
     mETcwd = (EditText) findViewById( R.id.cwd_text );

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="background">#ff3366cc</color>
+    <color name="menu_foreground">#ff33ccff</color>
+    <color name="menu_background">#ff333333</color>
+    <color name="button_background">#ff33ccff</color>
     <color name="textdelete">#ffcc0000</color>
 </resources>

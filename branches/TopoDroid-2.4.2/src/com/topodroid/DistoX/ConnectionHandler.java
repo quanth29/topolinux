@@ -364,15 +364,22 @@ class ConnectionHandler extends Handler
            Double.parseDouble(data[2]), Double.parseDouble(data[3]), Double.parseDouble(data[4]), Double.parseDouble(data[5]),
            false );
          break;
+       case DataListener.SHOT_DBC_UPDATE:
+         mApp.mData.updateShotDistanceBearingClino( Integer.parseInt(data[0]), mSID, 
+                                Float.parseFloat(data[2]), Float.parseFloat(data[3]), Float.parseFloat(data[4]), false );
+         break;
+
        case DataListener.SHOT_INSERT:
          mApp.mData.insertShot( mSID, Integer.parseInt(data[1]), data[2], data[3],
            Double.parseDouble(data[4]), Double.parseDouble(data[5]), Double.parseDouble(data[6]), Double.parseDouble(data[7]),
            Integer.parseInt(data[8]), Integer.parseInt(data[9]), Integer.parseInt(data[10]), Integer.parseInt(data[11]),
-           data[12], false );
+           Integer.parseInt(data[12]),
+           data[13], false );
          break;
        case DataListener.SHOT_INSERTAT:
          mApp.mData.insertShotAt( mSID, Integer.parseInt(data[1]), 
            Double.parseDouble(data[2]), Double.parseDouble(data[3]), Double.parseDouble(data[4]), Double.parseDouble(data[5]),
+           Integer.parseInt(data[6]),
            false );
          break;
 
@@ -452,6 +459,14 @@ class ConnectionHandler extends Handler
 
   // -------------------------------------------------------------------------
   // SHOTS
+
+  public void onUpdateShotDBC( long id, long sid, float d, float b, float c )
+  {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw  = new PrintWriter( sw );
+    pw.format( "%d|%d|%.2f|%.1f|%.1f|", (int)id, (int)sid, d, b, c );
+    enqueue( DataListener.SHOT_DBC_UPDATE, sw.getBuffer().toString() );
+  }
 
   public void onUpdateShot( long id, long sid, String fStation, String tStation,
                             long extend, long flag, long leg, String comment ) 

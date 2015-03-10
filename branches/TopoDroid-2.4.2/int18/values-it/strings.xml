@@ -539,8 +539,8 @@
   <string name="pref_cat_sketch">Opzioni sketch 3D</string>
   <string name="pref_cat_log">Opzioni log</string>
 
-  <string name="pref_hide_help_title">Nascondi aiuto</string>
-  <string name="pref_hide_help_summary">Nascondi bottoni di aiuto</string>
+  <string name="pref_locale_title">Lingua</string>
+  <string name="pref_locale_summary">Lingua</string>
 
   <string name="pref_raw_data_title">Dati grezzi</string>
   <string name="pref_raw_data_summary">Mostra dati grezzi</string>

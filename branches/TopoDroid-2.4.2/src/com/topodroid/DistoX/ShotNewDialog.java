@@ -12,7 +12,7 @@
  * 20130621 set hint for FROM field
  * 20130910 added "at" field
  * 20131022 dismiss only to the "close" button
- * 20140220 N.B. makeNewShot keeps into account current units
+ * 20140220 N.B. insertManualShot keeps into account current units
  * 20140221 auto update of stations names: three buttons, OK, Save, Back
  * 20140416 setError for required EditText inputs
  */
@@ -23,6 +23,7 @@ package com.topodroid.DistoX;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 import java.util.Locale;
+import java.util.ArrayList;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -182,7 +183,7 @@ public class ShotNewDialog extends Dialog
     if ( mTimer != null ) mTimer.mRun = false;
 
     Button b = (Button) v;
-    String val, error;
+    String val;
     // TopoDroidLog.Log( TopoDroidLog.LOG_INPUT, "ShotNewDialog onClick button " + b.getText().toString() );
 
     if ( b == mBtnOk || b == mBtnSave ) {
@@ -204,27 +205,23 @@ public class ShotNewDialog extends Dialog
 
         shot_from = TopoDroidApp.noSpaces( shot_from );
         if ( shot_from.length() == 0 ) {
-          error = mContext.getResources().getString( R.string.error_from_required );
-          mETfrom.setError( error );
+          mETfrom.setError( mContext.getResources().getString( R.string.error_from_required ) );
           return;
         }
 
         String distance = mETdistance.getText().toString().trim();
         if ( distance.length() == 0 ) { 
-          error = mContext.getResources().getString( R.string.error_length_required );
-          mETdistance.setError( error );
+          mETdistance.setError( mContext.getResources().getString( R.string.error_length_required ) );
           return;
         }
         String bearing = mETbearing.getText().toString().trim();
         if ( bearing.length() == 0 ) {
-          error = mContext.getResources().getString( R.string.error_azimuth_required );
-          mETbearing.setError( error );
+          mETbearing.setError( mContext.getResources().getString( R.string.error_azimuth_required ) );
           return;
         }
         String clino = mETclino.getText().toString().trim();
         if ( clino.length() == 0 ) {
-          error = mContext.getResources().getString( R.string.error_clino_required );
-          mETclino.setError( error );
+          mETclino.setError( mContext.getResources().getString( R.string.error_clino_required ) );
           return;
         }
 
@@ -246,7 +243,7 @@ public class ShotNewDialog extends Dialog
         try {
           if ( shot_to.length() > 0 ) {
             String splay_station = mCBsplayAtTo.isChecked() ? shot_to : shot_from;
-            blk = mApp.makeNewShot( mAt, shot_from, shot_to,
+            blk = mApp.insertManualShot( mAt, shot_from, shot_to,
                                Float.parseFloat( distance.replace(',','.') ),
                                Float.parseFloat( bearing.replace(',','.') ),
                                Float.parseFloat( clino.replace(',','.') ),
@@ -257,7 +254,7 @@ public class ShotNewDialog extends Dialog
                                mETdown.getText().toString().replace(',','.') ,
                                splay_station );
           } else {
-            blk = mApp.makeNewShot( mAt, shot_from, shot_to,
+            blk = mApp.insertManualShot( mAt, shot_from, shot_to,
                                Float.parseFloat(distance.replace(',','.') ),
                                Float.parseFloat(bearing.replace(',','.') ),
                                Float.parseFloat(clino.replace(',','.') ),
@@ -271,7 +268,9 @@ public class ShotNewDialog extends Dialog
         }
         if ( blk != null ) {
           resetData( shot_to );
-          mLister.refreshDisplay( 1, false );
+          if ( mLister !=  null ) {
+            mLister.refreshDisplay( 1, false );
+          }
           notDone = true;
         }
       }

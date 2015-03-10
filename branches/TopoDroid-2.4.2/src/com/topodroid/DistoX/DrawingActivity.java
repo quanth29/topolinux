@@ -8,36 +8,6 @@
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
  * --------------------------------------------------------
- * CHANGES
- * 20120517 point names in the point dialog
- * 20120621 begin long-click (item options editing)
- * 20120706 display screen scale factor
- * 20120715 per-category preferences
- * 20120725 TopoDroidApp log
- * 20121206 using symbol libraries
- * 20121220 handle missing symbols with Toast
- * 20121220 plot with mising symbols are not saved by default onPause
- * 20121220 if missing symbol saveTh menu has confirm dialog
- * 20121220 menu to invoke TdSymbol --> force DrawingBrushPaths reload symbols
- * 20121221 bug-fix isDrawing false onPause
- * 20121221 zoom button controls; replaced zoom button with "display mode" button
- * 20121221 undo button always enabled; removed canRedo variable
- * 20121224 bug-fix offset adjustment on zoom change
- * 20121225 point/line/area delete
- * 20130131 fixed multitouch
- * 20130213 save dialog (therion + PNG )
- * 20130307 made Annotations into a dialog
- * 20130825 added updateBlockName
- * 20130826 added splitLine
- * 20131201 button bar new interface. reorganized actions
- * ... interface restyling: buttons and all that
- * 20140115 sharpen line
- * 20140303 symbol picker mode, list or grid
- * 20140328 section plot with splays and leg(s) of the station the section line looks to
- * 20140401 cross-section bug fix
- * 20140513 export as cSurvey
- * 20140515 blus paint for latest shots
- * 20140527 selection radius cutoff (minimum value)
  */
 package com.topodroid.DistoX;
 
@@ -51,7 +21,6 @@ import android.content.pm.PackageManager;
 
 import android.util.TypedValue;
 
-import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.PointF;
@@ -89,6 +58,8 @@ import android.util.FloatMath;
 import android.provider.MediaStore;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 
 import java.io.File;
@@ -121,17 +92,21 @@ public class DrawingActivity extends ItemDrawer
                                       , ILister
 {
   // nr. 8 6 7 3
-  private static int icons00[];
-  private static int icons00ok[];
+  // private static int icons00[];
+  // private static int icons00ok[];
 
-  private static int iconsok[] = { 
-                        R.drawable.ic_edit_ok, // 0
-                        R.drawable.ic_eraser_ok,
-                        R.drawable.ic_select_ok };
-  private static int ixonsok[] = { 
-                        R.drawable.ix_edit_ok, // 0
-                        R.drawable.ix_eraser_ok,
-                        R.drawable.ix_select_ok };
+  // private static int iconsok[] = { 
+  //                       R.drawable.ic_edit_ok, // 0
+  //                       R.drawable.ic_eraser_ok,
+  //                       R.drawable.ic_select_ok };
+  // private static int ixonsok[] = { 
+  //                       R.drawable.ix_edit_ok, // 0
+  //                       R.drawable.ix_eraser_ok,
+  //                       R.drawable.ix_select_ok };
+  private static int izonsok[] = { 
+                        R.drawable.iz_edit_ok, // 0
+                        R.drawable.iz_eraser_ok,
+                        R.drawable.iz_select_ok };
 
   private static int IC_DOWNLOAD = 3;
   private static int IC_JOIN     = 14;
@@ -141,58 +116,95 @@ public class DrawingActivity extends ItemDrawer
   private static int IC_EXTEND   = 18;
   private static int IC_CONTINUE_NO = 11;      // index of mButton1 plot button
   private static int IC_CONTINUE = 20;   // index of mButton1 plot button
+  private static int IC_ADD = 21;
 
   private static int BTN_DOWNLOAD = 3;  // index of mButton1 download button
   private static int BTN_BLUETOOTH = 4;
   private static int BTN_JOIN = 5;
   private static int BTN_PLOT = 6;      // index of mButton1 plot button
   private static int BTN_CONTINUE = 6;  // index of mButton2 continue button
+
+  BitmapDrawable mBMdownload;
+  BitmapDrawable mBMdownload_on;
+  BitmapDrawable mBMjoin;
+  BitmapDrawable mBMjoin_no;
+  BitmapDrawable mBMplan;
+  BitmapDrawable mBMextend;
+  BitmapDrawable mBMcontinue_no;
+  BitmapDrawable mBMcontinue;
+  BitmapDrawable mBMadd;
                       
-  private static int icons[] = { 
-                        R.drawable.ic_edit,          // 0
-                        R.drawable.ic_eraser,
-                        R.drawable.ic_select,
-                        R.drawable.ic_download,      // 3 ic_download
-                        R.drawable.ic_bt,
-                        R.drawable.ic_mode,          // 5
-                        R.drawable.ic_plan,
-                        R.drawable.ic_note,
-                        R.drawable.ic_undo,
-                        R.drawable.ic_redo,
-                        R.drawable.ic_list,          // 10
-                        R.drawable.ic_continue_no,
-                        R.drawable.ic_back,          // 12
-                        R.drawable.ic_forw,
-                        R.drawable.ic_join,
-                        R.drawable.ic_note,          // 15
+  // private static int icons[] = { 
+  //                       R.drawable.ic_edit,          // 0
+  //                       R.drawable.ic_eraser,
+  //                       R.drawable.ic_select,
+  //                       R.drawable.ic_download,      // 3 ic_download
+  //                       R.drawable.ic_bt,
+  //                       R.drawable.ic_mode,          // 5
+  //                       R.drawable.ic_plan,
+  //                       R.drawable.ic_note,
+  //                       R.drawable.ic_undo,
+  //                       R.drawable.ic_redo,
+  //                       R.drawable.ic_list,          // 10
+  //                       R.drawable.ic_continue_no,
+  //                       R.drawable.ic_back,          // 12
+  //                       R.drawable.ic_forw,
+  //                       R.drawable.ic_join,
+  //                       R.drawable.ic_note,          // 15
+  //                       0,
+  //                       R.drawable.ic_menu,          // 17
+  //                       R.drawable.ic_extended,
+  //                       R.drawable.ic_join_no,
+  //                       R.drawable.ic_continue,   // 20
+  //                       R.drawable.ic_add,
+  //                     };
+  // private static int ixons[] = { 
+  //                       R.drawable.ix_edit, // 0
+  //                       R.drawable.ix_eraser,
+  //                       R.drawable.ix_select,
+  //                       R.drawable.ix_download,      // 3 <-- updateBlockList
+  //                       R.drawable.ix_bt,
+  //                       R.drawable.ix_mode,          // 5
+  //                       R.drawable.ix_plan,          // 6 <-- switchPlotType
+  //                       R.drawable.ix_note,
+  //                       R.drawable.ix_undo,
+  //                       R.drawable.ix_redo,
+  //                       R.drawable.ix_list,          // 10
+  //                       R.drawable.ix_continue,
+  //                       R.drawable.ix_back,
+  //                       R.drawable.ix_forw,
+  //                       R.drawable.ix_join,          // 14 <-- setButton3
+  //                       R.drawable.ix_note,          // 15
+  //                       0,
+  //                       R.drawable.ix_menu,          // 17
+  //                       R.drawable.ix_extended,
+  //                       R.drawable.ix_join_no,
+  //                       R.drawable.ix_continue_no,
+  //                       R.drawable.ix_add,
+  //                     };
+  private static int izons[] = { 
+                        R.drawable.iz_edit,          // 0
+                        R.drawable.iz_eraser,
+                        R.drawable.iz_select,
+                        R.drawable.iz_download,      // 3 ic_download
+                        R.drawable.iz_bt,
+                        R.drawable.iz_mode,          // 5
+                        R.drawable.iz_plan,
+                        R.drawable.iz_note,
+                        R.drawable.iz_undo,
+                        R.drawable.iz_redo,
+                        R.drawable.iz_tools,          // 10
+                        R.drawable.iz_continue_no,
+                        R.drawable.iz_back,          // 12
+                        R.drawable.iz_forw,
+                        R.drawable.iz_join,
+                        R.drawable.iz_note,          // 15
                         0,
-                        R.drawable.ic_menu,          // 17
-                        R.drawable.ic_extended,
-                        R.drawable.ic_join_no,
-                        R.drawable.ic_continue,   // 20
-                      };
-  private static int ixons[] = { 
-                        R.drawable.ix_edit, // 0
-                        R.drawable.ix_eraser,
-                        R.drawable.ix_select,
-                        R.drawable.ix_download,      // 3 <-- updateBlockList
-                        R.drawable.ix_bt,
-                        R.drawable.ix_mode,          // 5
-                        R.drawable.ix_plan,          // 6 <-- switchPlotType
-                        R.drawable.ix_note,
-                        R.drawable.ix_undo,
-                        R.drawable.ix_redo,
-                        R.drawable.ix_list,          // 10
-                        R.drawable.ix_continue,
-                        R.drawable.ix_back,
-                        R.drawable.ix_forw,
-                        R.drawable.ix_join,          // 14 <-- setButton3
-                        R.drawable.ix_note,          // 15
-                        0,
-                        R.drawable.ix_menu,          // 17
-                        R.drawable.ix_extended,
-                        R.drawable.ix_join_no,
-                        R.drawable.ix_continue_no,
+                        R.drawable.iz_menu,          // 17
+                        R.drawable.iz_extended,
+                        R.drawable.iz_join_no,
+                        R.drawable.iz_continue,   // 20
+                        R.drawable.iz_plus,
                       };
   private static int menus[] = {
                         R.string.menu_export,
@@ -705,10 +717,12 @@ public class DrawingActivity extends ItemDrawer
          || type == DrawingPath.DRAWING_PATH_AREA 
          || type == DrawingPath.DRAWING_PATH_STATION ) {
       inLinePoint = true;
-      mButton3[ BTN_JOIN ].setBackgroundResource( icons00[ IC_JOIN ] );
+      // mButton3[ BTN_JOIN ].setBackgroundResource( icons00[ IC_JOIN ] );
+      mButton3[ BTN_JOIN ].setBackgroundDrawable( mBMjoin );
     } else {
       inLinePoint = false;
-      mButton3[ BTN_JOIN ].setBackgroundResource( icons00[ IC_JOIN_NO ] );
+      // mButton3[ BTN_JOIN ].setBackgroundResource( icons00[ IC_JOIN_NO ] );
+      mButton3[ BTN_JOIN ].setBackgroundDrawable( mBMjoin_no );
     }
   }
 
@@ -717,7 +731,8 @@ public class DrawingActivity extends ItemDrawer
     mContinueLine = continue_line;
     if ( mSymbol == SYMBOL_LINE && mCurrentLine == DrawingBrushPaths.mLineLib.mLineWallIndex ) {
       mButton2[ BTN_CONTINUE ].setVisibility( View.VISIBLE );
-      mButton2[ BTN_CONTINUE ].setBackgroundResource( icons00[ ( mContinueLine ? IC_CONTINUE : IC_CONTINUE_NO ) ] );
+      // mButton2[ BTN_CONTINUE ].setBackgroundResource( icons00[ ( mContinueLine ? IC_CONTINUE : IC_CONTINUE_NO ) ] );
+      mButton2[ BTN_CONTINUE ].setBackgroundDrawable( mContinueLine ? mBMcontinue : mBMcontinue_no  );
     } else {
       mButton2[ BTN_CONTINUE ].setVisibility( View.GONE );
     }
@@ -730,7 +745,6 @@ public class DrawingActivity extends ItemDrawer
   //   visible = false;
   //   mButton2[ BTN_CONTINUE ].setVisibility( visible? View.VISIBLE : View.GONE );
   // }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -750,7 +764,7 @@ public class DrawingActivity extends ItemDrawer
 
       setContentView(R.layout.drawing_activity);
       mApp = (TopoDroidApp)getApplication();
-      mDataDownloader = new DataDownloader( this, mApp, this );
+      mDataDownloader = mApp.mDataDownloader; // new DataDownloader( this, mApp );
       mZoom = mApp.mScaleFactor;    // canvas zoom
 
       mDisplayCenter = new PointF(mApp.mDisplayWidth  / 2, mApp.mDisplayHeight / 2);
@@ -780,17 +794,25 @@ public class DrawingActivity extends ItemDrawer
       }
 
       mListView = (HorizontalListView) findViewById(R.id.listview);
-      mApp.setListViewHeight( mListView );
-      icons00   = ( TopoDroidSetting.mSizeButtons == 2 )? ixons : icons;
-      icons00ok = ( TopoDroidSetting.mSizeButtons == 2 )? ixonsok : iconsok;
+      int size = mApp.setListViewHeight( mListView );
+      // icons00   = ( TopoDroidSetting.mSizeButtons == 2 )? ixons : icons;
+      // icons00ok = ( TopoDroidSetting.mSizeButtons == 2 )? ixonsok : iconsok;
 
       mButton1 = new Button[ mNrButton1 ];
       for ( int k=0; k<mNrButton1; ++k ) {
         mButton1[k] = new Button( this );
         mButton1[k].setPadding(0,0,0,0);
         mButton1[k].setOnClickListener( this );
-        mButton1[k].setBackgroundResource( icons00[k] );
+        // mButton1[k].setBackgroundResource( icons00[k] );
+        BitmapDrawable bm2 = mApp.setButtonBackground( mButton1[k], size, izons[k] );
+        if ( k == IC_DOWNLOAD ) {
+          mBMdownload = bm2;
+        } else if ( k == IC_PLAN ) {
+          mBMplan = bm2;
+        }
       }
+      mBMextend  = mApp.setButtonBackground( null, size, izons[IC_EXTEND] ); 
+      mBMdownload_on = mApp.setButtonBackground( null, size, R.drawable.iz_download_on );
 
       mButton2 = new Button[ mNrButton2 ];
       for ( int k=0; k<mNrButton2; ++k ) {
@@ -798,13 +820,18 @@ public class DrawingActivity extends ItemDrawer
         mButton2[k].setPadding(0,0,0,0);
         mButton2[k].setOnClickListener( this );
         if ( k == 0 ) {
-          mButton2[k].setBackgroundResource( icons00ok[k] );
+          // mButton2[k].setBackgroundResource( icons00ok[k] );
+          mApp.setButtonBackground( mButton2[k], size, izonsok[k] );
         } else if ( k < 3 ) {
-          mButton2[k].setBackgroundResource( icons00[k] );
+          // mButton2[k].setBackgroundResource( icons00[k] );
+          mApp.setButtonBackground( mButton2[k], size, izons[k] );
         } else {
-          mButton2[k].setBackgroundResource( icons00[8-3+k] ); // starts at 8
+          // mButton2[k].setBackgroundResource( icons00[8-3+k] ); // starts at 8
+          BitmapDrawable bm2 = mApp.setButtonBackground( mButton2[k], size, izons[8-3+k] );
+          if ( 8-3+k == IC_CONTINUE_NO ) mBMcontinue_no = bm2;
         }
       }
+      mBMcontinue  = mApp.setButtonBackground( null, size, izons[IC_CONTINUE] );
 
       mButton3 = new Button[ mNrButton3 ];
       for ( int k=0; k<mNrButton3; ++k ) {
@@ -812,13 +839,19 @@ public class DrawingActivity extends ItemDrawer
         mButton3[k].setPadding(0,0,0,0);
         mButton3[k].setOnClickListener( this );
         if ( k == 2 ) {
-          mButton3[k].setBackgroundResource( icons00ok[k] );
+          // mButton3[k].setBackgroundResource( icons00ok[k] );
+          mApp.setButtonBackground( mButton3[k], size, izonsok[k] );
         } else if ( k < 3 ) {
-          mButton3[k].setBackgroundResource( icons00[k] );
+          // mButton3[k].setBackgroundResource( icons00[k] );
+          mApp.setButtonBackground( mButton3[k], size, izons[k] );
         } else {
-          mButton3[k].setBackgroundResource( icons00[12-3+k] ); // starts at 12
+          // mButton3[k].setBackgroundResource( icons00[12-3+k] ); // starts at 12
+          BitmapDrawable bm2 = mApp.setButtonBackground( mButton3[k], size, izons[12-3+k] );
+          if ( 12-3+k == IC_JOIN ) mBMjoin = bm2;
         }
       }
+      mBMjoin_no = mApp.setButtonBackground( null, size, izons[IC_JOIN_NO] );
+      mBMadd     = mApp.setButtonBackground( null, size, izons[IC_ADD] );
 
       mButton5 = new Button[ mNrButton5 ];
       for ( int k=0; k<mNrButton5; ++k ) {
@@ -826,9 +859,11 @@ public class DrawingActivity extends ItemDrawer
         mButton5[k].setPadding(0,0,0,0);
         mButton5[k].setOnClickListener( this );
         if ( k == 1 ) {
-          mButton5[k].setBackgroundResource( icons00ok[k] );
+          // mButton5[k].setBackgroundResource( icons00ok[k] );
+          mApp.setButtonBackground( mButton5[k], size, izonsok[k] );
         } else if ( k < 3 ) {
-          mButton5[k].setBackgroundResource( icons00[k] );
+          // mButton5[k].setBackgroundResource( icons00[k] );
+          mApp.setButtonBackground( mButton5[k], size, izons[k] );
         } else {
           // mButton5[k].setBackgroundResource( icons00[8-3+k] ); // nothing else
         }
@@ -840,10 +875,8 @@ public class DrawingActivity extends ItemDrawer
         mButton5[2].setVisibility( View.GONE );
       }
 
-      if ( mApp.mDevice == null ) {
-        mButton1[BTN_DOWNLOAD].setBackgroundResource( 
-          (TopoDroidSetting.mSizeButtons == 2 )? R.drawable.ix_add : R.drawable.ic_add );
-      }
+      // set button1[download] icon
+      setConnectionStatus( mDataDownloader != null && mDataDownloader.mConnected );
 
       mButtonView1 = new HorizontalButtonView( mButton1 );
       mButtonView2 = new HorizontalButtonView( mButton2 );
@@ -887,7 +920,8 @@ public class DrawingActivity extends ItemDrawer
 
       mImage = (Button) findViewById( R.id.handle );
       mImage.setOnClickListener( this );
-      mImage.setBackgroundResource( icons00[ IC_MENU ] );
+      // mImage.setBackgroundResource( icons00[ IC_MENU ] );
+      mApp.setButtonBackground( mImage, size, izons[IC_MENU] );
       mMenu = (ListView) findViewById( R.id.menu );
       setMenuAdapter();
       closeMenu();
@@ -901,14 +935,16 @@ public class DrawingActivity extends ItemDrawer
     {
       super.onResume();
       doResume();
-      // FIXME restore mDataDownloader receiver ?
+      // Log.v("DistoX", "Drawing Activity onResume " + ((mDataDownloader!=null)?"with DataDownloader":"") );
+      if ( mDataDownloader != null ) mDataDownloader.onResume();
+      setConnectionStatus( mDataDownloader.mConnected );
     }
 
     @Override
     protected synchronized void onPause() 
     { 
       super.onPause();
-      if ( mDataDownloader != null ) mDataDownloader.resetReceiver();
+      // Log.v("DistoX", "Drawing Activity onPause " + ((mDataDownloader!=null)?"with DataDownloader":"") );
       doPause();
     }
 
@@ -916,13 +952,22 @@ public class DrawingActivity extends ItemDrawer
     protected synchronized void onStart()
     {
       super.onStart();
+      // Log.v("DistoX", "Drawing Activity onStart " + ((mDataDownloader!=null)?"with DataDownloader":"") );
+      if ( mDataDownloader != null ) {
+        mDataDownloader.registerLister( this );
+      }
     }
 
     @Override
     protected synchronized void onStop()
     {
       super.onStop();
-      mApp.disconnectRemoteDevice();
+      // Log.v("DistoX", "Drawing Activity onStart " + ((mDataDownloader!=null)?"with DataDownloader":"") );
+      if ( mDataDownloader != null ) {
+        mDataDownloader.unregisterLister( this );
+        mDataDownloader.onPause();
+        mApp.disconnectRemoteDevice( false );
+      }
       doStop();
     }
 
@@ -2129,7 +2174,8 @@ public class DrawingActivity extends ItemDrawer
         mPid  = mPid2;
         mName = mName2;
         mType = (int)PlotInfo.PLOT_EXTENDED;
-        mButton1[ BTN_PLOT ].setBackgroundResource( icons00[ IC_EXTEND ] );
+        // mButton1[ BTN_PLOT ].setBackgroundResource( icons00[ IC_EXTEND ] );
+        mButton1[ BTN_PLOT ].setBackgroundDrawable( mBMextend );
         mDrawingSurface.setManager( mType );
         resetReference( mPlot2 );
       } else if ( mType == PlotInfo.PLOT_EXTENDED ) {
@@ -2137,7 +2183,8 @@ public class DrawingActivity extends ItemDrawer
         mPid  = mPid1;
         mName = mName1;
         mType = (int)PlotInfo.PLOT_PLAN;
-        mButton1[ BTN_PLOT ].setBackgroundResource(  icons00[ IC_PLAN ] );
+        // mButton1[ BTN_PLOT ].setBackgroundResource(  icons00[ IC_PLAN ] );
+        mButton1[ BTN_PLOT ].setBackgroundDrawable( mBMplan );
         mDrawingSurface.setManager( mType );
         resetReference( mPlot1 );
       }
@@ -2199,7 +2246,7 @@ public class DrawingActivity extends ItemDrawer
         } else if ( mType == (int)PlotInfo.PLOT_EXTENDED ) {
           saveReference( mPlot2, mPid2 );
         }
-        mDataDownloader.downloadData();
+        mDataDownloader.downloadData( );
       } else if ( b == mButton1[4] ) { // bluetooth
         new DeviceRemote( this, this, mApp ).show();
       } else if ( b == mButton1[5] ) { // display mode 
@@ -2612,7 +2659,7 @@ public class DrawingActivity extends ItemDrawer
   public void updateBlockList( DistoXDBlock blk )
   {
     mApp.mShotActivity.updateBlockList( blk );
-    // mButton1[ BTN_DOWNLOAD ].setBackgroundResource( icons00[ IC_DOWNLOAD ] );
+    // mButton1[ BTN_DOWNLOAD ].setBackgroundDrawable( mBMdownload );
     updateDisplay( true );
   }
 
@@ -2677,7 +2724,7 @@ public class DrawingActivity extends ItemDrawer
       askRecover();
     } else if ( item == mMIhelp ) { // HELP DIALOG
       int nn = mNrButton1 + mNrButton2 - 3 + mNrButton5 - 3 + ( TopoDroidApp.mLevelOverBasic? mNrButton3 - 3: 0 );
-      (new HelpDialog(this, icons, menus, help_icons, help_menus, nn, 7 ) ).show();
+      (new HelpDialog(this, izons, menus, help_icons, help_menus, nn, 7 ) ).show();
     } else {
       return super.onOptionsItemSelected(item);
     }
@@ -2732,7 +2779,7 @@ public class DrawingActivity extends ItemDrawer
         startActivity( intent );
       } else if ( p++ == pos ) { // HELP
         int nn = mNrButton1 + mNrButton2 - 3 + mNrButton5 - 3 + ( TopoDroidSetting.mLevelOverBasic? mNrButton3 - 3: 0 );
-        (new HelpDialog(this, icons, menus, help_icons, help_menus, nn, 7 ) ).show();
+        (new HelpDialog(this, izons, menus, help_icons, help_menus, nn, 7 ) ).show();
       }
     }
   }
@@ -2774,16 +2821,16 @@ public class DrawingActivity extends ItemDrawer
 
   public void setConnectionStatus( boolean connected )
   { 
-    Button buttonDownload = mButton1[ BTN_DOWNLOAD ]; 
-    if ( connected ) {
-      // setTitleColor( TopoDroidConst.COLOR_CONNECTED );
-      if ( buttonDownload != null ) {
-        buttonDownload.setBackgroundResource( R.drawable.ic_download_on );
-      }
+    if ( mApp.mDevice == null ) {
+      mButton1[ BTN_DOWNLOAD ].setVisibility( View.GONE );
     } else {
-      // setTitleColor( TopoDroidConst.COLOR_NORMAL );
-      if ( buttonDownload != null ) {
-        buttonDownload.setBackgroundResource( R.drawable.ic_download );
+      mButton1[ BTN_DOWNLOAD ].setVisibility( View.VISIBLE );
+      if ( connected ) {
+        // setTitleColor( TopoDroidConst.COLOR_CONNECTED );
+        mButton1[ BTN_DOWNLOAD ].setBackgroundDrawable( mBMdownload_on );
+      } else {
+        // setTitleColor( TopoDroidConst.COLOR_NORMAL );
+        mButton1[ BTN_DOWNLOAD ].setBackgroundDrawable( mBMdownload_on );
       }
     }
   }
@@ -2796,7 +2843,7 @@ public class DrawingActivity extends ItemDrawer
         do {
           Thread.sleep( 1000 );
           // Log.v("DistoX", "try reconnect " + mDataDownloader.mConnected );
-          mDataDownloader.downloadData();
+          mDataDownloader.downloadData( );
         } while ( mDataDownloader.mConnected == false );
       } catch ( InterruptedException e ) { }
       // Log.v("DistoX", "reconnected " + mDataDownloader.mConnected );

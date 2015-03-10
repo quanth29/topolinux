@@ -62,12 +62,15 @@ public interface DataListener
   static final byte SHOT_DELETE   = (byte)17;
   static final byte SHOT_UNDELETE = (byte)18;
   static final byte SHOT_AMDR     = (byte)19;
+  static final byte SHOT_DBC_UPDATE = (byte)20;
 
   static final byte SHOT_INSERT   = (byte)21;
   static final byte SHOT_INSERTAT = (byte)23;
 
   public void onUpdateShot( long id, long sid, String fStation, String tStation,
                             long extend, long flag, long leg, String comment );
+
+  public void onUpdateShotDBC( long id, long sid, float d, float b, float c );
 
   public void onUpdateShotName( long id, long sid, String fStation, String tStation );
 

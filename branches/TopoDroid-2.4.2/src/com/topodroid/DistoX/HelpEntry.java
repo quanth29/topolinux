@@ -18,6 +18,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.LinearLayout;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+
 class HelpEntry
 {
   Button   mButton   = null;
@@ -36,10 +40,12 @@ class HelpEntry
 
     if ( is_text ) {
       mButton.setText( icon );
-      mButton.setBackgroundColor( 0xff111111 );
-      mButton.setTextColor( 0xff6699ff );
+      mButton.setBackgroundColor( 0xff000000 );
+      mButton.setTextColor( 0xff33ccff ); // FIXME color/menu_foreground
     } else {
-      mButton.setBackgroundResource( icon );
+      // mButton.setBackgroundResource( icon );
+      int size = TopoDroidApp.getDefaultSize( context );
+      TopoDroidApp.setButtonBackground( context, mButton, size, icon );
     }
     mTextView.setText( text );
 

@@ -31,39 +31,25 @@ import java.util.Locale;
 
 import android.util.Log;
 
-public class PocketTopoParser
+public class PocketTopoParser extends ImportParser
 {
-  String mName = null;  // survey name
-  String mDate = null;  // survey date
-  String mTeam = "";
   String mTitle = "";
-  float  mDeclination = 0.0f; // one-survey declination
   String mComment;
-  private boolean mApplyDeclination = false;
   String mStartFrom;
 
-  private ArrayList< ParserShot > shots;   // centerline shots
-
-  public int getShotNumber()    { return shots.size(); }
-
-  public ArrayList< ParserShot > getShots() { return shots; }
-
-  
   static final float PT_SCALE = 0.1f; // 100/1000
 
   public PocketTopoParser( String filename, String surveyname, boolean apply_declination )
                            throws ParserException
   {
+    super( apply_declination );
     String mStartFrom = null;
     // TopoDroidLog.Log( TopoDroidLog.LOG_PTOPO, "PocketTopo parser " + surveyname );
-    shots  = new ArrayList< ParserShot >();
-    mApplyDeclination = apply_declination; // FIXME not used yet
     mName     = surveyname.replace(".top", "");
-    readFile( filename );
+    readPocketTopoFile( filename );
   }
 
-  private void readFile( String filename )
-                       throws ParserException
+  private void readPocketTopoFile( String filename ) throws ParserException
   {
     PTFile ptfile = new PTFile();
     TopoDroidLog.Log( TopoDroidLog.LOG_PTOPO, "PT survey " + mName + " read file " + filename );
@@ -83,7 +69,7 @@ public class PocketTopoParser
     int nr_trip = ptfile.tripCount();
     TopoDroidLog.Log( TopoDroidLog.LOG_PTOPO, "PT trip count " + nr_trip );
     mComment = "";
-    mTeam = "";
+    // mTeam = "";
     if ( nr_trip > 0 ) { // use only the first trip
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter( sw );

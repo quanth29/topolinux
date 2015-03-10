@@ -15,6 +15,8 @@ package com.topodroid.DistoX;
 
 // import java.Thread;
 
+import java.util.ArrayList;
+
 import android.widget.Toast;
 import android.os.AsyncTask;
 
@@ -22,10 +24,10 @@ import android.os.AsyncTask;
 public class DistoXRefresh extends AsyncTask< String, Integer, Integer >
 {
   private TopoDroidApp mApp;
-  private ILister mLister;                       // list display
+  private ArrayList<ILister> mLister;                       // list display
   private static DistoXRefresh running = null;
 
-  DistoXRefresh( TopoDroidApp app, ILister lister )
+  DistoXRefresh( TopoDroidApp app, ArrayList<ILister> lister )
   {
     // TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "DistoXRefresh cstr" );
     mApp = app;
@@ -58,8 +60,8 @@ public class DistoXRefresh extends AsyncTask< String, Integer, Integer >
     // TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "onPostExecute res " + res );
     if ( res != null ) {
       int r = res.intValue();
-      if ( mLister != null ) {
-        mLister.refreshDisplay( r, true );
+      for ( ILister lister : mLister ) {
+        lister.refreshDisplay( r, true );
       }
     }
     unlock();

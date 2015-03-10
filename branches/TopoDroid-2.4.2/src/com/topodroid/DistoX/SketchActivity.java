@@ -8,14 +8,6 @@
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
  * --------------------------------------------------------
- * CHANGES
- * 20130216 created
- * 20130307 made Annotations into a dialog
- * 20130525 revised buttons
- * 20130725 multitouch in 3D view for move/zoom/rotate (no more ROTATE mode)
- * 20130804 removed top/side view: draw surface from cross-sections only
- * 20130804 removed cross-section dialog: draw cross-sections in 3D view
- * 20130828 join(s)
  */
 package com.topodroid.DistoX;
 
@@ -68,6 +60,10 @@ import java.util.List;
 import java.util.ArrayList;
 // import java.util.Locale;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+
 import android.util.Log;
 
 /**
@@ -88,6 +84,7 @@ public class SketchActivity extends ItemDrawer
   static final String TAG = "DistoX";
 
   private TopoDroidApp mApp;
+  private DataDownloader mDataDownloader;
   private Sketch3dInfo mInfo;
   private SketchPainter mPainter;
 
@@ -128,70 +125,38 @@ public class SketchActivity extends ItemDrawer
   ArrayAdapter< String > mMenuAdapter;
   boolean onMenu;
 
-  private static int icons00[];
-  private static int icons00ok[];
-
-  private static int iconsok[] = { 
-                        R.drawable.ic_edit_ok, // 0
-                        R.drawable.ic_eraser_ok,
-                        R.drawable.ic_select_ok };
-  private static int ixonsok[] = { 
-                        R.drawable.ix_edit_ok, // 0
-                        R.drawable.ix_eraser_ok,
-                        R.drawable.ix_select_ok };
+  private static int izonsok[] = { 
+                        R.drawable.iz_edit_ok, // 0
+                        R.drawable.iz_eraser_ok,
+                        R.drawable.iz_select_ok };
                       
-  private static int icons[] = { 
-                        R.drawable.ic_edit, // 0
-                        R.drawable.ic_eraser,
-                        R.drawable.ic_select,
-                        R.drawable.ic_one,           // 3
-                        R.drawable.ic_mode,          // 4
-                        R.drawable.ic_plan,          // 
-                        R.drawable.ic_download,      // 
-                        R.drawable.ic_note,
-                        R.drawable.ic_info,          // 8 
+  private static int izons[] = { 
+                        R.drawable.iz_edit, // 0
+                        R.drawable.iz_eraser,
+                        R.drawable.iz_select,
+                        R.drawable.iz_one,           // 3
+                        R.drawable.iz_mode,          // 4
+                        R.drawable.iz_plan,          // 
+                        R.drawable.iz_download,      // 
+                        R.drawable.iz_note,
+                        R.drawable.iz_info,          // 8 
 
-                        R.drawable.ic_undo,          // 9 <--
-                        R.drawable.ic_redo,
-                        R.drawable.ic_list,          // 11
+                        R.drawable.iz_undo,          // 9 <--
+                        R.drawable.iz_redo,
+                        R.drawable.iz_list,          // 11
 
-                        R.drawable.ic_refinet,       // 12
-                        R.drawable.ic_refinec,       // 13
-                        R.drawable.ic_refines,       
-                        R.drawable.ic_cut,
-                        R.drawable.ic_stretch,       // 15
+                        R.drawable.iz_refinet,       // 12
+                        R.drawable.iz_refinec,       // 13
+                        R.drawable.iz_refines,       
+                        R.drawable.iz_cut,
+                        R.drawable.iz_stretch,       // 15
 
-                        R.drawable.ic_back,          // 17
-                        R.drawable.ic_forw,
-                        R.drawable.ic_refinep,
-                        R.drawable.ic_note           // 20 Point: delete(cut), Leg: step
+                        R.drawable.iz_back,          // 17
+                        R.drawable.iz_forw,
+                        R.drawable.iz_refinep,
+                        R.drawable.iz_note           // 20 Point: delete(cut), Leg: step
                      };
-  private static int ixons[] = { 
-                        R.drawable.ix_edit, // 0
-                        R.drawable.ix_eraser,
-                        R.drawable.ix_select,
-                        R.drawable.ix_one,           // 2
-                        R.drawable.ix_mode,          // 4
-                        R.drawable.ix_plan,          // 
-                        R.drawable.ix_download,      // 
-                        R.drawable.ix_note,
-                        R.drawable.ix_info,          // 8 
 
-                        R.drawable.ix_undo,          // 9 <--
-                        R.drawable.ix_redo,
-                        R.drawable.ix_list,          // 11
-
-                        R.drawable.ix_refinet,       // 12
-                        R.drawable.ix_refinec,       // 13
-                        R.drawable.ix_refines,       
-                        R.drawable.ix_cut,
-                        R.drawable.ix_stretch,       // 16
-
-                        R.drawable.ix_back,          // 17
-                        R.drawable.ix_forw,
-                        R.drawable.ix_refinep,
-                        R.drawable.ix_note           // 20 Point: delete(cut), Leg: step
-                      };
   private static int menus[] = {
                         R.string.menu_export,       // 21 <-- menus
                         R.string.menu_palette, 
@@ -703,6 +668,7 @@ public class SketchActivity extends ItemDrawer
 
     setContentView(R.layout.sketch_activity);
     mApp = (TopoDroidApp)getApplication();
+    mDataDownloader = null;
     // mInfo.zoom = mApp.mScaleFactor;    // canvas zoom
 
     // setCurrentPaint();
@@ -767,17 +733,19 @@ public class SketchActivity extends ItemDrawer
     // selectBtn.setOnClickListener( this );
 
     mListView = (HorizontalListView) findViewById(R.id.listview);
-    mApp.setListViewHeight( mListView );
-    icons00   = ( TopoDroidSetting.mSizeButtons == 2 )? ixons : icons;
-    icons00ok = ( TopoDroidSetting.mSizeButtons == 2 )? ixonsok : iconsok;
+    int size = mApp.setListViewHeight( mListView );
+    // icons00   = ( TopoDroidSetting.mSizeButtons == 2 )? ixons : icons;
+    // icons00ok = ( TopoDroidSetting.mSizeButtons == 2 )? ixonsok : iconsok;
 
     mButton1 = new Button[ mNrButton1 ];
     for ( int k=0; k<mNrButton1; ++k ) {
       mButton1[k] = new Button( this );
       mButton1[k].setPadding(0,0,0,0);
       mButton1[k].setOnClickListener( this );
-      mButton1[k].setBackgroundResource( icons00[k] );
+      // mButton1[k].setBackgroundResource( icons00[k] );
+      mApp.setButtonBackground( mButton1[k], size, izons[k] );
     }
+
 
     mButton2 = new Button[ mNrButton2 ];
     for ( int k=0; k<mNrButton2; ++k ) {
@@ -785,11 +753,14 @@ public class SketchActivity extends ItemDrawer
       mButton2[k].setPadding(0,0,0,0);
       mButton2[k].setOnClickListener( this );
       if ( k == 0 ) {
-        mButton2[k].setBackgroundResource( icons00ok[k] );
+        // mButton2[k].setBackgroundResource( icons00ok[k] );
+        mApp.setButtonBackground( mButton2[k], size, izonsok[k] );
       } else if ( k < 3 ) {
-        mButton2[k].setBackgroundResource( icons00[k] );
+        // mButton2[k].setBackgroundResource( icons00[k] );
+        mApp.setButtonBackground( mButton2[k], size, izons[k] );
       } else {
-        mButton2[k].setBackgroundResource( icons00[9-3+k] );
+        // mButton2[k].setBackgroundResource( icons00[9-3+k] );
+        mApp.setButtonBackground( mButton2[k], size, izons[9-3+k] );
       }
     }
 
@@ -799,11 +770,14 @@ public class SketchActivity extends ItemDrawer
       mButton3[k].setPadding(0,0,0,0);
       mButton3[k].setOnClickListener( this );
       if ( k == 1 ) {
-        mButton3[k].setBackgroundResource( icons00ok[k] );
+        // mButton3[k].setBackgroundResource( icons00ok[k] );
+        mApp.setButtonBackground( mButton3[k], size, izonsok[k] );
       } else if ( k < 3 ) {
-        mButton3[k].setBackgroundResource( icons00[k] );
+        // mButton3[k].setBackgroundResource( icons00[k] );
+        mApp.setButtonBackground( mButton3[k], size, izons[k] );
       } else {
-        mButton3[k].setBackgroundResource( icons00[12-3+k] );
+        // mButton3[k].setBackgroundResource( icons00[12-3+k] );
+        mApp.setButtonBackground( mButton3[k], size, izons[12-3+k] );
       }
     }
 
@@ -813,11 +787,14 @@ public class SketchActivity extends ItemDrawer
       mButton4[k].setPadding(0,0,0,0);
       mButton4[k].setOnClickListener( this );
       if ( k == 2 ) {
-        mButton4[k].setBackgroundResource( icons00ok[k] );
+        // mButton4[k].setBackgroundResource( icons00ok[k] );
+        mApp.setButtonBackground( mButton4[k], size, izonsok[k] );
       } else if ( k < 3 ) {
-        mButton4[k].setBackgroundResource( icons00[k] );
+        // mButton4[k].setBackgroundResource( icons00[k] );
+        mApp.setButtonBackground( mButton4[k], size, izons[k] );
       } else {
-        mButton4[k].setBackgroundResource( icons00[17-3+k] );
+        // mButton4[k].setBackgroundResource( icons00[17-3+k] );
+        mApp.setButtonBackground( mButton4[k], size, izons[17-3+k] );
       }
     }
     mButtonView1 = new HorizontalButtonView( mButton1 );  // MOVE
@@ -836,8 +813,8 @@ public class SketchActivity extends ItemDrawer
 
     mImage = (Button) findViewById( R.id.handle );
     mImage.setOnClickListener( this );
-    mImage.setBackgroundResource( 
-      ( TopoDroidSetting.mSizeButtons == 2 )? R.drawable.ix_menu : R.drawable.ic_menu );
+    // mImage.setBackgroundResource( ( TopoDroidSetting.mSizeButtons == 2 )? R.drawable.ix_menu : R.drawable.ic_menu );
+    mApp.setButtonBackground( mImage, size, R.drawable.iz_menu );
     mMenu = (ListView) findViewById( R.id.menu );
     setMenuAdapter();
     closeMenu();
@@ -845,6 +822,15 @@ public class SketchActivity extends ItemDrawer
 
     mTimer   = null;
   } 
+
+  @Override
+  protected synchronized void onStart()
+  {
+    super.onStart();
+    if ( mDataDownloader != null ) {
+      mDataDownloader.registerLister( this );
+    }
+  }
 
   @Override
   protected synchronized void onResume()
@@ -873,11 +859,16 @@ public class SketchActivity extends ItemDrawer
     super.onPause();
   }
 
-  // @Override
-  // protected synchronized void onStop() 
-  // {   
-  //   super.onStop();
-  // }
+  @Override
+  protected synchronized void onStop() 
+  {   
+    if ( mDataDownloader != null ) {
+      mDataDownloader.unregisterLister( this );
+      mDataDownloader.onPause();
+      mApp.disconnectRemoteDevice( false );
+    }
+    super.onStop();
+  }
 
 
   // ----------------------------------------------------------------------
@@ -1669,7 +1660,9 @@ public class SketchActivity extends ItemDrawer
           //      with the Asynch task that download the data.
           //      if there is an empty shot assign it
           setTitleColor( TopoDroidConst.COLOR_CONNECTED );
-          new DistoXRefresh( mApp, this ).execute();
+          ArrayList<ILister> listers = new ArrayList<ILister>();
+          listers.add( this );
+          new DistoXRefresh( mApp, listers ).execute();
         } else {
           Toast.makeText( this, R.string.device_none, Toast.LENGTH_SHORT ).show();
         }
@@ -1803,7 +1796,7 @@ public class SketchActivity extends ItemDrawer
         mTimer.execute();
       } else if (item == mMIhelp ) {
         int nn = mNrButton1 + mNrButton2 - 3 + mNrButton3 - 3 + mNrButton4 - 3;
-        (new HelpDialog(this, icons, menus, help_icons, help_menus, nn, 6 ) ).show();
+        (new HelpDialog(this, izons, menus, help_icons, help_menus, nn, 6 ) ).show();
       }
       return true;
     }
@@ -1873,7 +1866,7 @@ public class SketchActivity extends ItemDrawer
         mTimer.execute();
       } else if ( p++ == pos ) { // 
         int nn = mNrButton1 + mNrButton2 - 3 + mNrButton3 - 3 + mNrButton4 - 3;
-        (new HelpDialog(this, icons, menus, help_icons, help_menus, nn, 6 ) ).show();
+        (new HelpDialog(this, izons, menus, help_icons, help_menus, nn, 6 ) ).show();
       }
     }
   }

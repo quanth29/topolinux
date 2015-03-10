@@ -539,8 +539,8 @@
   <string name="pref_cat_sketch">Opciones dibujo</string>
   <string name="pref_cat_log">Opciones de registro</string>
 
-  <string name="pref_hide_help_title">Ocultar ayuda</string>
-  <string name="pref_hide_help_summary">Ocultar botón ayuda</string>
+  <!-- TODO string name="pref_locale_title">Language</string -->
+  <!-- TODO string name="pref_locale_summary">Language</string -->
 
   <string name="pref_raw_data_title">Datos sin procesar</string>
   <string name="pref_raw_data_summary">Mostrar datos sin procesar</string>

@@ -8,61 +8,6 @@
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
  * --------------------------------------------------------
- * CHANGES
- * 20120516 length and angle units
- * 20120517 survey-info and fix station export
- * 20120518 app base directory
- * 20120523 connection mode (batch, continuous)
- * 20120524 welcome screen and base-path pref. 
- * 20120524 moved fixed station management to SurveyActivity
- * 20120525 conn-mode pref.
- * 20120529 connection colors
- * 20120531 STATUS const's
- * 20120602 fixed-info exports
- * 20120611 made filename compositions private
- * 20120705 symbols screen units
- * 20120706 screen scale factor (for drawing on the canvas)
- * 20120715 forced no_spaces in names (survey, station, sketch, calib)
- * 20120720 added manifest
- * 20120725 centralized log
- * 20120803 removed connection-mode preference
- * 20121001 splay extend in therion export
- * 20121114 added LOG_DEBUG (true)
- * 20121120 added LOG_INPUT (false) log user inputs
- * 20121121 added log preferences
- * 20121124 added checkCalibrationDeviceMatch() 
- * 20121129 added mExtendThr and its pref 
- * 20121201 APP_POINT_PATH APP_LINE_PATH APP_AREA_PATH
- * 20121205 location units
- * 20121217 dropped TLX export, added mkdirs() for dir paths
- * 20121217 bug-fix comment in tro export
- * 20121218 pref whether to show TdSymbol 
- * 20130108 therion export surface flags (TODO better flags management)
- * 20130108 auto_stations option
- * 20130130 bug fix: export shot-type check for BLOCK_SEC_LEG
- * 20130204 disable lock
- * 20130504 DXF export
- * 20130520 altimetric altitude
- * 20130829 mLineShift pref
- * 20130920 defult CS pref
- * 20121116 DistoX types: A3 X310 ...
- * 20140103 moved math consts in util
- * 20140220 use current units to convert manual input to meters/degrees
- * 20140224 LOG_UNITS
- * 20140303 option: symbol picker mode (list or grid)
- * 20140305 immediate update of point symbols upon drawing unit pref. change
- * 20140328 option mHThreshold (theshold for horizontal cross-sections)
- * 20140329 raw data option
- * 20140401 log preferences selection bug fix
- * 20140408 check that manual values are not illegal (out-of-bounds)
- * 20140409 returned to TAG "DistoX"
- * 20140415 using GPSAveraging optional (default no)
- * 20140415 commented TdSymbol stuff
- * 20140508 removed DISABLE_KEYGUARD
- * 20140515 lastShotId and secondLastShotId
- * 20140520 LOG_PTOPO
- * 20140606 auto-station option: splays before or after the shot
- * 20140719 dump directory
  */
 package com.topodroid.DistoX;
 
@@ -120,6 +65,8 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.SharedPreferences.Editor;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.content.res.Configuration;
 import android.content.ActivityNotFoundException;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -130,7 +77,12 @@ import android.provider.Settings.SettingNotFoundException;
 import android.view.WindowManager;
 import android.view.Display;
 import android.view.ViewGroup.LayoutParams;
+
+import android.widget.Button;
 import android.graphics.Point;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 
 import android.util.Log;
 import android.util.DisplayMetrics;
@@ -159,7 +111,8 @@ public class TopoDroidApp extends Application
   static boolean VERSION30 = true;
 
   boolean mWelcomeScreen;  // whether to show the welcome screen
-  static String  mManual;  // manual url
+  static String mManual;  // manual url
+  static Locale mLocale;
 
   public static float mScaleFactor   = 1.0f;
   public static float mDisplayWidth  = 200f;
@@ -197,6 +150,7 @@ public class TopoDroidApp extends Application
   String[] DistoXConnectionError;
   BluetoothAdapter mBTAdapter = null;     // BT connection
   private DistoXComm mComm = null;        // BT communication
+  DataDownloader mDataDownloader = null;  // data downloader
   static DataHelper mData = null;         // database 
 
   SurveyActivity mSurveyActivity = null;
@@ -223,14 +177,38 @@ public class TopoDroidApp extends Application
   int    distoType() { return (mDevice == null)? 0 : mDevice.mType; }
   String distoAddress() { return (mDevice == null)? null : mDevice.mAddress; }
 
+
   int setListViewHeight( HorizontalListView listView )
   {
-    final float scale = getResources().getSystem().getDisplayMetrics().density;
+    return TopoDroidApp.setListViewHeight( this, listView );
+  }
+
+  static int setListViewHeight( Context context, HorizontalListView listView )
+  {
+    final float scale = context.getResources().getSystem().getDisplayMetrics().density;
     LayoutParams params = listView.getLayoutParams();
     int size = (int)( 42 * TopoDroidSetting.mSizeButtons * scale );
     params.height = size + 10;
     listView.setLayoutParams( params );
     return size;
+  }
+
+  static int getDefaultSize( Context context )
+  {
+    return (int)(42 * context.getResources().getSystem().getDisplayMetrics().density );
+  }
+
+  BitmapDrawable setButtonBackground( Button button, int size, int id )
+  {
+    return TopoDroidApp.setButtonBackground( this, button, size, id );
+  }
+
+  static BitmapDrawable setButtonBackground( Context context, Button button, int size, int id )
+  {
+    Bitmap bm1 = BitmapFactory.decodeResource( context.getResources(), id );
+    BitmapDrawable bm2 = new BitmapDrawable( context.getResources(), Bitmap.createScaledBitmap( bm1, size, size, false ) );
+    if ( button != null ) button.setBackgroundDrawable( bm2 );
+    return bm2;
   }
 
   // ------------------------------------------------------------
@@ -418,20 +396,23 @@ public class TopoDroidApp extends Application
     return mComm != null && mComm.mBTConnected && mComm.mRfcommThread != null;
   }
 
-  void disconnectRemoteDevice()
+  void disconnectRemoteDevice( boolean force )
   {
-    if ( mComm != null && mComm.mBTConnected ) mComm.disconnectRemoteDevice( );
+    // Log.v("DistoX", "App disconnect RemoteDevice listers " + mDataDownloader.mLister.size() );
+    if ( force || mDataDownloader.mLister.size() == 0 ) {
+      if ( mComm != null && mComm.mBTConnected ) mComm.disconnectRemoteDevice( );
+    }
   }
 
-  void connectRemoteDevice( String address, ILister lister )
-  {
-    if ( mComm != null ) mComm.connectRemoteDevice( address, lister );
-  }
+  // void connectRemoteDevice( String address, ArrayList<ILister> listers )
+  // {
+  //   if ( mComm != null ) mComm.connectRemoteDevice( address, listers );
+  // }
 
   // FIXME_COMM
-  public boolean connect( String address, ILister lister ) 
+  public boolean connect( String address, ArrayList<ILister> listers ) 
   {
-    return mComm != null && mComm.connect( address, lister );
+    return mComm != null && mComm.connect( address, listers );
   }
 
   public void disconnect()
@@ -495,7 +476,7 @@ public class TopoDroidApp extends Application
     this.mPrefs = PreferenceManager.getDefaultSharedPreferences( this );
     this.mPrefs.registerOnSharedPreferenceChangeListener( this );
 
-    TopoDroidSetting.loadPreferences( mPrefs );
+    TopoDroidSetting.loadPreferences( this, mPrefs );
 
     TopoDroidPath.setDefaultPaths();
     mCWD = mPrefs.getString( "DISTOX_CWD", "TopoDroid" );
@@ -532,9 +513,7 @@ public class TopoDroidApp extends Application
 
     mSyncConn = new ConnectionHandler( this );
 
-
     mDevice = mData.getDevice( mPrefs.getString( TopoDroidSetting.keyDeviceName(), DEVICE_NAME ) );
-
 
     // DrawingBrushPaths.makePaths( getResources() );
 
@@ -549,6 +528,8 @@ public class TopoDroidApp extends Application
     mConnListener = new ArrayList< Handler >();
 
     mComm = new DistoXComm( this );
+
+    mDataDownloader = new DataDownloader( this, this );
 
     DistoXConnectionError = new String[5];
     DistoXConnectionError[0] = getResources().getString( R.string.distox_err_ok );
@@ -582,6 +563,16 @@ public class TopoDroidApp extends Application
     }
   }
 
+  void setLocale( String locale )
+  {
+    mLocale = (locale.equals(""))? Locale.getDefault() : new Locale( locale );
+    Resources res = getResources();
+    DisplayMetrics dm = res.getDisplayMetrics();
+    Configuration conf = res.getConfiguration();
+    conf.locale = mLocale;
+    res.updateConfiguration( conf, dm );
+    if ( mActivity != null ) mActivity.setMenuAdapter( res );
+  }
 
   void setCWD( String cwd )
   {
@@ -907,13 +898,13 @@ public class TopoDroidApp extends Application
   // -------------------------------------------------------------
   // DATA DOWNLOAD
 
-  public int downloadData( ILister lister )
+  public int downloadData( ArrayList<ILister> listers )
   {
     mSecondLastShotId = lastShotId();
     TopoDroidLog.Log( TopoDroidLog.LOG_DATA, "downloadData() device " + mDevice + " comm " + mComm.toString() );
     int ret = 0;
     if ( mComm != null && mDevice != null ) {
-      ret = mComm.downloadData( mDevice.mAddress, lister );
+      ret = mComm.downloadData( mDevice.mAddress, listers );
       // Log.v( TAG, "TopoDroidApp.downloadData() result " + ret );
       if ( ret > 0 && TopoDroidSetting.mSurveyStations > 0 ) {
         // FIXME TODO select only shots after the last leg shots
@@ -1347,10 +1338,10 @@ public class TopoDroidApp extends Application
     }
   }
 
-  /**
+  /** insert manual-data shot
    * @param at   id of the shot before which to insert the new shot (and LRUD)
    */
-  public DistoXDBlock makeNewShot( long at, String from, String to,
+  public DistoXDBlock insertManualShot( long at, String from, String to,
                            float distance, float bearing, float clino, long extend,
                            String left, String right, String up, String down,
                            String splay_station )
@@ -1373,31 +1364,31 @@ public class TopoDroidApp extends Application
       //   Toast.makeText( this, R.string.makes_cycle, Toast.LENGTH_SHORT ).show();
       // } else
       {
-        // TopoDroidLog.Log( TopoDroidLog.LOG_SHOT, "makeNewShot Data " + distance + " " + bearing + " " + clino );
+        // TopoDroidLog.Log( TopoDroidLog.LOG_SHOT, "manual-shot Data " + distance + " " + bearing + " " + clino );
         boolean horizontal = ( Math.abs( clino ) > TopoDroidSetting.mVThreshold );
-        // TopoDroidLog.Log( TopoDroidLog.LOG_SHOT, "makeNewShot SID " + mSID + " LRUD " + left + " " + right + " " + up + " " + down);
+        // TopoDroidLog.Log( TopoDroidLog.LOG_SHOT, "manual-shot SID " + mSID + " LRUD " + left + " " + right + " " + up + " " + down);
         if ( left != null && left.length() > 0 ) {
           float l = -1.0f;
           try {
             l = Float.parseFloat( left ) / TopoDroidSetting.mUnitLength;
           } catch ( NumberFormatException e ) {
-            TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "makeNewShot parse error: left " + left );
+            TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "manual-shot parse error: left " + left );
           }
           if ( l >= 0.0f ) {
             if ( horizontal ) {
               if ( at >= 0L ) {
-                id = mData.insertShotAt( mSID, at, l, 270.0f, 0.0f, 0.0f, true );
+                id = mData.insertShotAt( mSID, at, l, 270.0f, 0.0f, 0.0f, 1, true );
               } else {
-                id = mData.insertShot( mSID, -1L, l, 270.0f, 0.0f, 0.0f, true );
+                id = mData.insertShot( mSID, -1L, l, 270.0f, 0.0f, 0.0f, 1, true );
               }
             } else {
               float b = bearing - 90.0f;
               if ( b < 0.0f ) b += 360.0f;
               // b = in360( b );
               if ( at >= 0L ) {
-                id = mData.insertShotAt( mSID, at, l, b, 0.0f, 0.0f, true );
+                id = mData.insertShotAt( mSID, at, l, b, 0.0f, 0.0f, 1, true );
               } else {
-                id = mData.insertShot( mSID, -1L, l, b, 0.0f, 0.0f, true );
+                id = mData.insertShot( mSID, -1L, l, b, 0.0f, 0.0f, 1, true );
               }
             }
             mData.updateShotName( id, mSID, splay_station, "", true );
@@ -1409,22 +1400,22 @@ public class TopoDroidApp extends Application
           try {
             r = Float.parseFloat( right ) / TopoDroidSetting.mUnitLength;
           } catch ( NumberFormatException e ) {
-            TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "makeNewShot parse error: right " + right );
+            TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "manual-shot parse error: right " + right );
           }
           if ( r >= 0.0f ) {
             if ( horizontal ) {
               if ( at >= 0L ) {
-                id = mData.insertShotAt( mSID, at, r, 90.0f, 0.0f, 0.0f, true );
+                id = mData.insertShotAt( mSID, at, r, 90.0f, 0.0f, 0.0f, 1, true );
               } else {
-                id = mData.insertShot( mSID, -1L, r, 90.0f, 0.0f, 0.0f, true );
+                id = mData.insertShot( mSID, -1L, r, 90.0f, 0.0f, 0.0f, 1, true );
               }
             } else {
               float b = bearing + 90.0f;
               if ( b >= 360.0f ) b -= 360.0f;
               if ( at >= 0L ) {
-                id = mData.insertShotAt( mSID, at, r, b, 0.0f, 0.0f, true );
+                id = mData.insertShotAt( mSID, at, r, b, 0.0f, 0.0f, 1, true );
               } else {
-                id = mData.insertShot( mSID, -1L, r, b, 0.0f, 0.0f, true );
+                id = mData.insertShot( mSID, -1L, r, b, 0.0f, 0.0f, 1, true );
               }
             }
             mData.updateShotName( id, mSID, splay_station, "", true );
@@ -1436,20 +1427,20 @@ public class TopoDroidApp extends Application
           try {
             u = Float.parseFloat( up ) / TopoDroidSetting.mUnitLength;
           } catch ( NumberFormatException e ) {
-            TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "makeNewShot parse error: up " + up );
+            TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "manual-shot parse error: up " + up );
           }
           if ( u >= 0.0f ) {
             if ( horizontal ) {
               if ( at >= 0L ) {
-                id = mData.insertShotAt( mSID, at, u, 0.0f, 0.0f, 0.0f, true );
+                id = mData.insertShotAt( mSID, at, u, 0.0f, 0.0f, 0.0f, 1, true );
               } else {
-                id = mData.insertShot( mSID, -1L, u, 0.0f, 0.0f, 0.0f, true );
+                id = mData.insertShot( mSID, -1L, u, 0.0f, 0.0f, 0.0f, 1, true );
               }
             } else {
               if ( at >= 0L ) {
-                id = mData.insertShotAt( mSID, at, u, 0.0f, 90.0f, 0.0f, true );
+                id = mData.insertShotAt( mSID, at, u, 0.0f, 90.0f, 0.0f, 1, true );
               } else {
-                id = mData.insertShot( mSID, -1L, u, 0.0f, 90.0f, 0.0f, true );
+                id = mData.insertShot( mSID, -1L, u, 0.0f, 90.0f, 0.0f, 1, true );
               }
             }
             mData.updateShotName( id, mSID, splay_station, "", true );
@@ -1461,20 +1452,20 @@ public class TopoDroidApp extends Application
           try {
             d = Float.parseFloat( down ) / TopoDroidSetting.mUnitLength;
           } catch ( NumberFormatException e ) {
-            TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "makeNewShot parse error: down " + down );
+            TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "manual-shot parse error: down " + down );
           }
           if ( d >= 0.0f ) {
             if ( horizontal ) {
               if ( at >= 0L ) {
-                id = mData.insertShotAt( mSID, at, d, 180.0f, 0.0f, 0.0f, true );
+                id = mData.insertShotAt( mSID, at, d, 180.0f, 0.0f, 0.0f, 1, true );
               } else {
-                id = mData.insertShot( mSID, -1L, d, 180.0f, 0.0f, 0.0f, true );
+                id = mData.insertShot( mSID, -1L, d, 180.0f, 0.0f, 0.0f, 1, true );
               }
             } else {
               if ( at >= 0L ) {
-                id = mData.insertShotAt( mSID, at, d, 0.0f, -90.0f, 0.0f, true );
+                id = mData.insertShotAt( mSID, at, d, 0.0f, -90.0f, 0.0f, 1, true );
               } else {
-                id = mData.insertShot( mSID, -1L, d, 0.0f, -90.0f, 0.0f, true );
+                id = mData.insertShot( mSID, -1L, d, 0.0f, -90.0f, 0.0f, 1, true );
               }
             }
             mData.updateShotName( id, mSID, splay_station, "", true );
@@ -1482,9 +1473,9 @@ public class TopoDroidApp extends Application
           }
         }
         if ( at >= 0L ) {
-          id = mData.insertShotAt( mSID, at, distance, bearing, clino, 0.0f, true );
+          id = mData.insertShotAt( mSID, at, distance, bearing, clino, 0.0f, 1, true );
         } else {
-          id = mData.insertShot( mSID, -1L, distance, bearing, clino, 0.0f, true );
+          id = mData.insertShot( mSID, -1L, distance, bearing, clino, 0.0f, 1, true );
         }
         // String name = from + "-" + to;
         mData.updateShotName( id, mSID, from, to, true );
@@ -1523,9 +1514,9 @@ public class TopoDroidApp extends Application
     return 1; // CALIB_ALGO_LINEAR
   }  
 
-  void setX310Laser( int what, ILister lister ) // 0: off, 1: on, 2: measure
+  void setX310Laser( int what, ArrayList<ILister> listers ) // 0: off, 1: on, 2: measure
   {
-    mComm.setX310Laser( mDevice.mAddress, what, lister );
+    mComm.setX310Laser( mDevice.mAddress, what, listers );
   }
 
   // int readFirmwareHardware()
