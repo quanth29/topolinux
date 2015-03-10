@@ -588,8 +588,8 @@
   <string name="pref_cat_sketch">3D-Modell Einstellungen</string>
   <!-- TODO string name="pref_cat_log">Log options</string -->
 
-  <!-- OK string name="pref_hide_help_title">Hide help</string -->
-  <!-- OK string name="pref_hide_help_summary">Hide help buttons</string -->
+  <string name="pref_locale_title">Sprache</string>
+  <string name="pref_locale_summary">Sprache</string>
 
   <!-- TODO string name="pref_raw_data_title">Raw data</string -->
   <!-- TODO string name="pref_raw_data_summary">Raw data zeigen</string -->

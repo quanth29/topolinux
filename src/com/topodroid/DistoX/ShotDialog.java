@@ -24,6 +24,8 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.widget.RadioButton;
 
+import android.text.method.KeyListener;
+
 // import android.widget.Spinner;
 // import android.widget.ArrayAdapter;
 
@@ -44,6 +46,8 @@ import android.view.WindowManager;
 import android.view.View.OnKeyListener;
 import android.view.KeyEvent;
 
+import android.util.Log;
+
 
 public class ShotDialog extends Dialog
                               implements View.OnClickListener
@@ -56,7 +60,11 @@ public class ShotDialog extends Dialog
 
   private Pattern mPattern; // name pattern
 
-  private TextView mTVdata;
+  // private TextView mTVdata;
+  private EditText mETdistance;
+  private EditText mETbearing;
+  private EditText mETclino;
+
   private TextView mTVextra;
 
   // private EditText mETname;
@@ -92,7 +100,12 @@ public class ShotDialog extends Dialog
   String shot_from;
   String shot_to;
   boolean shot_leg;
-  String shot_data;
+  // String shot_data;
+  String shot_distance;
+  String shot_bearing;
+  String shot_clino;
+  boolean shot_manual;
+
   String shot_extra;
   long shot_extend;
   long shot_flag;
@@ -135,7 +148,14 @@ public class ShotDialog extends Dialog
       }
     }
     
-    shot_data    = blk.dataString();
+    // shot_data    = blk.dataString();
+    shot_distance = blk.distanceString();
+    shot_bearing  = blk.bearingString();
+    shot_clino    = blk.clinoString();
+    shot_manual   = (blk.mShotType > 0);
+
+    Log.v("DistoX", "shot is manual " + shot_manual + " length " + shot_distance );
+
     shot_extra   = blk.extraString();
     shot_extend  = blk.mExtend;
     shot_flag    = blk.mFlag;
@@ -143,9 +163,29 @@ public class ShotDialog extends Dialog
     shot_comment = blk.mComment;
   }
 
+  private void setEditable( EditText et, KeyListener kl, boolean editable )
+  {
+    if ( editable ) {
+      et.setKeyListener( kl );
+      // et.setClickable( true );
+      // et.setFocusable( true );
+    } else {
+      // et.setFocusable( false );
+      // et.setClickable( false );
+      et.setKeyListener( null );
+    }
+  }
+
   private void updateView()
   {
-    mTVdata.setText( shot_data );
+    // mTVdata.setText( shot_data );
+    mETdistance.setText( shot_distance );
+    mETbearing.setText( shot_bearing );
+    mETclino.setText( shot_clino );
+    setEditable( mETdistance, mKLdistance, shot_manual );
+    setEditable( mETbearing,  mKLbearing,  shot_manual );
+    setEditable( mETclino,    mKLclino,    shot_manual );
+
     mTVextra.setText( shot_extra );
     if ( shot_from.length() > 0 ) {
       mETfrom.setText( shot_from );
@@ -188,6 +228,10 @@ public class ShotDialog extends Dialog
 
 
 // -------------------------------------------------------------------
+  private KeyListener mKLdistance;
+  private KeyListener mKLbearing;
+  private KeyListener mKLclino;
+ 
   @Override
   protected void onCreate(Bundle savedInstanceState) 
   {
@@ -199,7 +243,15 @@ public class ShotDialog extends Dialog
     setContentView(R.layout.shot_dialog);
     getWindow().setLayout( LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT );
 
-    mTVdata    = (TextView) findViewById(R.id.shot_data );
+    // mTVdata    = (TextView) findViewById(R.id.shot_data );
+    mETdistance = (EditText) findViewById(R.id.shot_distance);
+    mETbearing  = (EditText) findViewById(R.id.shot_bearing);
+    mETclino    = (EditText) findViewById(R.id.shot_clino);
+
+    mKLdistance = mETdistance.getKeyListener();
+    mKLbearing  = mETbearing .getKeyListener();
+    mKLclino    = mETclino   .getKeyListener();
+
     mTVextra   = (TextView) findViewById(R.id.shot_extra );
     // mETname = (EditText) findViewById(R.id.shot_name );
     mETfrom    = (EditText) findViewById(R.id.shot_from );
@@ -312,6 +364,15 @@ public class ShotDialog extends Dialog
       mParent.updateShot( shot_from, shot_to, shot_extend, shot_flag, shot_leg, comment, mBlk );
     }
     // mParent.scrollTo( mPos );
+
+    if ( shot_manual ) {
+      try {
+        float d = Float.parseFloat( mETdistance.getText().toString() ) / TopoDroidSetting.mUnitLength;
+        float b = Float.parseFloat( mETbearing.getText().toString() )  / TopoDroidSetting.mUnitAngle;
+        float c = Float.parseFloat( mETclino.getText().toString() )    / TopoDroidSetting.mUnitAngle;
+        mParent.updateShotDistanceBearingClino( d, b, c, mBlk );
+      } catch (NumberFormatException e ) { }
+    }
   }
 
   public void onClick(View v) 

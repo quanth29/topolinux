@@ -54,6 +54,10 @@ import android.view.MenuItem;
 
 import android.widget.Toast;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+
 import android.util.Log;
 
 import android.bluetooth.BluetoothDevice;
@@ -71,46 +75,66 @@ public class DeviceActivity extends Activity
 
   private TextView mTvAddress;
 
-  private static int icons00no[];
-  private static int iconsno[] = {
+  // private static int icons00no[];
+  // private static int iconsno[] = {
+  //                       0,
+  //                       R.drawable.ic_toggle_no,
+  //                       0,
+  //                       R.drawable.ic_read_no,
+  //                       0,
+  //                       // R.drawable.ic_remote_no
+  //                    };
+  // private static int ixonsno[] = {
+  //                       0,
+  //                       R.drawable.ix_toggle_no,
+  //                       0,
+  //                       R.drawable.ix_read_no,
+  //                       0,
+  //                       // R.drawable.ix_remote_no
+  //                     };
+  private static int izonsno[] = {
                         0,
-                        R.drawable.ic_toggle_no,
+                        R.drawable.iz_toggle_no,
                         0,
-                        R.drawable.ic_read_no,
+                        R.drawable.iz_read_no,
                         0,
-                        // R.drawable.ic_remote_no
+                        // R.drawable.iz_remote_no
                      };
-  private static int ixonsno[] = {
-                        0,
-                        R.drawable.ix_toggle_no,
-                        0,
-                        R.drawable.ix_read_no,
-                        0,
-                        // R.drawable.ix_remote_no
-                      };
 
-  private static int icons00[];
-  private static int icons[] = {
-                        R.drawable.ic_bt,
-                        R.drawable.ic_toggle,
-                        R.drawable.ic_sdcard,
-                        R.drawable.ic_read,
-                        R.drawable.ic_info
-                        // R.drawable.ic_remote,
+  // private static int icons00[];
+  // private static int icons[] = {
+  //                       R.drawable.ic_bt,
+  //                       R.drawable.ic_toggle,
+  //                       R.drawable.ic_sdcard,
+  //                       R.drawable.ic_read,
+  //                       R.drawable.ic_info
+  //                       // R.drawable.ic_remote,
+  //                    };
+  // private static int ixons[] = {
+  //                       R.drawable.ix_bt,
+  //                       R.drawable.ix_toggle,
+  //                       R.drawable.ix_sdcard,
+  //                       R.drawable.ix_read,
+  //                       R.drawable.ix_info
+  //                       // R.drawable.ix_remote,
+  //                     };
+  private static int izons[] = {
+                        R.drawable.iz_bt,
+                        R.drawable.iz_toggle,
+                        R.drawable.iz_sdcard,
+                        R.drawable.iz_read,
+                        R.drawable.iz_info
+                        // R.drawable.iz_remote,
                      };
-  private static int ixons[] = {
-                        R.drawable.ix_bt,
-                        R.drawable.ix_toggle,
-                        R.drawable.ix_sdcard,
-                        R.drawable.ix_read,
-                        R.drawable.ix_info
-                        // R.drawable.ix_remote,
-                      };
 
   private static int indexButtonDownload = 1;
   private static int indexButtonRead     = 2;
   // private static int indexButtonRemote   = 5;
 
+  BitmapDrawable mBMtoggle;
+  BitmapDrawable mBMtoggle_no;
+  BitmapDrawable mBMread;
+  BitmapDrawable mBMread_no;
 
   private static int menus[] = {
                         R.string.menu_scan,
@@ -220,9 +244,9 @@ public class DeviceActivity extends Activity
     mTvAddress = (TextView) findViewById( R.id.device_address );
 
     mListView = (HorizontalListView) findViewById(R.id.listview);
-    mApp.setListViewHeight( mListView );
-    icons00   = ( TopoDroidSetting.mSizeButtons == 2 )? ixons : icons;
-    icons00no = ( TopoDroidSetting.mSizeButtons == 2 )? ixonsno : iconsno;
+    int size = mApp.setListViewHeight( mListView );
+    // icons00   = ( TopoDroidSetting.mSizeButtons == 2 )? ixons : icons;
+    // icons00no = ( TopoDroidSetting.mSizeButtons == 2 )? ixonsno : iconsno;
 
     mNrButton1 = TopoDroidSetting.mLevelOverNormal ? 5 : 2;
     mButton1 = new Button[ mNrButton1 ];
@@ -230,8 +254,17 @@ public class DeviceActivity extends Activity
       mButton1[k] = new Button( this );
       mButton1[k].setPadding(0,0,0,0);
       mButton1[k].setOnClickListener( this );
-      mButton1[k].setBackgroundResource( icons00[k] );
+      // mButton1[k].setBackgroundResource( icons00[k] );
+      BitmapDrawable bm2 = mApp.setButtonBackground( mButton1[k], size, izons[k] );
+      if ( k == 1 ) {
+        mBMtoggle = bm2;
+      } else if ( k == 3 ) {
+        mBMread = bm2;
+      }
     }
+    mBMtoggle_no = mApp.setButtonBackground( null, size, izonsno[1] );
+    mBMread_no = mApp.setButtonBackground( null, size, izonsno[3] );
+
     mButtonView1 = new HorizontalButtonView( mButton1 );
     mListView.setAdapter( mButtonView1.mAdapter );
 
@@ -248,8 +281,8 @@ public class DeviceActivity extends Activity
 
     mImage = (Button) findViewById( R.id.handle );
     mImage.setOnClickListener( this );
-    mImage.setBackgroundResource( 
-      ( TopoDroidSetting.mSizeButtons == 2 )? R.drawable.ix_menu : R.drawable.ic_menu );
+    // mImage.setBackgroundResource( ( TopoDroidSetting.mSizeButtons == 2 )? R.drawable.ix_menu : R.drawable.ic_menu );
+    mApp.setButtonBackground( mImage, size, R.drawable.iz_menu );
     mMenu = (ListView) findViewById( R.id.menu );
     setMenuAdapter();
     closeMenu();
@@ -324,7 +357,7 @@ public class DeviceActivity extends Activity
         intent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_DEVICE );
         startActivity( intent );
       } else if ( p++ == pos ) { // HELP
-        (new HelpDialog(this, icons, menus, help_icons, help_menus, mNrButton1, 6 ) ).show();
+        (new HelpDialog(this, izons, menus, help_icons, help_menus, mNrButton1, 6 ) ).show();
       }
       return;
     }
@@ -347,7 +380,7 @@ public class DeviceActivity extends Activity
         mApp.setDevice( address );
         mDevice = mApp.mDevice;
         // mAddress = address;
-        mApp.disconnectRemoteDevice();
+        mApp.disconnectRemoteDevice( true );
         setState();
       }
     }
@@ -359,7 +392,7 @@ public class DeviceActivity extends Activity
       mApp.setDevice( null );
       mDevice = mApp.mDevice;
       // mAddress = address;
-      mApp.disconnectRemoteDevice();
+      mApp.disconnectRemoteDevice( true );
       setState();
     }
   }
@@ -375,16 +408,20 @@ public class DeviceActivity extends Activity
     }
     if ( enable ) {
       setTitleColor( TopoDroidConst.COLOR_NORMAL );
-      mButton1[1].setBackgroundResource( icons00[1] );
+      // mButton1[1].setBackgroundResource( icons00[1] );
+      mButton1[3].setBackgroundDrawable( mBMtoggle );
       if ( TopoDroidSetting.mLevelOverNormal ) {
-        mButton1[3].setBackgroundResource( icons00[3] );
+        // mButton1[3].setBackgroundResource( icons00[3] );
+        mButton1[3].setBackgroundDrawable( mBMread);
         // mButton1[indexButtonRemote].setBackgroundResource( icons00[5] );
       }
     } else {
       setTitleColor( TopoDroidConst.COLOR_CONNECTED );
-      mButton1[1].setBackgroundResource( icons00no[1] );
+      // mButton1[1].setBackgroundResource( icons00no[1] );
+      mButton1[3].setBackgroundDrawable( mBMtoggle_no );
       if ( TopoDroidSetting.mLevelOverNormal ) {
-        mButton1[3].setBackgroundResource( icons00no[3] );
+        // mButton1[3].setBackgroundResource( icons00no[3] );
+        mButton1[3].setBackgroundDrawable( mBMread_no );
         // mButton1[indexButtonRemote].setBackgroundResource( icons00no[5] );
       }
     }
@@ -622,11 +659,12 @@ public class DeviceActivity extends Activity
           if ( address == null ) {
             TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "onActivityResult REQUEST_DEVICE: null address");
           } else if ( mDevice == null || ! address.equals( mDevice.mAddress ) ) {
-            mApp.disconnectRemoteDevice();
+            mApp.disconnectRemoteDevice( true );
             Toast.makeText(this, R.string.device_pairing, Toast.LENGTH_LONG).show();
             mApp.setDevice( address );
-            mApp.connectRemoteDevice( address, null ); // null ILister
-            mApp.disconnectRemoteDevice();
+            // try to get the system ask for the PIN
+            // mApp.connectRemoteDevice( address, null ); // null ILister
+            // mApp.disconnectRemoteDevice( true );
             mDevice = mApp.mDevice;
             // mAddress = address;
             setState();
@@ -698,7 +736,7 @@ public class DeviceActivity extends Activity
       startActivityForResult( scanIntent, REQUEST_DEVICE );
       Toast.makeText(this, R.string.wait_scan, Toast.LENGTH_LONG).show();
     } else if ( item == mMIhelp  ) {    // HELP DIALOG
-      (new HelpDialog(this, icons, menus, help_icons, help_menus, mNrButton1, 6 ) ).show();
+      (new HelpDialog(this, izons, menus, help_icons, help_menus, mNrButton1, 6 ) ).show();
     } else if ( item == mMIfirmware ) { // FIRMWARE
       (new FirmwareDialog( this, this, mApp )).show();
     } else {

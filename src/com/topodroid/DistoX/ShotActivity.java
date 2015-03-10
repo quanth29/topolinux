@@ -8,31 +8,6 @@
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
  * --------------------------------------------------------
- * CHANGES
- * 20120520 created from DistoX.java
- * 20120531 implemented photo and 3D
- * 20120531 shot-numbering bugfix
- * 20120606 3D: implied therion export before 3D
- * 20120715 per-category preferences
- * 20121001 auto-extend splay shots
- * 20121113 mLastExtend to limit auto-extend of splays to new ones only
- * 20121129 included extend guess for splays in number assignment (only blank splay are "extend"-ed)
- * 20121129 commented MenuItem mMIextend
- * 20121215 merged update splays name+extend in a single db call (updateShotNameAndExtend)
- * 20130109 bug-fix missing block LEG in numberSplays
- * 20130110 menus: Survey -> Display; Distox under More; Number in its place
- * 20130111 photo date
- * 20130204 sleep menu to turn off screen immediately (1 sec)
- * 20130307 made Annotations into a dialog
- * 20130324 added mMIreset to reset DistoX connection
- * 20130910 "delete" button (removed "cancel"), "add shot" and "split survey" buttons
- * 20131022 top buttons and blank-leg violet color
- * 20131117 compute accel.+magn.+dip means
- * 20131201 button bar new interface. reorganized actions
- * 20140414 last and second-last shot id's
- * 20140115 fixed bug display purple shots 
- * 20140416 menus: palette options help
- * 20140508 dropped setBTMenus (download --> add when BT not enabled)
  */
 package com.topodroid.DistoX;
 
@@ -104,6 +79,9 @@ import android.view.MenuItem;
 import android.provider.MediaStore;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+
 import android.net.Uri;
 
 import android.util.Log;
@@ -115,45 +93,26 @@ public class ShotActivity extends Activity
                         , ILister
                         , INewPlot
 {
-  private static int icons00[];
-  private static int icons[] = {
-                        R.drawable.ic_download, // 0
-                        R.drawable.ic_bt,
-                        R.drawable.ic_mode,
-                        R.drawable.ic_plot,     // 3
-                        R.drawable.ic_note,
-                        R.drawable.ic_station,
-                        R.drawable.ic_add
-                      };
-  private static int ixons[] = {
-                        R.drawable.ix_download,
-                        R.drawable.ix_bt,
-                        R.drawable.ix_mode,
-                        R.drawable.ix_plot,
-                        R.drawable.ix_note,
-                        R.drawable.ix_station,
-                        R.drawable.ix_add
+  private static int izons[] = {
+                        R.drawable.iz_download,
+                        R.drawable.iz_bt,
+                        R.drawable.iz_mode,
+                        R.drawable.iz_plot,
+                        R.drawable.iz_note,
+                        R.drawable.iz_station,
+                        R.drawable.iz_plus
                       };
 
-  private static int icons00no[];
-  private static int iconsno[] = {
+  private static int izonsno[] = {
                         0,
                         0,
                         0,
-                        R.drawable.ic_plot_no,     // 3
-                        0,
-                        0,
-                        0
-                      };
-  private static int ixonsno[] = {
-                        0,
-                        0,
-                        0,
-                        R.drawable.ix_plot_no,
+                        R.drawable.iz_plot, // TODO_IZ
                         0,
                         0,
                         0
                       };
+
   private static int menus[] = {
                         R.string.menu_survey,
                         // R.string.menu_station,
@@ -228,14 +187,7 @@ public class ShotActivity extends Activity
   // private TextView mSaveTextView = null;
 
   private Button[] mButton1;
-  // private Button[] mButton2;
   private int mNrButton1 = 0;;
-  // private int mNrButton2 = 0;;
-
-  // private MenuItem mMIsymbol;
-  private MenuItem mMIsurvey;
-  private MenuItem mMIoptions;
-  private MenuItem mMIhelp;
 
   static long   mSensorId;
   static long   mPhotoId;
@@ -621,7 +573,7 @@ public class ShotActivity extends Activity
         startActivity( intent );
       } else if ( p++ == pos ) { // HELP
         // int nn = mNrButton1; //  + ( TopoDroidApp.mLevelOverNormal ?  mNrButton2 : 0 );
-        (new HelpDialog(this, icons, menus, help_icons, help_menus, mNrButton1, 8 ) ).show();
+        (new HelpDialog(this, izons, menus, help_icons, help_menus, mNrButton1, 8 ) ).show();
       }
       return;
     }
@@ -809,6 +761,12 @@ public class ShotActivity extends Activity
   ArrayAdapter< String > mMenuAdapter;
   boolean onMenu;
 
+  BitmapDrawable mBMdownload;
+  BitmapDrawable mBMdownload_on;
+  // BitmapDrawable mBMadd;
+  BitmapDrawable mBMplot;
+  BitmapDrawable mBMplot_no;
+
   private Handler mListItemsHandler;
   static final int MSG_ADD_BLK = 1;
   
@@ -819,7 +777,7 @@ public class ShotActivity extends Activity
     setContentView(R.layout.shot_activity);
     mApp = (TopoDroidApp) getApplication();
     mApp.mShotActivity = this; // FIXME
-    mDataDownloader = new DataDownloader( this, mApp, this );
+    mDataDownloader = mApp.mDataDownloader; // new DataDownloader( this, mApp );
 
     mShowSplay   = new ArrayList< String >();
     mDataAdapter = new DistoXDBlockAdapter( this, this, R.layout.row, new ArrayList<DistoXDBlock>() );
@@ -837,9 +795,9 @@ public class ShotActivity extends Activity
     };
 
     mListView = (HorizontalListView) findViewById(R.id.listview);
-    mApp.setListViewHeight( mListView );
-    icons00   = ( TopoDroidSetting.mSizeButtons == 2 )? ixons : icons;
-    icons00no = ( TopoDroidSetting.mSizeButtons == 2 )? ixonsno : iconsno;
+    int size = mApp.setListViewHeight( mListView );
+    // icons00   = ( TopoDroidSetting.mSizeButtons == 2 )? ixons : icons;
+    // icons00no = ( TopoDroidSetting.mSizeButtons == 2 )? ixonsno : iconsno;
 
     mNrButton1 = TopoDroidSetting.mLevelOverBasic ? 7 : 5;
     // mNrButton2 = 7;
@@ -850,24 +808,17 @@ public class ShotActivity extends Activity
       mButton1[k] = new Button( this );
       mButton1[k].setPadding(0,0,0,0);
       mButton1[k].setOnClickListener( this );
-      mButton1[k].setBackgroundResource(  icons00[k] );
+      // mButton1[k].setBackgroundResource(  icons00[k] );
+
+      BitmapDrawable bm2 = mApp.setButtonBackground( mButton1[k], size, izons[k] );
+      if ( k == 0 ) mBMdownload = bm2;
+      if ( k == 3 ) mBMplot = bm2;
+      // if ( k == 6 ) mBMadd  = bm2;
     }
-    // if ( mApp.mDevice == null ) {
-    //   mButton1[0].setBackgroundResource( icons00[9] ); // ic_add
-    // }
-
-    // for ( k=0; k<mNrButton2; ++k ) {
-    //   mButton2[k] = new Button( this );
-    //   mButton2[k].setPadding(0,0,0,0);
-    //   mButton2[k].setOnClickListener( this );
-    //   mButton2[k].setBackgroundResource(  icons00[k+7] ); // FIXME NOTE 7 = nr_button1
-    // }
-
-    // Resources res = getResources();
-    // setBTMenus( mApp.mBTAdapter.isEnabled() );
+    mBMplot_no = mApp.setButtonBackground( null, size, R.drawable.iz_plot_no );
+    mBMdownload_on = mApp.setButtonBackground( null, size, R.drawable.iz_download_on );
 
     mButtonView1 = new HorizontalButtonView( mButton1 );
-    // mButtonView2 = new HorizontalButtonView( mButton2 );
     mListView.setAdapter( mButtonView1.mAdapter );
 
     mList = (ListView) findViewById(R.id.list);
@@ -887,8 +838,11 @@ public class ShotActivity extends Activity
 
     mImage = (Button) findViewById( R.id.handle );
     mImage.setOnClickListener( this );
-    mImage.setBackgroundResource( 
-      ( TopoDroidSetting.mSizeButtons == 2 )? R.drawable.ix_menu : R.drawable.ic_menu );
+
+    // mImage.setBackgroundResource( 
+    //   ( TopoDroidSetting.mSizeButtons == 2 )? R.drawable.ix_menu : R.drawable.ic_menu );
+    mApp.setButtonBackground( mImage, size, R.drawable.iz_menu);
+
     mMenu = (ListView) findViewById( R.id.menu );
     setMenuAdapter();
     closeMenu();
@@ -902,15 +856,38 @@ public class ShotActivity extends Activity
   {
     mApp.mEnableZip = enabled;
     mButton1[3].setEnabled( enabled ); // FIXME SKETCH BUTTON 
-    mButton1[3].setBackgroundResource( enabled ? icons00[3] : icons00no[3] );
+    mButton1[3].setBackgroundDrawable( enabled ? mBMplot : mBMplot_no );
+  }
+
+  @Override
+  public synchronized void onStart() 
+  {
+    super.onStart();
+    // Debug.startMethodTracing( "distox" );
+    // Log.v( "DistoX", "Shot Activity onStart() " );
+    if ( mDataDownloader != null ) {
+      mDataDownloader.registerLister( this );
+    }
+  }
+
+  @Override
+  public synchronized void onStop() 
+  {
+    // Debug.stopMethodTracing( );
+    super.onStop();
+    // Log.v( "DistoX", "Shot Activity onStop() " + ((mDataDownloader!=null)? "with DataDownloader":"") );
+    if ( mDataDownloader != null ) {
+      mDataDownloader.unregisterLister( this );
+      mDataDownloader.onPause();
+    }
+    mApp.disconnectRemoteDevice( false );
   }
 
   @Override
   public synchronized void onPause() 
   {
     super.onPause();
-    // Log.v( TopoDroidApp.TAG, "onPause()" );
-    if ( mDataDownloader != null ) mDataDownloader.resetReceiver();
+    // Log.v( "DistoX", "Shot Activity onPause() " + ((mDataDownloader!=null)? "with DataDownloader":"") );
     saveInstanceToData();
 
     // mApp.unregisterConnListener( mHandler );
@@ -925,30 +902,15 @@ public class ShotActivity extends Activity
 
     // FIXME NOTIFY register ILister
     // if ( mApp.mComm != null ) { mApp.mComm.resume(); }
-    // Log.v( TopoDroidApp.TAG, "onResume()" );
+    // Log.v( "DistoX", "Shot Activity onResume()" );
     
-    // FIXME restore mDataDownloader receiver ?
-
     restoreInstanceFromData();
     updateDisplay( );
 
+    if ( mDataDownloader != null ) mDataDownloader.onResume();
+
     // mApp.registerConnListener( mHandler );
-    // setConnectionStatus( mApp.isConnected() );
-  }
-
-  // @Override
-  // public synchronized void onStart() 
-  // {
-  //   super.onStart();
-  //   Debug.startMethodTracing( "distox" );
-  // }
-
-  @Override
-  public synchronized void onStop() 
-  {
-    // Debug.stopMethodTracing( );
-    super.onStop();
-    mApp.disconnectRemoteDevice();
+    setConnectionStatus( mDataDownloader.mConnected );
   }
 
   // @Override
@@ -1006,7 +968,8 @@ public class ShotActivity extends Activity
       int k1 = 0;
       // int k2 = 0;
       if ( k1 < mNrButton1 && b == mButton1[k1++] ) {        // mBtnDownload
-        mDataDownloader.downloadData();
+        setConnectionStatus( ! mDataDownloader.mConnected );  // immediate button feedback ? FIXME
+        mDataDownloader.downloadData( );
       } else if ( k1 < mNrButton1 && b == mButton1[k1++] ) { // mBtnReset
         mDataDownloader.disconnect();
         switch ( mApp.distoType() ) {
@@ -1190,7 +1153,7 @@ public class ShotActivity extends Activity
     }
 
     // notice when starting the SketchActivity the remote device is disconnected 
-    mApp.disconnectRemoteDevice();
+    // FIXME mApp.disconnectRemoteDevice();
 
     // TODO
     Intent sketchIntent = new Intent( Intent.ACTION_VIEW ).setClass( this, SketchActivity.class );
@@ -1200,7 +1163,8 @@ public class ShotActivity extends Activity
   }
   // END_SKETCH_3D
 
-  private void startDrawingActivity( String start, String plot1_name, long plot1_id, String plot2_name, long plot2_id, long type )
+  private void startDrawingActivity( String start, String plot1_name, long plot1_id,
+                                                   String plot2_name, long plot2_id, long type )
   {
     if ( mApp.mSID < 0 || plot1_id < 0 || plot2_id < 0 ) {
       Toast.makeText( this, R.string.no_survey, Toast.LENGTH_SHORT ).show();
@@ -1208,7 +1172,7 @@ public class ShotActivity extends Activity
     }
     
     // notice when starting the DrawingActivity the remote device is disconnected 
-    mApp.disconnectRemoteDevice();
+    // FIXME mApp.disconnectRemoteDevice();
 
     Intent drawIntent = new Intent( Intent.ACTION_VIEW ).setClass( this, DrawingActivity.class );
     drawIntent.putExtra( TopoDroidApp.TOPODROID_SURVEY_ID, mApp.mSID );
@@ -1317,7 +1281,17 @@ public class ShotActivity extends Activity
     return null;
   }
 
-  public void updateShot( String from, String to, long extend, long flag, boolean leg, String comment, DistoXDBlock blk )
+  void updateShotDistanceBearingClino( float d, float b, float c, DistoXDBlock blk )
+  {
+    // Log.v("DistoX", "update shot DBC length " + d );
+    mApp.mData.updateShotDistanceBearingClino( blk.mId, mApp.mSID, d, b, c, true );
+    blk.mLength  = d;
+    blk.mBearing = b;
+    blk.mClino   = c;
+    mDataAdapter.updateBlockView( blk );
+  }
+
+  void updateShot( String from, String to, long extend, long flag, boolean leg, String comment, DistoXDBlock blk )
   {
     // TopoDroidLog.Log( TopoDroidLog.LOG_SHOT, "updateShot From >" + from + "< To >" + to + "< comment " + comment );
     blk.setName( from, to );
@@ -1390,6 +1364,12 @@ public class ShotActivity extends Activity
   // ---------------------------------------------------------
   /* MENU
 
+  // private MenuItem mMIsymbol;
+  private MenuItem mMIsurvey;
+  private MenuItem mMIoptions;
+  private MenuItem mMIhelp;
+
+
   @Override
   public boolean onCreateOptionsMenu(Menu menu) 
   {
@@ -1429,7 +1409,7 @@ public class ShotActivity extends Activity
       startActivity( intent );
     } else if ( item == mMIhelp  ) { // HELP DIALOG
       int nn = mNrButton1; // + ( TopoDroidApp.mLevelOverNormal ?  mNrButton2 : 0 );
-      (new HelpDialog(this, icons, menus, help_icons, help_menus, nn, 3 ) ).show();
+      (new HelpDialog(this, izons, menus, help_icons, help_menus, nn, 3 ) ).show();
     } else {
       return super.onOptionsItemSelected(item);
     }
@@ -1478,18 +1458,17 @@ public class ShotActivity extends Activity
     updateDisplay( );
   }
 
+
   public void setConnectionStatus( boolean connected )
   { 
-    Button buttonDownload = mButton1[0]; // download-index
-    if ( connected ) {
-      // setTitleColor( TopoDroidConst.COLOR_CONNECTED );
-      if ( buttonDownload != null ) {
-        buttonDownload.setBackgroundResource( R.drawable.ic_download_on );
-      }
+    if ( mApp.mDevice == null ) {
+      mButton1[ 0 ].setVisibility( View.GONE );
     } else {
-      // setTitleColor( TopoDroidConst.COLOR_NORMAL );
-      if ( buttonDownload != null ) {
-        buttonDownload.setBackgroundResource( R.drawable.ic_download );
+      mButton1[ 0 ].setVisibility( View.VISIBLE );
+      if ( connected ) {
+        mButton1[0].setBackgroundDrawable( mBMdownload_on );
+      } else {
+        mButton1[0].setBackgroundDrawable( mBMdownload );
       }
     }
   }
@@ -1497,15 +1476,15 @@ public class ShotActivity extends Activity
   public void notifyDisconnected()
   {
     if ( TopoDroidSetting.mAutoReconnect && TopoDroidSetting.mConnectionMode == TopoDroidSetting.CONN_MODE_CONTINUOUS ) {
-      // Log.v("DistoX", "auto reconnect ");
+      // Log.v("DistoX", "notify disconnected: auto reconnect ");
       try {
         do {
-          Thread.sleep( 1000 );
-          // Log.v("DistoX", "try reconnect " + mDataDownloader.mConnected );
-          mDataDownloader.downloadData();
+          Thread.sleep( 100 );
+          // Log.v("DistoX", "notify disconnected: try reconnect " + mDataDownloader.mConnected );
+          mDataDownloader.downloadData( ); 
         } while ( mDataDownloader.mConnected == false );
       } catch ( InterruptedException e ) { }
-      // Log.v("DistoX", "reconnected " + mDataDownloader.mConnected );
+      // Log.v("DistoX", "notify disconnected: reconnected " + mDataDownloader.mConnected );
     }
   }
 

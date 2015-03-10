@@ -66,8 +66,8 @@ import java.util.HashMap;
 public class DataHelper extends DataSetObservable
 {
 
-  static final String DB_VERSION = "21";
-  static final int DATABASE_VERSION = 21;
+  static final String DB_VERSION = "22";
+  static final int DATABASE_VERSION = 22;
   static final int DATABASE_VERSION_MIN = 21; // was 14
 
   private static final String CONFIG_TABLE = "configs";
@@ -94,6 +94,7 @@ public class DataHelper extends DataSetObservable
 
   private SQLiteStatement updateShotStmt;
   private SQLiteStatement updateShotStmtFull;
+  private SQLiteStatement updateShotDBCStmt;
   private SQLiteStatement updateShotLegStmt;
   private SQLiteStatement updateStationCommentStmt;
   private SQLiteStatement deleteStationStmt;
@@ -166,7 +167,7 @@ public class DataHelper extends DataSetObservable
     mShotFields = new String[] { 
          "id", "fStation", "tStation", "distance", "bearing",
          "clino", "acceleration", "magnetic", "dip", "extend",
-         "flag", "leg", "comment" 
+         "flag", "leg", "comment", "type"
     };
     mListeners = listeners;
     openDatabase();
@@ -206,6 +207,10 @@ public class DataHelper extends DataSetObservable
                              "UPDATE shots SET surveyId=?, id=? where surveyId=? and id=?" );
         updateShotStmtFull = myDB.compileStatement(
                              "UPDATE shots SET fStation=?, tStation=?, extend=?, flag=?, leg=?, comment=? WHERE surveyId=? AND id=?" );
+        updateShotDBCStmt = myDB.compileStatement(
+                            "UPDATE shots SET distance=?, bearing=?, clino=? WHERE surveyId=? AND id=?" );
+
+        updateShotLegStmt = myDB.compileStatement( "UPDATE shots SET leg=? WHERE surveyId=? AND id=?" );
         updateShotLegStmt = myDB.compileStatement( "UPDATE shots SET leg=? WHERE surveyId=? AND id=?" );
 
         updateShotExtendStmt  = myDB.compileStatement( "UPDATE shots SET extend=? WHERE surveyId=? AND id=?" );
@@ -288,6 +293,7 @@ public class DataHelper extends DataSetObservable
          block.mType = DistoXDBlock.BLOCK_SEC_LEG; 
      }
      block.mComment = cursor.getString(12);
+     block.mShotType = (int)cursor.getLong(13);
    }
    
 
@@ -498,8 +504,24 @@ public class DataHelper extends DataSetObservable
   // --------------------------------------------------------------------
   // SHOTS
 
-  public int updateShot( long id, long sid, String fStation, String tStation,
-                         long extend, long flag, long leg, String comment, boolean forward )
+  void updateShotDistanceBearingClino( long id, long sid, float d, float b, float c, boolean forward )
+  {
+    updateShotDBCStmt.bindDouble(  1, d );
+    updateShotDBCStmt.bindDouble(  2, b );
+    updateShotDBCStmt.bindDouble(  3, c );
+    updateShotDBCStmt.bindLong(   4, sid );     // WHERE
+    updateShotDBCStmt.bindLong(   5, id );
+    updateShotDBCStmt.execute();
+    if ( forward ) {
+      // synchronized( mListeners )
+      for ( DataListener listener : mListeners ) {
+        listener.onUpdateShotDBC( id, sid, d, b, c );
+      }
+    }
+  }
+
+  int updateShot( long id, long sid, String fStation, String tStation,
+                  long extend, long flag, long leg, String comment, boolean forward )
   {
     TopoDroidLog.Log(  TopoDroidLog.LOG_DB, "updateShot " + fStation + "-" + tStation + " " + extend + " " + flag + " <" + comment + ">");
     // if ( myDB == null ) return -1;
@@ -715,6 +737,7 @@ public class DataHelper extends DataSetObservable
     final int legCol      = ih.getColumnIndex( "leg" );
     final int statusCol   = ih.getColumnIndex( "status" );
     final int commentCol  = ih.getColumnIndex( "comment" );
+    final int typeCol     = ih.getColumnIndex( "type" );
     try {
       // myDB.execSQL("PRAGMA synchronous=OFF");
       myDB.setLockingEnabled( false );
@@ -737,6 +760,7 @@ public class DataHelper extends DataSetObservable
         ih.bind( legCol, 0 );
         ih.bind( statusCol, 0 );
         ih.bind( commentCol, s.comment );
+        ih.bind( typeCol, 0 );
         ih.execute();
         // TopoDroidLog.Log( TopoDroidLog.LOG_DEBUG, "shot " + id + ": " + s.from + "-" + s.to );
         ++id;
@@ -759,13 +783,13 @@ public class DataHelper extends DataSetObservable
     return id;
   }
   
-  public long insertShot( long sid, long id, double d, double b, double c, double r, boolean forward )
+  public long insertShot( long sid, long id, double d, double b, double c, double r, int type, boolean forward )
   {
     long extend = 0L;
     if ( TopoDroidSetting.mSplayExtend ) { // FIXME DataHelper should not do this 
       extend = ( b < 180.0 )? 1L : -1L;
     }
-    return insertShot( sid, id, "", "",  d, b, c, r, extend, DistoXDBlock.BLOCK_SURVEY, 0L, 0L, "", forward );
+    return insertShot( sid, id, "", "",  d, b, c, r, extend, DistoXDBlock.BLOCK_SURVEY, 0L, 0L, type, "", forward );
   }
 
   public void updateShotAMDR( long id, long sid, double acc, double mag, double dip, double r, boolean forward )
@@ -800,7 +824,7 @@ public class DataHelper extends DataSetObservable
     }
   }
 
-  public long insertShotAt( long sid, long at, double d, double b, double c, double r, boolean forward )
+  public long insertShotAt( long sid, long at, double d, double b, double c, double r, int type, boolean forward )
   {
     // if ( myDB == null ) return -1;
     shiftShotsId( sid, at );
@@ -822,6 +846,7 @@ public class DataHelper extends DataSetObservable
     cv.put( "leg",      0L ); // leg );
     cv.put( "status",   0L ); // status );
     cv.put( "comment",  "" ); // comment );
+    cv.put( "type",     type ); 
     myDB.insert( SHOT_TABLE, null, cv );
     if ( forward ) {
       // synchronized( mListeners )
@@ -835,7 +860,8 @@ public class DataHelper extends DataSetObservable
   // return the new-shot id
   public long insertShot( long sid, long id, String from, String to, 
                           double d, double b, double c, double r, 
-                          long extend, long flag, long leg, long status, String comment, boolean forward )
+                          long extend, long flag, long leg, long status, int type,
+                          String comment, boolean forward )
   {
     TopoDroidLog.Log( TopoDroidLog.LOG_DB, "insertShot <" + id + "> " + from + "-" + to + " extend " + extend );
     // if ( myDB == null ) return -1;
@@ -862,6 +888,7 @@ public class DataHelper extends DataSetObservable
     cv.put( "leg",      leg );
     cv.put( "status",   status );
     cv.put( "comment",  comment );
+    cv.put( "type",     type );
     myDB.insert( SHOT_TABLE, null, cv );
     if ( forward ) {
       // synchronized( mListeners )
@@ -1573,7 +1600,7 @@ public class DataHelper extends DataSetObservable
    {
      List< DistoXDBlock > list = new ArrayList< DistoXDBlock >();
      // if ( myDB == null ) return list;
-     Cursor cursor = myDB.query(SHOT_TABLE, mShotFields,
+     Cursor cursor = myDB.query( SHOT_TABLE, mShotFields,
        "surveyId=? and status=? and ( fStation=? or fStation=? )", 
        new String[] { Long.toString(sid), Long.toString(TopoDroidApp.STATUS_NORMAL), station1, station2 },
        null,  // groupBy
@@ -2976,13 +3003,13 @@ public class DataHelper extends DataSetObservable
        cursor = myDB.query( SHOT_TABLE, 
                             new String[] { "id", "fStation", "tStation", "distance", "bearing", "clino", "roll",
                                            "acceleration", "magnetic", "dip",
-                                           "extend", "flag", "leg", "status", "comment" },
+                                           "extend", "flag", "leg", "status", "comment", "type" },
                             "surveyId=?", new String[] { Long.toString( sid ) },
                             null, null, null );
        if (cursor.moveToFirst()) {
          do {
            pw.format(Locale.ENGLISH,
-                     "INSERT into %s values( %d, %d, \"%s\", \"%s\", %.2f, %.2f, %.2f, %.2f, %.2f %.2f %.2f, %d, %d, %d, %d, \"%s\" );\n",
+                     "INSERT into %s values( %d, %d, \"%s\", \"%s\", %.2f, %.2f, %.2f, %.2f, %.2f %.2f %.2f, %d, %d, %d, %d, \"%s\", %d );\n",
                      SHOT_TABLE,
                      sid,
                      cursor.getLong(0),
@@ -2998,8 +3025,9 @@ public class DataHelper extends DataSetObservable
                      cursor.getLong(10),    // extend
                      cursor.getLong(11),    // flag
                      cursor.getLong(12),    // leg
-                     cursor.getLong(13),   // status
-                     cursor.getString(14)  // comment
+                     cursor.getLong(13),    // status
+                     cursor.getString(14),  // comment
+                     cursor.getLong(15)     // type
            );
          } while (cursor.moveToNext());
        }
@@ -3258,7 +3286,8 @@ public class DataHelper extends DataSetObservable
              long leg    = longValue( v );
              status      = longValue( v );
              comment     = stringValue( v );
-             insertShot( sid, id, from, to, d, b, c, r, extend, flag, leg, status, comment, false );
+             // long type = 0;
+             insertShot( sid, id, from, to, d, b, c, r, extend, flag, leg, status, 0, comment, false );
              updateShotAMDR( id, sid, acc, mag, dip, r, false );
              // TopoDroidLog.Log( TopoDroidLog.LOG_DB, "insertShot " + sid + " " + id + " " + from + " " + to );
            } else if ( table.equals(FIXED_TABLE) ) {
@@ -3419,7 +3448,8 @@ public class DataHelper extends DataSetObservable
              +   " flag INTEGER, "
              +   " leg INTEGER, "
              +   " status INTEGER, "
-             +   " comment TEXT "
+             +   " comment TEXT, "
+             +   " type INTEGER "
              // +   " surveyId REFERENCES " + SURVEY_TABLE + "(id)"
              // +   " ON DELETE CASCADE "
              +   ")"
@@ -3621,6 +3651,8 @@ public class DataHelper extends DataSetObservable
              db.execSQL( "UPDATE plots SET type=5 WHERE type=3" );
              db.execSQL( "ALTER TABLE plots ADD COLUMN clino REAL default 0" );
            case 21:
+             db.execSQL( "ALTER TABLE shots ADD COLUMN type INTEGER default 0" );
+           case 22:
              /* current version */
            default:
              break;

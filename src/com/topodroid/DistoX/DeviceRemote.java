@@ -15,6 +15,8 @@ package com.topodroid.DistoX;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
+import java.util.ArrayList;
+
 import android.os.Bundle;
 import android.app.Dialog;
 // import android.app.Activity;
@@ -41,7 +43,7 @@ class DeviceRemote extends Dialog
   private CheckBox mCBdownload;
 
   // private DataDowloader mDataDowloader;
-  private ILister mLister;
+  private ArrayList<ILister> mLister;
 
   // private Button mBTback;
 
@@ -50,15 +52,12 @@ class DeviceRemote extends Dialog
 
   DeviceRemote( Context context,
                 ILister lister,
-                // DataDownloader data_downloader,
-                // DeviceActivity parent, 
                 TopoDroidApp app )
   {
     super( context );
-    // mParent = parent;
     mApp    = app;
-    mLister = lister;
-    // mDataDownloader = data_downloader
+    mLister = new ArrayList<ILister>();
+    if ( lister != null ) mLister.add( lister );
   }
 
 

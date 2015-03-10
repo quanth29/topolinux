@@ -12,6 +12,7 @@
  */
 package com.topodroid.DistoX;
 
+
 import android.content.SharedPreferences;
 
 class TopoDroidSetting
@@ -89,6 +90,7 @@ class TopoDroidSetting
     "DISTOX_ARROW_LENGTH",           // 57
     "DISTOX_EXPORT_SHOTS",           // 58
 
+    "DISTOX_LOCALE",                 // 59
     "DISTOX_CWD",                    // must be last 
 
     // "DISTOX_SKETCH_USES_SPLAYS",  // 
@@ -300,12 +302,13 @@ class TopoDroidSetting
   //   }
   // }
 
-  static void loadPreferences( SharedPreferences prefs )
+  static void loadPreferences( TopoDroidApp app, SharedPreferences prefs )
   {
     // ------------------- GENERAL PREFERENCES
     int k = 0;
     float f;
     int i;
+
 
     mActivityLevel = Integer.parseInt( prefs.getString( key[k++], "1" ) ); // DISTOX_EXTRA_BUTTONS
     setActivityBooleans();
@@ -542,6 +545,8 @@ class TopoDroidSetting
       mExportShotsFormat = Integer.parseInt( prefs.getString( key[k++], "0") );  // DISTOX_EXPORT_SHOTS (choice)
     } catch ( NumberFormatException e ) { }
 
+    app.setLocale( prefs.getString( key[k++], "" ) );
+
     // String cwd = prefs.getString( key[k++], "TopoDroid" );
     // if ( ! cwd.equals( mCWD ) ) {
     //   mCWD = cwd;
@@ -572,7 +577,7 @@ class TopoDroidSetting
         setActivityBooleans();
         if ( activity != null ) {
           activity.resetButtonBar();
-          activity.setMenuAdapter();
+          activity.setMenuAdapter( app.getResources() );
         }  
       }
     } else if ( k.equals( key[ nk++ ] ) ) {
@@ -829,6 +834,8 @@ class TopoDroidSetting
         mExportShotsFormat = Integer.parseInt( prefs.getString( k, "0") );  // DISTOX_EXPORT_SHOTS (choice)
       } catch ( NumberFormatException e ) { }
 
+    } else if ( k.equals( key[ nk++ ] ) ) { // DISTOX_LOCALE
+      app.setLocale( prefs.getString( k, "" ) );
     } else if ( k.equals( key[ nk++ ] ) ) { // DISTOX_CWD
       app.setCWD( prefs.getString( k, "TopoDroid" ) );
 

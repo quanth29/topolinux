@@ -87,11 +87,14 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.preference.PreferenceManager;
 
-import android.view.Menu;
-import android.view.MenuItem;
+// import android.view.Menu;
+// import android.view.MenuItem;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 
 import android.util.Log;
 
@@ -133,28 +136,28 @@ public class TopoDroidActivity extends Activity
   private ListItemAdapter mArrayAdapter;
 
   private Button[] mButton1;
-  // private Button[] mButton2;
-  private static int icons[] = {
-                          R.drawable.ic_disto,
-                          R.drawable.ic_add,
-                          R.drawable.ic_import,
-                          R.drawable.ic_therion,
-                          R.drawable.ic_database
-                          // R.drawable.ic_symbol,  // 5
-                          // R.drawable.ic_pref,
-                          // R.drawable.ic_logs,
-                          // R.drawable.ic_cosurvey,
-                          // R.drawable.ic_info,
-                          // R.drawable.ic_help
+  // private static int icons[] = {
+  //                         R.drawable.ic_disto,
+  //                         R.drawable.ic_add,
+  //                         R.drawable.ic_import,
+  //                         R.drawable.ic_therion,
+  //                         R.drawable.ic_database
+  //                         };
+  // private static int ixons[] = {
+  //                         R.drawable.ix_disto,
+  //                         R.drawable.ix_add,
+  //                         R.drawable.ix_import,
+  //                         R.drawable.ix_therion,
+  //                         R.drawable.ix_database
+  //                         };
+  private static int izons[] = {
+                          R.drawable.iz_disto,
+                          R.drawable.iz_plus,
+                          R.drawable.iz_import,
+                          R.drawable.iz_therion,
+                          R.drawable.iz_database
                           };
-  private static int ixons[] = {
-                          R.drawable.ix_disto,
-                          R.drawable.ix_add,
-                          R.drawable.ix_import,
-                          R.drawable.ix_therion,
-                          R.drawable.ix_database
-                          };
-  private int icons00[];
+  // private int icons00[];
 
   private static int menus[] = { 
                           R.string.menu_palette,
@@ -210,43 +213,9 @@ public class TopoDroidActivity extends Activity
     
   public void updateDisplay( )
   {
-    // TopoDroidLog.Log( TopoDroidLog.LOG_MAIN, "updateDisplay() status: " + StatusName() + " forcing: " + force_update );
-    // mArrayAdapter.clear();
     DataHelper data = mApp.mData;
-    // switch ( mStatus ) {
-    //     case STATUS_NONE:
-    //       break;
-    //     case STATUS_SURVEY:
-    //       if ( data != null ) {
-    //         List<String> list = data.selectAllSurveys();
-    //         // list.add( "new_survey" );
-    //         // setTitle( R.string.title_survey );
-    //         setButtonsBackground( mBtnCalibs, mBtnSurveys );
-    //         updateList( list );
-    //         if ( say_no_survey && list.size() == 0 ) {
-    //           say_no_survey = false;
-    //           Toast.makeText( this, R.string.no_survey, Toast.LENGTH_SHORT ).show();
-    //         } 
-    //       }
-    //       break;
-    //     case STATUS_CALIB:
-    //       if ( data != null ) {
-    //         List<String> list = data.selectAllCalibs();
-    //         // list.add( "new_calib" );
-    //         // setTitle( R.string.title_calib );
-    //         setButtonsBackground( mBtnSurveys, mBtnCalibs );
-    //         updateList( list );
-    //         if ( say_no_calib && list.size() == 0 ) {
-    //           say_no_calib = false;
-    //           Toast.makeText( this, R.string.no_calib, Toast.LENGTH_SHORT ).show();
-    //         } 
-    //       }
-    //       break;
-    // }
     if ( data != null ) {
       List<String> list = data.selectAllSurveys();
-      // list.add( "new_survey" );
-      // setTitle( R.string.title_survey );
       updateList( list );
       if ( say_no_survey && list.size() == 0 ) {
         say_no_survey = false;
@@ -255,17 +224,8 @@ public class TopoDroidActivity extends Activity
     }
   }
 
-  // private void setButtonsBackground( Button grey, Button blue )
-  // {
-  //   if ( mApp.VERSION30 ) return;
-  //   grey.getBackground().setColorFilter( Color.parseColor( "#cccccc" ), PorterDuff.Mode.DARKEN );
-  //   blue.getBackground().setColorFilter( Color.parseColor( "#ccccff" ), PorterDuff.Mode.LIGHTEN );
-  // }
-
   private void updateList( List<String> list )
   {
-    // TopoDroidLog.Log(TopoDroidLog.LOG_MAIN, "updateList" );
-    // mList.setAdapter( mArrayAdapter );
     mArrayAdapter.clear();
     if ( list.size() > 0 ) {
       for ( String item : list ) {
@@ -288,8 +248,7 @@ public class TopoDroidActivity extends Activity
     // int status = mStatus;
     Button b0 = (Button)view;
 
-    if ( b0 == mImage ) {
-      // Log.v("DistoX", "clicked image" );
+    if ( b0 == mMenuImage ) {
       if ( mMenu.getVisibility() == View.VISIBLE ) {
         mMenu.setVisibility( View.GONE );
         onMenu = false;
@@ -303,11 +262,6 @@ public class TopoDroidActivity extends Activity
 
     int k1 = 0;
     int k2 = 0;
-    // if ( b0 == mBtnSurveys ) {
-    //   mStatus = STATUS_SURVEY;
-    // } else if ( b0 == mBtnCalibs ) {
-    //   mStatus = STATUS_CALIB;
-    // } else 
     {
       if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) { // mBtnDevice
         if ( mApp.mBTAdapter == null ) {
@@ -321,31 +275,10 @@ public class TopoDroidActivity extends Activity
           }
         }
       } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // NEW SURVEY/CALIB
-        // if ( mStatus == STATUS_SURVEY ) {
-          // startSurvey( null, 0, -1, -1 );
-          mApp.setSurveyFromName( null, true ); // new-survey dialog: tell app to clear survey name and id
-          (new SurveyNewDialog( this, this, -1, -1 )).show(); 
-        // } else {
-        //   if ( mApp.mDevice != null ) {
-        //     startCalib( null, 0 );
-        //   } else {
-        //     Toast.makeText( this, R.string.device_none, Toast.LENGTH_SHORT ).show();
-        //   }
-        // }
+        mApp.setSurveyFromName( null, true ); // new-survey dialog: tell app to clear survey name and id
+        (new SurveyNewDialog( this, this, -1, -1 )).show(); 
       } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // IMPORT
-        // if ( mStatus == STATUS_SURVEY ) {
-          (new ImportDialog( this, this, mApp )).show();
-        // } else {
-        //   // TODO CALIB IMPORT
-        //   Toast.makeText( this, R.string.not_implemented, Toast.LENGTH_SHORT ).show();
-        // }
-
-      // } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // MORE
-      //   mListView.setAdapter( mButtonView2.mAdapter );
-      //   mListView.invalidate();
-      // } else if ( b0 == mButton2[k2++] ) {  // LESS
-      //   mListView.setAdapter( mButtonView1.mAdapter );
-      //   mListView.invalidate();
+        (new ImportDialog( this, this, mApp )).show();
 
       } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // THERION MANAGER ThManager
         try {
@@ -455,7 +388,7 @@ public class TopoDroidActivity extends Activity
                 (new TopoDroidAbout( this )).show();
               } else { 
                 if ( p++ == pos ) { // HELP
-                  (new HelpDialog(this, icons, menus, help_icons, help_menus, mNrButton1, 6 ) ).show();
+                  (new HelpDialog(this, izons, menus, help_icons, help_menus, mNrButton1, 6 ) ).show();
                 }
               }
             }
@@ -566,6 +499,37 @@ public class TopoDroidActivity extends Activity
     }
   }
 
+  private class ImportVisualTopoTask extends AsyncTask< String, Integer, Long >
+  {
+    @Override
+    protected Long doInBackground( String... str )
+    {
+      long sid = 0;
+      try {
+        VisualTopoParser parser = new VisualTopoParser( str[0], true ); // apply_declination = true
+        ArrayList< ParserShot > shots  = parser.getShots();
+
+        sid = mApp.setSurveyFromName( parser.mName, false );
+        mApp.mData.updateSurveyDayAndComment( sid, parser.mDate, parser.mTitle, false );
+        mApp.mData.updateSurveyDeclination( sid, parser.mDeclination, false );
+
+        long id = mApp.mData.insertShots( sid, 1, shots ); // start id = 1
+      } catch ( ParserException e ) {
+        // Toast.makeText(this, R.string.file_parse_fail, Toast.LENGTH_SHORT).show();
+      }
+      return sid;
+    }
+
+    @Override
+    protected void onProgressUpdate(Integer... progress) { }
+
+    @Override
+    protected void onPostExecute(Long result) {
+      setTheTitle( );
+      updateDisplay( );
+    }
+  }
+
   private class ImportPocketTopoTask extends AsyncTask< String, Integer, Long >
   {
     @Override
@@ -631,6 +595,8 @@ public class TopoDroidActivity extends Activity
       updateDisplay( );
     }
   }
+
+   
   
   private class ImportZipTask extends AsyncTask<String , Integer, Long >
   {
@@ -684,6 +650,9 @@ public class TopoDroidActivity extends Activity
     } else if ( filename.endsWith(".top") ) {
       String filepath = TopoDroidPath.getImportFile( filename );
       new ImportPocketTopoTask().execute( filepath, filename ); // TODO pass the drawer as arg
+    } else if ( filename.endsWith(".tro") ) {
+      String filepath = TopoDroidPath.getImportFile( filename );
+      new ImportVisualTopoTask().execute( filepath ); 
     } else if ( filename.endsWith(".zip") ) {
       Toast.makeText(this, R.string.import_zip_wait, Toast.LENGTH_LONG).show();
       new ImportZipTask( this ) .execute( filename );
@@ -700,16 +669,16 @@ public class TopoDroidActivity extends Activity
   HorizontalListView mListView;
   // HorizontalImageButtonView mButtonView1;
   HorizontalButtonView mButtonView1;
-  // HorizontalButtonView mButtonView2;
-  Button     mImage;
+  Button     mMenuImage;
   ListView   mMenu;
   ArrayAdapter< String > mMenuAdapter;
   
 
-  void setMenuAdapter()
+  void setMenuAdapter( Resources res )
   {
-    Resources res = getResources();
     mMenuAdapter = new ArrayAdapter<String>(this, R.layout.menu );
+    // FIXME TextView tv = ((TextVie)mMenuAdaptergetView()).setTextSize( 24 );
+
     mMenuAdapter.add( res.getString( menus[0] ) );
     mMenuAdapter.add( res.getString( menus[1] ) );
     if ( TopoDroidSetting.mLevelOverAdvanced ) mMenuAdapter.add( res.getString( menus[2] ) );
@@ -730,6 +699,7 @@ public class TopoDroidActivity extends Activity
   public void onCreate(Bundle savedInstanceState)
   {
     super.onCreate( savedInstanceState );
+    
     setContentView(R.layout.topodroid_activity);
     mApp = (TopoDroidApp) getApplication();
     mApp.mActivity = this;
@@ -746,10 +716,10 @@ public class TopoDroidActivity extends Activity
     mList.setOnItemLongClickListener( this );
     mList.setDividerHeight( 2 );
 
-    mImage = (Button) findViewById( R.id.handle );
-    mImage.setOnClickListener( this );
+    mMenuImage = (Button) findViewById( R.id.handle );
+    mMenuImage.setOnClickListener( this );
     mMenu = (ListView) findViewById( R.id.menu );
-    setMenuAdapter();
+    setMenuAdapter( getResources() );
     closeMenu();
     mMenu.setOnItemClickListener( this );
 
@@ -807,36 +777,26 @@ public class TopoDroidActivity extends Activity
 
   void resetButtonBar()
   {
-    mApp.setListViewHeight( mListView );
+    int size = mApp.setListViewHeight( mListView );
 
-    icons00 = ( TopoDroidSetting.mSizeButtons == 2 )? ixons : icons;
+    // icons00 = ( TopoDroidSetting.mSizeButtons == 2 )? ixons : icons;
     mNrButton1 = 3 + ( TopoDroidSetting.mLevelOverAdvanced ? 2 : 0 );
-    // int nr_button2 = 3;
     mButton1 = new Button[mNrButton1];
-    // mButton2 = new Button[nr_button2];
 
-    mImage.setBackgroundResource( 
-      ( TopoDroidSetting.mSizeButtons == 2 )? R.drawable.ix_menu
-                                       : R.drawable.ic_menu );
+    // mMenuImage.setBackgroundResource( ( TopoDroidSetting.mSizeButtons == 2 )? R.drawable.ix_menu : R.drawable.ic_menu );
+    mApp.setButtonBackground( mMenuImage, size, R.drawable.iz_menu );
 
-    int k;
-    for (k=0; k<mNrButton1; ++k ) {
+    for (int k=0; k<mNrButton1; ++k ) {
       mButton1[k] = new Button( this );
       mButton1[k].setPadding(0,0,0,0);
       mButton1[k].setOnClickListener( this );
-      mButton1[k].setBackgroundResource(  icons00[k] );
-      // mButton1[k].setImageResource(  icons00[k] );
+      // mButton1[k].setBackgroundResource(  icons00[k] );
+      // // mButton1[k].setImageResource(  icons00[k] );
+      mApp.setButtonBackground( mButton1[k], size, izons[k] );
     }
-    // for (k=0; k<nr_button2; ++k ) {
-    //   mButton2[k] = new Button( this );
-    //   mButton2[k].setPadding(0,0,0,0);
-    //   mButton2[k].setOnClickListener( this );
-    //   mButton2[k].setBackgroundResource(  icons00[k+mNrButton1] );
-    // }
 
     // mButtonView1 = new HorizontalImageButtonView( mButton1 );
     mButtonView1 = new HorizontalButtonView( mButton1 );
-    // mButtonView2 = new HorizontalButtonView( mButton2 );
     mListView.setAdapter( mButtonView1.mAdapter );
   }
 
@@ -1136,7 +1096,7 @@ public class TopoDroidActivity extends Activity
     } else if ( item == mMIabout ) { // ABOUT DIALOG
       (new TopoDroidAbout( this )).show();
     } else if ( item == mMIhelp  ) { // HELP DIALOG
-      (new HelpDialog(this, icons, menus, help_icons, help_menus, mNrButton1, 6 ) ).show();
+      (new HelpDialog(this, izons, menus, help_icons, help_menus, mNrButton1, 6 ) ).show();
     } else {
       return super.onOptionsItemSelected(item);
     }

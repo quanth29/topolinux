@@ -606,8 +606,8 @@
   <string name="pref_cat_sketch">3D MODEL SETTINGS</string>
   <string name="pref_cat_log">LOG SETTINGS</string>
 
-  <string name="pref_hide_help_title">Hide help</string>
-  <string name="pref_hide_help_summary">Hide help buttons</string>
+  <string name="pref_locale_title">Language</string>
+  <string name="pref_locale_summary">Language</string>
 
   <string name="pref_raw_data_title">Raw data</string>
   <string name="pref_raw_data_summary">Show raw data</string>

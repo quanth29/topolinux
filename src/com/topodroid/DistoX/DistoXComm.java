@@ -8,13 +8,6 @@
  *  Copyright This sowftare is distributed under GPL-3.0 or later
  *  See the file COPYING.
  * --------------------------------------------------------
- * CHANGES
- * 20120801 BT RFcomm connect method call with UUID
- * 20120803 taken nr. of read packets out of RFcomm thread
- * 20120803 commented connectRemoteDevice
- * 20131116 VECTOR packet
- * 20140320 X310 memory functions
- * 20140409 bugfix check if address == null on connect
  */
 package com.topodroid.DistoX;
 
@@ -25,6 +18,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 import java.util.List;
+import java.util.ArrayList;
 // import java.Thread;
 
 
@@ -107,7 +101,7 @@ public class DistoXComm
         } else if ( BluetoothDevice.ACTION_ACL_DISCONNECTED.equals( action ) ) {
           Bundle extra = data.getExtras();
           String device = extra.getString( BluetoothDevice.EXTRA_DEVICE ).toString();
-          Log.v("DistoX", " DistoXComm ACL_DISCONNECTED from " + device );
+          // Log.v("DistoX", " DistoXComm ACL_DISCONNECTED from " + device );
           TopoDroidLog.Log( TopoDroidLog.LOG_BT, "ACL_DISCONNECTED");
           closeSocket( );
         }
@@ -144,13 +138,13 @@ public class DistoXComm
   {
     private DistoXProtocol mProto;
     private int toRead; // number of packet to read
-    private ILister mLister;
+    private ArrayList<ILister> mLister;
 
     /** 
      * @param protocol    communication protocol
      * @param to_read     number of data to read (use -1 to read forever until timeout or an exception)
      */
-    public RfcommThread( DistoXProtocol protocol, int to_read, ILister lister )
+    public RfcommThread( DistoXProtocol protocol, int to_read, ArrayList<ILister> lister )
     {
       nReadPackets = 0; // reset nr of read packets
       toRead = to_read;
@@ -190,15 +184,18 @@ public class DistoXComm
           double c = mProto.mClino;
           double r = mProto.mRoll;
           TopoDroidLog.Log( TopoDroidLog.LOG_DISTOX, "DATA PACKET " + d + " " + b + " " + c );
-          mLastShotId = mApp.mData.insertShot( mApp.mSID, -1L, d, b, c, r, true );
-          if ( mLister != null ) {
+          // NOTE type=0 shot is DistoX-type
+          mLastShotId = mApp.mData.insertShot( mApp.mSID, -1L, d, b, c, r, 0, true );
+          if ( mLister != null && mLister.size() > 0 ) {
             DistoXDBlock blk = new DistoXDBlock( );
             blk.setId( mLastShotId, mApp.mSID );
             blk.mLength  = (float)d;
             blk.mBearing = (float)b;
             blk.mClino   = (float)c;
             blk.mRoll    = (float)r;
-            mLister.updateBlockList( blk );
+            for ( ILister lister : mLister ) {
+              lister.updateBlockList( blk );
+            }
           }
         } else if ( res == DistoXProtocol.DISTOX_PACKET_G ) {
           // TopoDroidLog.Log( TopoDroidLog.LOG_DISTOX, "G PACKET" );
@@ -438,7 +435,7 @@ public class DistoXComm
     return mBTConnected;
   }
 
-  private boolean startRfcommThread( int to_read, ILister lister )
+  private boolean startRfcommThread( int to_read, ArrayList<ILister> lister )
   {
     // TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "startRFcommThread to_read " + to_read );
     if ( mBTSocket != null ) {
@@ -459,20 +456,20 @@ public class DistoXComm
 
   // -------------------------------------------------------- 
   
-  public boolean connectRemoteDevice( String address, ILister lister )
-  {
-    // TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "connect remote device: address " + address );
-    if ( connectSocket( address ) ) {
-      if ( mProtocol != null ) {
-        return startRfcommThread( -1, lister );
-      }
-      TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "connectRemoteDevice null protocol");
-      destroySocket( );
-    } else {
-      TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "connectRemoteDevice failed on connectSocket()" );
-    }
-    return false;
-  }
+  // public boolean connectRemoteDevice( String address, ArrayList<ILister> lister )
+  // {
+  //   // TopoDroidLog.Log( TopoDroidLog.LOG_COMM, "connect remote device: address " + address );
+  //   if ( connectSocket( address ) ) {
+  //     if ( mProtocol != null ) {
+  //       return startRfcommThread( -1, lister );
+  //     }
+  //     TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "connect RemoteDevice null protocol");
+  //     destroySocket( );
+  //   } else {
+  //     TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "connect RemoteDevice failed on connectSocket()" );
+  //   }
+  //   return false;
+  // }
 
   public void disconnectRemoteDevice( )
   {
@@ -514,7 +511,7 @@ public class DistoXComm
   /**
    * nothing to read (only write) --> no AsyncTask
    */
-  void setX310Laser( String address, int what, ILister lister )
+  void setX310Laser( String address, int what, ArrayList<ILister> lister )
   {
     if ( connectSocket( address ) ) {
       switch ( what ) {
@@ -529,7 +526,7 @@ public class DistoXComm
           sendCommand( 0x38 );
           if ( what == 3 ) {
             if ( mRfcommThread == null ) {
-              Log.v("DistoX", "RF comm threadi start ... ");
+              // Log.v("DistoX", "RF comm thread start ... ");
               startRfcommThread( -1, lister );
               while ( mRfcommThread != null ) {
                 try {
@@ -537,7 +534,7 @@ public class DistoXComm
                 } catch ( InterruptedException e ) { }
               }
             } else {
-              Log.v("DistoX", "RF comm thread not null ");
+              // Log.v("DistoX", "RF comm thread not null ");
             }
           }
           break;
@@ -758,7 +755,7 @@ public class DistoXComm
   // ------------------------------------------------------------------------------------
   // CONTINUOUS DATA DOWNLOAD
 
-  public boolean connect( String address, ILister lister ) 
+  public boolean connect( String address, ArrayList<ILister> lister ) 
   {
     if ( mRfcommThread != null ) return true;
     if ( ! connectSocket( address ) ) return false;
@@ -782,7 +779,7 @@ public class DistoXComm
   // -------------------------------------------------------------------------------------
   // ON-DEMAND DATA DOWNLOAD
 
-  public int downloadData( String address, ILister lister )
+  public int downloadData( String address, ArrayList<ILister> lister )
   {
     if ( ! checkRfcommThreadNull( "download data: address " + address ) ) {
       TopoDroidLog.Log( TopoDroidLog.LOG_ERR, "download data: RFcomm thread not null");

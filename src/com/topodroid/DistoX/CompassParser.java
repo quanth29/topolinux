@@ -30,51 +30,12 @@ import java.util.Locale;
 
 // import android.util.Log;
 
-public class CompassParser
+public class CompassParser extends ImportParser
 {
-  public String mName = null;  // survey name
-  public String mDate = null;  // survey date
-  public String mTeam = "";
-  public String mTitle = "";
-  public float  mDeclination = 0.0f; // one-survey declination
-  private boolean mApplyDeclination = false;
- 
-
-  private ArrayList< ParserShot > shots;   // centerline shots
-  private ArrayList< ParserShot > splays;  // splay shots
-
-  public int getShotNumber()    { return shots.size(); }
-  public int getSplayNumber()   { return splays.size(); }
-
-  public ArrayList< ParserShot > getShots() { return shots; }
-  public ArrayList< ParserShot > getSplays() { return splays; }
-
-  private int mLineCnt;  // line counter
-
-
   public CompassParser( String filename, boolean apply_declination ) throws ParserException
   {
-    shots  = new ArrayList< ParserShot >();
-    splays = new ArrayList< ParserShot >();
-    mApplyDeclination = apply_declination;
+    super( apply_declination );
     readFile( filename );
-  }
-
-  private String nextLine( BufferedReader br ) throws IOException
-  {
-    StringBuilder ret = new StringBuilder();
-    {
-      String line = br.readLine();
-      ++mLineCnt;
-      if ( line == null ) return null; // EOF
-      while ( line != null && line.endsWith( "\\" ) ) {
-        ret.append( line.replace( '\\', ' ' ) ); // FIXME
-        line = br.readLine();
-        ++mLineCnt;
-      }
-      if ( line != null ) ret.append( line );
-    }
-    return ret.toString();
   }
 
   private boolean isDuplicate( String flag )
@@ -93,26 +54,15 @@ public class CompassParser
 
   /** read input file
    * @param filename name of the file to parse
-   * @param basepath survey pathname base
-   * @param usd   use survey declination
-   * @param sd    survey decliunation
-   * @param ul units of length (as multiple of 1 meter)
-   * @param ub units of bearing (as multiple of 1 degree)
-   * @param uc units of clino
    */
-  private void readFile( String filename ) throws ParserException
+  @Override
+  void readFile( BufferedReader br ) throws ParserException
   {
     float mLength, mBearing, mClino, mLeft, mUp, mDown, mRight;
     String mFlag=null, mComment=null, mFrom=null, mTo=null;
 
-    Pattern pattern = Pattern.compile( "\\s+" );
-
-    mLineCnt = 0;
-
     String line = "";
     try {
-      FileReader fr = new FileReader( filename );
-      BufferedReader br = new BufferedReader( fr );
       line = nextLine( br );
       while ( line != null ) {
         line = line.trim();
@@ -126,7 +76,7 @@ public class CompassParser
           }
         } else if ( line.startsWith("SURVEY DATE") ) {
           if ( mDate == null ) {
-            String[] vals = pattern.split(line); // line.split( "\\s+" );
+            String[] vals = splitLine(line); // line.split( "\\s+" );
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter( sw );
             pw.format( "%04d.%02d.%02d", Integer.parseInt( vals[4] ), Integer.parseInt( vals[2] ), Integer.parseInt( vals[3] ) );
@@ -144,10 +94,10 @@ public class CompassParser
             mTeam.trim();
           }
         } else if ( line.startsWith("DECLINATION") ) {
-          String[] vals = pattern.split(line); // line.split( "\\s+" );
+          String[] vals = splitLine(line); // line.split( "\\s+" );
           mDeclination = Float.parseFloat( vals[1] );
         } else if ( line.length() > 8 ) {
-          String[] vals = pattern.split(line); // line.split( "\\s+" );
+          String[] vals = splitLine(line); // line.split( "\\s+" );
           int k = 0;
           int kmax = vals.length;
           if ( kmax >= 5 && ! vals[0].equals("FROM") ) {

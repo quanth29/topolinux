@@ -54,6 +54,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+
 import android.util.Log;
 
 public class GMActivity extends Activity
@@ -84,45 +88,71 @@ public class GMActivity extends Activity
   static int CALIB_COMPUTE_GROUPS = 1;
   static int CALIB_RESET_GROUPS   = 2;
 
-  static int icons00[];
-  static int icons[] = { 
-                        R.drawable.ic_download,
-                        R.drawable.ic_toggle,
-                        R.drawable.ic_group,
-                        R.drawable.ic_cover,
-                        R.drawable.ic_compute,
-                        R.drawable.ic_read,
-                        R.drawable.ic_write
-                     };
-  static int ixons[] = { 
-                        R.drawable.ix_download,
-                        R.drawable.ix_toggle,
-                        R.drawable.ix_group,
-                        R.drawable.ix_cover,
-                        R.drawable.ix_compute,
-                        R.drawable.ix_read,
-                        R.drawable.ix_write
+  // static int icons00[];
+  // static int icons[] = { 
+  //                       R.drawable.ic_download,
+  //                       R.drawable.ic_toggle,
+  //                       R.drawable.ic_group,
+  //                       R.drawable.ic_cover,
+  //                       R.drawable.ic_compute,
+  //                       R.drawable.ic_read,
+  //                       R.drawable.ic_write
+  //                    };
+  // static int ixons[] = { 
+  //                       R.drawable.ix_download,
+  //                       R.drawable.ix_toggle,
+  //                       R.drawable.ix_group,
+  //                       R.drawable.ix_cover,
+  //                       R.drawable.ix_compute,
+  //                       R.drawable.ix_read,
+  //                       R.drawable.ix_write
+  //                    };
+  static int izons[] = { 
+                        R.drawable.iz_download,
+                        R.drawable.iz_toggle,
+                        R.drawable.iz_group,
+                        R.drawable.iz_cover,
+                        R.drawable.iz_compute,
+                        R.drawable.iz_read,
+                        R.drawable.iz_write
                      };
 
-  static int icons00no[];
-  static int iconsno[] = { 
+  // static int icons00no[];
+  // static int iconsno[] = { 
+  //                       0,
+  //                       R.drawable.ic_toggle_no,
+  //                       0,
+  //                       0,
+  //                       0,
+  //                       R.drawable.ic_read_no,
+  //                       R.drawable.ic_write_no
+  //                    };
+  // static int ixonsno[] = { 
+  //                       0,
+  //                       R.drawable.ix_toggle_no,
+  //                       0,
+  //                       0,
+  //                       0,
+  //                       R.drawable.ix_read_no,
+  //                       R.drawable.ix_write_no
+  //                    };
+  static int izonsno[] = { 
                         0,
-                        R.drawable.ic_toggle_no,
+                        R.drawable.iz_toggle_no,
                         0,
                         0,
                         0,
-                        R.drawable.ic_read_no,
-                        R.drawable.ic_write_no
+                        R.drawable.iz_read_no,
+                        R.drawable.iz_write_no
                      };
-  static int ixonsno[] = { 
-                        0,
-                        R.drawable.ix_toggle_no,
-                        0,
-                        0,
-                        0,
-                        R.drawable.ix_read_no,
-                        R.drawable.ix_write_no
-                     };
+
+
+  BitmapDrawable mBMtoggle;
+  BitmapDrawable mBMtoggle_no;
+  BitmapDrawable mBMread;
+  BitmapDrawable mBMread_no;
+  BitmapDrawable mBMwrite;
+  BitmapDrawable mBMwrite_no;
 
   static int menus[] = {
                         R.string.menu_options,  // 8
@@ -355,7 +385,7 @@ public class GMActivity extends Activity
         mBlkStatus = 1 - mBlkStatus;       // 0 --> 1;  1 --> 0
         updateDisplay( );
       } else if ( p++ == pos ) { // HELP
-        (new HelpDialog(this, icons, menus, help_icons, help_menus, mNrButton1, 3 ) ).show();
+        (new HelpDialog(this, izons, menus, help_icons, help_menus, mNrButton1, 3 ) ).show();
       }
       return;
     }
@@ -441,17 +471,29 @@ public class GMActivity extends Activity
 
     // mHandler = new ConnHandler( mApp, this );
     mListView = (HorizontalListView) findViewById(R.id.listview);
-    mApp.setListViewHeight( mListView );
-    icons00   = ( TopoDroidSetting.mSizeButtons == 2 )? ixons : icons;
-    icons00no = ( TopoDroidSetting.mSizeButtons == 2 )? ixonsno : iconsno;
+    int size = mApp.setListViewHeight( mListView );
+    // icons00   = ( TopoDroidSetting.mSizeButtons == 2 )? ixons : icons;
+    // icons00no = ( TopoDroidSetting.mSizeButtons == 2 )? ixonsno : iconsno;
 
     mButton1 = new Button[ mNrButton1 ];
     for ( int k=0; k<mNrButton1; ++k ) {
       mButton1[k] = new Button( this );
       mButton1[k].setPadding(0,0,0,0);
       mButton1[k].setOnClickListener( this );
-      mButton1[k].setBackgroundResource( icons00[k] );
+      // mButton1[k].setBackgroundResource( icons00[k] );
+      BitmapDrawable bm2 = mApp.setButtonBackground( mButton1[k], size, izons[k] );
+      if ( k == 1 ) {
+        mBMtoggle = bm2;
+      } else if ( k == 5 ) {
+        mBMread = bm2;
+      } else if ( k == 6 ) {
+        mBMwrite = bm2;
+      }
     }
+    mBMtoggle_no = mApp.setButtonBackground( null, size, izonsno[1] );
+    mBMread_no = mApp.setButtonBackground( null, size, izonsno[5] );
+    mBMwrite_no = mApp.setButtonBackground( null, size, izonsno[6] );
+
     enableWrite( false );
 
     mButtonView1 = new HorizontalButtonView( mButton1 );
@@ -463,8 +505,8 @@ public class GMActivity extends Activity
 
     mImage = (Button) findViewById( R.id.handle );
     mImage.setOnClickListener( this );
-    mImage.setBackgroundResource( 
-      ( TopoDroidSetting.mSizeButtons == 2 )? R.drawable.ix_menu : R.drawable.ic_menu );
+    // mImage.setBackgroundResource( ( TopoDroidSetting.mSizeButtons == 2 )? R.drawable.ix_menu : R.drawable.ic_menu );
+    mApp.setButtonBackground( mImage, size, R.drawable.iz_menu );
     mMenu = (ListView) findViewById( R.id.menu );
     setMenuAdapter();
     closeMenu();
@@ -486,9 +528,11 @@ public class GMActivity extends Activity
     mEnableWrite = enable;
     mButton1[6].setEnabled( enable );
     if ( enable ) {
-      mButton1[6].setBackgroundResource( icons00[6] );
+      // mButton1[6].setBackgroundResource( icons00[6] );
+      mButton1[6].setBackgroundDrawable( mBMwrite );
     } else {
-      mButton1[6].setBackgroundResource( icons00no[6] );
+      // mButton1[6].setBackgroundResource( icons00no[6] );
+      mButton1[6].setBackgroundDrawable( mBMwrite_no );
     }
   }
 
@@ -500,17 +544,23 @@ public class GMActivity extends Activity
     mButton1[6].setEnabled( enable && mEnableWrite );
     if ( enable ) {
       setTitleColor( TopoDroidConst.COLOR_CONNECTED );
-      mButton1[1].setBackgroundResource( icons00[1] );
-      mButton1[5].setBackgroundResource( icons00[5] );
+      // mButton1[1].setBackgroundResource( icons00[1] );
+      // mButton1[5].setBackgroundResource( icons00[5] );
+      mButton1[1].setBackgroundDrawable( mBMtoggle );
+      mButton1[5].setBackgroundDrawable( mBMread );
     } else {
       setTitleColor( TopoDroidConst.COLOR_CONNECTED );
-      mButton1[1].setBackgroundResource( icons00no[1] );
-      mButton1[5].setBackgroundResource( icons00no[5] );
+      // mButton1[1].setBackgroundResource( icons00no[1] );
+      // mButton1[5].setBackgroundResource( icons00no[5] );
+      mButton1[1].setBackgroundDrawable( mBMtoggle_no );
+      mButton1[5].setBackgroundDrawable( mBMread_no );
     }
     if ( enable && mEnableWrite ) {
-      mButton1[6].setBackgroundResource( icons00[6] );
+      // mButton1[6].setBackgroundResource( icons00[6] );
+      mButton1[6].setBackgroundDrawable( mBMwrite );
     } else {
-      mButton1[6].setBackgroundResource( icons00no[6] );
+      // mButton1[6].setBackgroundResource( icons00no[6] );
+      mButton1[6].setBackgroundDrawable( mBMwrite_no );
     }
   }
 
@@ -548,7 +598,9 @@ public class GMActivity extends Activity
             }
             mApp.updateCalibAlgo( mAlgo );
           }
-          new DistoXRefresh( mApp, this ).execute();
+          ArrayList<ILister> listers = new ArrayList<ILister>();
+          listers.add( this );
+          new DistoXRefresh( mApp, listers ).execute();
         }
       } else if ( b == mButton1[1] ) { // toggle
         enableButtons( false );
@@ -685,10 +737,12 @@ public class GMActivity extends Activity
 
   // ------------------------------------------------------------------
 
-  public int downloadData()
-  {
-    return mApp.downloadData( this );
-  }
+  // public int downloadData()
+  // {
+  //   ArrayList<ILister> listers = new ArrayList<ILister>();
+  //   listers.add( this );
+  //   return mApp.downloadData( this );
+  // }
 
   // public void makeNewCalib( String name, String date, String comment )
   // {
@@ -755,7 +809,7 @@ public class GMActivity extends Activity
       mBlkStatus = 1 - mBlkStatus;       // 0 --> 1;  1 --> 0
       updateDisplay( );
     } else if ( item == mMIhelp  ) { // HELP DIALOG
-      (new HelpDialog(this, icons, menus, help_icons, help_menus, mNrButton1, 3 ) ).show();
+      (new HelpDialog(this, izons, menus, help_icons, help_menus, mNrButton1, 3 ) ).show();
     } else {
       return super.onOptionsItemSelected(item);
     }

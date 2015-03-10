@@ -209,7 +209,7 @@
     <string name="menu_sensor">датчик</string>
     <string name="menu_scan">Сканировать</string>
     <string name="menu_station">ПИКЕТЫ</string>
-    <!-- TODO string name="menu_stats">STATS</string -->
+    <!-- TODO string name="menu_stats">СТАТИСТИКА</string -->
     <string name="menu_survey">Метаданные</string>
     <string name="menu_sync">СИНХР.</string>
 
@@ -367,8 +367,8 @@
     <string name="button_cancel"    >Отмена    </string>
     <string name="button_convert"   >Конвертир.</string>
     <string name="button_delete"    >Удалить   </string>
-    <string name="button_eval"      >Eval      </string>
-    <string name="button_eval_cal"  >Eval w. calib.</string>
+    <string name="button_eval"      >Расчет    </string>
+    <string name="button_eval_cal"  >Расчет w. калиб.</string>
     <string name="button_geomag"    >GeoMag    </string>
     <string name="button_gps_start" >GPS       </string>
     <!-- OK string name="button_gps_stop"  >Стоп      </string -->
@@ -381,13 +381,13 @@
     <string name="button_no"        >Нет       </string>
     <string name="button_open"      >Откр      </string>
     <string name="button_read"      >Считать   </string>
-    <string name="button_dump"      >Dump     </string>
-    <string name="button_reset"     >Reset     </string>
-    <string name="button_clear"     >Очистить     </string>
-    <string name="button_save"      >Сохр      </string>
-    <string name="button_select"    >Select    </string>
+    <!-- TODO string name="button_dump"      >Dump      </string -->
+    <string name="button_reset"     >Сброс     </string>
+    <string name="button_clear"     >Очистить  </string>
+    <string name="button_save"      >Сохр.     </string>
+    <string name="button_select"    >Выбрать   </string>
     <string name="button_store"     >Store     </string>
-    <string name="button_upload"    >Upload    </string>
+    <string name="button_upload"    >Загрузить </string>
     <string name="button_yes"       >Да       </string>
 
     <string name="button_sharp"     >Острый</string>
@@ -400,7 +400,7 @@
     <string name="button_split"     >Разделить </string>
     <string name="button_toggle"    >Режим КАЛИБ  </string>
 -->
-    <string name="button_write"     >Upload</string>
+    <string name="button_write"     >Записать</string>
 
     <string name="mode_leg">Нитка</string>
     <string name="mode_splay">Бок. замер</string>
@@ -409,11 +409,11 @@
     <string name="mode_fixed">Фиксир. точки.</string>
 
     <string name="remote_title">Пульт дистанционного управления</string>
-    <string name="remote_on">Laser ON</string>
-    <string name="remote_off">Laser OFF</string>
+    <string name="remote_on">Лазер ВКЛ</string>
+    <string name="remote_off">Лазер ВЫКЛ</string>
     <string name="remote_measure">Замер</string>
-    <!-- TODO string name="remote_reset">Reset BT</string -->
-    <!-- TODO string name="download">Download</string -->
+    <string name="remote_reset">Сброс БT</string>
+    <string name="download">Скачать</string>
 
 <!-- OK
     <string name="btn_3d">3D</string>
@@ -422,8 +422,8 @@
     <string name="btn_csurvey">cSurvey</string>
     <string name="btn_csv">CSV</string>
     <string name="btn_dxf">DXF</string>
-    <string name="btn_man">Manual</string>
-    <string name="btn_symbol">Drawing tools</string>
+    <string name="btn_man">Ручной</string>
+    <string name="btn_symbol">Инстр Рисования</string>
     <string name="btn_png">PNG</string>
     <string name="btn_pockettopo">PocketTopo</string>
     <string name="btn_survex">Survex</string>
@@ -466,10 +466,10 @@
     <string name="station_next">СЛЕД.</string>
     <string name="no_shot_between_stations">no_shot_between_stations</string>
     <string name="few_line_points">Слишком мало точек в линии</string>
-    <string name="line_delete">line_delete</string>
+    <string name="line_delete">удалить_линию</string>
 
     <string name="menu_head">Head</string>
-    <string name="menu_save_th2">save th2</string>
+    <string name="menu_save_th2">сохр th2</string>
 <!-- END_SKETCH_3D -->    
 
     <string name="help_help">Помощь</string>
@@ -531,7 +531,7 @@
     <string name="help_save">Сохранить нзменения информации о съёмемке</string>
     <string name="help_save_calib">Сохранить измерения информации о калибровке</string>
     <string name="help_export_survey">Экспорт съёмемки</string>
-    <string name="help_loc">GPS location</string>
+    <string name="help_loc">GPS местоположение</string>
     <string name="help_delete_survey">Удалить съёмку</string>
     <string name="help_delete_calib">Удалить калибровку</string>
     <string name="help_detach">Очистить текущий выбор DistoX</string>
@@ -600,8 +600,10 @@
   <string name="pref_cat_sketch">Настройки Абриса</string>
   <string name="pref_cat_log">настройки журнала</string>
 
-  <string name="pref_hide_help_title">Скрыть помощь</string>
-  <string name="pref_hide_help_summary">Скрыть кнопку помощи</string>
+  <!-- NO string name="pref_hide_help_title">Скрыть помощь</string -->
+  <!-- NO string name="pref_hide_help_summary">Скрыть кнопку помощи</string -->
+  <!-- TODO string name="pref_locale_title">Language</string -->
+  <!-- TODO string name="pref_locale_summary">Language</string -->
 
   <string name="pref_raw_data_title">Сырые данные</string>
   <string name="pref_raw_data_summary">Показать сырые данные</string>
@@ -609,8 +611,8 @@
   <string name="pref_bootloader_summary">Вкл Загрузчик</string>
   <string name="pref_cosurvey_title">Совм. съёмка</string>
   <string name="pref_cosurvey_summary">Вкл/Выкл Совм. съёмку</string>
-  <!-- TODO string name="pref_export_shots_title">Data export format</string -->
-  <!-- TODO string name="pref_export_shots_summary">Default data export format</string -->
+  <string name="pref_export_shots_title">Формат экспорта данных</string>
+  <string name="pref_export_shots_summary">Формат экспорта данных по умолчанию</string>
   <string name="pref_extra_buttons_title">Уровень функционала</string>
   <string name="pref_extra_buttons_summary">Уровень подключенного функционала</string>
   <string name="pref_size_buttons_title">Размер кнопок</string>
@@ -620,7 +622,7 @@
   <string name="pref_leg_shots_summary">Минимальное кол-во пикетов на отрезке</string>
 
   <string name="pref_sock_type_title">Socket</string>
-  <string name="pref_sock_type_summary">Socket create</string>
+  <string name="pref_sock_type_summary">Socket создать</string>
   <!-- OK string name="pref_device_type_title">Тип Disto</string -->
   <!-- OK string name="pref_device_type_summary">Модель DistoX</string -->
   <string name="pref_comm_retry_title">Попыток подключения</string >
@@ -636,10 +638,10 @@
   <string name="pref_crs_message">Введите имя CRS как в Proj4</string>
   <string name="pref_gps_averaging_title">Осреднение данных GPS </string>
   <string name="pref_gps_averaging_summary">Использовать GPSAveraging?</string>
-  <!-- TODO string name="pref_plot_screen_title">Sketch screen settings</string -->
-  <!-- TODO string name="pref_tool_screen_title">Sketch drawing settings</string -->
-  <!-- TODO string name="pref_location_title">Location settings</string -->
-  <!-- TODO string name="pref_shot_data_title">SHOT DATA SETTINGS</string -->
+  <string name="pref_plot_screen_title">Настройки экрана абриса</string>
+  <string name="pref_tool_screen_title">Настройки рисования абриса</string>
+  <string name="pref_location_title">Настройки местоположения</string>
+  <string name="pref_shot_data_title">НАСТРОЙКА ДАННЫХ ПИКЕТОВ</string>
   <string name="pref_cwd_title">Корневой каталог</string>
   <string name="pref_cwd_summary">TopoDroid корневой каталог</string>
   <string name="pref_cwd_message">Введите корневой каталог TopoDroid</string>
@@ -727,18 +729,18 @@
   <string name="pref_label_size_title">Размер значков</string>
   <string name="pref_label_size_summary">Размер значков</string>
   <string name="pref_label_size_message">Размер значков</string>
-  <!-- TODO string name="pref_arrow_length_title">Section tick</string -->
-  <!-- TODO string name="pref_arrow_length_summary">Size of the section line tick</string -->
-  <!-- TODO string name="pref_arrow_length_message">Size of the section line tick</string -->
-  <!-- TODO string name="pref_dot_radius_title">Dots radius</string -->
-  <!-- TODO string name="pref_dot_radius_summary">Green dots size</string -->
-  <!-- TODO string name="pref_dot_radius_message">Size of the green dots</string -->
+  <string name="pref_arrow_length_title">Бергштрих сечений</string>
+  <string name="pref_arrow_length_summary">Размер бергштриха линии сечений</string>
+  <string name="pref_arrow_length_message">Размер бергштриха линии сечений</string>
+  <string name="pref_dot_radius_title">Радиус точек</string>
+  <string name="pref_dot_radius_summary">Размер зеленых точек</string>
+  <string name="pref_dot_radius_message">Размер зеленых точек</string>
   <string name="pref_line_thickness_title">Толщина линии</string>
   <string name="pref_line_thickness_summary">Толщина линий</string>
   <string name="pref_line_thickness_message">Толщина линий</string>
-  <!-- TODO string name="pref_fixed_thickness_title">Survey line thickness</string -->
-  <!-- TODO string name="pref_fixed_thickness_summary">Survey line thickness</string -->
-  <!-- TODO string name="pref_fixed_thickness_message">Survey line thickness</string -->
+  <string name="pref_fixed_thickness_title">Толщина нитки хода</string>
+  <string name="pref_fixed_thickness_summary">Толщина нитки хода</string>
+  <string name="pref_fixed_thickness_message">Толщина нитки хода</string>
   <string name="pref_device_title">Устройство</string>
   <string name="pref_device_summary">DistoX наименование адреса</string>
   <string name="pref_device_message">DistoX наименование адреса</string>
@@ -811,10 +813,10 @@
   <string name="pref_log_units">Единицы</string>
   <string name="pref_log_zip">ZIP</string>
 
-  <!-- OK string name="line_bezier">Bezier</string -->
-  <!-- TODO string name="line_fine">fine</string -->
-  <!-- TODO string name="line_normal">normale</string -->
-  <!-- TODO string name="line_coarse">grossolana</string -->
+  <string name="line_bezier">Безье</string>
+  <string name="line_fine">точный</string>
+  <string name="line_normal">нормальный</string>
+  <string name="line_coarse">грубый</string>
 
     <string name="welcome_title">Вас приветствует TopoDroid %1$s</string>
     <string name="welcome_text">

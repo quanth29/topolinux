@@ -22,6 +22,7 @@ import android.app.Dialog;
 import android.widget.Button;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.net.Uri;
 
 import android.widget.Toast;
@@ -39,6 +40,8 @@ class TopoDroidAbout extends Dialog
     super( context );
     mContext = context;
     setContentView(R.layout.welcome);
+    getWindow().setLayout( LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT );
+
     setTitle( String.format( context.getResources().getString(R.string.welcome_title), TopoDroidApp.VERSION ) );
 
     // mBTman    = (Button)findViewById(R.id.btn_man);

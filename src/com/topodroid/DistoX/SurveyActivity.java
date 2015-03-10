@@ -72,27 +72,39 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+
 import android.net.Uri;
 
 public class SurveyActivity extends Activity
                             implements OnItemClickListener
                             , View.OnClickListener
 {
-  private static int icons[] = {
-                        R.drawable.ic_note,
-                        R.drawable.ic_info, // ic_details,
-                        R.drawable.ic_3d,
-                        R.drawable.ic_gps,
-                        R.drawable.ic_camera,
-                        R.drawable.ic_sensor 
-                    };
-  private static int ixons[] = { 
-                        R.drawable.ix_note,
-                        R.drawable.ix_info, // ic_details,
-                        R.drawable.ix_3d,
-                        R.drawable.ix_gps,
-                        R.drawable.ix_camera,
-                        R.drawable.ix_sensor
+  // private static int icons[] = {
+  //                       R.drawable.ic_note,
+  //                       R.drawable.ic_info, // ic_details,
+  //                       R.drawable.ic_3d,
+  //                       R.drawable.ic_gps,
+  //                       R.drawable.ic_camera,
+  //                       R.drawable.ic_sensor 
+  //                   };
+  // private static int ixons[] = { 
+  //                       R.drawable.ix_note,
+  //                       R.drawable.ix_info, // ic_details,
+  //                       R.drawable.ix_3d,
+  //                       R.drawable.ix_gps,
+  //                       R.drawable.ix_camera,
+  //                       R.drawable.ix_sensor
+  //                    };
+  private static int izons[] = { 
+                        R.drawable.iz_note,
+                        R.drawable.iz_info, // ic_details,
+                        R.drawable.iz_3d,
+                        R.drawable.iz_gps,
+                        R.drawable.iz_camera,
+                        R.drawable.iz_sensor
                      };
   private static int menus[] = {
                         R.string.menu_export,
@@ -114,7 +126,7 @@ public class SurveyActivity extends Activity
                         R.string.help_prefs,
                         R.string.help_help
                       };
-  private static int icons00[];
+  // private static int icons00[];
 
   // private ShotActivity mParent;
   private Context mContext;
@@ -289,8 +301,8 @@ public class SurveyActivity extends Activity
     // mPhoto = new ArrayList< PhotoInfo >();
 
     mListView = (HorizontalListView) findViewById(R.id.listview);
-    mApp.setListViewHeight( mListView );
-    icons00 = ( TopoDroidSetting.mSizeButtons == 2 )? ixons : icons;
+    int size = mApp.setListViewHeight( mListView );
+    // icons00 = ( TopoDroidSetting.mSizeButtons == 2 )? ixons : icons;
 
     mNrButton1 = TopoDroidSetting.mLevelOverNormal ? 6 
                : TopoDroidSetting.mLevelOverBasic ? 3 : 2;
@@ -299,7 +311,8 @@ public class SurveyActivity extends Activity
       mButton1[k] = new Button( this );
       mButton1[k].setPadding(0,0,0,0);
       mButton1[k].setOnClickListener( this );
-      mButton1[k].setBackgroundResource( icons00[k] );
+      // mButton1[k].setBackgroundResource( icons00[k] );
+      mApp.setButtonBackground( mButton1[k], size, izons[k] );
     }
 
     mButtonView1 = new HorizontalButtonView( mButton1 );
@@ -307,8 +320,8 @@ public class SurveyActivity extends Activity
 
     mImage = (Button) findViewById( R.id.handle );
     mImage.setOnClickListener( this );
-    mImage.setBackgroundResource( 
-      ( TopoDroidSetting.mSizeButtons == 2 )? R.drawable.ix_menu : R.drawable.ic_menu );
+    // mImage.setBackgroundResource( ( TopoDroidSetting.mSizeButtons == 2 )? R.drawable.ix_menu : R.drawable.ic_menu );
+    mApp.setButtonBackground( mImage, size, R.drawable.iz_menu );
     mMenu = (ListView) findViewById( R.id.menu );
     setMenuAdapter();
     closeMenu();
@@ -711,7 +724,7 @@ public class SurveyActivity extends Activity
     } else if ( item == mMIdelete  ) { // DELETE DIALOG
       askDelete();
     } else if ( item == mMIhelp  ) { // HELP DIALOG
-      (new HelpDialog(this, icons, menus, help_icons, help_menus, mNrButton1, 4 ) ).show();
+      (new HelpDialog(this, izons, menus, help_icons, help_menus, mNrButton1, 4 ) ).show();
     } else {
       return super.onOptionsItemSelected(item);
     }
@@ -754,7 +767,7 @@ public class SurveyActivity extends Activity
         intent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_SURVEY );
         startActivity( intent );
       } else if ( p++ == pos ) { // HELP
-        (new HelpDialog(this, icons, menus, help_icons, help_menus, mNrButton1, 4 ) ).show();
+        (new HelpDialog(this, izons, menus, help_icons, help_menus, mNrButton1, 4 ) ).show();
       }
       // updateDisplay();
       return;

@@ -326,7 +326,9 @@ public class TopoDroidPath
 
   static File[] getImportFiles() 
   { 
-    if ( TopoDroidSetting.mLevelOverNormal ) {
+    if ( TopoDroidSetting.mLevelOverAdvanced ) {
+      return getFiles( APP_IMPORT_PATH, new String[] {".th", ".top", ".dat", ".tro"} );
+    } else if ( TopoDroidSetting.mLevelOverNormal ) {
       return getFiles( APP_IMPORT_PATH, new String[] {".th", ".top", ".dat"} );
     }
     return getFiles( APP_IMPORT_PATH, new String[] {".th", ".dat"} );

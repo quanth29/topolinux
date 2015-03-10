@@ -544,8 +544,8 @@
   <string name="pref_cat_sketch">Options de dessin</string>
   <string name="pref_cat_log">Options de journalisation</string>
 
-  <string name="pref_hide_help_title">Masquer l\'aide</string>
-  <string name="pref_hide_help_summary">Masquer les boutons d\'aide</string>
+  <string name="pref_locale_title">Langue</string>
+  <string name="pref_locale_summary">Langue</string>
 
   <string name="pref_raw_data_title">Données brutes</string>
   <string name="pref_raw_data_summary">Afficher les données brutes</string>
