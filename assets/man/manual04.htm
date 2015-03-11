@@ -18,20 +18,21 @@ The first time you start the app a welcome message is shown: read it! It is impo
 
 <h4>BUTTONS</h4>
 <ulist>
-<li><u>Device activity</u> (Disto icon): switches to the Device (management) window</li>
+<li><u>Device activity</u> (DistoX icon): switches to the Device (management) window</li>
 <li><u>Add</u> (a plus sign): used to create a new survey</li>
-<li><u>Import</u> (a vertical arrow): used to import ZIP archives created with TopoDroid or survey files (Therion, Compass, or PocketTopo).</li>
+<li><u>Import</u> (a vertical arrow): used to import ZIP archives created with TopoDroid or survey files (Therion, Compass, VisualTopo, or PocketTopo).</li>
 <li>The optional buttons (shown only at the highest activity level) are for the <i>ThManager</i> (Therion manager) and the <i>SQLite viewer</i>; both require external apps</li>
 </ulist><br><p>
 
 <h4>SETTINGS</h4>
 <ulist>
-<li><i>Work directory</i> sets the current work directory. By default this is "TopoDroid", but it can be changed to another directory in the primary external memory. If the directory does not exists it is created. The database and the data files are stored in the work directory. The manual pages, drawing tools files, and firmware file are stored in the default "TopoDroid" directory.</li>
+<li><i>Work directory</i> sets the current work directory. By default this is "TopoDroid", but it can be changed to another directory in the primary external memory. If the directory does not exists it is created. The database and the data files are stored in the work directory. The drawing tools files, and firmware file are stored in the default "TopoDroid" directory.</li>
+<li><i>Language</i>. The available languages are: English, French, German, Italian, Russian, and Spanish. If no language is selected the system language is used.</li>
 <li><i>Text size</i> of items in the lists</li>
+<li><i>Buttons size</i>, either "small" or "large". The small buttons are suitablke to a 5" screen. You might want to switch to large buttons if you use a 7" tablet.</li>
 <li><i>Bootloader</i>: whether to show the bootloader menu in the Device window. You need it only when you have to upgrade your DistoX2 firmware. So leave it unchecked, and save one menu on the Device window</li>
 <li><i>Cosurveying</i> activate/deactivate the cosurveying service</li>
 <li><i>Activity level</i>: TopoDroid has four activity levels, differing in the amount of functions that are enabled. The default level ("normal") provides the most common functions. In this way the interface can be kept free of unnecessary buttons (and menus). </li>
-<li><i>Buttons size</i>, either "small" or "large". The small buttons are suitablke to a 5" screen. You might want to switch to large buttons if you use a 7" tablet.</li>
 </ulist><br><p>
 
 <h4>Survey import</h4>
@@ -41,6 +42,7 @@ TopoDroid can import the survey files in the followng formats:
 <li>Therion: ".th" data files, with simple data format ("normal from to length compass clino" and optionally LRUD).
 Therion scrap are not imported.</li>
 <li>Compass ".dat" files (not fully tested)</li>
+<li>VisualTopo ".tro" files (experimental)</li>
 <li>PocketTopo ".top" files. Data and drawings are imported (not fully tested)</li>
 <li>TopoDroid ZIP archives. These are special zip files with tke informations to repopulate the database, the drawings (".th2" files), the annotation file, and the photoes.</li>
 </ulist><br>
@@ -52,7 +54,7 @@ Logging is important to solve problems where the program does not behave as expe
 Logs are different from software crashes. Crashes are due to the program misbehaving in the system, and are detected by the system, that ends the program. You should report crashes (and ANR) vie Google Play so that they can be taken into account and fixed. Please, take the time to add a comment about what the program was doing when it crashed.<br><p>
 
 <hr>
-If <b>bluetooth</b> is not on, the app asks whether to turn it on. Without bluetooth it cannot communicate with the DistoX and the survey data can only be entered manually, and the "Download" buttons are replaced by "Add data" buttons.<br><p>
+If <b>bluetooth</b> is not on, the app asks whether to turn it on. Without bluetooth it cannot communicate with the DistoX and the survey data can only be entered manually. In this case the "Download" button in the Shot window is hidden, and that in the Sketch window is replaced by the "Add" button.<br><p>
 
 When the app starts the first time it installs the drawing tools files in the "symbol" directory. There are files for points (iconic symbols, like "entrance", or "stalagmite"), lines (like "wall", or "pit"), and areas (regions shown with a transparent color). If you have upgraded the app to a new version it asks if you want to reinstall the drawing tools.<br>
 Even if TopoDroid comes with many drawing tools preinstalled (45 points, 15 lines, and 9 areas), it can happen that it does not contains the tools you need (or you do not like the one provided). The tool files are plain text files, and you can write your own tool file(s). After you put them in the symbol subdirectories, TopoDroid will see and use them. The syntax of tool files is described in a page on the speleoapps website.<br><p>

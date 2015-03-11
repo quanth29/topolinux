@@ -13,7 +13,7 @@ Save when you are done, and the new survey name will appear in the list of surve
 
 If you tap shortly on the survey name the survey data activity starts.  This is one of the two most important activities of TopoDroid. The other is the Sketch activity.<br><p>
 
-TopoDroid distinguishes four kinds of shots:
+TopoDroid differentiates among four kinds of shots:
 <olist>
 <li>"blank" shots, ie, shots with the stations not set yet</li>
 <li>"splay": it has only one station, usually the "From" station</li>
@@ -36,7 +36,7 @@ Each kind of shots is displayed with a different color: "legs" are white, "repea
 
 <h4>BUTTONS</h4>
 <ulist>
-<li><u>Download</u>: it will download the data from the DistoX as in the calibration data window. If no DistoX is selected this button is replaced by the <u>Add</u> button used to manually enter a shot.</li>
+<li><u>Download</u>: it will download the data from the DistoX as in the calibration data window. If no DistoX is selected this button is hidden.</li>
 <li><u>Bluetooth</u>: Opens the Bluetooth dialog that allows you to control the laser, take a measurement and download it, and reset the BT connection. If you experience problems with the DistoX after downloading some data, you may try to reset the bluetooth connection on TopoDroid, switch the DistoX on and off, and retry downloading the data.</li>
 <li><u>Display</u>: to decide the display mode (what to show)</li>
 <li><u>Sketch</u>: opens the Sketch dialog where you can ask the program to create a new sketch or open an existing one. The dialog has a button to create a new sketch, and a two-column list of the current survey sketches (items in the left column open a sketch with its plan view, the right column items open sketches in extended-profile view; once open in a view you can switch to the other from within the sketch window). If the 3D modeling is enabled there is also a button to create a new 3D model, and the existing 3D models are listed after the sketches.</li>
@@ -108,5 +108,7 @@ The <u>Download</u> button starts a connection with the DistoX to download data.
 
 In the Bluetooth connection with the DistoX is broken (eg. the DistoX gets too far from the Android, or it is switched off) the data download is interrupted. In continuous-mode, if the "Auto reconnect" setting is selected, TopoDroid retries to connect to the DistoX every second.<br><p>
 
-When the Shot activity is closed the data download connection is terminated.
+When the Shot activity is closed the data download connection is terminated. The download connection is not interrupted when the activity is paused (the display switches off). If you open a sketch while the download connection is active in "continuous" mode, the connection is maintained and the data are downloaded (and displayed in the sketch).<br><p>
+
+
 </body></html>
